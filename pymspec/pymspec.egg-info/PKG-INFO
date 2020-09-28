@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: pymspec
+Version: 0.1
+Summary: A python framework for playing with mass get_spectra
+Home-page: UNKNOWN
+Author: Alexandre Drouin
+Author-email: alexandre.drouin.8@ulaval.ca
+License: GPL
+Description: UNKNOWN
+Keywords: mass,spectrometry,spectrum,get_spectra,kernel,proteomics
+Platform: UNKNOWN
+Requires: numpy
+Requires: xlrd

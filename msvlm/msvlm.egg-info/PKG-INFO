@@ -1,0 +1,15 @@
+Metadata-Version: 1.1
+Name: msvlm
+Version: 0.1
+Summary: Python and c++ implementations of the Virtual Lock Mass correction and alignment algorithms
+Home-page: https://github.com/francisbrochu/msvlm
+Author: Francis Brochu
+Author-email: francis.brochu.2@ulaval.ca
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires: h5py
+Requires: numpy
+Requires: scipy
+Requires: bisect
+Requires: heappq
