@@ -1,22 +1,18 @@
 import pandas as pd
 import numpy as np
 import seaborn as sns
-import io, base64, glob, datetime, json
+import io, base64, glob, datetime, json, importlib
 from collections import Counter
-import random
 
-
-import dash, dash_bio, dash_table
+import dash, dash_bio
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-from dash.exceptions import PreventUpdate
 
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import train_test_split
 import umap
 
 import plotly.graph_objs as go
@@ -27,6 +23,8 @@ from Utils import *
 from MetaboDashboardConfig import *
 
 from LDTD_CardiaquesMTL_make_split import *
+from MetaboDashboard.SamplesPairing import SamplesPairing
+
 
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX], meta_tags=[{"name": "viewport", "content": "width=device-width"}]) #"MetaboDashboard",
@@ -539,24 +537,70 @@ def layout():
                                             html.H4(id="Learn_conf_title", children="Define Learning configs"),
                                             dbc.Form(children=[
                                                 dbc.Col(children=[
-                                                    dbc.FormGroup([
-                                                        dbc.Label("Number of splits"),
-                                                        dbc.Input(id="in_nbr_splits_ML", value="25", type="number", min=1,
-                                                                  size="5"),
-                                                    ], className="form_field"),
-                                                    dbc.FormGroup([
-                                                        dbc.Label("Number of Cross Validation folds"),
-                                                        dbc.Input(id="in_nbr_CV_folds", value="5", type="number", min=1,
-                                                                  size="5")
-                                                    ], className="form_field"),
                                                     dbc.FormGroup(
                                                         [
-                                                            dbc.Label("Available Algorithms"),
-                                                            dbc.Checklist(id="in_algo_ML", value="None",
-                                                                          inline=True),
+                                                            dbc.Label("Name of splits config file *",
+                                                                      className="form_labels"),
+                                                            dbc.Input(id="name_splits_config", placeholder="Enter Name",
+                                                                      className="form_input_text"),
+                                                            dbc.FormText(
+                                                                "Write a name for this batch of splits that will be used to identify its parameters file",
+                                                            ),
                                                         ],
                                                         className="form_field"
                                                     ),
+                                                    dbc.FormGroup([
+                                                        dbc.Label("Number of Cross Validation folds", className="form_labels"),
+                                                        dbc.Input(id="in_nbr_CV_folds", value="5", type="number", min=1,
+                                                                  size="5")
+                                                    ], className="form_field"),
+
+
+                                                ],
+                                                )
+                                            ])
+                                        ]),
+                                        html.Div(className="title_and_form", children=[
+                                            html.H4(id="learn_algo_title", children="Define Learning Algorithms"),
+                                            dbc.Form(children=[
+                                                dbc.Col(children=[
+                                                    dbc.FormGroup(
+                                                        [
+                                                            dbc.Label("Available Algorithms", className="form_labels"),
+                                                            dbc.Checklist(id="in_algo_ML", value="None",
+                                                                          # inline=True
+                                                                          ),
+                                                        ],
+                                                        className="form_field"
+                                                    ),
+                                                    dbc.FormGroup(
+                                                        [
+                                                            dbc.Label("Add Sklearn Algorithms", className="form_labels"),
+                                                            dbc.Label("from sklearn.A import B"),
+                                                            dbc.Input(id="import_new_algo", placeholder="Complete import (A)",
+                                                                      className="form_input_text"),
+                                                            dbc.Input(id="name_new_algo", placeholder="Enter Name (B)",
+                                                                      className="form_input_text"),
+                                                            dbc.Label("Specify parameters to explore by gridsearch"),
+                                                            dbc.Input(id="name_param", placeholder="Name of parameter",
+                                                                      className="form_input_text"),
+                                                            dbc.Input(id="values_param", placeholder="Values to explore",
+                                                                      className="form_input_text"),
+                                                            dbc.Button("Add", color="success",
+                                                                       id="add_n_refresh_sklearn_algo_button",
+                                                                       className="custom_buttons", n_clicks=0),
+                                                        ],
+                                                        className="form_field"
+                                                    ),
+                                                    html.Div(className="button_box", children=[
+                                                        html.Div(
+                                                            "Before clicking on the Learn button, make shure all field with an * are correctly filled."),
+                                                        dbc.Button("Learn", color="primary", id="start_learning_button",
+                                                                   className="custom_buttons", n_clicks=0),
+                                                        html.Div(id="output_button_ml", children="",
+                                                                 style={'display': 'none'}),
+
+                                                    ]),
 
                                                 ],
                                                 )
@@ -1162,177 +1206,11 @@ def start_saving_params_of_splits_batch(n, name_of_the_file, nbr_splits, nbr_pro
         files_list = glob.glob(path_data_files + "/*")
         uniq_ID = list(df_metadata[ID_col_name])
         targets = list(df_metadata[targets_col_name])
-        splits_dict = {}
 
-        # Conditionnal statement to handle split creation with pairing(s)
-        if pairing_pn == "no" and pairing_12 == "no":  # no pairing
-            X = []
-            y = []
-            for file in files_list:
-                for i, id in enumerate(uniq_ID):
-                    if id in file.split("/")[-1]:
-                        X.append(file)
-                        y.append(targets[i])
-
-            # Create the splits
-            for i in range(nbr_splits):
-                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=percent_in_test, random_state=i)
-                splits_dict["split{}".format(i)] = [X_train, X_test, y_train, y_test]
-
-        elif pairing_pn != "no" and pairing_12 == "no":  # pairing of positive and negative files
-            X_pos = []
-            y_pos = []
-            for file in files_list:
-                if pair_id_pos in file.split("/")[-1]:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            X_pos.append(file)
-                            y_pos.append(targets[i])
-
-            # Create the splits
-            for i in range(nbr_splits):
-                X_train_p, X_test_p, y_train_p, y_test_p = train_test_split(X_pos, y_pos, test_size=percent_in_test,
-                                                                            random_state=i)
-                X_train_n = [i.replace(pair_id_pos, pair_id_neg) for i in X_train_p]
-                X_test_n = [i.replace(pair_id_pos, pair_id_neg) for i in X_test_p]
-                y_train_n = []
-                y_test_n = []
-                for file in X_train_n:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            y_train_n.append(targets[i])
-                for file in X_test_n:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            y_test_n.append(targets[i])
-
-                # shuffle datasets to make sure pos files and neg are seen in a random order by the algorithms
-                X_train = X_train_p + X_train_n
-                y_train = y_train_p + y_train_n
-                train_zip = list(zip(X_train, y_train))
-                random.Random(13).shuffle(train_zip)
-                X_train, y_train = zip(*train_zip)
-
-                X_test = X_test_p + X_test_n
-                y_test = y_test_p + y_test_n
-                test_zip = list(zip(X_test, y_test))
-                random.Random(13).shuffle(test_zip)
-                X_test, y_test = zip(*test_zip)
-
-                splits_dict["split{}".format(i)] = [X_train, X_test, y_train, y_test]
-
-        elif pairing_pn == "no" and pairing_12 != "no":  # pairing over another condition
-            X_1 = []
-            y_1 = []
-            for file in files_list:
-                if pair_id_1 in file.split("/")[-1]:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            X_1.append(file)
-                            y_1.append(targets[i])
-
-            # Create the splits
-            for i in range(nbr_splits):
-                X_train_1, X_test_1, y_train_1, y_test_1 = train_test_split(X_1, y_1, test_size=percent_in_test,
-                                                                            random_state=i)
-                X_train_2 = [i.replace(pair_id_1, pair_id_2) for i in X_train_1]
-                X_test_2 = [i.replace(pair_id_1, pair_id_2) for i in X_test_1]
-                y_train_2 = []
-                y_test_2 = []
-                for file in X_train_2:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            y_train_2.append(targets[i])
-                for file in X_test_2:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            y_test_2.append(targets[i])
-
-                # shuffle datasets to make sure pos files and neg are seen in a random order by the algorithms
-                X_train = X_train_1 + X_train_2
-                y_train = y_train_1 + y_train_2
-                train_zip = list(zip(X_train, y_train))
-                random.Random(13).shuffle(train_zip)
-                X_train, y_train = zip(*train_zip)
-
-                X_test = X_test_1 + X_test_2
-                y_test = y_test_1 + y_test_2
-                test_zip = list(zip(X_test, y_test))
-                random.Random(13).shuffle(test_zip)
-                X_test, y_test = zip(*test_zip)
-
-                splits_dict["split{}".format(i)] = [X_train, X_test, y_train, y_test]
-
-        elif pairing_pn != "no" and pairing_12 != "no":  # pairing pos/neg AND another condition
-            X_pos_1 = []
-            y_pos_1 = []
-            for file in files_list:
-                if pair_id_pos in file.split("/")[-1] and pair_id_1 in file.split("/")[-1]:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            X_pos_1.append(file)
-                            y_pos_1.append(targets[i])
-
-            # Create the splits
-            for i in range(nbr_splits):
-                X_train_pos_1, X_test_pos_1, y_train_pos_1, y_test_pos_1 = train_test_split(X_pos_1, y_pos_1,
-                                                                                            test_size=percent_in_test,
-                                                                                            random_state=i)
-                X_train_pos_2 = [i.replace(pair_id_1, pair_id_2) for i in X_train_pos_1]
-                X_test_pos_2 = [i.replace(pair_id_1, pair_id_2) for i in X_test_pos_1]
-                y_train_pos_2 = []
-                y_test_pos_2 = []
-                for file in X_train_pos_2:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            y_train_pos_2.append(targets[i])
-                for file in X_test_pos_2:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            y_test_pos_2.append(targets[i])
-
-                X_train_neg_1 = [i.replace(pair_id_pos, pair_id_neg) for i in X_train_pos_1]
-                X_test_neg_1 = [i.replace(pair_id_pos, pair_id_neg) for i in X_test_pos_1]
-                y_train_neg_1 = []
-                y_test_neg_1 = []
-                for file in X_train_neg_1:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            y_train_neg_1.append(targets[i])
-                for file in X_test_neg_1:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            y_test_neg_1.append(targets[i])
-
-                X_train_neg_2 = [i.replace(pair_id_1, pair_id_2) for i in X_train_neg_1]
-                X_test_neg_2 = [i.replace(pair_id_1, pair_id_2) for i in X_test_neg_1]
-                y_train_neg_2 = []
-                y_test_neg_2 = []
-                for file in X_train_neg_2:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            y_train_neg_2.append(targets[i])
-                for file in X_test_neg_2:
-                    for i, id in enumerate(uniq_ID):
-                        if id in file.split("/")[-1]:
-                            y_test_neg_2.append(targets[i])
-
-                # shuffle datasets to make sure pos files and neg are seen in a random order by the algorithms
-                X_train = X_train_pos_1 + X_train_pos_2 + X_train_neg_1 + X_train_neg_2
-                y_train = y_train_pos_1 + y_train_pos_2 + y_train_neg_1 + y_train_neg_2
-                train_zip = list(zip(X_train, y_train))
-                random.Random(13).shuffle(train_zip)
-                X_train, y_train = zip(*train_zip)
-
-                X_test = X_test_pos_1 + X_test_pos_2 + X_test_neg_1 + X_test_neg_2
-                y_test = y_test_pos_1 + y_test_pos_2 + y_test_neg_1 + y_test_neg_2
-                test_zip = list(zip(X_test, y_test))
-                random.Random(13).shuffle(test_zip)
-                X_test, y_test = zip(*test_zip)
-
-                splits_dict["split{}".format(i)] = [X_train, X_test, y_train, y_test]
-
-
+        # Do the pairing, all handled by a class : SamplesPairing
+        pairing = SamplesPairing([pairing_pn, pairing_12], files_list, targets, uniq_ID, percent_in_test, nbr_splits)
+        pairing.split()
+        splits_dict = pairing.dict_splits
 
         # Organizing data to write to config file
         df_metadata = df_metadata.to_dict("list")
@@ -1340,7 +1218,6 @@ def start_saving_params_of_splits_batch(n, name_of_the_file, nbr_splits, nbr_pro
 
         split_batch_info = {
             "Date_of_creation": date_time,
-            # "List_data_files": dict_files_list,
             "Directory_temp_splits_file": path_out_splits,
             "Type_of_processing": type_of_processing,
             "Options_of_processing": opt_process,
@@ -1362,6 +1239,99 @@ def start_saving_params_of_splits_batch(n, name_of_the_file, nbr_splits, nbr_pro
         return "The parameters file is created, the splits's creation should start shortly..."
     else:
         return dash.no_update
+
+
+@app.callback(
+    [Output("in_algo_ML", "options"),
+     Output("import_new_algo", "value"),
+     Output("name_new_algo", "value"),
+     Output("name_param", "value"),
+     Output("values_param", "value")],
+    [Input("add_n_refresh_sklearn_algo_button", "n_clicks")],
+    [State("import_new_algo", "value"),
+     State("name_new_algo", "value"),
+     State("name_param", "value"),
+     State("values_param", "value")]
+)
+def add_refresh_available_sklearn_algorithms(n, import_new, name_new, name_param, values_param):
+    sklearn_algo_file = "algo_sklearn.json"
+
+    if n >= 1:
+        new_algo_name = name_new
+        new_algo_params = {"function": name_new, "ParamGrid": {name_param: values_param}, "importing": import_new}
+
+        all_algo = {}
+        with open(sklearn_algo_file, "r+") as algo_file:
+            data = json.load(algo_file)
+
+            data[new_algo_name] = new_algo_params
+            all_algo = data
+
+            algo_file.seek(0)
+            json.dump(data, algo_file)
+            algo_file.truncate()
+
+        return [{"label": a, "value": a} for a in all_algo.keys()], "", "", "", ""
+
+    else:
+        all_algo = {}
+        with open(sklearn_algo_file, "r+") as algo_file:
+            all_algo = json.load(algo_file)
+        return [{"label": a, "value": a} for a in all_algo.keys()], "", "", "", ""
+
+
+@app.callback(
+    Output("output_button_ml", "children"),
+    [Input("start_learning_button", "n_clicks")],
+    [State("in_algo_ML", "value"),
+     State("name_splits_config", "value")]
+)
+def start_machine_learning(n, selected_algos, split_config_file):
+    if n >= 1:
+        with open("algo_sklearn.json", "r") as algo_file:
+            algo_list = json.load(algo_file)
+
+        algo = []
+        for a in selected_algos:
+            try:
+                # Take the name of an algorithm as a string and add it to the dictionary of global variables
+                # The string 'a' now become the variable 'a' to which we assign the imported module of the same name
+                # for example, if a="DecisionTreeClassifier", at the end we could do DecisionTreeClassifier.fit()
+                new_import = algo_list[a]["importing"]
+                globals()[a] = importlib.import_module("." + a, package="sklearn." + new_import)
+            except KeyError:
+                pass
+            except ImportError as ImpErr:
+                return "Importing Error: {}. Check if you wrote the right algorithm name or the right package name".format(ImpErr)
+            finally:
+                algo.append(a)
+
+        with open(split_config_file, "r") as conf_file:
+            splits_config = json.load(conf_file)
+
+        # get all files : X_train files [0] and X_test files [1]
+        all_data_files = splits_config["Splits"]["split0"][0] + splits_config["Splits"]["split0"][1]
+
+        # Check the processing needed and do it
+        if splits_config["Type_of_processing"] != "no":
+            opt = splits_config["Options_of_processing"]
+            if splits_config["Type_of_processing"] == "LDTD2":
+                print("blop")
+                # we must do the opposite : assign files to split and then do the processing
+
+            for o in opt:
+                print("do option o on all files")
+
+        # Then assign files to splits (create the actuals splits)
+
+
+        # Compute each algo for each split
+
+        return "Done!"
+
+    else:
+        return dash.no_update
+
 
 @app.callback(
     Output("pop_help_accPlot", "is_open"),
