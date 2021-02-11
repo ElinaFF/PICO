@@ -3,6 +3,7 @@ import numpy as np
 import seaborn as sns
 import io, base64, glob, datetime, json, importlib
 from collections import Counter
+from multiprocessing import Pool
 
 import dash, dash_bio
 import dash_core_components as dcc
@@ -23,7 +24,12 @@ from Utils import *
 from MetaboDashboardConfig import *
 
 from LDTD_CardiaquesMTL_make_split import *
-from MetaboDashboard.SamplesPairing import SamplesPairing
+from SamplesPairing import SamplesPairing
+from RunMLalgo import runAlgo
+from DataFormat import DataFormat
+
+
+
 
 
 
@@ -56,27 +62,10 @@ def layout():
                         ##############
                         dbc.Tab(className="global_tab",
                                 tab_style={"margin-left": "auto"},
-                                label="Info", children=[
+                                label="Home", children=[
                                 html.Div(className="fig_group", children=[
                                     html.Div(className="column_content", children=[
-                                        dbc.Card(className="cards_info", children=[
-                                            dbc.CardHeader("TODO"),
-                                            dbc.CardBody(
-                                                [
-                                                 html.P("Implement a Toast when split creation is done", className="card-text"),
-                                                 html.P("Implement the progression bar for split creation", className="card-text"),
-                                                ]
-                                            ),
-                                        ]),
-                                        dbc.Card(className="cards_info", children=[
-                                            dbc.CardHeader("Convert"),
-                                            dbc.CardBody(
-                                                [
-                                                    html.P("Blablabla",
-                                                           className="card-text"),
-                                                ]
-                                            ),
-                                        ]),
+
                                         dbc.Card(className="cards_info", children=[
                                             dbc.CardHeader("Splits"),
                                             dbc.CardBody(
@@ -115,132 +104,103 @@ def layout():
                                         ]),
                                     ]),
                                     html.Div(className="column_content", children=[
-                                        dbc.Card("Amazing figure here", className="card_body_fig", body=True),
+                                        dbc.Card(className="card_body_fig", children=[
+                                            # dbc.Card("Amazing figure here", className="card_body_fig", body=True),
+                                            dbc.CardImg(src="/assets/Figure_home_wider.png", bottom=True)
+                                        ])
                                     ])
                                 ]),
 
 
 
                          ]),
-                        ############
-                        # Data tab #
-                        ############
+                        #####################
+                        # Splits Tab #
+                        #####################
                         dbc.Tab(className="global_tab",
-                                # tab_style={"margin-left": "auto"},
-                                label="Data", children=[
-                                html.P("Will allow people to convert their files to the right format... maybe"),
-                                html.Div(className="fig_group", children=[
-
+                             label="Splits", children=[
+                                html.Div(className="fig_group_all_width", children=[
+                                    dbc.Card(children=[
+                                        dbc.CardBody(
+                                            [
+                                                html.Div(
+                                                    "In this tab, you will create a setting file with all info necessary "
+                                                    "to run a machine learning experiment. This file will even contain a copy of the data "
+                                                    "to avoid broken paths (after some times, files might be moved or deleted and the path pointing "
+                                                    "to their location will then be not valid). An * besides the name of the field means a value "
+                                                    "is required, all other fields can be left untouched and will use default values."),
+                                            ]
+                                        ),
+                                    ]),
                                 ]),
-                            ]),
-                        #####################
-                        # Create splits Tab #
-                        #####################
-                        dbc.Tab(className="global_tab",
-                             label="Create Splits", children=[
-                                html.Div("* means the field is mandatory to fill, all other fields can be left untouched and will use default values."),
                                 html.Div(className="fig_group", children=[
-                                    # html.Div(className="title_and_form", children=[
-                                    #     html.H4(id="files_list_title", children="Define the files list"),
-                                    #     dbc.Form(children=[
-                                    #         dbc.FormText(
-                                    #             "This is the file that contains a list of all the data files and a unique number given to each of them."
-                                    #             " It allows a simpler and faster way of doing/saving splits. It is preferable to keep this same file for"
-                                    #             " all the splits batch with the same dataset.",
-                                    #         ),
-                                    #         html.Br(),
-                                    #         dbc.FormGroup(
-                                    #             [
-                                    #                 dbc.Label("Does this file already exists *", className="form_labels"),
-                                    #                 dbc.RadioItems(
-                                    #                     id="list_data_files_exists_or_not",
-                                    #                     options=[
-                                    #                         {"label": "Yes", "value": 0},
-                                    #                         {"label": "No", "value": 1},
-                                    #                     ],
-                                    #                     inline=True,
-                                    #                 ),
-                                    #
-                                    #             ],
-                                    #             className="form_field"
-                                    #         ),
-                                    #         dbc.Col(id="col_list_data_files", children=[
-                                    #             dbc.Input(id="name_files_list"),
-                                    #             dbc.Input(id="path_to_data_file"),
-                                    #             dbc.Button(id="list_files_button", n_clicks=0)
-                                    #         ]),
-                                    #         dbc.Toast(
-                                    #             "This toast is placed in the top right",
-                                    #             id="toast_success_files_list_created",
-                                    #             header="Positioned toast",
-                                    #             is_open=False,
-                                    #             dismissable=True,
-                                    #             # icon="success",
-                                    #             # top: 66 positions the toast below the navbar
-                                    #             # style={"position": "fixed", "top": 66, "right": 10, "width": 350},
-                                    #         ),
-                                    #         html.Div(id="output_button_list_files", children=[]),
-                                    #
-                                    #     ])
-                                    # ]),
                                     html.Div(className="title_and_form", children=[
-                                        html.H4(id="preprocess_title", children="Define Preprocessing"),
+                                        html.H4(id="CreateSplits_paths_title", children="A) Files"),
                                         dbc.Form(children=[
                                             dbc.Col(children=[
                                                 dbc.FormGroup(
                                                     [
-                                                        dbc.Label("Processing according to data type"),
-                                                        dbc.RadioItems(id="in_type_of_data", value="LCMS",
-                                                                       inline=True,
-                                                                       options=[
-                                                                           {"label": "LC-MS", "value": "LCMS"},
-                                                                           {"label": "LDTD 1", "value": "LDTD1"},
-                                                                           {"label": "LDTD 2", "value": "LDTD2"},
-                                                                       ]),
+                                                        dbc.Label("Data file(s) *", className="form_labels"),
+                                                        dbc.Input(id="path_to_data_file", placeholder="Enter path",
+                                                                  className="form_input_text"),
+                                                        dbc.FormText(
+                                                            "Write the path to the data files (spectra). You can use either absolute or relative path.",
+                                                        ),
                                                     ],
                                                     className="form_field"
                                                 ),
                                                 dbc.FormGroup(
                                                     [
-                                                        dbc.Label("Perform peak picking"),
-                                                        dbc.RadioItems(id="in_peak_picking", value=0,
-                                                                       inline=True,
-                                                                       options=[
-                                                                           {"label": "No", "value": 0, "disabled": True},
-                                                                           {"label": "Yes", "value": 1, "disabled": True},
-                                                                       ]),
+                                                        dbc.Label("Metadata file *", className="form_labels"),
+                                                        dbc.Input(id="in_path_to_metadata", placeholder="Enter path",
+                                                                  debounce=True, className="form_input_text"),
+                                                        dbc.FormText(
+                                                            "Write the path of the metadata file.You can use either absolute or relative path. "
+                                                            "Press Enter when you are done to update other forms.",
+                                                        ),
+                                                        html.Div(id="output_in_case_of_error_in_path_to_metadata")
                                                     ],
                                                     className="form_field"
                                                 ),
                                                 dbc.FormGroup(
                                                     [
-                                                        dbc.Label("Perform alignment"),
-                                                        dbc.RadioItems(id="in_alignment", value=0,
-                                                                       inline=True,
-                                                                       options=[
-                                                                           {"label": "No", "value": 0,"disabled": True},
-                                                                           {"label": "Yes", "value": 1,"disabled": True},
-                                                                       ]),
+                                                        dbc.Label("Output file *",
+                                                                  className="form_labels"),
+                                                        dbc.Input(id="name_splits_batch", placeholder="Enter Name",
+                                                                  className="form_input_text"),
+                                                        dbc.FormText(
+                                                            "Write a unique name for the output file.",
+                                                        ),
                                                     ],
                                                     className="form_field"
                                                 ),
                                                 dbc.FormGroup(
                                                     [
-                                                        dbc.Label("Perform normalization"),
-                                                        dbc.RadioItems(id="in_normalization", value=0,
-                                                                       inline=True,
-                                                                       options=[
-                                                                           {"label": "No", "value": 0,"disabled": True},
-                                                                           {"label": "Yes", "value": 1,"disabled": True},
-                                                                       ]),
+                                                        dbc.Label("Use raw data",
+                                                                  className="form_labels"),
+                                                        dbc.FormText(
+                                                            "If there is normalized and raw data in your file, you can choose to use raw by selecting yes. "
+                                                            "Default is no and will use normalized data",
+                                                        ),
+                                                        dbc.RadioItems(
+                                                            id="in_use_raw",
+                                                            options=[
+                                                                {"label": "Yes", "value": True},
+                                                                {"label": "No", "value": False}
+                                                            ],
+                                                            value=False,
+                                                            labelCheckedStyle={"color": "#13BD00"},
+                                                        )
                                                     ],
-                                                    className="form_field"
                                                 ),
-                                            ])
-                                        ])
+
+                                            ]),
+
+                                        ]),
+
                                     ]),
                                     html.Div(className="title_and_form", children=[
-                                        html.H4(id="sep_samples_title", children="Define Sample Pairing"),
+                                        html.H4(id="sep_samples_title", children="B) Data Fusion"),
                                         dbc.Form(children=[
                                             dbc.Col(children=[
                                                 dbc.FormText(
@@ -313,88 +273,15 @@ def layout():
                                         ])
                                     ]),
 
+
                                 ]),
+
                                 html.Div(className="fig_group", children=[
                                     html.Div(className="title_and_form", children=[
-                                        html.H4(id="CreateSplits_paths_title", children="Define Paths"),
+                                        html.H4(id="Exp_desg_title", children="C) Define Experimental designs"),
                                         dbc.Form(children=[
                                             dbc.Col(children=[
-                                                dbc.FormGroup(
-                                                    [
-                                                        dbc.Label("Path to data files *", className="form_labels"),
-                                                        dbc.Input(id="path_to_data_file", placeholder="Enter path",
-                                                                  className="form_input_text"),
-                                                        dbc.FormText(
-                                                            "Write the path to the data files (spectra). You can use either absolute or relative path.",
-                                                        ),
-                                                    ],
-                                                    className="form_field"
-                                                ),
-                                                dbc.FormGroup(
-                                                    [
-                                                        dbc.Label("Unique name for splits batch *", className="form_labels"),
-                                                        dbc.Input(id="name_splits_batch", placeholder="Enter Name",
-                                                                  className="form_input_text"),
-                                                        dbc.FormText(
-                                                            "Write a name for this batch of splits that will be used to identify its parameters file",
-                                                        ),
-                                                    ],
-                                                    className="form_field"
-                                                ),
-                                                # dbc.FormGroup(
-                                                #     [
-                                                #         dbc.Label("Path to data files", className="form_labels"),
-                                                #         dbc.Input(id="in_path_to_data_file", placeholder="Enter path",
-                                                #                   className="form_input_text"),
-                                                #         dbc.FormText(
-                                                #             "Write the path to the data files (spectra). You can use either absolute or relative path.",
-                                                #         ),
-                                                #     ],
-                                                #     className="form_field"
-                                                # ),
-                                                dbc.FormGroup(
-                                                    [
-                                                        dbc.Label("Output path for splits", className="form_labels"),
-                                                        dbc.Input(id="path_output_splits", placeholder="Enter path",
-                                                                  className="form_input_text"),
-                                                        dbc.FormText(
-                                                            "Write a path where temporary files needed for splits creation will be stored. You can use either absolute or relative path.",
-                                                        ),
-                                                    ],
-                                                    className="form_field"
-                                                ),
-                                                dbc.FormGroup(
-                                                    [
-                                                        dbc.Label("Path to metadata file *", className="form_labels"),
-                                                        dbc.Input(id="in_path_to_metadata", placeholder="Enter path",
-                                                                  debounce=True, className="form_input_text"),
-                                                        dbc.FormText(
-                                                            "Write the path of the metadata file.You can use either absolute or relative path. "
-                                                            "Press Enter when you are done to update other forms.",
-                                                        ),
-                                                        html.Br(),
-                                                        html.Div(id="output_in_case_of_error_in_path_to_metadata")
-                                                    ],
-                                                    className="form_field"
-                                                ),
 
-
-                                            ]),
-
-                                        ]),
-
-                                    ]),
-                                    html.Div(className="title_and_form", children=[
-                                        html.H4(id="Exp_desg_title", children="Define Experimental design"),
-                                        dbc.Form(children=[
-                                            dbc.Col(children=[
-                                                dbc.FormGroup([
-                                                    dbc.Label("Proportion of samples in test"),
-                                                    dbc.Input(id="in_percent_samples_in_test", value="0.2",
-                                                              type="number",
-                                                              min=0, max=1, step=0.01,
-                                                              size="5")
-                                                ], className="form_field"),
                                                 dbc.FormText(
                                                     "Allows to link each file to its type/group to separate them approprietly afterwards."
                                                 ),
@@ -418,7 +305,7 @@ def layout():
                                                 ),
                                                 html.Br(),
                                                 dbc.FormText(
-                                                    "Define all group comparaison to test with the algorithms"
+                                                    "Define labels and filter out samples."
                                                 ),
                                                 dbc.Card(id="", children=[
                                                     dbc.FormGroup(
@@ -436,17 +323,19 @@ def layout():
                                                     ),
                                                     dbc.FormGroup(
                                                         [
-                                                            dbc.Label("Classes"),
-                                                            html.Div(className="fig_group_mini", id="define_classes_desgn_exp", children=[
-                                                                dbc.Input(id="class1_name"),
-                                                                dbc.Checklist(id="possible_groups_for_class1"),
-                                                                dbc.Input(id="class2_name"),
-                                                                dbc.Checklist(id="possible_groups_for_class2")
-                                                            ])
+                                                            dbc.Label("Labels"),
+                                                            html.Div(className="fig_group_mini",
+                                                                     id="define_classes_desgn_exp", children=[
+                                                                    dbc.Input(id="class1_name"),
+                                                                    dbc.Checklist(id="possible_groups_for_class1"),
+                                                                    dbc.Input(id="class2_name"),
+                                                                    dbc.Checklist(id="possible_groups_for_class2")
+                                                                ])
                                                         ],
                                                         className="form_field"
                                                     ),
-                                                    dbc.Button("Add", id="btn_add_design_exp", color="primary", className="custom_buttons", n_clicks=0),
+                                                    dbc.Button("Add", id="btn_add_design_exp", color="primary",
+                                                               className="custom_buttons", n_clicks=0),
                                                     html.Div(id="output_btn_add_desgn_exp")
 
                                                 ], body=True),
@@ -455,22 +344,21 @@ def layout():
                                         ]),
 
                                     ]),
-
-                                ]),
-                                html.Div(className="fig_group", children=[
                                     html.Div(className="title_and_form", children=[
-                                        html.H4(id="Define_split_title", children="Define splits"),
+                                        html.H4(id="Define_split_title", children="D) Define splits"),
                                         dbc.Form(children=[
                                             dbc.Col(children=[
+                                                dbc.FormGroup([
+                                                    dbc.Label("Proportion of samples in test"),
+                                                    dbc.Input(id="in_percent_samples_in_test", value="0.2",
+                                                              type="number",
+                                                              min=0, max=1, step=0.01,
+                                                              size="5")
+                                                ], className="form_field"),
                                                 dbc.FormGroup([
                                                     dbc.Label("Number of splits"),
                                                     dbc.Input(id="in_nbr_splits", value="25", type="number", min=1,
                                                               size="5"),
-                                                ], className="form_field"),
-                                                dbc.FormGroup([
-                                                    dbc.Label("Number of processes"),
-                                                    dbc.Input(id="in_nbr_processes", value="2", type="number", min=1,
-                                                              size="5")
                                                 ], className="form_field"),
                                                 dbc.FormGroup([
                                                     dbc.Label("Peak Threshold"),
@@ -478,13 +366,6 @@ def layout():
                                                               min=1,
                                                               size="5")
                                                 ], className="form_field"),
-                                                # dbc.FormGroup([
-                                                #     dbc.Label("Proportion in test"),
-                                                #     dbc.Input(id="in_percent_samples_in_test", value="0.2",
-                                                #               type="number",
-                                                #               min=0, max=1, step=0.01,
-                                                #               size="5")
-                                                # ], className="form_field"),
                                                 dbc.FormGroup([
                                                     dbc.Label("AutoOptimize number"),
                                                     dbc.Input(id="in_autoOptimize_value", value="20", type="number",
@@ -494,22 +375,98 @@ def layout():
                                             ]),
                                         ])
                                     ]),
+
+                                ]),
+                                html.Div(className="fig_group", children=[
                                     html.Div(className="title_and_form", children=[
-                                        html.H4(id="create_split_title", children="Create splits"),
+                                        html.H4(id="preprocess_title", children="E) Other Preprocessing"),
+                                        dbc.Form(children=[
+                                            dbc.Col(children=[
+                                                dbc.FormText(
+                                                    "Options in case of LDTD data that needs to be preprocess"),
+                                                dbc.Collapse(
+                                                    dbc.Card(
+                                                        dbc.CardBody(
+                                                            children=[
+                                                                dbc.FormGroup(
+                                                                    [
+                                                                        dbc.Label("Processing according to data type"),
+                                                                        dbc.FormText(
+                                                                            "LDTD1 means the preprocessing will be done on all samples in one time. "
+                                                                            "LDTD2 means the preprocessing will be done seperatly for each split."),
+                                                                        dbc.RadioItems(id="in_type_of_data", value="none",
+                                                                                       inline=True,
+                                                                                       options=[
+                                                                                           {"label": "None", "value": "none"},
+                                                                                           {"label": "LDTD 1", "value": "LDTD1"},
+                                                                                           {"label": "LDTD 2", "value": "LDTD2"},
+                                                                                       ]),
+                                                                    ],
+                                                                    className="form_field"
+                                                                ),
+                                                                dbc.FormGroup(
+                                                                    [
+                                                                        dbc.Label("Perform peak picking"),
+                                                                        dbc.RadioItems(id="in_peak_picking", value=0,
+                                                                                       inline=True,
+                                                                                       options=[
+                                                                                           {"label": "No", "value": 0,
+                                                                                            "disabled": True},
+                                                                                           {"label": "Yes", "value": 1,
+                                                                                            "disabled": True},
+                                                                                       ]),
+                                                                    ],
+                                                                    className="form_field"
+                                                                ),
+                                                                dbc.FormGroup(
+                                                                    [
+                                                                        dbc.Label("Perform alignment"),
+                                                                        dbc.RadioItems(id="in_alignment", value=0,
+                                                                                       inline=True,
+                                                                                       options=[
+                                                                                           {"label": "No", "value": 0,
+                                                                                            "disabled": True},
+                                                                                           {"label": "Yes", "value": 1,
+                                                                                            "disabled": True},
+                                                                                       ]),
+                                                                    ],
+                                                                    className="form_field"
+                                                                ),
+                                                                dbc.FormGroup(
+                                                                    [
+                                                                        dbc.Label("Perform normalization"),
+                                                                        dbc.RadioItems(id="in_normalization", value=0,
+                                                                                       inline=True,
+                                                                                       options=[
+                                                                                           {"label": "No", "value": 0,
+                                                                                            "disabled": True},
+                                                                                           {"label": "Yes", "value": 1,
+                                                                                            "disabled": True},
+                                                                                       ]),
+                                                                    ],
+                                                                    className="form_field"
+                                                                ),
+                                                            ]
+                                                        )
+                                                    ),
+                                                    id="collapse_preprocessing",
+                                                ),
+                                                dbc.Button(
+                                                    "Open",
+                                                    id="collapse_preprocessing_button",
+                                                    className="custom_buttons",
+                                                    color="primary",
+                                                    n_clicks=0
+                                                ),
+
+                                            ])
+                                        ])
+                                    ]),
+                                    html.Div(className="title_and_form", children=[
+                                        html.H4(id="create_split_title", children="F) Generate file"),
                                         dbc.Form(children=[
                                             dbc.Col(children=[
                                                 html.Div(id="output_button_split_file"),
-                                                html.Div(className="progress_bar_section", children=[
-                                                    dbc.Progress(id="progress", value=0, color="success"),
-                                                    html.Div(id="interval_div", children=[])
-                                                    # dcc.Interval(id="interval", interval=60000, n_intervals=0),
-                                                    # interval is in milliseconds (60 000 => 1min)
-
-                                                    # html.Div(id="output_recursive_split", children="", style={'display': 'none'}),
-                                                    # html.Div(id="in_out_nbr_split_created", children="", style={'display': 'none'}),
-                                                    # html.Div(id="timer_split", children="", style={'display': 'none'})
-
-                                                ]),
                                                 html.Div(className="button_box", children=[
                                                     html.Div("Before clicking on the Create button, make shure all field with an * are correctly filled."),
                                                     dbc.Button("Create", color="primary", id="split_dataset_button",
@@ -554,7 +511,12 @@ def layout():
                                                         dbc.Input(id="in_nbr_CV_folds", value="5", type="number", min=1,
                                                                   size="5")
                                                     ], className="form_field"),
-
+                                                    dbc.FormGroup([
+                                                        dbc.Label("Number of processes"),
+                                                        dbc.Input(id="in_nbr_processes", value="2", type="number",
+                                                                  min=1,
+                                                                  size="5")
+                                                    ], className="form_field"),
 
                                                 ],
                                                 )
@@ -567,7 +529,7 @@ def layout():
                                                     dbc.FormGroup(
                                                         [
                                                             dbc.Label("Available Algorithms", className="form_labels"),
-                                                            dbc.Checklist(id="in_algo_ML", value="None",
+                                                            dbc.Checklist(id="in_algo_ML",
                                                                           # inline=True
                                                                           ),
                                                         ],
@@ -887,23 +849,16 @@ def layout():
 app.layout = layout()
 
 
-@app.callback(
-    [Output("in_peak_picking", "options")],
-    [Input("in_type_of_data", "value")]
-)
-def enable_disable_preprocessing_options(data_type):
-    if data_type != "LCMS":
-        return False
-    else:
-        return dash.no_update
-
+                                             ###############################
+# -------------------------------------------#            SPLITS           #
+                                             ###############################
 @app.callback(
     [Output("div_pair_pn", "style"),
      Output("div_pair_12", "style")],
     [Input("in_pairing_pos_neg", "value"),
      Input("in_pairing_samples", "value")]
 )
-def show_hide_name_field_pairing(pair_pn, pair_12):
+def pairing_show_hide_name_fields(pair_pn, pair_12):
     if pair_pn == [0] and pair_12 == [0]:
         return {"display": "block"}, {"display": "block"}
     elif pair_pn == [0] and pair_12 != [0]:
@@ -912,89 +867,6 @@ def show_hide_name_field_pairing(pair_pn, pair_12):
         return {"display": "none"}, {"display": "block"}
     else:
         return {"display": "none"}, {"display": "none"}
-
-
-
-# @app.callback(
-#     Output("col_list_data_files", "children"),
-#     [Input("list_data_files_exists_or_not", "value")],
-# )
-# def update_form_define_the_files_list(exists):
-#     """
-#     If the files already exists (0) the dashboard will only display a form field to ask for the name of the existing file,
-#     if it doesn't (1), it will display an extra field to name the output file and a button to launch the creation of the file.
-#     :param exists: the value of the radio button -> yes (0) no (1)
-#     :return: extra form field and button to adapt to the chosen situation
-#     """
-#     if exists == 0:
-#         return [
-#                     dbc.FormGroup(
-#                         [
-#                             dbc.Label("Name of the file *", className="form_labels"),
-#                             dbc.Input(id="name_files_list", placeholder="Enter path",
-#                                       className="form_input_text"),
-#                             dbc.FormText(
-#                                 "Write the name of the file that will be used to store the list of data files."
-#                                 "Must end with the '.json' extension.",
-#                             ),
-#                         ],
-#                         className="form_field"
-#                     ),
-#                 ]
-#     elif exists == 1:
-#         return [
-#                     dbc.FormGroup(
-#                         [
-#                             dbc.Label("Name of the file *", className="form_labels"),
-#                             dbc.Input(id="name_files_list", placeholder="Enter path",
-#                                       className="form_input_text"),
-#                             dbc.FormText(
-#                                 "Write the name of the file that will be used to store the list of data files."
-#                                 "Must end with the '.json' extension.",
-#                             ),
-#                         ],
-#                         className="form_field"
-#                     ),
-#                     dbc.FormGroup(
-#                         [
-#                             dbc.Label("Path to data files *", className="form_labels"),
-#                             dbc.Input(id="path_to_data_file", placeholder="Enter path",
-#                                       className="form_input_text"),
-#                             dbc.FormText(
-#                                 "Write the path to the data files (spectra). You can use either absolute or relative path.",
-#                             ),
-#                         ],
-#                         className="form_field"
-#                     ),
-#
-#                     dbc.Button("Create", color="primary", id="list_files_button",
-#                            className="custom_buttons", n_clicks=0)
-#                 ]
-#
-
-
-# @app.callback(
-#     Output("toast_success_files_list_created", "is_open"),
-#     [Input("list_files_button", "n_clicks")],
-#     [State("path_to_data_file", "value"),
-#      State("name_files_list", "value")]
-# )
-# def create_list_data_files(n, path_files, name):
-#     """
-#     Creates a json file containing a dict, the key being a number, and the value being the path to a file (data)
-#     :param n: button attribute, indicates number of clicks
-#     :param path_files: path of the directory containing the data files
-#     :param name: name of the output file containing the list
-#     :return: make a success popup visible
-#     """
-#     if n >= 1:
-#         files_list = glob.glob(path_files+"/*")
-#         dict = {i : j for i, j in enumerate(files_list)}
-#         with open(name, "a+") as infile:
-#             json.dump(dict, infile)
-#         return True
-#     else:
-#         return dash.no_update
 
 
 @app.callback([Output("in_target_col_name", "options"),
@@ -1011,7 +883,7 @@ def get_metadata_cols_names_to_choose_from(path_value):
     elif "xls" in path_value.split(".")[-1] or "od" in path_value.split(".")[-1]:
         df_metadata = pd.read_excel(path_value)
     else:
-        return [], [], "There is a problem, the format of your metadata file might not be supported. You need to give either a .csv, .xlsY or .odY (where Y replace variation of format). Ex: file.xlsx, file.odt"
+        return [], [], "There is a problem, the format of your metadata file might not be supported. You need to give either a .csv, .xlsX or .odX (where X replace variation of format). Ex: file.xlsx, file.odt"
 
     options_list.extend(list(df_metadata.columns))
     print(options_list)
@@ -1023,6 +895,12 @@ def get_metadata_cols_names_to_choose_from(path_value):
     [Input("in_classification_type", "value")]
 )
 def define_classes_for_experiment_design(t):
+    """
+    if the classification type is binary (0), certain options will be available
+    if it is multiclass (1), other options wil be shown
+    :param t:
+    :return:
+    """
     if t == 0:
         return [
                 html.Div(className="title_and_form_mini", children=[
@@ -1030,7 +908,7 @@ def define_classes_for_experiment_design(t):
                         dbc.Col(children=[
                             dbc.FormGroup(
                                 [
-                                    dbc.Label("Name of class 1"),
+                                    dbc.Label("Label 1"),
                                     dbc.Input(id="class1_name",
                                               placeholder="Enter name",
                                               debounce=True,
@@ -1041,7 +919,7 @@ def define_classes_for_experiment_design(t):
                             ),
                             dbc.FormGroup(
                                 [
-                                    dbc.Label("Group(s)"),
+                                    dbc.Label("Class(es)"),
                                     dbc.Checklist(
                                         id="possible_groups_for_class1")
                                 ]
@@ -1054,7 +932,7 @@ def define_classes_for_experiment_design(t):
                         dbc.Col(children=[
                             dbc.FormGroup(
                                 [
-                                    dbc.Label("Name of class 2"),
+                                    dbc.Label("Label 2"),
                                     dbc.Input(id="class2_name",
                                               placeholder="Enter name",
                                               debounce=True,
@@ -1065,7 +943,7 @@ def define_classes_for_experiment_design(t):
                             ),
                             dbc.FormGroup(
                                 [
-                                    dbc.Label("Group(s)"),
+                                    dbc.Label("Class(es)"),
                                     dbc.Checklist(
                                         id="possible_groups_for_class2")
                                 ]
@@ -1113,6 +991,16 @@ def update_possible_classes_exp_design(target_col, path_metadata):
      State("possible_groups_for_class2", "value")]
 )
 def add_n_reset_classes_exp_design(n, c1, g1, c2, g2):
+    """
+    When the "Add" button is pushed on the interface, the values for the new experimental design are saved to a file.
+    Then, the fields are cleared so the user can input another design if desired.
+    :param n:
+    :param c1:
+    :param g1:
+    :param c2:
+    :param g2:
+    :return:
+    """
     if n >= 1:
         new_desgn_name = "{}_vs_{}".format(c1, c2)
         new_desgn_classes = {c1: g1, c2: g2}
@@ -1136,15 +1024,24 @@ def add_n_reset_classes_exp_design(n, c1, g1, c2, g2):
     else:
         return dash.no_update
 
+@app.callback(
+    Output("collapse_preprocessing", "is_open"),
+    [Input("collapse_preprocessing_button", "n_clicks")],
+    [State("collapse_preprocessing", "is_open")],
+)
+def toggle_collapse_preprocessing(n, is_open):
+    if n:
+        return not is_open
+    return is_open
 
 @app.callback(
     Output('output_button_split_file', 'children'),
     [Input('split_dataset_button', 'n_clicks')],
     [State("name_splits_batch", "value"),
+     State("in_use_raw", "value"),
      State('in_nbr_splits', 'value'),
      State('in_nbr_processes', 'value'),
      State("path_to_data_file", "value"),
-     State('path_output_splits', 'value'),
      State('in_peak_threshold_value', 'value'),
      State('in_percent_samples_in_test', 'value'),
      State('in_autoOptimize_value', 'value'),
@@ -1163,14 +1060,12 @@ def add_n_reset_classes_exp_design(n, c1, g1, c2, g2):
      State("distinct_id_2_samples", "value"),
      ]
 )
-def start_saving_params_of_splits_batch(n, name_of_the_file, nbr_splits, nbr_processes, path_data_files ,path_out_splits,
+def saving_params_of_splits_batch(n, name_of_the_file, use_raw, nbr_splits, nbr_processes, path_data_files,
                                         peakT, percent_in_test, autoOpt, path_to_metadata, ID_col_name, targets_col_name,
                                         type_of_processing, peak_pick, align, normalize, pair_pn, pair_id_pos,
                                         pair_id_neg, pair_12, pair_id_1, pair_id_2):
     """
-    Create the skeleton of the file (json) which will contains all info about the split creation launched.
-    It will be completed a bit here with inputed infos, and then with each split created, the info about which data file
-    is where for each split will be added.
+    Create the file (json) which will contains all info about the split creation / data experiment.
     """
     if n >= 1:
         date_time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
@@ -1179,10 +1074,6 @@ def start_saving_params_of_splits_batch(n, name_of_the_file, nbr_splits, nbr_pro
         with open("temp_exp_designs.json", "r+") as design_file:
             dict_exp_desgn = json.load(design_file)
 
-        # Define a temporary path to output splits files in case needed
-        if path_out_splits == "" or path_out_splits is None:
-            path_out_splits = "Temp_dir_splits/"
-
         # Load metadata file as dataframe
         if path_to_metadata.split(".")[-1] == "csv":
             df_metadata = pd.read_csv(path_to_metadata)
@@ -1190,6 +1081,15 @@ def start_saving_params_of_splits_batch(n, name_of_the_file, nbr_splits, nbr_pro
             df_metadata = pd.read_excel(path_to_metadata)
         else:
             print("There is a problem, the format of your metadata file might not be supported. You need to give either a .csv, .xlsY or .odY (where Y replace variation of format). Ex: file.xlsx, file.odt")
+
+        # Prepare data for splits creation and handle pairing
+        uniq_ID = list(df_metadata[ID_col_name])
+        #TODO: prob de coherence entre labels du fichier metadata et ceux direct du fichier de donnees
+        targets = list(df_metadata[targets_col_name])
+
+        # Convert the data to fit the format
+        f = DataFormat(path_data_files, use_raw)
+        features_info, data, labels, sample_names = f.convert()
 
         # Handle paired samples if need be
         if pair_pn == [0]:
@@ -1202,13 +1102,11 @@ def start_saving_params_of_splits_batch(n, name_of_the_file, nbr_splits, nbr_pro
         else:
             pairing_12 = "no"
 
-        # Prepare data for splits creation and handle pairing
-        files_list = glob.glob(path_data_files + "/*")
-        uniq_ID = list(df_metadata[ID_col_name])
-        targets = list(df_metadata[targets_col_name])
 
+        #TODO: revoir pcq gestion avec fichiers (lcs) donc pas adapter pour matrices csv LCMS
         # Do the pairing, all handled by a class : SamplesPairing
-        pairing = SamplesPairing([pairing_pn, pairing_12], files_list, targets, uniq_ID, percent_in_test, nbr_splits)
+        # and the splits are also created at the same time
+        pairing = SamplesPairing([pairing_pn, pairing_12], sample_names, labels, uniq_ID, percent_in_test, nbr_splits)
         pairing.split()
         splits_dict = pairing.dict_splits
 
@@ -1218,7 +1116,6 @@ def start_saving_params_of_splits_batch(n, name_of_the_file, nbr_splits, nbr_pro
 
         split_batch_info = {
             "Date_of_creation": date_time,
-            "Directory_temp_splits_file": path_out_splits,
             "Type_of_processing": type_of_processing,
             "Options_of_processing": opt_process,
             "Nbr_splits": nbr_splits,
@@ -1229,8 +1126,10 @@ def start_saving_params_of_splits_batch(n, name_of_the_file, nbr_splits, nbr_pro
             "Experimental_designs": dict_exp_desgn,
             "Pairing_pos_neg": pairing_pn,
             "Pairing_other": pairing_12,
+            "Data_matrix": data.to_json(),
             "Splits": splits_dict,
             "Metadata": df_metadata,
+            "Features_info": features_info.to_json(),
         }
 
         # Writing to config file
@@ -1240,6 +1139,10 @@ def start_saving_params_of_splits_batch(n, name_of_the_file, nbr_splits, nbr_pro
     else:
         return dash.no_update
 
+
+                                             ################################
+# -------------------------------------------#       Machine Learning       #
+                                             ################################
 
 @app.callback(
     [Output("in_algo_ML", "options"),
@@ -1284,48 +1187,50 @@ def add_refresh_available_sklearn_algorithms(n, import_new, name_new, name_param
     Output("output_button_ml", "children"),
     [Input("start_learning_button", "n_clicks")],
     [State("in_algo_ML", "value"),
-     State("name_splits_config", "value")]
+     State("name_splits_config", "value"),
+     State("in_nbr_CV_folds", "value"),
+     State("in_nbr_processes", "value")]
 )
-def start_machine_learning(n, selected_algos, split_config_file):
+def start_machine_learning(n, selected_algos, split_config_file, cv_folds, nbr_process):
     if n >= 1:
         with open("algo_sklearn.json", "r") as algo_file:
             algo_list = json.load(algo_file)
 
-        algo = []
-        for a in selected_algos:
-            try:
-                # Take the name of an algorithm as a string and add it to the dictionary of global variables
-                # The string 'a' now become the variable 'a' to which we assign the imported module of the same name
-                # for example, if a="DecisionTreeClassifier", at the end we could do DecisionTreeClassifier.fit()
-                new_import = algo_list[a]["importing"]
-                globals()[a] = importlib.import_module("." + a, package="sklearn." + new_import)
-            except KeyError:
-                pass
-            except ImportError as ImpErr:
-                return "Importing Error: {}. Check if you wrote the right algorithm name or the right package name".format(ImpErr)
-            finally:
-                algo.append(a)
-
         with open(split_config_file, "r") as conf_file:
             splits_config = json.load(conf_file)
 
+        print("Splits_dict 1er element = {}".format(splits_config["Splits"][list(splits_config["Splits"].keys())[0]]))
+        print("---")
+        print("Data matrix type = {}".format(type(pd.read_json(splits_config["Data_matrix"]))))
+        print("Data matrix 2 first lines = {}".format(pd.read_json(splits_config["Data_matrix"]).iloc[:2, :5]))
+
         # get all files : X_train files [0] and X_test files [1]
-        all_data_files = splits_config["Splits"]["split0"][0] + splits_config["Splits"]["split0"][1]
+        #all_data_files = splits_config["Splits"]["split0"][0] + splits_config["Splits"]["split0"][1]
 
         # Check the processing needed and do it
-        if splits_config["Type_of_processing"] != "no":
-            opt = splits_config["Options_of_processing"]
-            if splits_config["Type_of_processing"] == "LDTD2":
-                print("blop")
-                # we must do the opposite : assign files to split and then do the processing
-
-            for o in opt:
-                print("do option o on all files")
+        # ---> with SplitProcessing class
 
         # Then assign files to splits (create the actuals splits)
+        # ---> with SplitProcessing class
 
 
         # Compute each algo for each split
+        print("---> selected_algo type = {}".format(type(selected_algos)))
+        print(selected_algos)
+        l = []
+        for a in selected_algos:
+            print("---> a = {}".format(a))
+            try:
+                algo = runAlgo(algo_list[a]["function"], cv_folds, algo_list[a]["ParamGrid"],
+                               algo_import=algo_list[a]["importing"])
+            except KeyError:
+                algo = runAlgo(algo_list[a]["function"], cv_folds, algo_list[a]["ParamGrid"])
+
+            for s in splits_config["Splits"].values():
+                l.append([s, ])
+
+            pool = Pool(nbr_process)
+            pool.map(algo.learn(), l)
 
         return "Done!"
 
@@ -1344,6 +1249,11 @@ def toggle_popover(n, is_open):
     return is_open
 
 
+
+
+                                             #############################
+# -------------------------------------------#            ELSE           #
+                                             #############################
 
 
 # @app.callback(Output('output_button_split', 'children'),

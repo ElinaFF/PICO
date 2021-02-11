@@ -112,6 +112,7 @@ H4{
 
 .card_body_fig{
     margin-left:2em;
+    padding: 1em;
 }
 
 
@@ -322,6 +323,11 @@ H4{
     flex-grow:1;
     margin-top:1em;
     /*margin-bottom:1em;*/
+}
+
+.fig_group_all_width{
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 .pca_plot_and_title{

@@ -7,6 +7,21 @@ from ExperimentDesign import *
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 
+def list_filler(liste):
+    """
+    (NA or "")
+    Complete the NA values of a list with the last non NA value from left to right.
+    If the first value is NA, then leave it like this.
+    :param liste: list to fill
+    :return: new list filled
+    """
+    l = []
+    current = ""
+    for idx, j in enumerate(liste):
+        if j != "":
+            current = j
+        l.append(current)
+    return l
 
 def read_Progenesis_compounds_table(fileName, with_raw=True):
     datatable = pd.read_csv(fileName, header=2, index_col=0)
