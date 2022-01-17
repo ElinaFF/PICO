@@ -7,6 +7,25 @@ from ExperimentDesign import *
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 
+
+def retrieve_data_from_sample_name(names_list, dataframe):
+    """
+
+    :param names_list: list of samples name
+    :param dataframe: a dataframe with each sample as a line identified by the samples' name
+    :return: list of data
+    """
+    print("retrieving data from name")
+    data_list = []
+    for n in names_list:
+        d = dataframe.loc[n, :]
+        data_list.append(d.tolist())
+    # print("data list : {}".format(data_list[0]))
+    print("data from name retrieved")
+    # print("data 2nd element : {}".format(data_list[1]))
+    return data_list
+
+
 def list_filler(liste):
     """
     (NA or "")

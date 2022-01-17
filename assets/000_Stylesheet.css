@@ -36,6 +36,10 @@ H4{
     color: red;
 }
 
+#loading-output-1{
+    margin-top:2em;
+}
+
 
 /*******************
 *       Forms      *
@@ -98,6 +102,18 @@ H4{
     font-size:1em;
     padding-left:1em;
     text-align:center;
+}
+
+#table_exp_info {
+    margin-left: 0.5em;
+}
+
+#table_exp_info tr{
+    line-height: 0.25;
+}
+
+#table_exp_info td{
+    border-bottom: none;
 }
 
 

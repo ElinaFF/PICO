@@ -38,8 +38,8 @@ class SamplesPairing():
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.proportion,
                                                                     random_state=i)
                 # convert sample names to indices so its easier to reconstruct later
-                X_train = [self.names_dict[i] for i in X_train]
-                X_test = [self.names_dict[i] for i in X_test]
+                # X_train = [self.names_dict[i] for i in X_train]
+                # X_test = [self.names_dict[i] for i in X_test]
 
                 ###### save splits dans dict ######
 

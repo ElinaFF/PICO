@@ -4,6 +4,9 @@ import seaborn as sns
 import io, base64, glob, datetime, json, importlib
 from collections import Counter
 from multiprocessing import Pool
+import datetime
+import time
+import pickle as pkl
 
 import dash, dash_bio
 import dash_core_components as dcc
@@ -14,6 +17,7 @@ import dash_bootstrap_components as dbc
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
+from sklearn.metrics import accuracy_score
 import umap
 
 import plotly.graph_objs as go
@@ -27,11 +31,7 @@ from LDTD_CardiaquesMTL_make_split import *
 from SamplesPairing import SamplesPairing
 from RunMLalgo import runAlgo
 from DataFormat import DataFormat
-
-
-
-
-
+from Utils import retrieve_data_from_sample_name
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX], meta_tags=[{"name": "viewport", "content": "width=device-width"}]) #"MetaboDashboard",
 server = app.server
@@ -574,6 +574,7 @@ def layout():
                         # Results Tab #
                         ###############
                         dbc.Tab(className="global_tab",
+                                id="results_tab",
                                 label="Results",
                                 children=[
                                     html.Div(className="Results_info", children=[
@@ -583,18 +584,16 @@ def layout():
                                                     html.H6("Experimental Design : "),
                                                     dbc.Select(id="design_dropdown",
                                                                className="form_select",
-                                                               options=[{"label": i, "value": i} for i in
-                                                                        EXPERIMENT_DESIGNS],
-                                                               value=list(EXPERIMENT_DESIGNS.keys())[0],
+                                                               options=[{"label": "None", "value": "None"}],
+                                                               value="None",
                                                                )]
                                                          ),
                                                 html.Div(className="dropdowns", children=[
                                                     html.H6("ML Algorithm : "),
                                                     dbc.Select(id="ml_dropdown",
                                                                className="form_select",
-                                                               options=[{"label": i, "value": i} for i in
-                                                                        LEARN_CONFIG["Algos"]],
-                                                               value=list(LEARN_CONFIG["Algos"].keys())[0],
+                                                               options=[{"label": "None", "value": "None"}],
+                                                               value="None",
                                                                )
                                                 ]),
                                                 dbc.Button("Load", color="primary", id="load_ML_results_button",
@@ -606,8 +605,10 @@ def layout():
                                         ]),
                                         dbc.Card(children=[
                                             dbc.CardBody(children=[
-                                                html.H6("Current experiment info"),  # , style={"marginTop": 25}
-                                                html.Div(id="view_info", children="")
+                                                html.H6("Current experiment info"),  # , style={"marginTop": 25},
+                                                html.Div(id="view_info", children=""),
+                                                dcc.Loading(id="loading-1", children=[html.Div(id="loading-output-1")],
+                                                            type="dot", color="#13BD00")
                                             ])
                                         ], className="w-25"),
                                     ]),
@@ -630,9 +631,8 @@ def layout():
                                                                           target="help_accPlot")
                                                                       ])
                                                             ,
-                                                            dcc.Loading(
-                                                                dcc.Graph(id="accuracy_overview"),
-                                                                type="circle")]
+                                                            dcc.Loading(dcc.Graph(id="accuracy_overview"),
+                                                                        type="dot", color="#13BD00")]
                                                         ),
                                                         html.Div(className="w-25", children=[
                                                             html.H6("Global metrics"),
@@ -1083,7 +1083,7 @@ def saving_params_of_splits_batch(n, name_of_the_file, use_raw, nbr_splits, nbr_
             print("There is a problem, the format of your metadata file might not be supported. You need to give either a .csv, .xlsY or .odY (where Y replace variation of format). Ex: file.xlsx, file.odt")
 
         # Prepare data for splits creation and handle pairing
-        uniq_ID = list(df_metadata[ID_col_name])
+        uniq_ID = [str(i) for i in list(df_metadata[ID_col_name])]
         #TODO: prob de coherence entre labels du fichier metadata et ceux direct du fichier de donnees
         targets = list(df_metadata[targets_col_name])
 
@@ -1109,6 +1109,8 @@ def saving_params_of_splits_batch(n, name_of_the_file, use_raw, nbr_splits, nbr_
         pairing = SamplesPairing([pairing_pn, pairing_12], sample_names, labels, uniq_ID, percent_in_test, nbr_splits)
         pairing.split()
         splits_dict = pairing.dict_splits
+
+        # ---------- !!!!!! most recent : désigner les samples par leur nom, mettre un ID unique = trop complexe a gérer
 
         # Organizing data to write to config file
         df_metadata = df_metadata.to_dict("list")
@@ -1223,19 +1225,50 @@ def start_machine_learning(n, selected_algos, split_config_file, cv_folds, nbr_p
             try:
                 algo = runAlgo(algo_list[a]["function"], cv_folds, algo_list[a]["ParamGrid"],
                                algo_import=algo_list[a]["importing"])
+                print("instance algo créée avec importing")
             except KeyError:
                 algo = runAlgo(algo_list[a]["function"], cv_folds, algo_list[a]["ParamGrid"])
+                print("instance algo créée sans importing")
 
-            for s in splits_config["Splits"].values():
-                l.append([s, ])
+            dataframe = pd.read_json(splits_config["Data_matrix"])
+            for key, value in splits_config["Splits"].items():
+                opt_list = []
+                no = key.split("split")[-1]
+                print("no : {}".format(no))
+                Xtrain = retrieve_data_from_sample_name(value[0], dataframe)
+                opt_list.append(Xtrain)
+                Xtest = retrieve_data_from_sample_name(value[1], dataframe)
+                opt_list.append(Xtest)
+                opt_list.append(value[2])
+                opt_list.append(value[3])
+                opt_list.append(no)
+                l.append(opt_list)
+            print("liste l remplie")
 
-            pool = Pool(nbr_process)
-            pool.map(algo.learn(), l)
+            for i in l:
+                print("learn {} split".format(i[-1]))
+                algo.learn(i)
+
+            print("finiiiiiiiii ---- !!!!!")
+
+            # pool = Pool(int(nbr_process))
+            # pool.map(algo.learn, l)
 
         return "Done!"
 
     else:
         return dash.no_update
+
+
+
+
+
+
+                                                   ################################
+# -------------------------------------------------#            RESULTS           #
+                                                   ################################
+
+
 
 
 @app.callback(
@@ -1247,6 +1280,324 @@ def toggle_popover(n, is_open):
     if n:
         return not is_open
     return is_open
+
+
+@app.callback(
+        [Output("design_dropdown", "options"),
+         Output("design_dropdown", "value")],
+        [Input("custom_big_tabs", "active_tab")]
+)
+def update_results_dropdown_design(active):
+    if active == "tab-3":
+        f = os.listdir("Results/")
+        a = [i.split(".pkl")[0].split("_")[:4] for i in f]
+        a = ["_".join(i) for i in a]
+        a = sorted(list(set(a)))
+        return [{"label": i, "value": i} for i in a], a[0]
+    else:
+        return dash.no_update
+
+@app.callback(
+    [Output("ml_dropdown", "options"),
+     Output("ml_dropdown", "value")],
+    [Input("custom_big_tabs", "active_tab")]
+)
+def update_results_dropdown_algo(active):
+    if active == "tab-3":
+        f = os.listdir("Results/")
+        a = [i.split(".pkl")[0].split("_")[-1] for i in f]
+        a = sorted(list(set(a)))
+        return [{"label": i, "value": i} for i in a], a[0]
+    else:
+        return dash.no_update
+
+
+@app.callback(
+    Output("loading-output-1", "children"),
+    [Input("custom_big_tabs", "active_tab")]
+)
+def input_triggers_spinner(value):
+    time.sleep(1)
+    return
+
+
+@app.callback(
+    Output("view_info", "children"),
+    [Input("custom_big_tabs", "active_tab")]
+)
+def get_experiment_statistics(active):
+    if active == "tab-3":
+        with open("testest", "r") as conf_file:
+            splits_config = json.load(conf_file)
+
+        splits_dict = splits_config["Splits"]
+        nbr_in_train = len(splits_dict["split0"][0])
+        nbr_in_test = len(splits_dict["split0"][1])
+        nbr_tot = nbr_in_train + nbr_in_test
+        classes_train = splits_dict["split0"][2]
+        classes_tot = classes_train.extend(splits_dict["split0"][3])
+        count_per_class = Counter(classes_tot)
+
+        row1 = html.Tr([html.Td("Total number of samples"), html.Td(str(nbr_tot))])
+        row2 = html.Tr([html.Td("Number of samples in train"), html.Td(str(nbr_in_train))])
+        row3 = html.Tr([html.Td("Number of samples in test"), html.Td(str(nbr_in_test))])
+        # row4 = html.Tr([html.Td(list(count_per_class.keys())[0]), html.Td("Astra")])
+
+        table_body = [html.Tbody([row1, row2, row3])]
+        table = dbc.Table(table_body, id="table_exp_info", borderless=True, hover=True)
+
+        return table
+    else:
+        return dash.no_update
+
+
+@app.callback(
+    Output("accuracy_overview", "figure"),
+    [Input("load_ML_results_button", "n_clicks")],
+    [State("ml_dropdown", "value"),
+     State("design_dropdown", "value")]
+)
+def generates_accuracyPlot_global(n_clicks, ml_dropdown, design_dropdown):
+    if n_clicks >= 1:
+        rez_files = glob.glob(os.path.join("Results", design_dropdown + "_*_" + ml_dropdown + ".pkl"))
+
+        acc_train = []
+        acc_test = []
+        for file in rez_files:
+            with open(file, "rb") as f:
+                GS_rez = pkl.load(f)
+                train_predict = pkl.load(f)
+                test_predict = pkl.load(f)
+                train_targets = pkl.load(f)
+                test_targets = pkl.load(f)
+
+            acc_train.append(accuracy_score(train_targets, train_predict)*100)
+            acc_test.append(accuracy_score(test_targets, test_predict)*100)
+
+        acc_fig = go.Figure()
+        x_axis = [str(i) for i in range(len(acc_train))]
+
+        acc_fig.add_trace(
+            go.Scatter(
+                x=x_axis,
+                y=acc_train,
+                mode="lines+markers",
+                name="Train accuracies"
+            )
+        )
+
+        acc_fig.add_trace(
+            go.Scatter(
+                x=x_axis,
+                y=acc_test,
+                mode="lines+markers",
+                marker_symbol="diamond",
+                name="Test accuracies"
+            )
+        )
+
+        acc_fig.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)',
+            xaxis_title="Splits",
+            yaxis_title="Accuracy (%)"
+        )
+
+        return acc_fig
+    else:
+        return dash.no_update
+
+
+
+
+@app.callback(
+    [
+        # Output("accuracy_overview", "figure"),
+     Output("overview_table", "children"),
+     Output("umap_overview", "figure"),
+     Output("output_button_load_ML_results", "children")],
+    [Input("load_ML_results_button", "n_clicks")],
+    [State("ml_dropdown", "value"),
+     State("design_dropdown", "value")]
+)
+def show_global_view(n_clicks, ml_dropdown, design_dropdown):
+    if n_clicks >= 1:
+        print("Updating global accuracy plot")
+        splits_name = []
+        split_train_accuracy = []
+        split_test_accuracy = []
+
+        features = []
+        data_matrix_filename = os.path.join("Results", design_dropdown + "_0_" + ml_dropdown + ".pkl")
+        print("data_matrix_filename name found")
+        with open(data_matrix_filename, "rb") as fi:
+            GS_rez = pkl.load(fi)
+            train_predict = pkl.load(fi)  # , encoding='bytes'
+            test_predict = pkl.load(fi)  # , encoding='latin1'
+            train_targets = pkl.load(fi)  # , encoding='latin1'
+            test_targets = pkl.load(fi)  # , encoding='latin1'
+
+        print("data_matrix_filename red")
+
+        # print("train predict : {}".format(train_predict))
+        # cols = ["a"] * len(train_df[0])
+        # train_df = pd.DataFrame(train_df, columns=cols)
+        #
+        # reducer = umap.UMAP()
+        # print("umap initialized")
+
+        def filter_cluster(df, threshold=0.5):
+            """
+            threshold : (proportion) minimum of non-zero values in a line to consider keeping this line
+            for example -> threshold = 0.6 means it will keep only the lines where there is at least 60% of non-zero values
+            """
+            df = df.T
+            nbr_col = len(df.columns.to_list())
+            print(nbr_col)
+            print((df.astype(bool).sum(axis=0)).shape)
+            df_filtered = df.loc[df.astype(bool).sum(axis=1) >= nbr_col * threshold]
+            return df_filtered.T
+
+        print(np.array(train_df).shape)
+        train_df = filter_cluster(train_df, threshold=1.0)
+        print(np.array(train_df).shape)
+        embedding = reducer.fit_transform(train_df)
+
+        trace_train = go.Scatter(
+            x=embedding[:, 0],
+            y=embedding[:, 1],
+            mode="markers",
+            text=np.array(train_df.index)
+        )
+        fig_umap = go.Figure(data=[trace_train],
+                             layout=go.Layout(
+                                 paper_bgcolor='rgba(0,0,0,0)',
+                                 plot_bgcolor='rgba(0,0,0,0)')
+                             )
+        # return(fig, dash.no_update)
+
+        for model_filename in glob.glob(
+                os.path.join("Results", design_dropdown + "_*_" + ml_dropdown + "*")):
+            with open(model_filename, "rb") as fi:
+                gc = pkl.load(fi)
+                print(gc.best_estimator_.classes_)
+                train_predict = pkl.load(fi)
+                test_predict = pkl.load(fi)
+
+            data_matrix_filename = os.path.join("Splits",
+                                                design_dropdown + "_" + model_filename.split("_")[1])
+            with open(data_matrix_filename, "rb") as fi:
+                train_df = pkl.load(fi)
+                train_targets = pkl.load(fi)
+                test_df = pkl.load(fi)
+                test_targets = pkl.load(fi)
+
+            splits_name.append(model_filename.split("_")[1])
+            split_train_accuracy.append(accuracy_score(y_true=train_targets, y_pred=train_predict))
+            split_test_accuracy.append(accuracy_score(y_true=test_targets, y_pred=test_predict))
+
+            if isinstance(gc.best_estimator_, RandomForestClassifier) or \
+                    isinstance(gc.best_estimator_, DecisionTreeClassifier):
+                features_importance = gc.best_estimator_.feature_importances_
+
+            zipped = zip(features_importance, train_df.columns)
+            zipped = sorted(zipped, key=lambda t: t[0])
+
+            [features.append(i[1]) for i in zipped if np.abs(i[0]) > 0.0]
+
+        features_count = Counter(features)
+
+        # table = []
+        # table_style = {"padding": "12px 55px", "text-align": "left"}
+        # table.append(html.Tr([html.Th("Feature", style=table_style), html.Th("Number of models")]))
+        # for f in features_count.most_common():
+        #    table.append(html.Tr([html.Td(f[0]), html.Td(f[1])]))
+        features_column = []
+        n_models_column = []
+        for f in features_count.most_common():
+            features_column.append(f[0])
+            n_models_column.append(f[1])
+
+        df = pd.DataFrame()
+        df["Feature"] = features_column
+        df["Number of models"] = n_models_column
+
+        trace_train = go.Scatter(
+            y=split_train_accuracy,
+            name="Train accuracy"
+        )
+        trace_test = go.Scatter(
+            y=split_test_accuracy,
+            name="Test accuracy"
+        )
+        fig_acc = go.Figure(data=[trace_train, trace_test])
+        print("Number of items:{}".format(len(train_df.columns)))
+
+        print("df : {}".format(df))
+        df = pd.DataFrame({
+            "Feature": [],
+            "Number of models": []
+        })
+
+        return fig_acc, df, fig_umap, ""  # .to_dict("records")
+
+    else:
+        return dash.no_update
+
+@app.callback(
+    Output("global_metrics", "children"),
+    [Input("compute_global_metrics", "n_clicks"),
+     Input("ml_dropdown", "value"),
+     Input("design_dropdown", "value")]
+)
+def compute_global_metrics(n_clicks, ml_algo, exp_design):
+    if n_clicks is None or n_clicks == 0:
+        return dash.no_update
+    if dash.callback_context.triggered[0]['prop_id'].split('.')[0] != "compute_global_metrics":
+        return ""
+    data_matrix_file_list = glob.glob(os.path.join("Splits", "{}_*".format(exp_design)))
+    metrics_results_train = {i: [] for i in STATISTICS}
+    metrics_results_test = {i: [] for i in STATISTICS}
+
+    for data_matrix_filename in data_matrix_file_list:
+        split_number = data_matrix_filename.split("_")[-1]
+        model_filename = os.path.join("Results",
+                                      "{}_{}_{}.pkl".format(exp_design, split_number, ml_algo))
+
+        with open(data_matrix_filename, "rb") as fi:
+            train_df = pkl.load(fi, encoding="latin1")
+            train_targets = pkl.load(fi, encoding="latin1")
+            test_df = pkl.load(fi, encoding="latin1")
+            test_targets = pkl.load(fi, encoding="latin1")
+
+        with open(model_filename, "rb") as fi:
+            gc = pkl.load(fi, encoding="latin1")
+            print(gc.best_estimator_.classes_)
+            train_predict = pkl.load(fi, encoding="latin1")
+            test_predict = pkl.load(fi, encoding="latin1")
+
+        for stat in STATISTICS:
+            metrics_results_train[stat].append(
+                STATISTICS[stat](train_targets, train_predict)
+            )
+            metrics_results_test[stat].append(
+                STATISTICS[stat](test_targets, test_predict)
+            )
+    table = []
+    table_style = {"padding": "12px 55px", "text-align": "left"}
+    table.append(html.Tr([html.Th("Metric", style=table_style), html.Th("Train"), html.Th("Test")]))
+    for stat in STATISTICS:
+        print(stat)
+        train_average = np.average(metrics_results_train[stat])
+        test_average = np.average(metrics_results_test[stat])
+        train_std = np.std(metrics_results_train[stat])
+        test_std = np.std(metrics_results_test[stat])
+        print(train_average, train_std)
+        table.append(html.Tr([html.Td(stat),
+                              html.Td("{:0.2f} ({:0.2f})".format(train_average, train_std)),
+                              html.Td("{:0.2f} ({:0.2f})".format(test_average, test_std))]
+                             ))
+    return html.Table(table)
+
 
 
 
@@ -1290,6 +1641,8 @@ def toggle_popover(n, is_open):
 #         return "0"
 #     else:
 #         return dash.no_update
+
+
 
 
 @app.callback(
@@ -1342,189 +1695,189 @@ def get_experiment_statistics(y_true_train, y_pred_train, y_true_test, y_pred_te
     return html.Table(table)
     #return children
 
-@app.callback(
-    [Output("accuracy_overview", "figure"),
-    Output("overview_table", "children"),
-    Output("umap_overview", "figure"),
-    Output("output_button_load_ML_results", "children")],
-    [Input("load_ML_results_button", "n_clicks")],
-    [State("ml_dropdown", "value"),
-    State("design_dropdown", "value")]
-)
-def show_global_view(n_clicks, ml_dropdown, design_dropdown):
-    if n_clicks >= 1:
-        print("Updating global accuracy plot")
-        splits_name = []
-        split_train_accuracy = []
-        split_test_accuracy = []
-
-        features = []
-        data_matrix_filename = os.path.join("Splits", design_dropdown + "_0")
-        with open(data_matrix_filename, "rb") as fi:
-            train_df = pkl.load(fi, encoding='bytes')
-            train_targets = pkl.load(fi, encoding='latin1')
-            test_df = pkl.load(fi, encoding='latin1')
-            test_targets = pkl.load(fi, encoding='latin1')
-
-        cols = ["a"] * len(train_df[0])
-        train_df = pd.DataFrame(train_df, columns=cols)
-
-        reducer = umap.UMAP()
-
-        def filter_cluster(df, threshold=0.5):
-            """
-            threshold : (proportion) minimum of non-zero values in a line to consider keeping this line
-            for example -> threshold = 0.6 means it will keep only the lines where there is at least 60% of non-zero values
-            """
-            df = df.T
-            nbr_col = len(df.columns.to_list())
-            print(nbr_col)
-            print((df.astype(bool).sum(axis=0)).shape)
-            df_filtered = df.loc[df.astype(bool).sum(axis=1) >= nbr_col*threshold]
-            return df_filtered.T
-
-        print(np.array(train_df).shape)
-        train_df = filter_cluster(train_df, threshold=1.0)
-        print(np.array(train_df).shape)
-        embedding = reducer.fit_transform(train_df)
-
-        trace_train = go.Scatter(
-            x=embedding[:, 0],
-            y=embedding[:, 1],
-            mode="markers",
-            text=np.array(train_df.index)
-        )
-        fig_umap = go.Figure(data=[trace_train],
-                        layout=go.Layout(
-                            paper_bgcolor='rgba(0,0,0,0)',
-                            plot_bgcolor='rgba(0,0,0,0)')
-                        )
-        # return(fig, dash.no_update)
-
-
-
-        for model_filename in glob.glob(os.path.join("Results", design_dropdown+"_*_"+ml_dropdown+"*")):
-            with open(model_filename, "rb") as fi:
-                gc = pkl.load(fi)
-                print(gc.best_estimator_.classes_)
-                train_predict = pkl.load(fi)
-                test_predict = pkl.load(fi)
-
-            data_matrix_filename = os.path.join("Splits", design_dropdown + "_" + model_filename.split("_")[1])
-            with open(data_matrix_filename, "rb") as fi:
-                train_df = pkl.load(fi)
-                train_targets = pkl.load(fi)
-                test_df = pkl.load(fi)
-                test_targets = pkl.load(fi)
-
-            splits_name.append(model_filename.split("_")[1])
-            split_train_accuracy.append(accuracy_score(y_true=train_targets, y_pred = train_predict))
-            split_test_accuracy.append(accuracy_score(y_true=test_targets, y_pred=test_predict))
-
-            if isinstance(gc.best_estimator_, RandomForestClassifier) or \
-                isinstance(gc.best_estimator_, DecisionTreeClassifier):
-                features_importance = gc.best_estimator_.feature_importances_
-
-            zipped = zip(features_importance, train_df.columns)
-            zipped = sorted(zipped, key = lambda t:t[0])
-
-            [features.append(i[1]) for i in zipped if np.abs(i[0]) > 0.0]
-
-        features_count = Counter(features)
-
-        #table = []
-        #table_style = {"padding": "12px 55px", "text-align": "left"}
-        #table.append(html.Tr([html.Th("Feature", style=table_style), html.Th("Number of models")]))
-        #for f in features_count.most_common():
-        #    table.append(html.Tr([html.Td(f[0]), html.Td(f[1])]))
-        features_column = []
-        n_models_column = []
-        for f in features_count.most_common():
-            features_column.append(f[0])
-            n_models_column.append(f[1])
-
-        df = pd.DataFrame()
-        df["Feature"] = features_column
-        df["Number of models"] = n_models_column
-
-        trace_train = go.Scatter(
-            y=split_train_accuracy,
-            name="Train accuracy"
-        )
-        trace_test = go.Scatter(
-            y=split_test_accuracy,
-            name="Test accuracy"
-        )
-        fig_acc = go.Figure(data=[trace_train, trace_test])
-        print("Number of items:{}".format(len(train_df.columns)))
-
-        print("df : {}".format(df))
-        df = pd.DataFrame({
-                            "Feature":[],
-                            "Number of models":[]
-                        })
-
-        return fig_acc, df, fig_umap, ""  #.to_dict("records")
-
-    else:
-        return dash.no_update
-
-
-@app.callback(
-    Output("global_metrics", "children"),
-    [Input("compute_global_metrics", "n_clicks"),
-    Input("ml_dropdown", "value"),
-    Input("design_dropdown", "value")]
-)
-def compute_global_metrics(n_clicks, ml_algo, exp_design):
-    if n_clicks is None or n_clicks == 0:
-        return dash.no_update
-    if dash.callback_context.triggered[0]['prop_id'].split('.')[0] != "compute_global_metrics":
-        return ""
-    data_matrix_file_list = glob.glob(os.path.join("Splits", "{}_*".format(exp_design)))
-    metrics_results_train =  {i:[] for i in STATISTICS}
-    metrics_results_test =  {i:[] for i in STATISTICS}
-
-    for data_matrix_filename in data_matrix_file_list:
-        split_number = data_matrix_filename.split("_")[-1]
-        model_filename = os.path.join("Results", 
-            "{}_{}_{}.pkl".format(exp_design, split_number, ml_algo))
-    
-        with open(data_matrix_filename, "rb") as fi:
-            train_df = pkl.load(fi, encoding="latin1")
-            train_targets = pkl.load(fi, encoding="latin1")
-            test_df = pkl.load(fi, encoding="latin1")
-            test_targets = pkl.load(fi, encoding="latin1")
-
-        with open(model_filename, "rb") as fi:
-            gc = pkl.load(fi, encoding="latin1")
-            print(gc.best_estimator_.classes_)
-            train_predict = pkl.load(fi, encoding="latin1")
-            test_predict = pkl.load(fi, encoding="latin1")
-
-        for stat in STATISTICS:
-            metrics_results_train[stat].append(
-                STATISTICS[stat](train_targets, train_predict)
-            )
-            metrics_results_test[stat].append(
-                STATISTICS[stat](test_targets, test_predict)
-            )
-    table = []
-    table_style = {"padding": "12px 55px", "text-align": "left"}
-    table.append(html.Tr([html.Th("Metric", style=table_style), html.Th("Train"), html.Th("Test")]))
-    for stat in STATISTICS:
-        print(stat)
-        train_average = np.average(metrics_results_train[stat])
-        test_average = np.average(metrics_results_test[stat])
-        train_std = np.std(metrics_results_train[stat])
-        test_std = np.std(metrics_results_test[stat])
-        print(train_average, train_std)
-        table.append(html.Tr([html.Td(stat), 
-            html.Td("{:0.2f} ({:0.2f})".format(train_average, train_std)), 
-            html.Td("{:0.2f} ({:0.2f})".format(test_average, test_std))]
-        ))
-    return html.Table(table)
-
+# @app.callback(
+#     [Output("accuracy_overview", "figure"),
+#     Output("overview_table", "children"),
+#     Output("umap_overview", "figure"),
+#     Output("output_button_load_ML_results", "children")],
+#     [Input("load_ML_results_button", "n_clicks")],
+#     [State("ml_dropdown", "value"),
+#     State("design_dropdown", "value")]
+# )
+# def show_global_view(n_clicks, ml_dropdown, design_dropdown):
+#     if n_clicks >= 1:
+#         print("Updating global accuracy plot")
+#         splits_name = []
+#         split_train_accuracy = []
+#         split_test_accuracy = []
+#
+#         features = []
+#         data_matrix_filename = os.path.join("Results", design_dropdown + "_0_" + ml_dropdown + ".pkl")
+#         with open(data_matrix_filename, "rb") as fi:
+#             train_df = pkl.load(fi)  #, encoding='bytes'
+#             train_targets = pkl.load(fi)  #, encoding='latin1'
+#             test_df = pkl.load(fi)  #, encoding='latin1'
+#             test_targets = pkl.load(fi)  #, encoding='latin1'
+#
+#         cols = ["a"] * len(train_df[0])
+#         train_df = pd.DataFrame(train_df, columns=cols)
+#
+#         reducer = umap.UMAP()
+#
+#         def filter_cluster(df, threshold=0.5):
+#             """
+#             threshold : (proportion) minimum of non-zero values in a line to consider keeping this line
+#             for example -> threshold = 0.6 means it will keep only the lines where there is at least 60% of non-zero values
+#             """
+#             df = df.T
+#             nbr_col = len(df.columns.to_list())
+#             print(nbr_col)
+#             print((df.astype(bool).sum(axis=0)).shape)
+#             df_filtered = df.loc[df.astype(bool).sum(axis=1) >= nbr_col*threshold]
+#             return df_filtered.T
+#
+#         print(np.array(train_df).shape)
+#         train_df = filter_cluster(train_df, threshold=1.0)
+#         print(np.array(train_df).shape)
+#         embedding = reducer.fit_transform(train_df)
+#
+#         trace_train = go.Scatter(
+#             x=embedding[:, 0],
+#             y=embedding[:, 1],
+#             mode="markers",
+#             text=np.array(train_df.index)
+#         )
+#         fig_umap = go.Figure(data=[trace_train],
+#                         layout=go.Layout(
+#                             paper_bgcolor='rgba(0,0,0,0)',
+#                             plot_bgcolor='rgba(0,0,0,0)')
+#                         )
+#         # return(fig, dash.no_update)
+#
+#
+#
+#         for model_filename in glob.glob(os.path.join("Results", design_dropdown+"_*_"+ml_dropdown+"*")):
+#             with open(model_filename, "rb") as fi:
+#                 gc = pkl.load(fi)
+#                 print(gc.best_estimator_.classes_)
+#                 train_predict = pkl.load(fi)
+#                 test_predict = pkl.load(fi)
+#
+#             data_matrix_filename = os.path.join("Splits", design_dropdown + "_" + model_filename.split("_")[1])
+#             with open(data_matrix_filename, "rb") as fi:
+#                 train_df = pkl.load(fi)
+#                 train_targets = pkl.load(fi)
+#                 test_df = pkl.load(fi)
+#                 test_targets = pkl.load(fi)
+#
+#             splits_name.append(model_filename.split("_")[1])
+#             split_train_accuracy.append(accuracy_score(y_true=train_targets, y_pred = train_predict))
+#             split_test_accuracy.append(accuracy_score(y_true=test_targets, y_pred=test_predict))
+#
+#             if isinstance(gc.best_estimator_, RandomForestClassifier) or \
+#                 isinstance(gc.best_estimator_, DecisionTreeClassifier):
+#                 features_importance = gc.best_estimator_.feature_importances_
+#
+#             zipped = zip(features_importance, train_df.columns)
+#             zipped = sorted(zipped, key = lambda t:t[0])
+#
+#             [features.append(i[1]) for i in zipped if np.abs(i[0]) > 0.0]
+#
+#         features_count = Counter(features)
+#
+#         #table = []
+#         #table_style = {"padding": "12px 55px", "text-align": "left"}
+#         #table.append(html.Tr([html.Th("Feature", style=table_style), html.Th("Number of models")]))
+#         #for f in features_count.most_common():
+#         #    table.append(html.Tr([html.Td(f[0]), html.Td(f[1])]))
+#         features_column = []
+#         n_models_column = []
+#         for f in features_count.most_common():
+#             features_column.append(f[0])
+#             n_models_column.append(f[1])
+#
+#         df = pd.DataFrame()
+#         df["Feature"] = features_column
+#         df["Number of models"] = n_models_column
+#
+#         trace_train = go.Scatter(
+#             y=split_train_accuracy,
+#             name="Train accuracy"
+#         )
+#         trace_test = go.Scatter(
+#             y=split_test_accuracy,
+#             name="Test accuracy"
+#         )
+#         fig_acc = go.Figure(data=[trace_train, trace_test])
+#         print("Number of items:{}".format(len(train_df.columns)))
+#
+#         print("df : {}".format(df))
+#         df = pd.DataFrame({
+#                             "Feature":[],
+#                             "Number of models":[]
+#                         })
+#
+#         return fig_acc, df, fig_umap, ""  #.to_dict("records")
+#
+#     else:
+#         return dash.no_update
+#
+#
+# @app.callback(
+#     Output("global_metrics", "children"),
+#     [Input("compute_global_metrics", "n_clicks"),
+#     Input("ml_dropdown", "value"),
+#     Input("design_dropdown", "value")]
+# )
+# def compute_global_metrics(n_clicks, ml_algo, exp_design):
+#     if n_clicks is None or n_clicks == 0:
+#         return dash.no_update
+#     if dash.callback_context.triggered[0]['prop_id'].split('.')[0] != "compute_global_metrics":
+#         return ""
+#     data_matrix_file_list = glob.glob(os.path.join("Splits", "{}_*".format(exp_design)))
+#     metrics_results_train =  {i:[] for i in STATISTICS}
+#     metrics_results_test =  {i:[] for i in STATISTICS}
+#
+#     for data_matrix_filename in data_matrix_file_list:
+#         split_number = data_matrix_filename.split("_")[-1]
+#         model_filename = os.path.join("Results",
+#             "{}_{}_{}.pkl".format(exp_design, split_number, ml_algo))
+#
+#         with open(data_matrix_filename, "rb") as fi:
+#             train_df = pkl.load(fi, encoding="latin1")
+#             train_targets = pkl.load(fi, encoding="latin1")
+#             test_df = pkl.load(fi, encoding="latin1")
+#             test_targets = pkl.load(fi, encoding="latin1")
+#
+#         with open(model_filename, "rb") as fi:
+#             gc = pkl.load(fi, encoding="latin1")
+#             print(gc.best_estimator_.classes_)
+#             train_predict = pkl.load(fi, encoding="latin1")
+#             test_predict = pkl.load(fi, encoding="latin1")
+#
+#         for stat in STATISTICS:
+#             metrics_results_train[stat].append(
+#                 STATISTICS[stat](train_targets, train_predict)
+#             )
+#             metrics_results_test[stat].append(
+#                 STATISTICS[stat](test_targets, test_predict)
+#             )
+#     table = []
+#     table_style = {"padding": "12px 55px", "text-align": "left"}
+#     table.append(html.Tr([html.Th("Metric", style=table_style), html.Th("Train"), html.Th("Test")]))
+#     for stat in STATISTICS:
+#         print(stat)
+#         train_average = np.average(metrics_results_train[stat])
+#         test_average = np.average(metrics_results_test[stat])
+#         train_std = np.std(metrics_results_train[stat])
+#         test_std = np.std(metrics_results_test[stat])
+#         print(train_average, train_std)
+#         table.append(html.Tr([html.Td(stat),
+#             html.Td("{:0.2f} ({:0.2f})".format(train_average, train_std)),
+#             html.Td("{:0.2f} ({:0.2f})".format(test_average, test_std))]
+#         ))
+#     return html.Table(table)
+#
 
 
 @app.callback(
@@ -1573,7 +1926,7 @@ def update_boxplot_metabolite(metabolite_name, exp_design, ml_exp_number):
     Output("heatmap", "src"),
     Output("heatmap_title", "children"),
     Output("metrics_table", "children"),
-    Output("view_info", "children")
+    # Output("view_info", "children")
      ],
     [Input("load_ML_results_button", "n_clicks"),
      Input("update_specific_results_button", "n_clicks")
