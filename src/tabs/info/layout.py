@@ -28,7 +28,7 @@ infoLayout =  dbc.Tab(className="global_tab",
                                             ),
                                         ]),
                                         dbc.Card(className="cards_info", children=[
-                                            dbc.CardHeader("results"),
+                                            dbc.CardHeader("Results"),
                                             dbc.CardBody(
                                                 [
                                                     html.P("Blablabla",
