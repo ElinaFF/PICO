@@ -16,7 +16,7 @@ _introductionNotice = html.Div(className="fig_group_all_width", children=[
     ]),
 ])
 
-__dataFile = dbc.FormGroup(
+__dataFile = html.Div(
     [
         dbc.Label("Data file(s) *", className="form_labels"),
         dbc.Input(id="path_to_data_file", placeholder="Enter path",
@@ -28,7 +28,7 @@ __dataFile = dbc.FormGroup(
     className="form_field"
 )
 
-__metaDataFile = dbc.FormGroup(
+__metaDataFile = html.Div(
     [
         dbc.Label("Metadata file *", className="form_labels"),
         dbc.Input(id="in_path_to_metadata", placeholder="Enter path",
@@ -42,7 +42,7 @@ __metaDataFile = dbc.FormGroup(
     className="form_field"
 )
 
-__outputFile = dbc.FormGroup(
+__outputFile = html.Div(
     [
         dbc.Label("Output file *",
                   className="form_labels"),
@@ -55,7 +55,7 @@ __outputFile = dbc.FormGroup(
     className="form_field"
 )
 
-__useRawData = dbc.FormGroup(
+__useRawData = html.Div(
     [
         dbc.Label("Use raw data",
                   className="form_labels"),
@@ -85,7 +85,7 @@ _file = html.Div(className="title_and_form", children=[
 
 ])
 
-__posNegPairing = dbc.FormGroup(
+__posNegPairing = html.Div(
     [
         dbc.Checklist(
             id="in_pairing_pos_neg",
@@ -98,7 +98,7 @@ __posNegPairing = dbc.FormGroup(
     ],
 )
 
-__posPattern = dbc.FormGroup(
+__posPattern = html.Div(
     [
         dbc.Input(id="distinct_id_pos_samples",
                   className="form_input_text",
@@ -106,7 +106,7 @@ __posPattern = dbc.FormGroup(
     ],
 )
 
-__negPattern = dbc.FormGroup(
+__negPattern = html.Div(
     [
         dbc.Input(id="distinct_id_neg_samples",
                   className="form_input_text",
@@ -114,7 +114,7 @@ __negPattern = dbc.FormGroup(
     ],
 )
 
-__otherPairing = dbc.FormGroup(
+__otherPairing = html.Div(
     [
         dbc.Checklist(
             id="in_pairing_samples",
@@ -126,7 +126,7 @@ __otherPairing = dbc.FormGroup(
     ],
 )
 
-_type1Pattern = dbc.FormGroup(
+_type1Pattern = html.Div(
     [
         dbc.Input(id="distinct_id_1_samples",
                   className="form_input_text",
@@ -134,7 +134,7 @@ _type1Pattern = dbc.FormGroup(
     ],
 )
 
-_type2Pattern = dbc.FormGroup(
+_type2Pattern = html.Div(
     [
         dbc.Input(id="distinct_id_2_samples",
                   className="form_input_text",
@@ -192,7 +192,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                               "Allows to link each file to its type/group to separate them approprietly afterwards."
                                                           ),
                                                           dbc.Card([
-                                                              dbc.FormGroup(
+                                                              html.Div(
                                                                   [
                                                                       dbc.Label(
                                                                           "Name of the targets column"),
@@ -203,7 +203,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                                   ],
                                                                   className="form_field"
                                                               ),
-                                                              dbc.FormGroup(
+                                                              html.Div(
                                                                   [
                                                                       dbc.Label(
                                                                           "Name of the unique id column"),
@@ -222,7 +222,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                           ),
                                                           dbc.Card(id="",
                                                                    children=[
-                                                                       dbc.FormGroup(
+                                                                       html.Div(
                                                                            [
                                                                                dbc.Label(
                                                                                    "Type of classification"),
@@ -242,7 +242,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                                            ],
                                                                            className="form_field"
                                                                        ),
-                                                                       dbc.FormGroup(
+                                                                       html.Div(
                                                                            [
                                                                                dbc.Label(
                                                                                    "Labels"),
@@ -285,7 +285,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                       children="D) Define splits"),
                                                   dbc.Form(children=[
                                                       dbc.Col(children=[
-                                                          dbc.FormGroup([
+                                                          html.Div([
                                                               dbc.Label(
                                                                   "Proportion of samples in test"),
                                                               dbc.Input(
@@ -297,7 +297,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                                   size="5")
                                                           ],
                                                               className="form_field"),
-                                                          dbc.FormGroup([
+                                                          html.Div([
                                                               dbc.Label(
                                                                   "Number of splits"),
                                                               dbc.Input(
@@ -308,7 +308,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                                   size="5"),
                                                           ],
                                                               className="form_field"),
-                                                          dbc.FormGroup([
+                                                          html.Div([
                                                               dbc.Label(
                                                                   "Peak Threshold"),
                                                               dbc.Input(
@@ -319,7 +319,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                                   size="5")
                                                           ],
                                                               className="form_field"),
-                                                          dbc.FormGroup([
+                                                          html.Div([
                                                               dbc.Label(
                                                                   "AutoOptimize number"),
                                                               dbc.Input(
@@ -348,7 +348,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                               dbc.Card(
                                                                   dbc.CardBody(
                                                                       children=[
-                                                                          dbc.FormGroup(
+                                                                          html.Div(
                                                                               [
                                                                                   dbc.Label(
                                                                                       "Processing according to data type"),
@@ -373,7 +373,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                                               ],
                                                                               className="form_field"
                                                                           ),
-                                                                          dbc.FormGroup(
+                                                                          html.Div(
                                                                               [
                                                                                   dbc.Label(
                                                                                       "Perform peak picking"),
@@ -394,7 +394,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                                               ],
                                                                               className="form_field"
                                                                           ),
-                                                                          dbc.FormGroup(
+                                                                          html.Div(
                                                                               [
                                                                                   dbc.Label(
                                                                                       "Perform alignment"),
@@ -415,7 +415,7 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                                               ],
                                                                               className="form_field"
                                                                           ),
-                                                                          dbc.FormGroup(
+                                                                          html.Div(
                                                                               [
                                                                                   dbc.Label(
                                                                                       "Perform normalization"),

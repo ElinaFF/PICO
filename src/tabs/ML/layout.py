@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import html
 
-__splitConfigFile = dbc.FormGroup(
+__splitConfigFile = html.Div(
     [
         dbc.Label("Name of splits config file *",
                   className="form_labels"),
@@ -14,13 +14,13 @@ __splitConfigFile = dbc.FormGroup(
     className="form_field"
 )
 
-__CVConfig = dbc.FormGroup([
+__CVConfig = html.Div([
     dbc.Label("Number of Cross Validation folds", className="form_labels"),
     dbc.Input(id="in_nbr_CV_folds", value="5", type="number", min=1,
               size="5")
 ], className="form_field")
 
-__processNumberConfig = dbc.FormGroup([
+__processNumberConfig = html.Div([
     dbc.Label("Number of processes"),
     dbc.Input(id="in_nbr_processes", value="2", type="number",
               min=1,
@@ -36,7 +36,7 @@ _definitionLearningConfig = html.Div(className="title_and_form", children=[
     ])
 ])
 
-__availableAlgorithms = dbc.FormGroup(
+__availableAlgorithms = html.Div(
     [
         dbc.Label("Available Algorithms", className="form_labels"),
         dbc.Checklist(id="in_algo_ML",
@@ -46,7 +46,7 @@ __availableAlgorithms = dbc.FormGroup(
     className="form_field"
 )
 
-__addCustomAlgorithm = dbc.FormGroup(
+__addCustomAlgorithm = html.Div(
     [
         dbc.Label("Add Sklearn Algorithms", className="form_labels"),
         dbc.Label("from sklearn.A import B"),
