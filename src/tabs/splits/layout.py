@@ -172,6 +172,313 @@ _dataFusion = html.Div(className="title_and_form", children=[
     ])
 ])
 
+__typeGroupLink = dbc.Card([
+    html.Div(
+        [
+            dbc.Label(
+                "Name of the targets column"),
+            dbc.RadioItems(
+                id="in_target_col_name",
+                value=0,
+                inline=True),
+        ],
+        className="form_field"
+    ),
+    html.Div(
+        [
+            dbc.Label(
+                "Name of the unique id column"),
+            dbc.RadioItems(
+                id="in_ID_col_name",
+                value=0,
+                inline=True),
+        ],
+        className="form_field"
+    )],
+    body=True
+)
+
+__labelDefinition = dbc.Card(id="",
+                             children=[
+                                 html.Div(
+                                     [
+                                         dbc.Label(
+                                             "Type of classification"),
+                                         dbc.RadioItems(
+                                             id="in_classification_type",
+                                             value=0,
+                                             inline=True,
+                                             options=[
+                                                 {
+                                                     "label": "Binary",
+                                                     "value": 0},
+                                                 {
+                                                     "label": "Multiclass",
+                                                     "value": 1,
+                                                     "disabled": True},
+                                             ]),
+                                     ],
+                                     className="form_field"
+                                 ),
+                                 html.Div(
+                                     [
+                                         dbc.Label(
+                                             "Labels"),
+                                         html.Div(
+                                             className="fig_group_mini",
+                                             id="define_classes_desgn_exp",
+                                             children=[
+                                                 dbc.Input(
+                                                     id="class1_name"),
+                                                 dbc.Checklist(
+                                                     id="possible_groups_for_class1"),
+                                                 dbc.Input(
+                                                     id="class2_name"),
+                                                 dbc.Checklist(
+                                                     id="possible_groups_for_class2")
+                                             ])
+                                     ],
+                                     className="form_field"
+                                 ),
+                                 dbc.Button(
+                                     "Add",
+                                     id="btn_add_design_exp",
+                                     color="primary",
+                                     className="custom_buttons",
+                                     n_clicks=0),
+                                 html.Div(
+                                     id="output_btn_add_desgn_exp")
+                             ], body=True)
+
+_experimentalDesigns = html.Div(className="title_and_form",
+                                children=[
+                                    html.H4(id="Exp_desg_title",
+                                            children="C) Define Experimental designs"),
+                                    dbc.Form(children=[
+                                        dbc.Col(children=[
+
+                                            dbc.FormText(
+                                                "Allows to link each file to its type/group to separate them approprietly afterwards."
+                                            ),
+                                            __typeGroupLink
+                                            ,
+                                            html.Br(),
+                                            dbc.FormText(
+                                                "Define labels and filter out samples."
+                                            ),
+                                            __labelDefinition
+                                            ,
+                                        ]),
+
+                                    ]),
+                                ])
+__sampleProportion = html.Div([
+    dbc.Label(
+        "Proportion of samples in test"),
+    dbc.Input(
+        id="in_percent_samples_in_test",
+        value="0.2",
+        type="number",
+        min=0, max=1,
+        step=0.01,
+        size="5")
+], className="form_field")
+
+__splitsNumber = html.Div([
+    dbc.Label(
+        "Number of splits"),
+    dbc.Input(
+        id="in_nbr_splits",
+        value="25",
+        type="number",
+        min=1,
+        size="5"),
+],
+    className="form_field")
+
+__peakThreshold = html.Div([
+    dbc.Label(
+        "Peak Threshold"),
+    dbc.Input(
+        id="in_peak_threshold_value",
+        value="500",
+        type="number",
+        min=1,
+        size="5")
+], className="form_field")
+
+__autoOptimizeNumber = html.Div([
+    dbc.Label(
+        "AutoOptimize number"),
+    dbc.Input(
+        id="in_autoOptimize_value",
+        value="20",
+        type="number",
+        min=1,
+        size="5")
+], className="form_field")
+
+_splitDefinition = html.Div(className="title_and_form",
+                            children=[
+                                html.H4(
+                                    id="Define_split_title",
+                                    children="D) Define splits"),
+                                dbc.Form(children=[
+                                    dbc.Col(children=[__sampleProportion,
+                                                      __splitsNumber,
+                                                      __peakThreshold,
+                                                      __autoOptimizeNumber
+                                                      ]),
+                                ])
+                            ])
+__LDTDDataType = html.Div(
+    [
+        dbc.Label(
+            "Processing according to data type"),
+        dbc.FormText(
+            "LDTD1 means the preprocessing will be done on all samples in one time. "
+            "LDTD2 means the preprocessing will be done seperatly for each split."),
+        dbc.RadioItems(
+            id="in_type_of_data",
+            value="none",
+            inline=True,
+            options=[
+                {
+                    "label": "None",
+                    "value": "none"},
+                {
+                    "label": "LDTD 1",
+                    "value": "LDTD1"},
+                {
+                    "label": "LDTD 2",
+                    "value": "LDTD2"},
+            ]),
+    ], className="form_field")
+
+__LDTDPeakPicking = html.Div(
+    [
+        dbc.Label(
+            "Perform peak picking"),
+        dbc.RadioItems(
+            id="in_peak_picking",
+            value=0,
+            inline=True,
+            options=[
+                {
+                    "label": "No",
+                    "value": 0,
+                    "disabled": True},
+                {
+                    "label": "Yes",
+                    "value": 1,
+                    "disabled": True},
+            ]),
+    ], className="form_field")
+
+__LDTDAlignment = html.Div(
+    [
+        dbc.Label(
+            "Perform alignment"),
+        dbc.RadioItems(
+            id="in_alignment",
+            value=0,
+            inline=True,
+            options=[
+                {
+                    "label": "No",
+                    "value": 0,
+                    "disabled": True},
+                {
+                    "label": "Yes",
+                    "value": 1,
+                    "disabled": True},
+            ]),
+    ],
+    className="form_field"
+)
+
+__LDTDNormalization = html.Div(
+    [
+        dbc.Label(
+            "Perform normalization"),
+        dbc.RadioItems(
+            id="in_normalization",
+            value=0,
+            inline=True,
+            options=[
+                {
+                    "label": "No",
+                    "value": 0,
+                    "disabled": True},
+                {
+                    "label": "Yes",
+                    "value": 1,
+                    "disabled": True},
+            ]),
+    ], className="form_field")
+
+_otherProcessing = html.Div(className="title_and_form",
+                            children=[
+                                html.H4(id="preprocess_title",
+                                        children="E) Other Preprocessing"),
+                                dbc.Form(children=[
+                                    dbc.Col(children=[
+                                        dbc.FormText(
+                                            "Options in case of LDTD data that needs to be preprocess"),
+                                        dbc.Collapse(
+                                            dbc.Card(
+                                                dbc.CardBody(
+                                                    children=[__LDTDDataType,
+                                                              __LDTDPeakPicking,
+                                                              __LDTDAlignment,
+                                                              __LDTDNormalization
+                                                              ]
+                                                )
+                                            ),
+                                            id="collapse_preprocessing",
+                                        ),
+                                        dbc.Button(
+                                            "Open",
+                                            id="collapse_preprocessing_button",
+                                            className="custom_buttons",
+                                            color="primary",
+                                            n_clicks=0
+                                        ),
+
+                                    ])
+                                ])
+                            ])
+
+_generateFile = html.Div(className="title_and_form",
+                         children=[
+                             html.H4(
+                                 id="create_split_title",
+                                 children="F) Generate file"),
+                             dbc.Form(children=[
+                                 dbc.Col(children=[
+                                     html.Div(
+                                         id="output_button_split_file"),
+                                     html.Div(
+                                         className="button_box",
+                                         children=[
+                                             html.Div(
+                                                 "Before clicking on the Create button, make shure all field with an * are correctly filled."),
+                                             dbc.Button(
+                                                 "Create",
+                                                 color="primary",
+                                                 id="split_dataset_button",
+                                                 className="custom_buttons",
+                                                 n_clicks=0),
+                                             html.Div(
+                                                 id="output_button_split",
+                                                 children="",
+                                                 style={
+                                                     'display': 'none'}),
+                                         ]),
+                                 ])
+                             ])
+                         ])
+
 splitsLayout = dbc.Tab(className="global_tab",
                        label="Splits",
                        children=[_introductionNotice,
@@ -180,309 +487,13 @@ splitsLayout = dbc.Tab(className="global_tab",
                                                     _dataFusion,
                                                     ]),
 
-                                 html.Div(className="fig_group", children=[
-                                     html.Div(className="title_and_form",
-                                              children=[
-                                                  html.H4(id="Exp_desg_title",
-                                                          children="C) Define Experimental designs"),
-                                                  dbc.Form(children=[
-                                                      dbc.Col(children=[
+                                 html.Div(className="fig_group",
+                                          children=[_experimentalDesigns,
+                                                    _splitDefinition
+                                                    ]),
 
-                                                          dbc.FormText(
-                                                              "Allows to link each file to its type/group to separate them approprietly afterwards."
-                                                          ),
-                                                          dbc.Card([
-                                                              html.Div(
-                                                                  [
-                                                                      dbc.Label(
-                                                                          "Name of the targets column"),
-                                                                      dbc.RadioItems(
-                                                                          id="in_target_col_name",
-                                                                          value=0,
-                                                                          inline=True),
-                                                                  ],
-                                                                  className="form_field"
-                                                              ),
-                                                              html.Div(
-                                                                  [
-                                                                      dbc.Label(
-                                                                          "Name of the unique id column"),
-                                                                      dbc.RadioItems(
-                                                                          id="in_ID_col_name",
-                                                                          value=0,
-                                                                          inline=True),
-                                                                  ],
-                                                                  className="form_field"
-                                                              )],
-                                                              body=True
-                                                          ),
-                                                          html.Br(),
-                                                          dbc.FormText(
-                                                              "Define labels and filter out samples."
-                                                          ),
-                                                          dbc.Card(id="",
-                                                                   children=[
-                                                                       html.Div(
-                                                                           [
-                                                                               dbc.Label(
-                                                                                   "Type of classification"),
-                                                                               dbc.RadioItems(
-                                                                                   id="in_classification_type",
-                                                                                   value=0,
-                                                                                   inline=True,
-                                                                                   options=[
-                                                                                       {
-                                                                                           "label": "Binary",
-                                                                                           "value": 0},
-                                                                                       {
-                                                                                           "label": "Multiclass",
-                                                                                           "value": 1,
-                                                                                           "disabled": True},
-                                                                                   ]),
-                                                                           ],
-                                                                           className="form_field"
-                                                                       ),
-                                                                       html.Div(
-                                                                           [
-                                                                               dbc.Label(
-                                                                                   "Labels"),
-                                                                               html.Div(
-                                                                                   className="fig_group_mini",
-                                                                                   id="define_classes_desgn_exp",
-                                                                                   children=[
-                                                                                       dbc.Input(
-                                                                                           id="class1_name"),
-                                                                                       dbc.Checklist(
-                                                                                           id="possible_groups_for_class1"),
-                                                                                       dbc.Input(
-                                                                                           id="class2_name"),
-                                                                                       dbc.Checklist(
-                                                                                           id="possible_groups_for_class2")
-                                                                                   ])
-                                                                           ],
-                                                                           className="form_field"
-                                                                       ),
-                                                                       dbc.Button(
-                                                                           "Add",
-                                                                           id="btn_add_design_exp",
-                                                                           color="primary",
-                                                                           className="custom_buttons",
-                                                                           n_clicks=0),
-                                                                       html.Div(
-                                                                           id="output_btn_add_desgn_exp")
-
-                                                                   ],
-                                                                   body=True),
-                                                      ]),
-
-                                                  ]),
-
-                                              ]),
-                                     html.Div(className="title_and_form",
-                                              children=[
-                                                  html.H4(
-                                                      id="Define_split_title",
-                                                      children="D) Define splits"),
-                                                  dbc.Form(children=[
-                                                      dbc.Col(children=[
-                                                          html.Div([
-                                                              dbc.Label(
-                                                                  "Proportion of samples in test"),
-                                                              dbc.Input(
-                                                                  id="in_percent_samples_in_test",
-                                                                  value="0.2",
-                                                                  type="number",
-                                                                  min=0, max=1,
-                                                                  step=0.01,
-                                                                  size="5")
-                                                          ],
-                                                              className="form_field"),
-                                                          html.Div([
-                                                              dbc.Label(
-                                                                  "Number of splits"),
-                                                              dbc.Input(
-                                                                  id="in_nbr_splits",
-                                                                  value="25",
-                                                                  type="number",
-                                                                  min=1,
-                                                                  size="5"),
-                                                          ],
-                                                              className="form_field"),
-                                                          html.Div([
-                                                              dbc.Label(
-                                                                  "Peak Threshold"),
-                                                              dbc.Input(
-                                                                  id="in_peak_threshold_value",
-                                                                  value="500",
-                                                                  type="number",
-                                                                  min=1,
-                                                                  size="5")
-                                                          ],
-                                                              className="form_field"),
-                                                          html.Div([
-                                                              dbc.Label(
-                                                                  "AutoOptimize number"),
-                                                              dbc.Input(
-                                                                  id="in_autoOptimize_value",
-                                                                  value="20",
-                                                                  type="number",
-                                                                  min=1,
-                                                                  size="5")
-                                                          ],
-                                                              className="form_field"),
-                                                      ]),
-                                                  ])
-                                              ]),
-
-                                 ]),
-                                 html.Div(className="fig_group", children=[
-                                     html.Div(className="title_and_form",
-                                              children=[
-                                                  html.H4(id="preprocess_title",
-                                                          children="E) Other Preprocessing"),
-                                                  dbc.Form(children=[
-                                                      dbc.Col(children=[
-                                                          dbc.FormText(
-                                                              "Options in case of LDTD data that needs to be preprocess"),
-                                                          dbc.Collapse(
-                                                              dbc.Card(
-                                                                  dbc.CardBody(
-                                                                      children=[
-                                                                          html.Div(
-                                                                              [
-                                                                                  dbc.Label(
-                                                                                      "Processing according to data type"),
-                                                                                  dbc.FormText(
-                                                                                      "LDTD1 means the preprocessing will be done on all samples in one time. "
-                                                                                      "LDTD2 means the preprocessing will be done seperatly for each split."),
-                                                                                  dbc.RadioItems(
-                                                                                      id="in_type_of_data",
-                                                                                      value="none",
-                                                                                      inline=True,
-                                                                                      options=[
-                                                                                          {
-                                                                                              "label": "None",
-                                                                                              "value": "none"},
-                                                                                          {
-                                                                                              "label": "LDTD 1",
-                                                                                              "value": "LDTD1"},
-                                                                                          {
-                                                                                              "label": "LDTD 2",
-                                                                                              "value": "LDTD2"},
-                                                                                      ]),
-                                                                              ],
-                                                                              className="form_field"
-                                                                          ),
-                                                                          html.Div(
-                                                                              [
-                                                                                  dbc.Label(
-                                                                                      "Perform peak picking"),
-                                                                                  dbc.RadioItems(
-                                                                                      id="in_peak_picking",
-                                                                                      value=0,
-                                                                                      inline=True,
-                                                                                      options=[
-                                                                                          {
-                                                                                              "label": "No",
-                                                                                              "value": 0,
-                                                                                              "disabled": True},
-                                                                                          {
-                                                                                              "label": "Yes",
-                                                                                              "value": 1,
-                                                                                              "disabled": True},
-                                                                                      ]),
-                                                                              ],
-                                                                              className="form_field"
-                                                                          ),
-                                                                          html.Div(
-                                                                              [
-                                                                                  dbc.Label(
-                                                                                      "Perform alignment"),
-                                                                                  dbc.RadioItems(
-                                                                                      id="in_alignment",
-                                                                                      value=0,
-                                                                                      inline=True,
-                                                                                      options=[
-                                                                                          {
-                                                                                              "label": "No",
-                                                                                              "value": 0,
-                                                                                              "disabled": True},
-                                                                                          {
-                                                                                              "label": "Yes",
-                                                                                              "value": 1,
-                                                                                              "disabled": True},
-                                                                                      ]),
-                                                                              ],
-                                                                              className="form_field"
-                                                                          ),
-                                                                          html.Div(
-                                                                              [
-                                                                                  dbc.Label(
-                                                                                      "Perform normalization"),
-                                                                                  dbc.RadioItems(
-                                                                                      id="in_normalization",
-                                                                                      value=0,
-                                                                                      inline=True,
-                                                                                      options=[
-                                                                                          {
-                                                                                              "label": "No",
-                                                                                              "value": 0,
-                                                                                              "disabled": True},
-                                                                                          {
-                                                                                              "label": "Yes",
-                                                                                              "value": 1,
-                                                                                              "disabled": True},
-                                                                                      ]),
-                                                                              ],
-                                                                              className="form_field"
-                                                                          ),
-                                                                      ]
-                                                                  )
-                                                              ),
-                                                              id="collapse_preprocessing",
-                                                          ),
-                                                          dbc.Button(
-                                                              "Open",
-                                                              id="collapse_preprocessing_button",
-                                                              className="custom_buttons",
-                                                              color="primary",
-                                                              n_clicks=0
-                                                          ),
-
-                                                      ])
-                                                  ])
-                                              ]),
-                                     html.Div(className="title_and_form",
-                                              children=[
-                                                  html.H4(
-                                                      id="create_split_title",
-                                                      children="F) Generate file"),
-                                                  dbc.Form(children=[
-                                                      dbc.Col(children=[
-                                                          html.Div(
-                                                              id="output_button_split_file"),
-                                                          html.Div(
-                                                              className="button_box",
-                                                              children=[
-                                                                  html.Div(
-                                                                      "Before clicking on the Create button, make shure all field with an * are correctly filled."),
-                                                                  dbc.Button(
-                                                                      "Create",
-                                                                      color="primary",
-                                                                      id="split_dataset_button",
-                                                                      className="custom_buttons",
-                                                                      n_clicks=0),
-                                                                  html.Div(
-                                                                      id="output_button_split",
-                                                                      children="",
-                                                                      style={
-                                                                          'display': 'none'}),
-
-                                                              ]),
-
-                                                      ])
-                                                  ])
-                                              ])
-                                 ]),
-
+                                 html.Div(className="fig_group",
+                                          children=[_otherProcessing,
+                                                    _generateFile
+                                                    ]),
                                  ])
