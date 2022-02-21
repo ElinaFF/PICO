@@ -14,6 +14,12 @@ app.css.append_css({
     "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
 })
 
+infoTab = InfoTab(app)
+splitsTab = SplitsTab(app)
+mLTab = MLTab(app)
+resultsTab = ResultsTab(app)
+interpretTab = InterpretTab(app)
+
 
 app.layout = html.Div(id="page", children=[
         html.Div(id="dataCache", children=[
@@ -27,7 +33,14 @@ app.layout = html.Div(id="page", children=[
         html.Div(id="main-content", children=[
             dbc.Tabs(id="custom_big_tabs",
                      className="global_tabs_container",
-                     children=[infoLayout, splitsLayout, MLLayout, resultsLayout, interpretLayout])
+                     children=[
+                         infoTab.getLayout(),
+                         splitsTab.getLayout(),
+                         mLTab.getLayout(),
+                         resultsTab.getLayout(),
+                         interpretTab.getLayout()
+                     ]
+                     )
         ]),
     ])
 
