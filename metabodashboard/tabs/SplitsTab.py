@@ -6,8 +6,8 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, Output, Input, dash, State
 
-from metabodashboard.utility.DataFormat import DataFormat
-from metabodashboard.utility.SamplesPairing import SamplesPairing
+from metabodashboard.service.DataFormat import DataFormat
+from metabodashboard.service.SamplesPairing import SamplesPairing
 from metabodashboard.tabs.MetaTab import MetaTab
 
 
