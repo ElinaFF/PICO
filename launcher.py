@@ -3,7 +3,7 @@ import os
 try:
     from metabodashboard import app
 except ImportError:
-    os.system("pip install metabodashboard/")
+    os.system("pip install .")
     from metabodashboard import app
 
 if __name__ == "__main__":
