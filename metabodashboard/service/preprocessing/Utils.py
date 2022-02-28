@@ -1,7 +1,7 @@
 __author__='pier-luc'
 
 from scipy.cluster.hierarchy import dendrogram
-from .metabodashboard.service.pymspec.preprocessing import common, discrete
+from pymspec.preprocessing import common, discrete
 #import matplotlib.pyplot as plt
 import numpy as np
 from bisect import bisect_left

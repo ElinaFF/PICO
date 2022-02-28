@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
-from Utils import *
+from .Utils import *
 
 class DataFormat:
     """

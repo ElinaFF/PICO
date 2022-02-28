@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import pickle as pkl
 import random, os
-from LearnConfig import *
-from ExperimentDesign import *
+from ..conf.LearnConfig import *
+from .ExperimentDesign import *
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 
