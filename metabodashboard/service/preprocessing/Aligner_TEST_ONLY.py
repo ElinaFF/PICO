@@ -12,10 +12,10 @@ from matplotlib import pyplot as plt
 from scipy.cluster._hierarchy import linkage
 from scipy.cluster.hierarchy import fcluster
 
-from metabodashboard.service.preprocessing.Virtual_lock_mass import Point
-from metabodashboard.service.pymspec.preprocessing import common, discrete
-from metabodashboard.service.pymspec.spectrum import *
-from metabodashboard.service.pymspec import Spectrum
+from .metabodashboard.service.preprocessing.Virtual_lock_mass import Point
+from .metabodashboard.service.pymspec.preprocessing import common, discrete
+from .metabodashboard.service.pymspec.spectrum import *
+from .metabodashboard.service.pymspec import Spectrum
 from preprocessing.Utils import *
 import matplotlib.cm as cm
 

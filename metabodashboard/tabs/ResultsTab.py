@@ -15,9 +15,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 
-from metabodashboard.conf.MetaboDashboardConfig import STATISTICS
-from metabodashboard.tabs.MetaTab import MetaTab
-from metabodashboard.conf.LearnConfig import LEARN_CONFIG
+from ..conf.MetaboDashboardConfig import STATISTICS
+from .MetaTab import MetaTab
+from ..conf.LearnConfig import LEARN_CONFIG
 
 
 class ResultsTab(MetaTab):

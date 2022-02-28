@@ -6,7 +6,7 @@ from scipy.cluster.hierarchy import complete, fcluster, linkage
 import logging
 
 #from matplotlib.pyplot import cm
-from metabodashboard.service.pymspec import Spectrum
+from .metabodashboard.service.pymspec import Spectrum
 import fastcluster as fc
 from preprocessing.Utils import *
 

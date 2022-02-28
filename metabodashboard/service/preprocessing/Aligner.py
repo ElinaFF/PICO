@@ -7,7 +7,7 @@ from bisect import bisect_left
 from collections import defaultdict
 
 import numpy as np
-from metabodashboard.service.pymspec.spectrum import *
+from .metabodashboard.service.pymspec.spectrum import *
 
 
 """

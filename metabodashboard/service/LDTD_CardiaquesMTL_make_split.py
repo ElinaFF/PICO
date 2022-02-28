@@ -5,8 +5,8 @@ from msvlm.msvlm.identification import VirtualLockMassCorrector
 import preprocessing.RFMSA2_old_new
 import os, sys, glob
 # import h5py as h
-from metabodashboard.service.pymspec.spectrum import unify_mz
-from metabodashboard.service.pymspec.io.ion_list.file_loader import *
+from .metabodashboard.service.pymspec.spectrum import unify_mz
+from .metabodashboard.service.pymspec.io.ion_list.file_loader import *
 from preprocessing.Utils import *
 import copy
 # from vlm.identification import VirtualLockMassCorrector

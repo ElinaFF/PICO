@@ -2,7 +2,7 @@ __author__='pier-luc'
 
 import logging
 
-from metabodashboard.service.pymspec import Spectrum
+from .metabodashboard.service.pymspec import Spectrum
 from Utils import *
 
 
@@ -219,7 +219,7 @@ class Real_lock_mass_corrector():
 
 if __name__ == '__main__':
     import glob
-    from metabodashboard.service.pymspec.io.ion_list.file_loader import *
+    from .metabodashboard.service.pymspec.io.ion_list.file_loader import *
 
     logging.basicConfig(level=logging.ERROR)
     logging.debug("Welcome to the RLM test suit.\n")

@@ -3,8 +3,8 @@ __author__='pier-luc'
 
 from preprocessing.Utils import *
 import numpy as np
-from metabodashboard.service.pymspec import Spectrum
-from metabodashboard.service.pymspec.spectrum import copy_spectrum_with_new_intensities
+from .metabodashboard.service.pymspec import Spectrum
+from .metabodashboard.service.pymspec.spectrum import copy_spectrum_with_new_intensities
 
 
 class Intensity_normalizer():

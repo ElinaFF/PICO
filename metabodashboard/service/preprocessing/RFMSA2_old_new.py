@@ -8,7 +8,7 @@ from itertools import chain
 import preprocessing.Utils
 import numpy as np
 import logging
-from metabodashboard.service.pymspec.spectrum import *
+from .metabodashboard.service.pymspec.spectrum import *
 import time
 
 try:
@@ -235,11 +235,11 @@ class Reference_free_aligner2():
 if __name__ == '__main__':
     import glob
     import Virtual_lock_mass
-    from metabodashboard.service.pymspec.spectrum import *
-    from metabodashboard.service.pymspec.io.ion_list.file_loader import *
+    from .metabodashboard.service.pymspec.spectrum import *
+    from .metabodashboard.service.pymspec.io.ion_list.file_loader import *
     import time
-    from metabodashboard.service.pymspec.preprocessing.common import *
-    from metabodashboard.service.pymspec.preprocessing.discrete import *
+    from .metabodashboard.service.pymspec.preprocessing.common import *
+    from .metabodashboard.service.pymspec.preprocessing.discrete import *
 
     logging.basicConfig(level=logging.DEBUG,
                         format="%(asctime)s.%(msecs)d %(levelname)s %(module)s - %(funcName)s: %(message)s")

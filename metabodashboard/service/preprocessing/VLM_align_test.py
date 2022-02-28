@@ -7,7 +7,7 @@ import logging
 import fastcluster as fc
 
 from matplotlib.pyplot import cm
-from metabodashboard.service.pymspec import Spectrum
+from .metabodashboard.service.pymspec import Spectrum
 
 from preprocessing.Utils import *
 
