@@ -23,5 +23,6 @@ setup(
         'scikit-learn',
         # 'pyMSpec @ git+https://github.com/alexandrovteam/pyMSpec',
         # 'msvlm @ git+https://github.com/francisbrochu/msvlm'
-        ]
+        ],
+    tests_require=['pytest', 'pytest-mock'],
 )
