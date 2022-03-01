@@ -6,8 +6,8 @@ import pandas as pd
 from dash import html, State, Input, Output, dash
 
 from .MetaTab import MetaTab
-from ..service.RunMLalgo import runAlgo
-from ..service.Utils import retrieve_data_from_sample_name
+from metabodashboard.service.RunMLalgo import runAlgo
+from metabodashboard.service.Utils import retrieve_data_from_sample_name
 
 
 class MLTab(MetaTab):
@@ -117,7 +117,7 @@ class MLTab(MetaTab):
              State("values_param", "value")]
         )
         def add_refresh_available_sklearn_algorithms(n, import_new, name_new, name_param, values_param):
-            sklearn_algo_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "../conf/algo_sklearn.json"))
+            sklearn_algo_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../conf/algo_sklearn.json"))
 
             if n >= 1:
                 new_algo_name = name_new
@@ -153,7 +153,7 @@ class MLTab(MetaTab):
         )
         def start_machine_learning(n, selected_algos, split_config_file, cv_folds, nbr_process):
             if n >= 1:
-                with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "../conf/algo_sklearn.json")), "r") as algo_file:
+                with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../conf/algo_sklearn.json")), "r") as algo_file:
                     algo_list = json.load(algo_file)
 
                 with open(split_config_file, "r") as conf_file:
