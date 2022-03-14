@@ -21,6 +21,7 @@ setup(
         'pandas',
         'plotly',
         'scikit-learn',
+        'umap-learn'
         # 'pyMSpec @ git+https://github.com/alexandrovteam/pyMSpec',
         # 'msvlm @ git+https://github.com/francisbrochu/msvlm'
         ],
