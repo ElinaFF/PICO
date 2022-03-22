@@ -3,10 +3,10 @@ from . import DataMatrix
 from . import ExperimentalDesign
 from .ModelFactory import ModelFactory
 
-from metabodashboard.domain import SplitGroup
-from metabodashboard.domain import MetaData
-from metabodashboard.domain import DataMatrix
-from metabodashboard.domain import ExperimentalDesign
+X_TRAIN_INDEX = 0
+X_TEST_INDEX = 1
+y_TRAIN_INDEX = 2
+y_TEST_INDEX = 3
 
 
 class MetaboExperiment:
@@ -21,7 +21,11 @@ class MetaboExperiment:
 
         self._experimental_designs = []
 
-    def setMetadata(self, metadata: MetaData):
+        self._supported_model = self._model_factory.create_supported_models()
+        self._custom_models = {}
+        self._selected_models = []
+
+    def set_metadata(self, metadata: MetaData):
         self._metadata = metadata
 
     def set_data_matrix(self, data_matrix: DataMatrix):
@@ -48,3 +52,31 @@ class MetaboExperiment:
                                "experiment: missing metadata")
         self._experimental_designs.append(ExperimentalDesign(classes_design, self._number_of_splits,
                                                              self._train_test_proportion, self._metadata))
+
+    def add_custom_model(self, model_name: str, needed_import: str, grid_search_param: dict):
+        self._custom_models[model_name] = self._model_factory.create_custom_model(model_name, needed_import, grid_search_param)
+
+    def set_selected_model(self, selected_model: list):
+        self._selected_models = selected_model
+
+    def get_model_from_name(self, model_name: str) -> MetaboModel:
+        if model_name in self._supported_model.keys():
+            return self._supported_model[model_name]
+        elif model_name in self._custom_models.keys():
+            return self._custom_models[model_name]
+        else:
+            raise RuntimeError("The model '"+model_name+"' has not been found neither in supported and custom lists.")
+
+    def learn(self):
+        for experimental_design in self._experimental_designs:
+            number_of_splits = experimental_design.get_number_of_splits()
+            result = experimental_design.get_results()
+            for split_index, split in experimental_design.all_splits:
+                split_index = str(split_index)
+                for model_name in self._selected_models:
+                    metabo_model = self.get_model_from_name(model_name)
+                    best_model = metabo_model.train(number_of_splits, split[X_TRAIN_INDEX], split[y_TRAIN_INDEX])
+                    y_train_pred = best_model.predict(split[X_TRAIN_INDEX])
+                    y_test_pred = best_model.predict(split[X_TEST_INDEX])
+                    result.add_results_from_one_algo_on_one_split(best_model, split[y_TRAIN_INDEX], y_train_pred, split[y_TEST_INDEX], y_test_pred, model_name, split_index)
+
