@@ -81,16 +81,28 @@ class Results:
 
 
     def _get_features_importance_DecisionTree(self, model):
+        """
+        retrieve features and their importance from a model to save it in the Results dict after each split
+        """
         features = model.feature_names_in_
         importances = model.feature_importances_
-        zipped = list(zip(features, importances))
+        zipped = zip(features, importances)
         #{f: importances[i] for i, f in enumerate(features)}
         return zipped
 
-    def _aggregate_features_info_DecisionTree(self):
+    def _aggregate_features_info_DecisionTree(self, algo_name):
+        """
+        When all splits are done and saved, aggregate feature info from every split to compute more stats
+        for all splits, concatenate in the same list the name of features, and another list their importance
+        """
         features = []
         times_used_all_splits = []
         importance_or_usage_or_ = []
+        for split in self.results[algo_name].keys():
+            f, i = zip(*self.results[algo_name][split]["feature_importances"])
+            features.append(f)
+            importance_or_usage_or_.append(i)
+
         return features, times_used_all_splits, importance_or_usage_or_
 
     def _get_features_importance_RandomForest(self, model):

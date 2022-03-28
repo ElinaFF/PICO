@@ -4,7 +4,7 @@ import pickle
 import sklearn
 from sklearn.model_selection import GridSearchCV
 
-
+#TODO: implement randomSearch
 class MetaboModel:
     def __init__(self, grid_search_configuration: dict, model: sklearn):
         self.grid_search_param = grid_search_configuration

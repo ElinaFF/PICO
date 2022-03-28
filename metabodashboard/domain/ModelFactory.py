@@ -5,7 +5,7 @@ import sklearn
 from .MetaboModel import MetaboModel
 from ..conf.supported_models import LEARN_CONFIG
 
-
+#TODO: deals with methods names' that are used in Results (for example), how to retrieve features/importance/etc
 class ModelFactory:
     def __init__(self):
         pass
