@@ -3,9 +3,12 @@ import dash_bootstrap_components as dbc
 
 from dash import Dash
 
+from metabodashboard.domain import MetaboController
+
 
 class MetaTab:
-    def __init__(self, app: Dash):
+    def __init__(self, app: Dash, metabo_controller: MetaboController):
+        self.metabo_controller = metabo_controller
         self.app = app
         self._registerCallbacks()
 

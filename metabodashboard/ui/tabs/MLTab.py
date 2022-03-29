@@ -151,68 +151,12 @@ class MLTab(MetaTab):
              State("in_nbr_CV_folds", "value"),
              State("in_nbr_processes", "value")]
         )
-        def start_machine_learning(n, selected_algos, split_config_file, cv_folds, nbr_process):
+        def start_machine_learning(n, selected_models, split_config_file, cv_folds, nbr_process):
             if n >= 1:
-                with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../conf/algo_sklearn.json")), "r") as algo_file:
-                    algo_list = json.load(algo_file)
-
-                with open(split_config_file, "r") as conf_file:
-                    splits_config = json.load(conf_file)
-
-                print("Splits_dict 1er element = {}".format(
-                    splits_config["Splits"][list(splits_config["Splits"].keys())[0]]))
-                print("---")
-                print("Data matrix type = {}".format(type(pd.read_json(splits_config["Data_matrix"]))))
-                print("Data matrix 2 first lines = {}".format(pd.read_json(splits_config["Data_matrix"]).iloc[:2, :5]))
-
-                # get all files : X_train files [0] and X_test files [1]
-                # all_data_files = splits_config["Splits"]["split0"][0] + splits_config["Splits"]["split0"][1]
-
-                # Check the processing needed and do it
-                # ---> with SplitProcessing class
-
-                # Then assign files to splits (create the actuals splits)
-                # ---> with SplitProcessing class
-
-                # Compute each algo for each split
-                print("---> selected_algo type = {}".format(type(selected_algos)))
-                print(selected_algos)
-                l = []
-                for a in selected_algos:
-                    print("---> a = {}".format(a))
-                    try:
-                        algo = runAlgo(algo_list[a]["function"], cv_folds, algo_list[a]["ParamGrid"],
-                                       algo_import=algo_list[a]["importing"])
-                        print("instance algo créée avec importing")
-                    except KeyError:
-                        algo = runAlgo(algo_list[a]["function"], cv_folds, algo_list[a]["ParamGrid"])
-                        print("instance algo créée sans importing")
-
-                    dataframe = pd.read_json(splits_config["Data_matrix"])
-                    for key, value in splits_config["Splits"].items():
-                        opt_list = []
-                        no = key.split("split")[-1]
-                        print("no : {}".format(no))
-                        Xtrain = retrieve_data_from_sample_name(value[0], dataframe)
-                        opt_list.append(Xtrain)
-                        Xtest = retrieve_data_from_sample_name(value[1], dataframe)
-                        opt_list.append(Xtest)
-                        opt_list.append(value[2])
-                        opt_list.append(value[3])
-                        opt_list.append(no)
-                        l.append(opt_list)
-                    print("liste l remplie")
-
-                    for i in l:
-                        print("learn {} split".format(i[-1]))
-                        algo.learn(i)
-
-                    print("finiiiiiiiii ---- !!!!!")
-
-                    # pool = Pool(int(nbr_process))
-                    # pool.map(algo.learn, l)
-
+                print("in")
+                print(selected_models)
+                self.metabo_controller.set_selected_models(selected_models)
+                self.metabo_controller.learn(int(cv_folds))
                 return "Done!"
-
             else:
                 return dash.no_update

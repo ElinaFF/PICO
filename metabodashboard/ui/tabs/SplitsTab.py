@@ -1,10 +1,9 @@
 import datetime
 import json
-import os
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, Output, Input, dash, State
+from dash import html, Output, Input, dash, State, dcc
 
 from metabodashboard.service.DataFormat import DataFormat
 from metabodashboard.service.SamplesPairing import SamplesPairing
@@ -275,6 +274,8 @@ class SplitsTab(MetaTab):
                                                     __typeGroupLink
                                                     ,
                                                     html.Br(),
+                                                    dbc.Card(id="setted_classes_container",
+                                                             style={'display': 'none'}),
                                                     dbc.FormText(
                                                         "Define labels and filter out samples."
                                                     ),
@@ -508,6 +509,7 @@ class SplitsTab(MetaTab):
                                           children=[_otherProcessing,
                                                     _generateFile
                                                     ]),
+                                 dcc.Download(id="download-save-file")
                                  ])
 
     def _registerCallbacks(self) -> None:
@@ -528,25 +530,20 @@ class SplitsTab(MetaTab):
                 return {"display": "none"}, {"display": "none"}
 
         @self.app.callback([Output("in_target_col_name", "options"),
-                       Output("in_ID_col_name", "options"),
-                       Output("output_in_case_of_error_in_path_to_metadata", "children")],
-                      [Input("in_path_to_metadata", "value")])
+                            Output("in_ID_col_name", "options"),
+                            Output("output_in_case_of_error_in_path_to_metadata", "children")],
+                           [Input("in_path_to_metadata", "value")])
         def get_metadata_cols_names_to_choose_from(path_value):
-            options_list = ["None"]
-            print(options_list)
             if path_value is None:
                 return dash.no_update
-            elif path_value.split(".")[-1] == "csv":
-                df_metadata = pd.read_csv(path_value)
-            elif "xls" in path_value.split(".")[-1] or "od" in path_value.split(".")[-1]:
-                df_metadata = pd.read_excel(path_value)
-            else:
-                return [], [], "There is a problem, the format of your metadata file might not be supported. You need to give either a .csv, .xlsX or .odX (where X replace variation of format). Ex: file.xlsx, file.odt"
 
-            options_list.extend(list(df_metadata.columns))
-            print(options_list)
-            return [{'label': col, 'value': col} for col in options_list], [{'label': col, 'value': col} for col in
-                                                                            options_list], ""
+            if self.metabo_controller.set_metadata_from_path(path_value):
+                formatted_columns = self.metabo_controller.get_formatted_columns()
+                return formatted_columns, formatted_columns, ""
+            else:
+                return [], [], "There is a problem, the format of your metadata file might not be supported. You " \
+                               "need to give either a .csv, .xlsX or .odX (where X replace variation of format). Ex: " \
+                               "file.xlsx, file.odt "
 
         @self.app.callback(
             Output("define_classes_desgn_exp", "children"),
@@ -620,19 +617,9 @@ class SplitsTab(MetaTab):
         )
         def update_possible_classes_exp_design(target_col, path_metadata):
             if target_col != 0:
-                print("target_col value is : {}".format(target_col))
-                if path_metadata is None or path_metadata == "":
-                    return [], [], "There is a problem, check if there is a file in the 'Path to metadata file' field."
-                elif path_metadata.split(".")[-1] == "csv":
-                    df_metadata = pd.read_csv(path_metadata)
-                elif "xls" in path_metadata.split(".")[-1] or "od" in path_metadata.split(".")[-1]:
-                    df_metadata = pd.read_excel(path_metadata)
-                else:
-                    return [], [], "There is a problem, the format of your metadata file might not be supported. You need to give either a .csv, .xlsY or .odY (where Y replace variation of format). Ex: file.xlsx, file.odt"
-
-                possible_targets = list(set(list(df_metadata[target_col])))
-                return [{'label': i, 'value': i} for i in possible_targets], [{'label': i, 'value': i} for i in
-                                                                              possible_targets], ""
+                self.metabo_controller.set_target_column(target_col)
+                formatted_possible_targets = self.metabo_controller.get_formatted_unique_targets()
+                return formatted_possible_targets, formatted_possible_targets, ""
             else:
                 return [], [], ""
 
@@ -640,7 +627,9 @@ class SplitsTab(MetaTab):
             [Output("class1_name", "value"),
              Output("possible_groups_for_class1", "value"),
              Output("class2_name", "value"),
-             Output("possible_groups_for_class2", "value")],
+             Output("possible_groups_for_class2", "value"),
+             Output("setted_classes_container", "children"),
+             Output("setted_classes_container", "style")],
             [Input("btn_add_design_exp", "n_clicks")],
             [State("class1_name", "value"),
              State("possible_groups_for_class1", "value"),
@@ -659,25 +648,8 @@ class SplitsTab(MetaTab):
             :return:
             """
             if n >= 1:
-                new_desgn_name = "{}_vs_{}".format(c1, c2)
-                new_desgn_classes = {c1: g1, c2: g2}
-
-                experiment_desgn_file = "temp_exp_designs.json"
-
-                if not os.path.exists(experiment_desgn_file):
-                    with open(experiment_desgn_file, "w+") as design_file:
-                        data = {}
-                        json.dump(data, design_file)
-
-                with open(experiment_desgn_file, "r+") as design_file:
-                    data = json.load(design_file)
-
-                    data[new_desgn_name] = new_desgn_classes
-
-                    design_file.seek(0)
-                    json.dump(data, design_file)
-                    design_file.truncate()
-                return "", 0, "", 0
+                self.metabo_controller.add_experimental_design({c1: g1, c2: g2})
+                return "", 0, "", 0, self._get_wrapped_experimental_designs(), {"display": "block", "padding": "1em"}
             else:
                 return dash.no_update
 
@@ -726,77 +698,24 @@ class SplitsTab(MetaTab):
             Create the file (json) which will contains all info about the split creation / data experiment.
             """
             if n >= 1:
-                date_time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-
-                # Load the asked experiment design
-                with open("temp_exp_designs.json", "r+") as design_file:
-                    dict_exp_desgn = json.load(design_file)
-
-                # Load metadata file as dataframe
-                if path_to_metadata.split(".")[-1] == "csv":
-                    df_metadata = pd.read_csv(path_to_metadata)
-                elif "xls" in path_to_metadata.split(".")[-1] or "od" in path_to_metadata.split(".")[-1]:
-                    df_metadata = pd.read_excel(path_to_metadata)
-                else:
-                    print(
-                        "There is a problem, the format of your metadata file might not be supported. You need to give either a .csv, .xlsY or .odY (where Y replace variation of format). Ex: file.xlsx, file.odt")
-
-                # Prepare data for splits creation and handle pairing
-                uniq_ID = [str(i) for i in list(df_metadata[ID_col_name])]
-                # TODO: prob de coherence entre labels du fichier metadata et ceux direct du fichier de donnees
-                targets = list(df_metadata[targets_col_name])
-
-                # Convert the data to fit the format
-                f = DataFormat(path_data_files, use_raw)
-                features_info, data, labels, sample_names = f.convert()
-
-                # Handle paired samples if need be
-                if pair_pn == [0]:
-                    pairing_pn = [pair_id_pos, pair_id_neg]
-                else:
-                    pairing_pn = "no"
-
-                if pair_12 == [0]:
-                    pairing_12 = [pair_id_1, pair_id_2]
-                else:
-                    pairing_12 = "no"
-
-                # TODO: revoir pcq gestion avec fichiers (lcs) donc pas adapter pour matrices csv LCMS
-                # Do the pairing, all handled by a class : SamplesPairing
-                # and the splits are also created at the same time
-                pairing = SamplesPairing([pairing_pn, pairing_12], sample_names, labels, uniq_ID, percent_in_test,
-                                         nbr_splits)
-                pairing.split()
-                splits_dict = pairing.dict_splits
-
-                # ---------- !!!!!! most recent : désigner les samples par leur nom, mettre un ID unique = trop complexe a gérer
-
-                # Organizing data to write to config file
-                df_metadata = df_metadata.to_dict("list")
-                opt_process = [peak_pick, align, normalize]
-
-                split_batch_info = {
-                    "Date_of_creation": date_time,
-                    "Type_of_processing": type_of_processing,
-                    "Options_of_processing": opt_process,
-                    "Nbr_splits": nbr_splits,
-                    "Nbr_processes": nbr_processes,
-                    "Proportion_in_test": percent_in_test,
-                    "Peak_threshold": peakT,
-                    "AutoOptimize_nbr": autoOpt,
-                    "Experimental_designs": dict_exp_desgn,
-                    "Pairing_pos_neg": pairing_pn,
-                    "Pairing_other": pairing_12,
-                    "Data_matrix": data.to_json(),
-                    "Splits": splits_dict,
-                    "Metadata": df_metadata,
-                    "Features_info": features_info.to_json(),
-                }
-
-                # Writing to config file
-                with open(name_of_the_file, "w+") as history_file:
-                    json.dump(split_batch_info, history_file)
+                self.metabo_controller.set_id_column(ID_col_name)
+                self.metabo_controller.set_splits_parameters(int(nbr_splits), float(percent_in_test))
+                print("oui")
                 return "The parameters file is created, the splits's creation should start shortly..."
             else:
                 return dash.no_update
-        
+
+    def _get_wrapped_experimental_designs(self):
+        children_container = [html.Div("Experimental design")]
+        for name, full_name in self.metabo_controller.all_experimental_designs_names():
+            button = dbc.Button("🞬", id=name, className="btn btn-secondary",
+                                style={"color": "grey", "font-size": "medium"})
+            # TODO: add callback for button
+            children_container.append(html.Div(children=["- " + full_name, button],
+                                               style={"display": "flex",
+                                                      "justify-content": "space-between", "align-items": "center"}))
+        return children_container
+
+
+
+
