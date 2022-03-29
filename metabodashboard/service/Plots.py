@@ -77,13 +77,15 @@ class Plots():
         """
         if "features" not in df.columns:
             raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'features' column")
-        if "importances" not in df.columns:
-            raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'importances' column")
+        if "times_used" not in df.columns:
+            raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'times_used' column")
+        if "importance_usage" not in df.columns:
+            raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'importance_usage' column")
 
         fig = go.Figure(
             data=[go.Table(
                 header=dict(values=list(df.columns)),
-                cells=dict(values=[df.features, df.importances]))
+                cells=dict(values=[df.features, df.times_used, df.importance_usage]))
             ])
         return fig.show()
 
