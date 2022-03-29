@@ -1,30 +1,39 @@
-from typing import Generator
+from typing import Generator, Tuple
 
-from . import SplitGroup, MetaData, Results
+from . import SplitGroup, MetaData
+from .Results import Results
 
 
 class ExperimentalDesign:
-    def __init__(self, classes_design: dict, number_of_splits: int, train_test_proportion: float, metadata: MetaData):
+    def __init__(self, classes_design: dict):
         self._classes_design = classes_design
         self._name = ""
         self._compute_name()
 
-        self._split_group = SplitGroup(metadata, train_test_proportion, number_of_splits, self._classes_design,
-                                       self._name)
+        self._split_group = None
 
         self._selected_models_name = None
         self._results = None
 
-    def get_name(self):
+    def set_split_parameter(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData) -> None:
+        self._split_group = SplitGroup(metadata, train_test_proportion, number_of_splits, self._classes_design,
+                                       self._name)
+
+    def get_name(self) -> str:
         return self._name
 
-    def get_classes_design(self):
+    def get_full_name(self) -> str:
+        name = []
+        for key, item_list in self._classes_design.items():
+            name.append(f"{key} ({', '.join(item_list)})")
+        return " versus ".join(name)
+
+    def get_classes_design(self) -> dict:
         return self._classes_design
 
-    def set_selected_models_name(self, selected_models_name: list):
+    def set_selected_models_name(self, selected_models_name: list) -> None:
         self._selected_models_name = selected_models_name
-        # self._results = Results(selected_models_name, self._split_group.get_number_of_splits())
-        #TODO: add result
+        self._results = Results(self._split_group.get_number_of_splits())
 
     def get_results(self) -> Results:
         if self._results is None:
@@ -40,8 +49,8 @@ class ExperimentalDesign:
     def get_number_of_splits(self) -> int:
         return self._split_group.get_number_of_splits()
 
-    def all_splits(self) -> Generator[list, None, None]:
+    def all_splits(self) -> Generator[Tuple[int, list], None, None]:
+        if self._split_group is None:
+            raise RuntimeError("Trying to access Splits before setting splits parameters")
         for split_index in range(self._split_group.get_number_of_splits()):
             yield split_index, self._split_group.load_split_with_index(split_index)
-
-

@@ -4,3 +4,4 @@ from .ExperimentalDesign import ExperimentalDesign
 from .MetaboExperiment import MetaboExperiment
 from .ModelFactory import ModelFactory
 from .Results import Results
+from .MetaboController import MetaboController

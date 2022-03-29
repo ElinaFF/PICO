@@ -1,3 +1,7 @@
+from typing import Generator, Tuple
+
+import pandas as pd
+
 from . import MetaData, MetaboModel
 from . import DataMatrix
 from . import ExperimentalDesign
@@ -19,45 +23,56 @@ class MetaboExperiment:
         self._number_of_splits = None
         self._train_test_proportion = None
 
-        self._experimental_designs = []
+        self._experimental_designs = {}
 
         self._supported_model = self._model_factory.create_supported_models()
         self._custom_models = {}
         self._selected_models = []
 
-    def set_metadata(self, metadata: MetaData):
-        self._metadata = metadata
+    def set_metadata(self, df_meta_data: pd.DataFrame):
+        self._metadata = MetaData(df_meta_data)
 
     def set_data_matrix(self, data_matrix: DataMatrix):
         self._data_matrix = data_matrix
 
-    def set_number_of_splits(self, number_of_splits: int):
+    def _update_experimental_design(self):
+        for _, experimental_design in self._experimental_designs.items():
+            experimental_design.set_split_parameter(self._train_test_proportion, self._number_of_splits, self._metadata)
+
+    def set_splits_parameters(self, number_of_splits: int, train_test_proportion: float):
         self._number_of_splits = number_of_splits
-
-    def set_train_test_proportion(self, train_test_proportion: float):
         self._train_test_proportion = train_test_proportion
+        self._update_experimental_design()
 
-    def get_experimental_designs(self) -> list:
+    def get_experimental_designs(self) -> dict:
         return self._experimental_designs
 
     def add_experimental_design(self, classes_design: dict):
-        if self._number_of_splits is None:
-            raise RuntimeError("Train test proportion, number of splits and metadata need to be set before adding an "
-                               "experiment: missing number of splits")
-        if self._train_test_proportion is None:
-            raise RuntimeError("Train test proportion, number of splits and metadata need to be set before adding an "
-                               "experiment: missing train test proportion")
-        if self._metadata is None:
-            raise RuntimeError("Train test proportion, number of splits and metadata need to be set before adding an "
-                               "experiment: missing metadata")
-        self._experimental_designs.append(ExperimentalDesign(classes_design, self._number_of_splits,
-                                                             self._train_test_proportion, self._metadata))
+        experimental_design = ExperimentalDesign(classes_design)
+        self._experimental_designs[experimental_design.get_name()] = experimental_design
+
+    def remove_experimental_design(self, name: str):
+        self._experimental_designs.pop(name)
 
     def add_custom_model(self, model_name: str, needed_import: str, grid_search_param: dict):
         self._custom_models[model_name] = self._model_factory.create_custom_model(model_name, needed_import, grid_search_param)
 
-    def set_selected_model(self, selected_model: list):
-        self._selected_models = selected_model
+    def set_selected_models(self, selected_models: list):
+        self._selected_models = selected_models
+        for _, experimental_design in self._experimental_designs.items():
+            experimental_design.set_selected_models_name(selected_models)
+
+    def get_formatted_columns(self) -> list:
+        return self._metadata.get_formatted_columns()
+
+    def set_target_column(self, target_column: str):
+        self._metadata.set_target_column(target_column)
+
+    def set_id_column(self, id_column: str):
+        self._metadata.set_id_column(id_column)
+
+    def get_formatted_unique_targets(self) -> list:
+        return self._metadata.get_formatted_unique_targets()
 
     def get_model_from_name(self, model_name: str) -> MetaboModel:
         if model_name in self._supported_model.keys():
@@ -67,15 +82,28 @@ class MetaboExperiment:
         else:
             raise RuntimeError("The model '"+model_name+"' has not been found neither in supported and custom lists.")
 
-    def learn(self):
-        for experimental_design in self._experimental_designs:
-            number_of_splits = experimental_design.get_number_of_splits()
+    def _check_experimental_design(self):
+        error_message = "Train test proportion, number of splits and metadata need to be set before start learning: "
+        if self._number_of_splits is None:
+            raise RuntimeError(error_message + "missing number of splits")
+        if self._train_test_proportion is None:
+            raise RuntimeError(error_message + "missing train test proportion")
+        if self._metadata is None:
+            raise RuntimeError(error_message + "missing metadata")
+
+    def all_experimental_designs_names(self) -> Generator[Tuple[str, str], None, None]:
+        for name, experimental_design in self._experimental_designs.items():
+            yield name, experimental_design.get_full_name()
+
+    def learn(self, folds: int):
+        self._check_experimental_design()
+        for _, experimental_design in self._experimental_designs.items():
             result = experimental_design.get_results()
-            for split_index, split in experimental_design.all_splits:
+            for split_index, split in experimental_design.all_splits():
                 split_index = str(split_index)
                 for model_name in self._selected_models:
                     metabo_model = self.get_model_from_name(model_name)
-                    best_model = metabo_model.train(number_of_splits, split[X_TRAIN_INDEX], split[y_TRAIN_INDEX])
+                    best_model = metabo_model.train(folds, split[X_TRAIN_INDEX], split[y_TRAIN_INDEX])
                     y_train_pred = best_model.predict(split[X_TRAIN_INDEX])
                     y_test_pred = best_model.predict(split[X_TEST_INDEX])
                     result.add_results_from_one_algo_on_one_split(best_model, split[y_TRAIN_INDEX], y_train_pred, split[y_TEST_INDEX], y_test_pred, model_name, split_index)
