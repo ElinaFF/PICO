@@ -1,17 +1,8 @@
-import pandas as pd
 import pytest as pytest
 
 from metabodashboard.domain.MetaData import MetaData
 
-METADATA_DATAFRAME = pd.DataFrame(data={"meta1": ["11", "12"], "meta2": ["21", "22"], "meta3": ["31", "32"]})
-FORMATTED_COLUMNS = [{"label": "None", "value": "None"}, {"label": "meta1", "value": "meta1"}, {"label": "meta2", "value": "meta2"},
-                     {"label": "meta3", "value": "meta3"}]
-TARGET_COLUMN = "meta2"
-FORMATTED_TARGETS = [{"label": "21", "value": "21"},
-                     {"label": "22", "value": "22"}]
-FORMATTED_REVERTED_TARGETS = [FORMATTED_TARGETS[1], FORMATTED_TARGETS[0]]
-
-ID_COLUMN = "meta1"
+from TestsUtility import METADATA_DATAFRAME, SAMPLES_ID_COLUMN, TARGETS_COLUMN, SAMPLES_ID, TARGETS
 
 
 @pytest.fixture
@@ -21,38 +12,29 @@ def input_meta_data():
 
 
 def testLoadMetadata(input_meta_data):
-    assert input_meta_data.loadMetadata().equals(METADATA_DATAFRAME)
+    assert input_meta_data.load_metadata().equals(METADATA_DATAFRAME)
 
 
 def testLoadColumns(input_meta_data):
-    assert input_meta_data.loadColumns() == list(METADATA_DATAFRAME.columns)
-
-
-def testGetFormattedColumns(input_meta_data):
-    assert input_meta_data.getFormattedColumns() == FORMATTED_COLUMNS
+    assert input_meta_data.load_columns() == list(METADATA_DATAFRAME.columns)
 
 
 def testLoadSamplesId(input_meta_data):
-    input_meta_data.setIdColumn(ID_COLUMN)
-    assert input_meta_data.loadSamplesId() == METADATA_DATAFRAME[ID_COLUMN].tolist()
+    input_meta_data.set_id_column(SAMPLES_ID_COLUMN)
+    assert input_meta_data.load_samples_id() == SAMPLES_ID
 
 
 def testThrowRuntimeErrorWhenLoadSamplesIdBeforeSettingIdColumn(input_meta_data):
     with pytest.raises(RuntimeError) as e_info:
-        input_meta_data.loadSamplesId()
+        input_meta_data.load_samples_id()
 
 
 def testLoadTargets(input_meta_data):
-    input_meta_data.setTargetColumn(TARGET_COLUMN)
-    assert input_meta_data.loadTargets() == METADATA_DATAFRAME[TARGET_COLUMN].tolist()
+    input_meta_data.set_target_column(TARGETS_COLUMN)
+    assert input_meta_data.load_targets() == TARGETS
 
 
 def testThrowRuntimeErrorWhenLoadTargetsBeforeSettingTargetsColumn(input_meta_data):
     with pytest.raises(RuntimeError) as e_info:
-        input_meta_data.loadTargets()
+        input_meta_data.load_targets()
 
-
-def testGetUniqueFormattedTargets(input_meta_data):
-    input_meta_data.setTargetColumn(TARGET_COLUMN)
-    actual_formatted_targets = input_meta_data.getFormattedUniqueTargets()
-    assert actual_formatted_targets == FORMATTED_TARGETS or actual_formatted_targets == FORMATTED_REVERTED_TARGETS
