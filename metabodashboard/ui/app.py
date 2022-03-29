@@ -4,6 +4,7 @@ import dash
 import dash_bootstrap_components as dbc
 
 from .tabs import *
+from ..domain import MetaboController
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX], meta_tags=[{"name": "viewport", "content": "width=device-width"}])
 server = app.server
@@ -14,11 +15,12 @@ app.css.append_css({
     "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
 })
 
-infoTab = InfoTab(app)
-splitsTab = SplitsTab(app)
-mLTab = MLTab(app)
-resultsTab = ResultsTab(app)
-interpretTab = InterpretTab(app)
+metabo_controller = MetaboController()
+infoTab = InfoTab(app, metabo_controller)
+splitsTab = SplitsTab(app, metabo_controller)
+mLTab = MLTab(app, metabo_controller)
+resultsTab = ResultsTab(app, metabo_controller)
+interpretTab = InterpretTab(app, metabo_controller)
 
 
 app.layout = html.Div(id="page", children=[
