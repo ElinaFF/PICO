@@ -13,7 +13,7 @@ class ExperimentalDesign:
         self._split_group = None
 
         self._selected_models_name = None
-        self._results = None
+        self.results = None
 
     def set_split_parameter(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData) -> None:
         self._split_group = SplitGroup(metadata, train_test_proportion, number_of_splits, self._classes_design,
@@ -33,17 +33,17 @@ class ExperimentalDesign:
 
     def set_selected_models_name(self, selected_models_name: list) -> None:
         self._selected_models_name = selected_models_name
-        #TODO : un genre d'emballage de classe results pour pouvoir appeler juste un nom de classe
+        # TODO : un genre d'emballage de classe results pour pouvoir appeler juste un nom de classe
         for n in self._selected_models_name:
             if n == "RandomForest":
-                self._results[n] = ResultsRF(self._split_group.get_number_of_splits())
+                self.results[n] = ResultsRF(self._split_group.get_number_of_splits())
             elif n == "DecisionTree":
-                self._results[n] = ResultsDT(self._split_group.get_number_of_splits())
+                self.results[n] = ResultsDT(self._split_group.get_number_of_splits())
 
     def get_results(self) -> Results:
-        if self._results is None:
+        if self.results is None:
             raise RuntimeError("The name of the selected models has to be set before accessing results.")
-        return self._results
+        return self.results
 
     def _compute_name(self) -> None:
         class_list = self._classes_design.keys()

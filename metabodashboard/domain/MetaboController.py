@@ -3,8 +3,8 @@ from typing import Generator, Tuple
 import pandas as pd
 
 from metabodashboard.domain import MetaboExperiment
-from metabodashboard.service import Plots
-from Results import *
+from ..service import Plots
+from .Results import *
 
 
 class MetaboController:
@@ -12,12 +12,16 @@ class MetaboController:
         self._metabo_experiment = MetaboExperiment()
         self._plots = Plots("blues")
 
-    def set_metadata_from_path(self, path: str) -> bool:
+    def set_metadata(self) -> bool:
+
+        return self._metabo_experiment.set_metadata()
+
+    def set_metadata_dataframe_from_path(self, path: str):
         if path.split(".")[-1] == "csv":
-            self._metabo_experiment.set_metadata(pd.read_csv(path, sep=";"))
+            self._metabo_experiment.set_metadata_with_dataframe(pd.read_csv(path, sep=";"))
             return True
         if "xls" in path.split(".")[-1] or "od" in path.split(".")[-1]:
-            self._metabo_experiment.set_metadata(pd.read_excel(path))
+            self._metabo_experiment.set_metadata_with_dataframe(pd.read_excel(path))
             return True
         return False
 
@@ -58,25 +62,28 @@ class MetaboController:
         self._metabo_experiment.learn(folds)
 
     def show_exp_info_all(self, df: pd.DataFrame):
-        return self.plots.show_exp_info_all(df)
+        return self._plots.show_exp_info_all(df)
 
-    def produce_exp_info(self, design_name: str):
-        return self._metabo_experiment._experimental_designs[design_name]._results[].results["info_expe"]
+    def produce_exp_info(self, design_name: str, algo: str):
+        return self._metabo_experiment.experimental_designs[design_name].results[algo].results["info_expe"]
 
     def show_accuracy_all(self, df: pd.DataFrame):
-        return self.plots.show_accuracy_all(df)
+        return self._plots.show_accuracy_all(df)
 
-    def produce_accuracy_plot_all(self, design_name: str, algo:str):
-        return self._metabo_experiment._experimental_designs[design_name]._results[algo].produce_accuracy_plot_all()
+    def produce_accuracy_plot_all(self, design_name: str, algo: str):
+        # TODO: méthode get_accuracy_plot_all(design_name: str, algo:str)
+        return self._metabo_experiment.experimental_designs[design_name].results[algo].produce_accuracy_plot_all()
 
     def show_features_selection(self, df: pd.DataFrame):
-        return self.plots.show_features_selection(df)
+        return self._plots.show_features_selection(df)
 
-    def produce_features_importance_table(self, design_name: str, algo:str):
-        return self._metabo_experiment._experimental_designs[design_name]._results[algo].produce_features_importance_table()
+    def produce_features_importance_table(self, design_name: str, algo: str):
+        return self._metabo_experiment.experimental_designs[design_name].results[
+            algo].produce_features_importance_table()
 
     def show_umap(self, df: pd.DataFrame):
-        return self.plots.show_umap_2D(df)
+        return self._plots.show_umap_2D(df)
 
-    def produce_umap(self, design_name: str, algo:str):
-        return self._metabo_experiment._experimental_designs[design_name]._results[algo].produce_features_importance_table()
+    def produce_umap(self, design_name: str, algo: str):
+        return self._metabo_experiment.experimental_designs[design_name].results[
+            algo].produce_features_importance_table()

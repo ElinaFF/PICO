@@ -3,3 +3,4 @@ from .DataFormat import DataFormat
 from .RunMLalgo import runAlgo
 from .SamplesPairing import SamplesPairing
 from .Utils import *
+from .Plots import Plots

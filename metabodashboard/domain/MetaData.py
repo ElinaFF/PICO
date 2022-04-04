@@ -13,9 +13,11 @@ DUMP_TARGETS_PATH = os.path.join(DUMP_PATH, "targets.p")
 
 
 class MetaData:
-    def __init__(self,  path_to_metadata: str):
-        self.path_metadata = path_to_metadata
-        self.metadata = None
+    def __init__(self, metadata_dataframe: pd.DataFrame = None):
+
+        if metadata_dataframe:
+            self.save_metadata(metadata_dataframe)
+
         self._id_column = None
         self._target_column = None
 

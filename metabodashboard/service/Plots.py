@@ -7,7 +7,7 @@ import umap
 
 
 class Plots():
-    def __init__(self, colors, y_train_true: list, y_train_pred: list, y_test_true: list, y_test_pred: list):
+    def __init__(self, colors: str):
         self.colors = colors
 
     def show_algo_comparison_by_heatmap(self):

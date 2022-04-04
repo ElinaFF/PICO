@@ -23,20 +23,23 @@ class MetaboExperiment:
         self._number_of_splits = None
         self._train_test_proportion = None
 
-        self._experimental_designs = {}
+        self.experimental_designs = {}
 
         self._supported_model = self._model_factory.create_supported_models()
         self._custom_models = {}
         self._selected_models = []
 
-    def set_metadata(self, df_meta_data: pd.DataFrame):
-        self._metadata = MetaData(df_meta_data)
+    def set_metadata(self):
+        self._metadata = MetaData()
+
+    def set_metadata_with_dataframe(self, metadata_dataframe: pd.DataFrame):
+        self._metadata = MetaData(metadata_dataframe)
 
     def set_data_matrix(self, path_data_matrix: str, use_raw: bool):
         self._data_matrix.read_format_and_store_data(path_data_matrix, use_raw)
 
     def _update_experimental_design(self):
-        for _, experimental_design in self._experimental_designs.items():
+        for _, experimental_design in self.experimental_designs.items():
             experimental_design.set_split_parameter(self._train_test_proportion, self._number_of_splits, self._metadata)
 
     def set_splits_parameters(self, number_of_splits: int, train_test_proportion: float):
@@ -45,21 +48,21 @@ class MetaboExperiment:
         self._update_experimental_design()
 
     def get_experimental_designs(self) -> dict:
-        return self._experimental_designs
+        return self.experimental_designs
 
     def add_experimental_design(self, classes_design: dict):
         experimental_design = ExperimentalDesign(classes_design)
-        self._experimental_designs[experimental_design.get_name()] = experimental_design
+        self.experimental_designs[experimental_design.get_name()] = experimental_design
 
     def remove_experimental_design(self, name: str):
-        self._experimental_designs.pop(name)
+        self.experimental_designs.pop(name)
 
     def add_custom_model(self, model_name: str, needed_import: str, grid_search_param: dict):
         self._custom_models[model_name] = self._model_factory.create_custom_model(model_name, needed_import, grid_search_param)
 
     def set_selected_models(self, selected_models: list):
         self._selected_models = selected_models
-        for _, experimental_design in self._experimental_designs.items():
+        for _, experimental_design in self.experimental_designs.items():
             experimental_design.set_selected_models_name(selected_models)
 
     def get_formatted_columns(self) -> list:
@@ -92,13 +95,13 @@ class MetaboExperiment:
             raise RuntimeError(error_message + "missing metadata")
 
     def all_experimental_designs_names(self) -> Generator[Tuple[str, str], None, None]:
-        for name, experimental_design in self._experimental_designs.items():
+        for name, experimental_design in self.experimental_designs.items():
             yield name, experimental_design.get_full_name()
 
     def learn(self, folds: int):
         self._check_experimental_design()
         self._data_matrix.load_data()
-        for _, experimental_design in self._experimental_designs.items():
+        for _, experimental_design in self.experimental_designs.items():
             result = experimental_design.get_results()
             for split_index, split in experimental_design.all_splits():
                 x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(split[X_TRAIN_INDEX])

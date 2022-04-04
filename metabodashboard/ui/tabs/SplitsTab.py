@@ -537,7 +537,7 @@ class SplitsTab(MetaTab):
             if path_value is None:
                 return dash.no_update
 
-            if self.metabo_controller.set_metadata_from_path(path_value):
+            if self.metabo_controller.set_metadata_dataframe_from_path(path_value):
                 formatted_columns = self.metabo_controller.get_formatted_columns()
                 return formatted_columns, formatted_columns, ""
             else:
