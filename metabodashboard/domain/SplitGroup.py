@@ -4,6 +4,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 
 from metabodashboard.domain import MetaData
+from metabodashboard.service import Utils
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
@@ -20,9 +21,7 @@ class SplitGroup:
 
     def _load_classes(self):
         targets = self._metadata.load_targets()
-        reverse_classes_design = {target: class_
-                                  for class_, target_list in self._classes_design.items()
-                                  for target in target_list}
+        reverse_classes_design = Utils.reverse_dict(self._classes_design)
         classes = []
         for target in targets:
             classes.append(reverse_classes_design[target])

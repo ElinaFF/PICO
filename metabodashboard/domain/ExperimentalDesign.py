@@ -13,7 +13,7 @@ class ExperimentalDesign:
         self._split_group = None
 
         self._selected_models_name = None
-        self.results = None
+        self.results = {}
 
     def set_split_parameter(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData) -> None:
         self._split_group = SplitGroup(metadata, train_test_proportion, number_of_splits, self._classes_design,
@@ -33,6 +33,8 @@ class ExperimentalDesign:
 
     def set_selected_models_name(self, selected_models_name: list) -> None:
         self._selected_models_name = selected_models_name
+        if self._split_group is None:
+            raise RuntimeError("Trying to set models before setting splits parameters")
         # TODO : un genre d'emballage de classe results pour pouvoir appeler juste un nom de classe
         for n in self._selected_models_name:
             if n == "RandomForest":

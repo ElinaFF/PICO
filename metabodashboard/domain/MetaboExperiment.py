@@ -3,7 +3,7 @@ from typing import Generator, Tuple
 import pandas as pd
 
 from . import MetaData, MetaboModel
-from . import DataMatrix
+from .DataMatrix import DataMatrix
 from . import ExperimentalDesign
 from .ModelFactory import ModelFactory
 
@@ -17,7 +17,7 @@ class MetaboExperiment:
     def __init__(self):
         self._model_factory = ModelFactory()
 
-        self._data_matrix = DataMatrix
+        self._data_matrix = DataMatrix()
         self._metadata = None
 
         self._number_of_splits = None
@@ -43,6 +43,7 @@ class MetaboExperiment:
             experimental_design.set_split_parameter(self._train_test_proportion, self._number_of_splits, self._metadata)
 
     def set_splits_parameters(self, number_of_splits: int, train_test_proportion: float):
+        # TODO : ATTENTION : ajouter update experimental design dans add experimental design
         self._number_of_splits = number_of_splits
         self._train_test_proportion = train_test_proportion
         self._update_experimental_design()

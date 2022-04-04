@@ -169,3 +169,14 @@ def get_group_to_class(classes):
         for subgroup in classes[class_name]:
             group_to_class[subgroup] = class_name
     return group_to_class
+
+
+def reverse_dict(dictionnary: dict) -> dict:
+    reversed_dict = {}
+    for key, value in dictionnary.items():
+        if type(value) is list:
+            for val in value:
+                reversed_dict[val] = key
+        else:
+            reversed_dict[value] = key
+    return reversed_dict

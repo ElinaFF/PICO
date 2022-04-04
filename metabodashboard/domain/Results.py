@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from abc import abstractmethod
+
+import sklearn
 from sklearn.metrics import accuracy_score, confusion_matrix
 from collections import Counter
 
@@ -12,7 +14,7 @@ class Results:
     """
     def __init__(self, splits_number: int):
         self.splits_number = [str(s) for s in range(splits_number)]
-        self.results = {s: None for s in self.splits_number}
+        self.results = {s: {} for s in self.splits_number}
 
     @abstractmethod
     def _get_features_importance(self, model):

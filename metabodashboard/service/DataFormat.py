@@ -30,8 +30,9 @@ class DataFormat:
     def _convert_from_LCMS(self):
         file_ext = self.inpath.split(".")[-1]
         if "csv" in file_ext:
-            header = pd.read_csv(self.inpath, header=None, sep=";", nrows=3, index_col=0).fillna('').to_numpy()
-            datatable = pd.read_csv(self.inpath, header=[0, 1, 2], sep=";", index_col=0)
+            # TODO : beware of the sep (, or ;)
+            header = pd.read_csv(self.inpath, header=None, sep=",", nrows=3, index_col=0).fillna('').to_numpy()
+            datatable = pd.read_csv(self.inpath, header=[0, 1, 2], sep=",", index_col=0)
         elif "xls" in file_ext or "od" in file_ext:  #TODO : restrict the "od" condition, might be too large
             datatable = pd.read_excel(self.inpath, header=2, index_col=0)
             header = pd.read_excel(self.inpath, nrows=1, index_col=0)
@@ -49,6 +50,7 @@ class DataFormat:
         :param datatable:
         :return:
         """
+        print(header)
         if not self.use_raw and "Normalised abundance" in header[0]:  #header.columns.tolist():
             start_data = list(header[0]).index("Normalised abundance")
         elif self.use_raw and "Raw abundance" in header[0]:  #header.columns.tolist():

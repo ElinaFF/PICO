@@ -6,7 +6,7 @@ import pandas as pd
 from metabodashboard.service import DataFormat
 
 ROOT_PATH = os.path.dirname(__file__)
-DUMP_PATH = os.path.join(ROOT_PATH, "dump")
+DUMP_PATH = os.path.join(ROOT_PATH, "dumps")
 DUMP_DATA_MATRIX_PATH = os.path.join(DUMP_PATH, "datamatrix.p")
 
 
@@ -15,8 +15,8 @@ class DataMatrix:
         # TODO : implémenter test format de matrice (progenesis -> ML ready)
         self.data = None
 
-    def read_format_and_store_data(self, path, is_raw):
-        data_df = self._load_and_format_from_progenesis(path, is_raw)
+    def read_format_and_store_data(self, path: str, use_raw: bool):
+        data_df = self._load_and_format_from_progenesis(path, use_raw)
 
         with open(DUMP_DATA_MATRIX_PATH, "w+b") as data_matrix_file:
             pickle.dump(data_df, data_matrix_file)
@@ -43,6 +43,6 @@ class DataMatrix:
         """
         if self.data is None:
             raise RuntimeError("Need to load data from file before extracting specific samples")
-        df = self.data.loc[:, id_list]
-        return df.T
+        df = self.data.loc[id_list, :]
+        return df
 

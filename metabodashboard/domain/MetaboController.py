@@ -16,12 +16,14 @@ class MetaboController:
 
         return self._metabo_experiment.set_metadata()
 
+    # TODO: Déplacer dans metaboexperiment
     def set_metadata_dataframe_from_path(self, path: str):
         if path.split(".")[-1] == "csv":
             self._metabo_experiment.set_metadata_with_dataframe(pd.read_csv(path, sep=";"))
             return True
         if "xls" in path.split(".")[-1] or "od" in path.split(".")[-1]:
-            self._metabo_experiment.set_metadata_with_dataframe(pd.read_excel(path))
+            # TODO: WARNING -> no na filter at all
+            self._metabo_experiment.set_metadata_with_dataframe(pd.read_excel(path, na_filter=False))
             return True
         return False
 
