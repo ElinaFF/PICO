@@ -40,7 +40,7 @@ app.layout = html.Div(id="page", children=[
                          splitsTab.getLayout(),
                          mLTab.getLayout(),
                          resultsTab.getLayout(),
-                         interpretTab.getLayout()
+                         #interpretTab.getLayout()
                      ]
                      )
         ]),

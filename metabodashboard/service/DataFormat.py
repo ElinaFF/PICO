@@ -12,6 +12,7 @@ class DataFormat:
         self.use_raw = use_raw
         self.inpath = path_to_data
 
+        #TODO : make sure to handle the situation where the data file/data matrix is not from progenesis
         if os.path.isfile(path_to_data):
             self.in_format = "LCMS"
         elif os.path.isdir(path_to_data):

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from abc import abstractmethod
 from sklearn.metrics import accuracy_score, confusion_matrix
 from collections import Counter
 
@@ -13,18 +14,20 @@ class Results:
         self.splits_number = [str(s) for s in range(splits_number)]
         self.results = {s for s in self.splits_number}
 
+    @abstractmethod
     def _get_features_importance(self, model):
         """
         retrieve features and their importance from a model to save it in the Results dict after each split
         """
-        return
+        pass
 
+    @abstractmethod
     def _aggregate_features_info(self):
         """
         When all splits are done and saved, aggregate feature info from every split to compute stats
         from all splits, concatenate in the same list the name of features, and another list their importance
         """
-        return
+        pass
 
     def add_results_from_one_algo_on_one_split(self, model, y_train_true: list, y_train_pred: list,
                                                y_test_true: list, y_test_pred: list, algo_name: str, split_number: str):
@@ -125,8 +128,6 @@ class ResultsDT(Results):
     Has results of all algorithms for all splits on one experimental design (so almost only numbers/floats/ints).
     Can be kept in RAM as it is not supposed to be too big, and prevents the reading/writing of models and splits files.
     """
-    def __init__(self):
-        pass
 
     def _get_features_importance(self, model):
         """
@@ -165,8 +166,6 @@ class ResultsRF(Results):
     Has results of all algorithms for all splits on one experimental design (so almost only numbers/floats/ints).
     Can be kept in RAM as it is not supposed to be too big, and prevents the reading/writing of models and splits files.
     """
-    def __init__(self):
-        pass
 
     def _get_features_importance(self, model):
         features = []

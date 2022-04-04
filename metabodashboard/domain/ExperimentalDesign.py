@@ -1,7 +1,7 @@
 from typing import Generator, Tuple
 
 from . import SplitGroup, MetaData
-from .Results import Results
+from .Results import *
 
 
 class ExperimentalDesign:
@@ -33,7 +33,12 @@ class ExperimentalDesign:
 
     def set_selected_models_name(self, selected_models_name: list) -> None:
         self._selected_models_name = selected_models_name
-        self._results = Results(self._split_group.get_number_of_splits())
+        #TODO : un genre d'emballage de classe results pour pouvoir appeler juste un nom de classe
+        for n in self._selected_models_name:
+            if n == "RandomForest":
+                self._results[n] = ResultsRF(self._split_group.get_number_of_splits())
+            elif n == "DecisionTree":
+                self._results[n] = ResultsDT(self._split_group.get_number_of_splits())
 
     def get_results(self) -> Results:
         if self._results is None:

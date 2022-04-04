@@ -3,20 +3,26 @@ from typing import Generator, Tuple
 import pandas as pd
 
 from metabodashboard.domain import MetaboExperiment
+from metabodashboard.service import Plots
+from Results import *
 
 
 class MetaboController:
     def __init__(self):
         self._metabo_experiment = MetaboExperiment()
+        self._plots = Plots("blues")
 
     def set_metadata_from_path(self, path: str) -> bool:
         if path.split(".")[-1] == "csv":
-            self._metabo_experiment.set_metadata(pd.read_csv(path))
+            self._metabo_experiment.set_metadata(pd.read_csv(path, sep=";"))
             return True
         if "xls" in path.split(".")[-1] or "od" in path.split(".")[-1]:
             self._metabo_experiment.set_metadata(pd.read_excel(path))
             return True
         return False
+
+    def set_data_matrix_from_path(self, path_data_matrix, use_raw):
+        return self._metabo_experiment.set_data_matrix(path_data_matrix, use_raw)
 
     def get_formatted_columns(self) -> list:
         return self._metabo_experiment.get_formatted_columns()
@@ -50,3 +56,27 @@ class MetaboController:
 
     def learn(self, folds: int):
         self._metabo_experiment.learn(folds)
+
+    def show_exp_info_all(self, df: pd.DataFrame):
+        return self.plots.show_exp_info_all(df)
+
+    def produce_exp_info(self, design_name: str):
+        return self._metabo_experiment._experimental_designs[design_name]._results[].results["info_expe"]
+
+    def show_accuracy_all(self, df: pd.DataFrame):
+        return self.plots.show_accuracy_all(df)
+
+    def produce_accuracy_plot_all(self, design_name: str, algo:str):
+        return self._metabo_experiment._experimental_designs[design_name]._results[algo].produce_accuracy_plot_all()
+
+    def show_features_selection(self, df: pd.DataFrame):
+        return self.plots.show_features_selection(df)
+
+    def produce_features_importance_table(self, design_name: str, algo:str):
+        return self._metabo_experiment._experimental_designs[design_name]._results[algo].produce_features_importance_table()
+
+    def show_umap(self, df: pd.DataFrame):
+        return self.plots.show_umap_2D(df)
+
+    def produce_umap(self, design_name: str, algo:str):
+        return self._metabo_experiment._experimental_designs[design_name]._results[algo].produce_features_importance_table()

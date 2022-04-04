@@ -18,6 +18,7 @@ class Plots():
         umap_2d = umap.UMAP(n_components=2, init='random', random_state=13)
         return umap_2d.fit_transform(x)
 
+    #TODO : faire la sauvegarde dans results des resultats de heatmap pour pouvoir sortir la figure
     def show_umap_2D(self, X: pd.DataFrame):
         umap_data = self._produce_UMAP_2D(X)
         fig_2d = px.scatter(
@@ -81,11 +82,13 @@ class Plots():
             raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'times_used' column")
         if "importance_usage" not in df.columns:
             raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'importance_usage' column")
+        #TODO : sort data by times_used or importance, and take only top 10-20 to display
 
         fig = go.Figure(
             data=[go.Table(
                 header=dict(values=list(df.columns)),
-                cells=dict(values=[df.features, df.times_used, df.importance_usage]))
+                cells=dict(values=[df.iloc[:10, :].features, df.iloc[:10, :].times_used,
+                                   df.iloc[:10, :].importance_usage]))
             ])
         return fig.show()
 
@@ -102,3 +105,23 @@ class Plots():
         And show the intensity of this metabolite/ this feature in each class (one box per class)
         """
         return
+
+# def show_info_exp ancienne
+#with open("testest", "r") as conf_file:
+#    splits_config = json.load(conf_file)
+
+#splits_dict = splits_config["Splits"]
+#nbr_in_train = len(splits_dict["split0"][0])
+#nbr_in_test = len(splits_dict["split0"][1])
+#nbr_tot = nbr_in_train + nbr_in_test
+#classes_train = splits_dict["split0"][2]
+#classes_tot = classes_train.extend(splits_dict["split0"][3])
+#count_per_class = Counter(classes_tot)
+
+#row1 = html.Tr([html.Td("Total number of samples"), html.Td(str(nbr_tot))])
+#row2 = html.Tr([html.Td("Number of samples in train"), html.Td(str(nbr_in_train))])
+#row3 = html.Tr([html.Td("Number of samples in test"), html.Td(str(nbr_in_test))])
+## row4 = html.Tr([html.Td(list(count_per_class.keys())[0]), html.Td("Astra")])
+
+#table_body = [html.Tbody([row1, row2, row3])]
+#table = dbc.Table(table_body, id="table_exp_info", borderless=True, hover=True)

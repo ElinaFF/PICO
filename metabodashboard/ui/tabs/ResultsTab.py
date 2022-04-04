@@ -103,22 +103,9 @@ class ResultsTab(MetaTab):
                         "Feature": [],
                         "Number of models": []
                     }),
-                    id="overview_table",
+                    id="features_table",
                     striped=True, bordered=True,
                     hover=True)
-                # ,dash_table.DataTable(
-                #     id="overview_table",
-                #     columns=[{"name": i, "id": i} for i in ["Feature", "Number of models"]],
-                #     style_table={
-                #         'maxHeight': '300px',
-                #         'overflowY': 'scroll'
-                #     },
-                #     style_as_list_view=True,
-                #     style_cell={
-                #         'padding': '5px',
-                #         "textAlign": "center"
-                #     },
-                # )
             ),
         ])
 
@@ -392,30 +379,13 @@ class ResultsTab(MetaTab):
 
         @self.app.callback(
             Output("view_info", "children"),
-            [Input("custom_big_tabs", "active_tab")]
+            [Input("custom_big_tabs", "active_tab")],
+            [State("design_dropdown", "value")]
         )
-        def get_experiment_statistics(active):
+        def get_experiment_statistics(active, design_name):
             if active == "tab-3":
-                with open("testest", "r") as conf_file:
-                    splits_config = json.load(conf_file)
-
-                splits_dict = splits_config["Splits"]
-                nbr_in_train = len(splits_dict["split0"][0])
-                nbr_in_test = len(splits_dict["split0"][1])
-                nbr_tot = nbr_in_train + nbr_in_test
-                classes_train = splits_dict["split0"][2]
-                classes_tot = classes_train.extend(splits_dict["split0"][3])
-                count_per_class = Counter(classes_tot)
-
-                row1 = html.Tr([html.Td("Total number of samples"), html.Td(str(nbr_tot))])
-                row2 = html.Tr([html.Td("Number of samples in train"), html.Td(str(nbr_in_train))])
-                row3 = html.Tr([html.Td("Number of samples in test"), html.Td(str(nbr_in_test))])
-                # row4 = html.Tr([html.Td(list(count_per_class.keys())[0]), html.Td("Astra")])
-
-                table_body = [html.Tbody([row1, row2, row3])]
-                table = dbc.Table(table_body, id="table_exp_info", borderless=True, hover=True)
-
-                return table
+                df = self.metabo_controller.produce_exp_info(design_name)
+                return self.metabo_controller.show_exp_info_all(df)
             else:
                 return dash.no_update
 
@@ -425,52 +395,40 @@ class ResultsTab(MetaTab):
             [State("ml_dropdown", "value"),
              State("design_dropdown", "value")]
         )
-        def generates_accuracyPlot_global(n_clicks, ml_dropdown, design_dropdown):
+        def generates_accuracyPlot_global(n_clicks, ml_dropdown, design_name):
             if n_clicks >= 1:
-                rez_files = glob.glob(os.path.join("Results", design_dropdown + "_*_" + ml_dropdown + ".pkl"))
+                df = self.metabo_controller.produce_accuracy_plot_all(design_name, ml_dropdown)
+                return self.metabo_controller.show_accuracy_all(df)
+            else:
+                return dash.no_update
 
-                acc_train = []
-                acc_test = []
-                for file in rez_files:
-                    with open(file, "rb") as f:
-                        GS_rez = pkl.load(f)
-                        train_predict = pkl.load(f)
-                        test_predict = pkl.load(f)
-                        train_targets = pkl.load(f)
-                        test_targets = pkl.load(f)
+        @self.app.callback(
+            [
+                Output("features_table", "children"),
+                Output("output_button_load_ML_results", "children")],
+            [Input("load_ML_results_button", "n_clicks")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")]
+        )
+        def show_features(n_clicks, ml_dropdown, design_name):
+            if n_clicks >= 1:
+                df = self.metabo_controller.produce_features_importance_table(design_name, ml_dropdown)
+                return self.metabo_controller.show_features_selection(df), ""
+            else:
+                return dash.no_update
 
-                    acc_train.append(accuracy_score(train_targets, train_predict) * 100)
-                    acc_test.append(accuracy_score(test_targets, test_predict) * 100)
-
-                acc_fig = go.Figure()
-                x_axis = [str(i) for i in range(len(acc_train))]
-
-                acc_fig.add_trace(
-                    go.Scatter(
-                        x=x_axis,
-                        y=acc_train,
-                        mode="lines+markers",
-                        name="Train accuracies"
-                    )
-                )
-
-                acc_fig.add_trace(
-                    go.Scatter(
-                        x=x_axis,
-                        y=acc_test,
-                        mode="lines+markers",
-                        marker_symbol="diamond",
-                        name="Test accuracies"
-                    )
-                )
-
-                acc_fig.update_layout(
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    xaxis_title="Splits",
-                    yaxis_title="Accuracy (%)"
-                )
-
-                return acc_fig
+        @self.app.callback(
+            [
+                Output("umap_overview", "figure"),
+                Output("output_button_load_ML_results", "children")],
+            [Input("load_ML_results_button", "n_clicks")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")]
+        )
+        def show_umap(n_clicks, ml_dropdown, design_name):
+            if n_clicks >= 1:
+                df = self.metabo_controller.produce_features_importance_table(design_name, ml_dropdown)
+                return self.metabo_controller.show_features_selection(df), ""
             else:
                 return dash.no_update
 

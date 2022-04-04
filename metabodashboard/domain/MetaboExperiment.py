@@ -17,7 +17,7 @@ class MetaboExperiment:
     def __init__(self):
         self._model_factory = ModelFactory()
 
-        self._data_matrix = None
+        self._data_matrix = DataMatrix
         self._metadata = None
 
         self._number_of_splits = None
@@ -32,8 +32,8 @@ class MetaboExperiment:
     def set_metadata(self, df_meta_data: pd.DataFrame):
         self._metadata = MetaData(df_meta_data)
 
-    def set_data_matrix(self, data_matrix: DataMatrix):
-        self._data_matrix = data_matrix
+    def set_data_matrix(self, path_data_matrix: str, use_raw: bool):
+        self._data_matrix.read_format_and_store_data(path_data_matrix, use_raw)
 
     def _update_experimental_design(self):
         for _, experimental_design in self._experimental_designs.items():
@@ -97,14 +97,19 @@ class MetaboExperiment:
 
     def learn(self, folds: int):
         self._check_experimental_design()
+        self._data_matrix.load_data()
         for _, experimental_design in self._experimental_designs.items():
             result = experimental_design.get_results()
             for split_index, split in experimental_design.all_splits():
-                split_index = str(split_index)
+                x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(split[X_TRAIN_INDEX])
+                x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(split[X_TEST_INDEX])
                 for model_name in self._selected_models:
                     metabo_model = self.get_model_from_name(model_name)
-                    best_model = metabo_model.train(folds, split[X_TRAIN_INDEX], split[y_TRAIN_INDEX])
-                    y_train_pred = best_model.predict(split[X_TRAIN_INDEX])
-                    y_test_pred = best_model.predict(split[X_TEST_INDEX])
-                    result.add_results_from_one_algo_on_one_split(best_model, split[y_TRAIN_INDEX], y_train_pred, split[y_TEST_INDEX], y_test_pred, model_name, split_index)
+                    best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX])
+                    y_train_pred = best_model.predict(x_train)
+                    y_test_pred = best_model.predict(x_test)
+                    result[model_name].add_results_from_one_algo_on_one_split(best_model, split[y_TRAIN_INDEX], y_train_pred,
+                                                                              split[y_TEST_INDEX], y_test_pred, model_name,
+                                                                              str(split_index))
+        self._data_matrix.data = None
 

@@ -13,15 +13,18 @@ DUMP_TARGETS_PATH = os.path.join(DUMP_PATH, "targets.p")
 
 
 class MetaData:
-    def __init__(self, df_meta_data: pd.DataFrame):
+    def __init__(self,  path_to_metadata: str):
+        self.path_metadata = path_to_metadata
+        self.metadata = None
+        self._id_column = None
+        self._target_column = None
+
+    def save_metadata(self, df_meta_data: pd.DataFrame):
         with open(DUMP_METADATA_PATH, "w+b") as metadata_file:
             pickle.dump(df_meta_data, metadata_file)
 
         with open(DUMP_METADATA_COLUMNS_PATH, "w+b") as metadata_file:
             pickle.dump(list(df_meta_data.columns), metadata_file)
-
-        self._id_column = None
-        self._target_column = None
 
     def load_metadata(self) -> pd.DataFrame:
         with open(DUMP_METADATA_PATH, "rb") as metadata_file:
@@ -37,6 +40,7 @@ class MetaData:
 
     def get_formatted_unique_targets(self) -> List[dict]:
         targets = self.load_metadata()[self._target_column]
+        print("MetaData -> get_formatted_unique_targets : print self._target_column = {}".format(self._target_column))
         possible_targets = list(set(targets))
         return [{'label': target, 'value': target} for target in possible_targets]
 
