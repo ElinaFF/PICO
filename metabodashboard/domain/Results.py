@@ -42,6 +42,7 @@ class Results:
         graphique pour l'onglet résultat
         X : entièreté du dataset (autant train que test) c'est simplement pour voir le clustering de tous les individus
         """
+        print(algo_name)
         self.results[split_number]["train_accuracy"] = accuracy_score(y_train_true, y_train_pred)
         self.results[split_number]["test_accuracy"] = accuracy_score(y_test_true, y_test_pred)
         self.results[split_number]["feature_importances"] = self._get_features_importance(model)
@@ -58,13 +59,13 @@ class Results:
         """
         self.f_names = list(x.columns)
 
-    def __format_name_and_associated_values(self, names, values):
+    def format_name_and_associated_values(self, names, values):
         """
         from a Counter dict, modify
         """
         count = Counter(names)
         for n in count.keys():
-            count[n] = list(count[n])
+            count[n] = [count[n]]
             liste_val = []
             for idx, j in enumerate(names):
                 if n == j:
@@ -157,13 +158,14 @@ class ResultsDT(Results):
         features = []
         imp = []
         # Get values of all splits in two lists
-        for split in self.results.keys():
+        for split in self.splits_number:
+            print(split)
             f, i = zip(*self.results[split]["feature_importances"])
             features.extend(f)
             imp.extend(i)
 
         # Store the mean importance, and the number of time used, per feature
-        count_f = self.__format_name_and_associated_values(self, features, imp)
+        count_f = self.format_name_and_associated_values(features, imp)
 
         features = [f for f in count_f.keys()]
         times_used_all_splits = [count_f[f][0] for f in count_f.keys()]
@@ -206,7 +208,7 @@ class ResultsRF(Results):
         features_complet = []
         imp_complet = []
         # Get values of all splits in two lists
-        for split in self.results.keys():
+        for split in self.splits_number:
             f, i = zip(*self.results[split]["feature_importances"][0])
             features.extend(f)
             imp.extend(i)
@@ -215,8 +217,8 @@ class ResultsRF(Results):
             imp_complet.extend(i_complet)
 
         # Store the mean importance, and the number of time used, per feature
-        dict_top = self.__format_name_and_associated_values(self, features, imp)
-        dict_complet = self.__format_name_and_associated_values(self, features_complet, imp_complet)
+        dict_top = self.format_name_and_associated_values(features, imp)
+        dict_complet = self.format_name_and_associated_values(features_complet, imp_complet)
 
         # Top 5 of sub-classifier (DT) for features, and times_used
         # Top 5 of sub-classifier (DT) for importance_(mean global importance in RF)
