@@ -89,3 +89,9 @@ class MetaboController:
     def produce_umap(self, design_name: str, algo: str):
         return self._metabo_experiment.experimental_designs[design_name].results[
             algo].produce_features_importance_table()
+
+    def get_results(self, design_name: str, algo: str):
+        return self._metabo_experiment.experimental_designs[design_name].results[algo].results
+
+    def get_all_results(self):
+        return self._metabo_experiment.get_all_results()

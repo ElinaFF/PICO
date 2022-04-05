@@ -124,3 +124,14 @@ class MetaboExperiment:
                                                                               str(split_index))
         self._data_matrix.data = None
 
+    def get_results(self, classes_design: str, algo_name) -> dict:
+        return self.experimental_designs[classes_design].get_results()[algo_name]
+
+    def get_all_results(self) -> dict:
+        results = {}
+        for name in self.experimental_designs:
+            results[name] = self.experimental_designs[name].get_results()
+        return results
+
+
+# TODO: print current algo when training
