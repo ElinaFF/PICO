@@ -1,6 +1,7 @@
 import os
 import pickle
 
+import pandas as pd
 import sklearn
 from sklearn.model_selection import GridSearchCV
 
@@ -12,8 +13,10 @@ class MetaboModel:
         self.grid_search_param = grid_search_configuration
         self.model = model
 
-    def train(self, folds: int, X_train: list, y_train: list) -> sklearn:
+    def train(self, folds: int, X_train: pd.DataFrame, y_train: list) -> sklearn:
         gridsearch = GridSearchCV(self.model(), self.grid_search_param, cv=folds)
+        print("X_train dataframe, 10 first lines and 30 first columns")
+        print(X_train.iloc[:10, :30])
         gridsearch.fit(X_train, y_train)
         return gridsearch.best_estimator_
 

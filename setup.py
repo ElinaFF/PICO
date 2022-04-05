@@ -13,16 +13,16 @@ setup(
         'dash',
         'dash-bio',
         'dash-bootstrap-components',
-        'dash-core-components',
-        'dash-html-components',
+        'dash-core-components==2.0.0',
+        'dash-html-components==2.0.0',
         'dash-renderer',
-        'dash-table',
+        'dash-table==5.0.0',
         'numpy==1.21.4',
         'pandas',
         'plotly',
         'scikit-learn',
         'umap-learn',
-        'openpyxl'
+        #'openpyxl'
         # 'pyMSpec @ git+https://github.com/alexandrovteam/pyMSpec',
         # 'msvlm @ git+https://github.com/francisbrochu/msvlm'
         ],
