@@ -7,7 +7,8 @@ def main():
 
     metabo_controller = MetaboController()
 
-    metabo_controller.set_metadata_dataframe_from_path(METADATA_PATH)
+    if not metabo_controller.set_metadata_dataframe_from_path(METADATA_PATH):
+        raise RuntimeError('Metadata file not setted')
     metabo_controller.set_data_matrix_from_path(DATAMATRIX_PATH, use_raw=False)
     print("Metadata and DataMatrix are set_from_path")
 
