@@ -67,12 +67,18 @@ class MetaboExperiment:
             experimental_design.set_selected_models_name(selected_models)
 
     def get_formatted_columns(self) -> list:
+        if self._metadata is None:
+            raise RuntimeError("Metadata is not set.")
         return self._metadata.get_formatted_columns()
 
     def set_target_column(self, target_column: str):
+        if self._metadata is None:
+            raise RuntimeError("Metadata is not set.")
         self._metadata.set_target_column(target_column)
 
     def set_id_column(self, id_column: str):
+        if self._metadata is None:
+            raise RuntimeError("Metadata is not set.")
         self._metadata.set_id_column(id_column)
 
     def get_formatted_unique_targets(self) -> list:
@@ -103,17 +109,17 @@ class MetaboExperiment:
         self._check_experimental_design()
         self._data_matrix.load_data()
         for _, experimental_design in self.experimental_designs.items():
-            result = experimental_design.get_results()
+            results = experimental_design.get_results()
             for split_index, split in experimental_design.all_splits():
                 x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(split[X_TRAIN_INDEX])
                 x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(split[X_TEST_INDEX])
-                result.get_feature_names(x_train)
                 for model_name in self._selected_models:
+                    results[model_name].set_feature_names(x_train)
                     metabo_model = self.get_model_from_name(model_name)
                     best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX])
                     y_train_pred = best_model.predict(x_train)
                     y_test_pred = best_model.predict(x_test)
-                    result[model_name].add_results_from_one_algo_on_one_split(best_model, split[y_TRAIN_INDEX], y_train_pred,
+                    results[model_name].add_results_from_one_algo_on_one_split(best_model, split[y_TRAIN_INDEX], y_train_pred,
                                                                               split[y_TEST_INDEX], y_test_pred, model_name,
                                                                               str(split_index))
         self._data_matrix.data = None
