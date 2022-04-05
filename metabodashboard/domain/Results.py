@@ -15,6 +15,7 @@ class Results:
     def __init__(self, splits_number: int):
         self.splits_number = [str(s) for s in range(splits_number)]
         self.results = {s: {} for s in self.splits_number}
+        self.f_names = []
 
     @abstractmethod
     def _get_features_importance(self, model):
@@ -50,6 +51,12 @@ class Results:
             self.results["info_expe"] = self._produce_info_expe(y_train_true, y_test_true)
             self.results["features_table"] = self.produce_features_importance_table()
             self.results["accuracies_table"] = self.produce_accuracy_plot_all()
+
+    def get_feature_names(self, x: pd.DataFrame):
+        """
+        retrieve features name directly from datamatrix
+        """
+        self.f_names = list(x.columns)
 
     def __format_name_and_associated_values(self, names, values):
         """
@@ -135,7 +142,10 @@ class ResultsDT(Results):
         """
         retrieve features and their importance from a model to save it in the Results dict after each split
         """
-        features = model.feature_names_in_
+        if self.f_names is None:
+            raise RuntimeError("Features names are not retrieved yet")
+        else:
+            features = self.f_names
         importances = model.feature_importances_
         zipped = zip(features, importances)
         return zipped

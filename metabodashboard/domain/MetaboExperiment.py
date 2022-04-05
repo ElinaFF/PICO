@@ -107,6 +107,7 @@ class MetaboExperiment:
             for split_index, split in experimental_design.all_splits():
                 x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(split[X_TRAIN_INDEX])
                 x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(split[X_TEST_INDEX])
+                result.get_feature_names(x_train)
                 for model_name in self._selected_models:
                     metabo_model = self.get_model_from_name(model_name)
                     best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX])
