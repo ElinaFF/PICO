@@ -4,7 +4,7 @@ METADATA_PATH = 'metadata_test.csv'
 DATAMATRIX_PATH = 'DataMatrix.csv'
 
 def main():
-
+    print('Starting the MetaboDashboard')
     metabo_controller = MetaboController()
 
     if not metabo_controller.set_metadata_dataframe_from_path(METADATA_PATH):
@@ -18,11 +18,13 @@ def main():
     print("Experimental design added")
 
     metabo_controller.set_splits_parameters(20, 0.8)
-    metabo_controller.set_selected_models(['DecisionTree', 'RandomForest'])
+    metabo_controller.set_selected_models(['RandomForest', 'DecisionTree'])
 
     print("Learning starts...")
     metabo_controller.learn(5)
     print("finished")
+
+    pickle.dump(metabo_controller.get_all_results(), open("big_results.p", "wb"))
 
 
 if __name__ == '__main__':
