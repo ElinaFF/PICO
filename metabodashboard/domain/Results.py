@@ -52,7 +52,7 @@ class Results:
             self.results["features_table"] = self.produce_features_importance_table()
             self.results["accuracies_table"] = self.produce_accuracy_plot_all()
 
-    def get_feature_names(self, x: pd.DataFrame):
+    def set_feature_names(self, x: pd.DataFrame):
         """
         retrieve features name directly from datamatrix
         """
@@ -144,10 +144,9 @@ class ResultsDT(Results):
         """
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
-        else:
-            features = self.f_names
+
         importances = model.feature_importances_
-        zipped = zip(features, importances)
+        zipped = zip(self.f_names, importances)
         return zipped
 
     def _aggregate_features_info(self):
@@ -180,12 +179,14 @@ class ResultsRF(Results):
     """
 
     def _get_features_importance(self, model):
+        if self.f_names is None:
+            raise RuntimeError("Features names are not retrieved yet")
+
         features = []
         importances = []
         for DT in model.estimators_:
-            f = DT.feature_names_in_
             i = DT.feature_importances_
-            zipped = list(zip(f, i))
+            zipped = list(zip(self.f_names, i))
             feat_sort = sorted(zipped, key=lambda x: x[1])
             top_five = feat_sort[:5]
             f, i = zip(*top_five)
