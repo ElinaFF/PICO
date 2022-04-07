@@ -21,6 +21,7 @@ class SplitGroup:
 
     def _load_classes(self):
         targets = self._metadata.load_targets()
+        print("targets _load_classes : {}".format(targets))
         reverse_classes_design = Utils.reverse_dict(self._classes_design)
         classes = []
         for target in targets:

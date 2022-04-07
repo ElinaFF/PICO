@@ -94,6 +94,10 @@ H4{
 /*************
 *   Tables   *
 *************/
+th{
+    font-size: 1em;
+}
+
 .table_features{
     width:40%;
 }

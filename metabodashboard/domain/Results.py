@@ -5,6 +5,9 @@ from abc import abstractmethod
 import sklearn
 from sklearn.metrics import accuracy_score, confusion_matrix
 from collections import Counter
+import umap
+from sklearn.decomposition import PCA
+
 
 class Results:
     """
@@ -32,7 +35,7 @@ class Results:
         """
         pass
 
-    def add_results_from_one_algo_on_one_split(self, model, y_train_true: list, y_train_pred: list,
+    def add_results_from_one_algo_on_one_split(self, model, x_train, y_train_true: list, y_train_pred: list,
                                                y_test_true: list, y_test_pred: list, algo_name: str, split_number: str):
         """
         Besoin modèle pour extraire features, features importance
@@ -50,8 +53,13 @@ class Results:
 
         if split_number == self.splits_number[-1]:
             self.results["info_expe"] = self._produce_info_expe(y_train_true, y_test_true)
+            print("------> last split, start features importance")
             self.results["features_table"] = self.produce_features_importance_table()
             self.results["accuracies_table"] = self.produce_accuracy_plot_all()
+            self.results["umap_data"] = self._produce_UMAP_2D(x_train)
+            self.results["pca_data"] = self._produce_PCA(x_train)
+            self.results["classes_train"] = y_train_true
+
 
     def set_feature_names(self, x: pd.DataFrame):
         """
@@ -65,17 +73,31 @@ class Results:
         """
         count = Counter(names)
         for n in count.keys():
-            count[n] = [count[n]]
+            count[n] = [0]
             liste_val = []
             for idx, j in enumerate(names):
-                if n == j:
+                if n == j and values[idx] > 0:
+                    count[n][0] += 1
                     liste_val.append(values[idx])
-            count[n].append(np.mean(liste_val))
+            if liste_val:
+                count[n].append(np.mean(liste_val))
+            else:
+                count[n].append(0)
         return count
 
     def _produce_conf_matrix(self, y_test_true: list, y_test_pred: list):
         labels = list(set(y_test_true))
-        return confusion_matrix(y_test_true, y_test_pred, labels=labels)
+        return labels, confusion_matrix(y_test_true, y_test_pred, labels=labels, normalize="true")
+
+    def _produce_UMAP_2D(self, X: pd.DataFrame):
+        x = X.to_numpy()
+        umap_2d = umap.UMAP(n_components=2, init='random', random_state=13)
+        return umap_2d.fit_transform(x)
+
+    def _produce_PCA(self, X: pd.DataFrame):
+        x = X.to_numpy()
+        pca = PCA(n_components=2)
+        return pca.fit_transform(x)
 
     def _produce_info_expe(self, y_train_true, y_test_true):
         """
@@ -85,8 +107,8 @@ class Results:
         nbr_train = len(y_train_true)
         nbr_test = len(y_test_true)
         tot = nbr_train + nbr_test
-        nom_stats = ["Number of samples (proportion train:test)"]
-        valeurs_stats = [str(tot) +" ("+ str(nbr_train/tot*100) +":"+ str(nbr_test/tot*100) +")"]
+        nom_stats = ["Number of samples (train:test)"]
+        valeurs_stats = [str(tot) +" ("+ str(int(nbr_train/tot*100)) +":"+ str(int(nbr_test/tot*100)) +")"]
         y = y_train_true + y_test_true
         c = Counter(y)
         for k in c.keys():
@@ -105,8 +127,12 @@ class Results:
         """
         features, times_used_all_splits, importance_or_usage_or_ = self._aggregate_features_info()
 
+
+        print("--> aggregating done, importances : {}".format(importance_or_usage_or_))
+
         d = {"features": features, "times_used": times_used_all_splits, "importance_usage": importance_or_usage_or_}
         df = pd.DataFrame(data=d)
+        df = df.sort_values(by=['importance_usage'], ascending=False)
         return df
 
     def produce_accuracy_plot_all(self):
@@ -145,8 +171,11 @@ class ResultsDT(Results):
         """
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
-
+        print("----> entered in _get_features_importance of DT, importances :")
         importances = model.feature_importances_
+        for i in importances:
+            if i > 0:
+                print(i)
         zipped = zip(self.f_names, importances)
         return zipped
 
@@ -159,7 +188,6 @@ class ResultsDT(Results):
         imp = []
         # Get values of all splits in two lists
         for split in self.splits_number:
-            print(split)
             f, i = zip(*self.results[split]["feature_importances"])
             features.extend(f)
             imp.extend(i)
@@ -190,13 +218,13 @@ class ResultsRF(Results):
             i = DT.feature_importances_
             zipped = list(zip(self.f_names, i))
             feat_sort = sorted(zipped, key=lambda x: x[1])
-            top_five = feat_sort[:5]
-            f, i = zip(*top_five)
+            top_x = feat_sort[-50:]
+            f, i = zip(*top_x)
             features.extend(f)
             importances.extend(i)
         zipped = zip(features, importances)
-        zipped_complet = zip(model.feature_names_in_, model.feature_importances_)
-        return zipped, zipped_complet
+        #zipped_complet = zip(model.feature_names_in_, model.feature_importances_)
+        return zipped#, zipped_complet
 
     def _aggregate_features_info(self):
         """
@@ -205,26 +233,26 @@ class ResultsRF(Results):
         """
         features = []
         imp = []
-        features_complet = []
-        imp_complet = []
+        # features_complet = []
+        # imp_complet = []
         # Get values of all splits in two lists
         for split in self.splits_number:
-            f, i = zip(*self.results[split]["feature_importances"][0])
+            f, i = zip(*self.results[split]["feature_importances"])
             features.extend(f)
             imp.extend(i)
-            f_complet, i_complet = zip(*self.results[split]["feature_importances"][1])
-            features_complet.extend(f_complet)
-            imp_complet.extend(i_complet)
+            # f_complet, i_complet = zip(*self.results[split]["feature_importances"][1])
+            # features_complet.extend(f_complet)
+            # imp_complet.extend(i_complet)
 
         # Store the mean importance, and the number of time used, per feature
         dict_top = self.format_name_and_associated_values(features, imp)
-        dict_complet = self.format_name_and_associated_values(features_complet, imp_complet)
+        # dict_complet = self.format_name_and_associated_values(features_complet, imp_complet)
 
         # Top 5 of sub-classifier (DT) for features, and times_used
         # Top 5 of sub-classifier (DT) for importance_(mean global importance in RF)
         features = [f for f in dict_top.keys()]
         times_used_all_splits = [dict_top[f][0] for f in dict_top.keys()]
-        importance_or_usage_or_ = [str(dict_top[f][1]) + "_(" + str(dict_complet[f][1]) + ")" for f in dict_top.keys()]
+        importance_or_usage_or_ = [str(dict_top[f][1]) for f in dict_top.keys()] #+ "_(" + str(dict_complet[f][1]) + ")"
         return features, times_used_all_splits, importance_or_usage_or_
 
 

@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from sklearn.decomposition import PCA
+from dash import html
 import umap
 
 
@@ -10,33 +10,63 @@ class Plots():
     def __init__(self, colors: str):
         self.colors = colors
 
+    # TODO : faire la sauvegarde dans results des resultats de heatmap pour pouvoir sortir la figure
     def show_algo_comparison_by_heatmap(self):
         return
 
-    def _produce_UMAP_2D(self, X: pd.DataFrame):
-        x = X.to_numpy()
-        umap_2d = umap.UMAP(n_components=2, init='random', random_state=13)
-        return umap_2d.fit_transform(x)
-
-    #TODO : faire la sauvegarde dans results des resultats de heatmap pour pouvoir sortir la figure
-    def show_umap_2D(self, X: pd.DataFrame):
-        umap_data = self._produce_UMAP_2D(X)
-        fig_2d = px.scatter(
+    def show_umap_2D(self, umap_data, classes):
+        fig = px.scatter(
             umap_data, x=0, y=1,
-            color=self.colors,
-            labels={'color': 'Classes'}
+            color=classes,
+            color_continuous_scale=self.colors,
+
         )
-        return fig_2d.show()
+        fig.update_layout({
+            "plot_bgcolor": "rgba(0, 0, 0, 0)",
+            "paper_bgcolor": "rgba(0, 0, 0, 0)",
+        })
+        return fig
 
-    def _produce_PCA(self, X: pd.DataFrame):
-        x = X.to_numpy()
-        pca = PCA(n_components=2)
-        return pca.fit_transform(x)
+    def show_PCA(self, pca_data, classes):
+        fig = px.scatter(pca_data, x=0, y=1,
+                         color=classes,
+                         color_continuous_scale=self.colors,
+                         )
+        fig.update_layout({
+            "plot_bgcolor": "rgba(0, 0, 0, 0)",
+            "paper_bgcolor": "rgba(0, 0, 0, 0)",
+        })
+        return fig
 
-    def show_PCA(self, X: pd.DataFrame):
-        pca_data = self._produce_PCA(X)
-        fig = px.scatter(pca_data, x=0, y=1, color=self.colors)
-        return fig.show()
+    def show_general_confusion_matrix(self, cm, labels, text):
+        # labels = ["0", "1"]
+
+        fig = go.Figure(data=go.Heatmap(
+            #labels=dict(x="Prediciton", y="Vérité", color="Nombre de prédictions"),
+            z=cm,
+            x=labels,
+            y=labels,
+            # text=text,
+            colorscale=self.colors,
+            showscale=False
+            #texttemplate="%{text}",
+        ))
+        fig = fig.update_traces(text=text, texttemplate="%{text}", hovertemplate=None)
+        fig.update_layout(xaxis_title="Prediciton",
+                          yaxis_title="Truth",
+
+                         )
+
+        # fig = px.imshow(
+        #         cm,
+        #         labels=dict(x="Prediciton", y="Vérité", color="Nombre de prédictions"),
+        #         x=list(set(labels)),
+        #         y=list(set(labels)),
+        #         color_continuous_scale=self.colors,
+        #         text_auto=True
+        # )
+        # fig.update_traces(text=text)
+        return fig
 
     def show_accuracy_all(self, df):
         """
@@ -50,8 +80,12 @@ class Plots():
         if "color" not in df.columns:
             raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'color' column")
 
-        fig = px.line(df, x='splits', y='accuracies', color='color', markers=True)
-        return fig.show()
+        fig = px.line(df, x='splits', y='accuracies', color='color')
+        fig.update_layout({
+            "plot_bgcolor": "rgba(246, 247, 247, 0.4)",
+            "paper_bgcolor": "rgba(0, 0, 0, 0)"
+        })
+        return fig
 
     def show_exp_info_all(self, df: pd.DataFrame):
         """
@@ -63,11 +97,16 @@ class Plots():
         if "numbers" not in df.columns:
             raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'numbers' column")
 
-        fig = go.Figure(
-            data=[go.Table(
-                cells=dict(values=[df.stats, df.numbers]))
-                ])
-        return fig.show()
+        # fig = go.Figure(
+        #     data=[go.Table(
+        #         cells=dict(values=[df.stats, df.numbers]))
+        #         ])
+
+        row1 = html.Tr([html.Td(df.iloc[0, 0]), html.Td(df.iloc[0, 1])])
+        row2 = html.Tr([html.Td(df.iloc[1, 0]), html.Td(df.iloc[1, 1])])
+        row3 = html.Tr([html.Td(df.iloc[2, 0]), html.Td(df.iloc[2, 1])])
+        table_body = [html.Tbody([row1, row2, row3])]
+        return table_body
 
     def show_features_selection(self, df: pd.DataFrame):
         """
@@ -86,11 +125,12 @@ class Plots():
 
         fig = go.Figure(
             data=[go.Table(
-                header=dict(values=list(df.columns)),
+                header=dict(values=list(df.columns), align="center"),
                 cells=dict(values=[df.iloc[:10, :].features, df.iloc[:10, :].times_used,
-                                   df.iloc[:10, :].importance_usage]))
+                                   df.iloc[:10, :].importance_usage],
+                           align="center"))
             ])
-        return fig.show()
+        return fig
 
 
     def show_split_metrics(self):
