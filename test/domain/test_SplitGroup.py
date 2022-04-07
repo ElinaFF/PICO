@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from metabodashboard.domain import SplitGroup
 
 from TestsUtility import MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN, EXPERIMENT_NAME, \
-    SAMPLES_ID, CLASSES
+    SPLITS
 
 
 @pytest.fixture
@@ -16,9 +16,11 @@ def input_splits():
     return splits
 
 
-def testGetSplitsWithIndex(input_splits):
+def test_givenASplitGroup_whenLoadSplitWithIndex_thenTheSplitsAreReproducible(input_splits):
     for split_index in range(NUMBER_OF_SPLITS):
-        assert input_splits.load_split_with_index(split_index) == train_test_split(SAMPLES_ID,
-                                                                                   CLASSES,
-                                                                                   test_size=TRAIN_TEST_PROPORTION,
-                                                                                   random_state=split_index)
+        assert input_splits.load_split_with_index(split_index) == SPLITS[split_index]
+
+
+def test_givenASplitGroup_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(input_splits):
+    assert input_splits.get_number_of_splits() == NUMBER_OF_SPLITS
+

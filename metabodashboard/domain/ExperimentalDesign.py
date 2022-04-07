@@ -42,16 +42,13 @@ class ExperimentalDesign:
             elif n == "DecisionTree":
                 self.results[n] = ResultsDT(self._split_group.get_number_of_splits())
 
-    def get_results(self) -> Results:
-        if self.results is None:
+    def get_results(self) -> dict:
+        if self.results == {}:
             raise RuntimeError("The name of the selected models has to be set before accessing results.")
         return self.results
 
     def _compute_name(self) -> None:
-        class_list = self._classes_design.keys()
-        for class_name in class_list:
-            self._name += class_name + "_vs_"
-        self._name = self._name[:-4]
+        self._name = '_vs_'.join(self._classes_design)
 
     def get_number_of_splits(self) -> int:
         return self._split_group.get_number_of_splits()

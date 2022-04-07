@@ -2,7 +2,12 @@ import random
 from typing import List
 from unittest.mock import Mock
 
+import numpy as np
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.svm import LinearSVC
+from sklearn.tree import DecisionTreeClassifier
 
 
 def _get_samples_id(size: int) -> List[str]:
@@ -15,8 +20,8 @@ def _get_targets_and_classes(size: int, classes_design: dict):
                    for target in target_list]
     number_of_target = len(target_list) - 1
     reversed_classes_design = {target: class_
-                                  for class_, target_list in classes_design.items()
-                                  for target in target_list}
+                               for class_, target_list in classes_design.items()
+                               for target in target_list}
     targets = []
     classes = []
     for index in range(size):
@@ -27,11 +32,24 @@ def _get_targets_and_classes(size: int, classes_design: dict):
 
     return targets, classes
 
+
+def _get_splits(number_of_splits: int, train_test_proportion: float, samples_id: list, classes: list) -> List[
+    List[str]]:
+    splits = []
+    for split_index in range(number_of_splits):
+        X_train, X_test, y_train, y_test = train_test_split(samples_id, classes, test_size=train_test_proportion,
+                                                            random_state=split_index)
+        splits.append([X_train, X_test, y_train, y_test])
+    return splits
+
+
 SIZE = 100
 
 EXPERIMENT_NAME = "sick_vs_healthy"
+EXPERIMENT_FULL_NAME = "sick (sick, ill) versus healthy (healthy)"
 
 CLASSES_DESIGN = {"sick": ["sick", "ill"], "healthy": ["healthy"]}
+
 NUMBER_OF_SPLITS = 10
 TRAIN_TEST_PROPORTION = 0.75
 
@@ -48,3 +66,27 @@ MOCKED_METADATA = MOCKED_METADATA_CLASS.return_value
 MOCKED_METADATA.load_metadata.return_value = METADATA_DATAFRAME
 MOCKED_METADATA.load_samples_id.return_value = SAMPLES_ID
 MOCKED_METADATA.load_targets.return_value = TARGETS
+
+SPLITS = _get_splits(NUMBER_OF_SPLITS, TRAIN_TEST_PROPORTION, SAMPLES_ID, CLASSES)
+
+SUPPORTED_MODEL = {
+    "DecisionTree": {
+        "function": DecisionTreeClassifier,
+        "ParamGrid": {
+            "max_depth": [1, 2, 3, 4, 5, 10],
+            "min_samples_split": [2, 4, 6, 8, 10]
+        }
+    },
+    "RandomForest": {
+        "function": RandomForestClassifier,
+        "ParamGrid": {
+            "n_estimators": [1, 2, 4, 10, 30, 70, 100, 500, 1000]
+        }
+    },
+    "SVM_L1": {
+        "function": LinearSVC,
+        "ParamGrid": {
+            "C": np.logspace(-5, 5, 20)
+        }
+    },
+}

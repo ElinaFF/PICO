@@ -217,7 +217,7 @@ class ResultsRF(Results):
         for DT in model.estimators_:
             i = DT.feature_importances_
             zipped = list(zip(self.f_names, i))
-            feat_sort = sorted(zipped, key=lambda x: x[1])
+            feat_sort = sorted(zipped, key=lambda x: x[1], reverse=True)
             top_x = feat_sort[-50:]
             f, i = zip(*top_x)
             features.extend(f)

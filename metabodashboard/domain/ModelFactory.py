@@ -28,4 +28,4 @@ class ModelFactory:
     def create_custom_model(self, model_name: str, needed_imports: str, grid_search_param: dict) -> MetaboModel:
         imports_list = needed_imports.split(".")
         model = self._get_model_from_import(imports_list, model_name)
-        return MetaboModel(grid_search_param, model)
+        return MetaboModel(model, grid_search_param)
