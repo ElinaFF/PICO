@@ -17,7 +17,7 @@ class Plots():
     def show_umap_2D(self, umap_data, classes):
         fig = px.scatter(
             umap_data, x=0, y=1,
-            color=classes,
+            # color=classes,
             color_continuous_scale=self.colors,
 
         )
