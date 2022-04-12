@@ -14,6 +14,12 @@ def _get_samples_id(size: int) -> List[str]:
     return ["patient-" + str(patient_id) for patient_id in range(size)]
 
 
+def _get_random_data(size: int, number_of_columns: int):
+    data = np.random.rand(size, number_of_columns)
+    column = np.arange(number_of_columns)
+    return pd.DataFrame(data, columns=column)
+
+
 def _get_targets_and_classes(size: int, classes_design: dict):
     target_list = [target
                    for _, target_list in classes_design.items()
@@ -44,6 +50,7 @@ def _get_splits(number_of_splits: int, train_test_proportion: float, samples_id:
 
 
 SIZE = 100
+COLUMNS = 1000
 
 EXPERIMENT_NAME = "sick_vs_healthy"
 EXPERIMENT_FULL_NAME = "sick (sick, ill) versus healthy (healthy)"
@@ -55,11 +62,14 @@ TRAIN_TEST_PROPORTION = 0.75
 
 SAMPLES_ID = _get_samples_id(SIZE)
 TARGETS, CLASSES = _get_targets_and_classes(SIZE, CLASSES_DESIGN)
+DATA = _get_random_data(SIZE, COLUMNS)
 
 SAMPLES_ID_COLUMN = "samples_id"
 TARGETS_COLUMN = "target"
 
 METADATA_DATAFRAME = pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID, TARGETS_COLUMN: TARGETS})
+DATAMATRIX = pd.concat([pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID}), DATA], axis=1)
+DATAMATRIX.set_index(SAMPLES_ID_COLUMN, inplace=True)
 
 MOCKED_METADATA_CLASS = Mock()
 MOCKED_METADATA = MOCKED_METADATA_CLASS.return_value
