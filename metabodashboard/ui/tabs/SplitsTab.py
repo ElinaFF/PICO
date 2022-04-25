@@ -537,11 +537,10 @@ class SplitsTab(MetaTab):
             Output('upload_datatable_button', 'style'),
             [Input('upload_datatable', 'contents')],
             [State('upload_datatable', 'filename'),
-             State('upload_datatable', 'last_modified'),
              State("in_use_raw", "value")
              ]
         )
-        def upload_data(list_of_contents, list_of_names, list_of_dates, use_raw):
+        def upload_data(list_of_contents, list_of_names, use_raw):
             if list_of_contents is not None:
                 print("---> len list_of_names")
                 print(len(list_of_names))
@@ -553,6 +552,8 @@ class SplitsTab(MetaTab):
                 self.metabo_controller.set_data_matrix_from_path(list_of_names,
                                                                  data=list_of_contents,
                                                                  use_raw=use_raw)
+                return dash.no_update
+            else:
                 return dash.no_update
 
         @self.app.callback(
@@ -571,40 +572,39 @@ class SplitsTab(MetaTab):
             else:
                 return {"display": "none"}, {"display": "none"}
 
-        @self.app.callback(
-            Output('upload_metadata_button', 'style'),
-            [Input('upload_metadata', 'contents')],
-            [State('upload_metadata', 'filename'),
-             State('upload_metadata', 'last_modified'),
-             ]
-        )
-        def upload_metadata(list_of_contents, list_of_names):
-            if list_of_contents is not None:
-                self.metabo_controller.set_data_matrix_from_path(list_of_names,
-                                                                 data=list_of_contents,
-                                                                 )
-                return dash.no_update
+        # @self.app.callback(
+        #     Output('upload_metadata_button', 'style'),
+        #     [Input('upload_metadata', 'contents')],
+        #     [State('upload_metadata', 'filename'),
+        #
+        #      ]
+        # )
+        # def upload_metadata(list_of_contents, list_of_names):
+        #     if list_of_contents is not None:
+        #         self.metabo_controller.set_data_matrix_from_path(list_of_names,
+        #                                                          data=list_of_contents,
+        #                                                          )
+        #         return dash.no_update
 
         @self.app.callback([Output("in_target_col_name", "options"),
                             Output("in_ID_col_name", "options"),
                             Output("output_in_case_of_error_in_path_to_metadata", "children")],
                            [Input('upload_metadata', 'contents')],
                            [State('upload_metadata', 'filename'),
-                            State('upload_metadata', 'last_modified'),
+
                             ]
                            )
         def get_metadata_cols_names_to_choose_from(list_of_contents, list_of_names):
             if list_of_contents is not None:
-                self.metabo_controller.set_data_matrix_from_path(list_of_names,
-                                                                 data=list_of_contents)
-
-            if self.metabo_controller.set_metadata_dataframe_from_path(path_value):
-                formatted_columns = self.metabo_controller.get_formatted_columns()
-                return formatted_columns, formatted_columns, ""
+                if self.metabo_controller.set_metadata(list_of_names, data=list_of_contents):
+                    formatted_columns = self.metabo_controller.get_formatted_columns()
+                    return formatted_columns, formatted_columns, ""
+                else:
+                    return [], [], "There is a problem, the format of your metadata file might not be supported. You " \
+                                   "need to give either a .csv, .xlsX or .odX (where X replace variation of format). Ex: " \
+                                   "file.xlsx, file.odt "
             else:
-                return [], [], "There is a problem, the format of your metadata file might not be supported. You " \
-                               "need to give either a .csv, .xlsX or .odX (where X replace variation of format). Ex: " \
-                               "file.xlsx, file.odt "
+                return dash.no_update
 
         @self.app.callback(
             Output("define_classes_desgn_exp", "children"),
@@ -674,9 +674,8 @@ class SplitsTab(MetaTab):
              Output("possible_groups_for_class2", "options"),
              Output("output_btn_add_desgn_exp", "children")],
             [Input("in_target_col_name", "value")],
-            [State("in_path_to_metadata", "value")]
         )
-        def update_possible_classes_exp_design(target_col, path_metadata):
+        def update_possible_classes_exp_design(target_col):
             if target_col != 0:
                 self.metabo_controller.set_target_column(target_col)
                 formatted_possible_targets = self.metabo_controller.get_formatted_unique_targets()
@@ -735,7 +734,7 @@ class SplitsTab(MetaTab):
              State('in_peak_threshold_value', 'value'),
              State('in_percent_samples_in_test', 'value'),
              State('in_autoOptimize_value', 'value'),
-             State('in_path_to_metadata', 'value'),
+             # State('in_path_to_metadata', 'value'),
              State('in_ID_col_name', 'value'),
              State('in_target_col_name', 'value'),
              State("in_type_of_data", "value"),
@@ -751,7 +750,7 @@ class SplitsTab(MetaTab):
              ]
         )
         def saving_params_of_splits_batch(n, name_of_the_file, use_raw, nbr_splits, nbr_processes, #path_data_files,
-                                          peakT, percent_in_test, autoOpt, path_to_metadata, ID_col_name,
+                                          peakT, percent_in_test, autoOpt,  ID_col_name,#path_to_metadata,
                                           targets_col_name,
                                           type_of_processing, peak_pick, align, normalize, pair_pn, pair_id_pos,
                                           pair_id_neg, pair_12, pair_id_1, pair_id_2):

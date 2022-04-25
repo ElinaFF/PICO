@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 
 from dash import Dash
 
-from metabodashboard.domain import MetaboController
+from ...domain import MetaboController
 
 
 class MetaTab:

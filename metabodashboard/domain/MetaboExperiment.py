@@ -37,17 +37,13 @@ class MetaboExperiment:
     def set_metadata(self):
         self._metadata = MetaData()
 
-    def set_metadata_with_dataframe(self, metadata_dataframe: pd.DataFrame, filename, data=None, from_base64=True):
+    def set_metadata_with_dataframe(self, filename, data=None, from_base64=True):
         self.set_metadata()
-        df = self._metadata.read_format_and_store_metadata()
-        if filename.split(".")[-1] == "csv":
-            self._metadata = MetaData(pd.read_csv(filename, sep=";", na_filter=False))
+        try:
+            self._metadata.read_format_and_store_metadata(filename, data=data, from_base64=from_base64)
             return True
-        if "xls" in filename.split(".")[-1] or "od" in filename.split(".")[-1]:
-            # TODO: WARNING -> no na filter at all
-            self._metadata = MetaData(pd.read_excel(filename, na_filter=False))
-            return True
-        return False
+        except RuntimeError:
+            return False
 
     # def set_metadata_dataframe_from_path(self, path: str):
     #     if path.split(".")[-1] == "csv":

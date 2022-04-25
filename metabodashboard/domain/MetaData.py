@@ -1,6 +1,8 @@
 import os.path
 import pickle
 from typing import List
+import base64
+import io
 
 import pandas as pd
 
@@ -21,38 +23,31 @@ class MetaData:
         self._id_column = None
         self._target_column = None
 
-    def read_format_and_store_metadata(self):
-
-        file_ext = self.filename.split(".")[-1]
-        # TODO : beware of the sep (, or ;)
-        if "csv" in file_ext:  # Abundance matrices of Progenesis are always in csv format, so its checked first
-            if self.in_format == "base64":  # this condition is to make readable the input data from dcc.Upload
-                self.data = io.StringIO(self.data.decode('utf-8'))
-            else:  # this else is to enable the pd dataframe to be read from full file path
-                self.data = self.filename
-            header = pd.read_csv(self.data, header=None, sep=",", nrows=3, index_col=0).fillna('').to_numpy()
-            print("---> DataFormat.py -> _convert_from_file : header")
-            print(header)
-            if "Normalised abundance" in header[0] or "Raw abundance" in header[0]:
-                datatable = pd.read_csv(self.data, header=[0, 1, 2], sep=","
-                                        , index_col=0)
-                return self._read_Progenesis_data_table(datatable, header)
-            else:
-                datatable = pd.read_csv(self.data, sep=",", index_col=0)
-                return self._read_general_data_table(datatable)
-
-        elif "xls" in file_ext or "od" in file_ext:  # TODO : restrict the "od" condition, might be too large
-            if self.in_format == "base64":  # same as above
-                self.data = io.StringIO(io.BytesIO(self.data))
-            else:
-                self.data = self.filename
-            datatable = pd.read_excel(self.data, index_col=0)
-            return self._read_general_data_table(datatable)
-
-        else:
-            raise TypeError("The input file is not of the right type, must be excel, odt or csv.")
-
+    def read_format_and_store_metadata(self, path, data=None, from_base64=True):
+        df = self._load_and_format(path, data=data, from_base64=from_base64)
         self.save_metadata(df)
+
+    def _load_and_format(self, filename, data=None, from_base64=True) -> pd.DataFrame:
+        if from_base64:
+            data_type, data_string = data.split(',')
+            data = base64.b64decode(data_string)
+            print("data decoded :{}")
+            print(data[:200])
+        else:
+            data = filename
+
+        if 'csv' in filename:
+            # Assume that the user uploaded a CSV file
+            if from_base64:
+                data = io.StringIO(data.decode('utf-8'))
+            df = pd.read_csv(data, sep=";", na_filter=False)
+        elif 'xls' in filename:
+            if from_base64:
+                data = io.BytesIO(data)
+            # Assume that the user uploaded an excel file
+            df = pd.read_excel(data)
+        else:
+            raise RuntimeError
         return df
 
     def save_metadata(self, df_meta_data: pd.DataFrame):

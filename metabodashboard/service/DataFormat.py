@@ -50,11 +50,13 @@ class DataFormat:
             else:  # this else is to enable the pd dataframe to be read from full file path
                 self.data = self.filename
             header = pd.read_csv(self.data, header=None, sep=",", nrows=3, index_col=0).fillna('').to_numpy()
-            print("---> DataFormat.py -> _convert_from_file : header")
-            print(header)
+
+            # Needs to reset the pointer to the top of the ioString (to be able to read the string again)
+            if self.in_format == "base64":
+                self.data.seek(0)
+
             if "Normalised abundance" in header[0] or "Raw abundance" in header[0]:
-                datatable = pd.read_csv(self.data, header=[0, 1, 2], sep=","
-                                        , index_col=0)
+                datatable = pd.read_csv(self.data, header=[0, 1, 2], sep=",", index_col=0)
                 return self._read_Progenesis_data_table(datatable, header)
             else:
                 datatable = pd.read_csv(self.data, sep=",", index_col=0)
@@ -84,7 +86,7 @@ class DataFormat:
         but that might change
         """
 
-        return "", datatable, "", ""
+        return None, datatable, None, None
 
     def _read_Progenesis_data_table(self, datatable, header):
         """

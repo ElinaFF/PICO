@@ -19,6 +19,7 @@ class Results:
         self.splits_number = [str(s) for s in range(splits_number)]
         self.results = {s: {} for s in self.splits_number}
         self.f_names = []
+        self.best_acc = 0
 
     @abstractmethod
     def _get_features_importance(self, model):
@@ -48,6 +49,10 @@ class Results:
         print(algo_name)
         self.results[split_number]["train_accuracy"] = accuracy_score(y_train_true, y_train_pred)
         self.results[split_number]["test_accuracy"] = accuracy_score(y_test_true, y_test_pred)
+        print('self.results[split_number]["test_accuracy"] = {}'.format(self.results[split_number]["test_accuracy"]))
+        if self.results[split_number]["test_accuracy"] > self.best_acc:
+            self.best_acc = self.results[split_number]["test_accuracy"]
+            self.results["best_model"] = model
         self.results[split_number]["feature_importances"] = self._get_features_importance(model)
         self.results[split_number]["Confusion_matrix"] = self._produce_conf_matrix(y_test_true, y_test_pred)
 
@@ -96,12 +101,12 @@ class Results:
             selected_feat = features_df["features"][:nbr]
             x = X.loc[:, selected_feat]
             x = x.to_numpy()
-            umap = umap.UMAP(n_components=2, init='random', random_state=13)
-            umaps.append(umap.fit_transform(x))
+            umap_data = umap.UMAP(n_components=2, init='random', random_state=13)
+            umaps.append(umap_data.fit_transform(x))
         # Redo the umap but on all the data
         x = X.to_numpy()
-        umap = umap.UMAP(n_components=2, init='random', random_state=13)
-        umaps.append(umap.fit_transform(x))
+        umap_data = umap.UMAP(n_components=2, init='random', random_state=13)
+        umaps.append(umap_data.fit_transform(x))
         return umaps
 
     def _produce_PCA(self, X: pd.DataFrame, features_df: pd.DataFrame):

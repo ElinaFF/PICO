@@ -16,7 +16,7 @@ class MetaboController:
         self._plots = Plots("blues")
 
     def set_metadata(self, filename: str, data=None, from_base64=True) -> bool:
-        return self._metabo_experiment.set_metadata(filename=filename, data=data, from_base64=from_base64)
+        return self._metabo_experiment.set_metadata_with_dataframe(filename=filename, data=data, from_base64=from_base64)
 
     def set_data_matrix_from_path(self, path_data_matrix, data=None, use_raw=False, from_base64=True):
         return self._metabo_experiment.set_data_matrix(path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64)
