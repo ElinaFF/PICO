@@ -2,9 +2,16 @@ from dash import html
 from dash.dependencies import Input, Output
 import dash
 import dash_bootstrap_components as dbc
+import os
+from ..service import Utils
 
 from .tabs import *
 from ..domain import MetaboController
+
+ROOT_PATH = os.path.dirname(__file__)
+DUMP_PATH = os.path.join(ROOT_PATH, "dumps")
+DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "metaboExpe.p")
+
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX], meta_tags=[{"name": "viewport", "content": "width=device-width"}])
 server = app.server
@@ -15,7 +22,7 @@ app.css.append_css({
     "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
 })
 
-metabo_controller = MetaboController()
+metabo_controller = MetaboController(Utils.load_metabo_expe(DUMP_EXPE_PATH))
 infoTab = InfoTab(app, metabo_controller)
 splitsTab = SplitsTab(app, metabo_controller)
 mLTab = MLTab(app, metabo_controller)

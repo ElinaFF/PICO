@@ -19,9 +19,9 @@ def main():
     print('Starting the MetaboDashboard')
     metabo_controller = MetaboController()
 
-    if not metabo_controller.set_metadata_dataframe_from_path(METADATA_PATH):
+    if not metabo_controller.set_metadata(METADATA_PATH, from_base64=False):
         raise RuntimeError('Metadata file not setted')
-    metabo_controller.set_data_matrix_from_path(DATAMATRIX_PATH, use_raw=False)
+    metabo_controller.set_data_matrix_from_path(DATAMATRIX_PATH, use_raw=False, from_base64=False)
     print("Metadata and DataMatrix are set_from_path")
 
     metabo_controller.set_id_column('Sample')

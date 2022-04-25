@@ -15,17 +15,17 @@ class DataMatrix:
         # TODO : implémenter test format de matrice (progenesis -> ML ready)
         self.data = None
 
-    def read_format_and_store_data(self, path: str, use_raw: bool):
-        data_df = self._load_and_format_from_progenesis(path, use_raw)
+    def read_format_and_store_data(self, path: str, data=None, use_raw: bool=False, from_base64: bool=True):
+        data_df = self._load_and_format(path, data=data, is_raw=use_raw, from_base64=from_base64)
 
         with open(DUMP_DATA_MATRIX_PATH, "w+b") as data_matrix_file:
             pickle.dump(data_df, data_matrix_file)
 
-    def _load_and_format_from_progenesis(self, path, is_raw) -> pd.DataFrame:
+    def _load_and_format(self, path, data=None, is_raw=False, from_base64=True) -> pd.DataFrame:
         """
-        load the progenesis table from a path and process it to make it more easy to manipulate
+        load the table from a path and process it to make it more easy to manipulate
         """
-        formater = DataFormat(path, is_raw)
+        formater = DataFormat(path, data=data, use_raw=is_raw, from_base64_str=from_base64)
         datatable_compoundsInfo, datatable, labels, sample_names = formater.convert()
         return datatable
 
@@ -35,11 +35,11 @@ class DataMatrix:
 
     def load_samples_corresponding_to_IDs_in_splits(self, id_list: list) -> pd.DataFrame:
         """
-        self.data is supposed to have samples as columns, so with select only the samples(columns) we need
-        with their IDS(columns names)
-        Also, the way of selecting the samples column assures the samples are in the same order as the list, which is
+        self.data is supposed to have samples as lines, so we select only the samples we need
+        with their IDS(lines indexes)
+        Also, the way of selecting the samples assures the samples are in the same order as the list, which is
         it self in the same order as the target list
-        :return: the reduced dataframe, transposed so the samples are lines and the matrix is ML ready
+        :return: the reduced dataframe, the samples are lines and the matrix is ML ready
         """
         if self.data is None:
             raise RuntimeError("Need to load data from file before extracting specific samples")

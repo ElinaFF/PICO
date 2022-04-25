@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import os
+import base64
+import io
 from .Utils import *
 
 class DataFormat:
@@ -8,41 +10,81 @@ class DataFormat:
     Take data file(s) as input and output a matrix where columns are samples and lines features. With the matrix comes
     a list of the columns names to retrieve the samples properly.
     """
-    def __init__(self, path_to_data, use_raw):
+    def __init__(self, filename, data=None, use_raw=False, from_base64_str=True):
         self.use_raw = use_raw
-        self.inpath = path_to_data
+        self.filename = filename
+        self.base64 = from_base64_str
+        self.data = data
 
-        #TODO : make sure to handle the situation where the data file/data matrix is not from progenesis
-        if os.path.isfile(path_to_data):
-            self.in_format = "LCMS"
-        elif os.path.isdir(path_to_data):
+        #TODO : make sure to check if "not progen" matrix are well handled
+        if self.base64:
+            self.in_format = "base64"
+        elif os.path.isfile(filename):
+            self.in_format = "file"
+        elif os.path.isdir(filename):
             self.in_format = "LDTD"
         else:
-            raise TypeError("The given path is not valid, it have to be a file or a directory.")
+            raise TypeError("The given path is not valid, it has to be a file or a directory.")
 
     def convert(self):
-        if self.in_format == "LCMS":
-            data = self._convert_from_LCMS()
+        if self.in_format == "base64":
+            data_type, data_string = self.data.split(',')
+            self.data = base64.b64decode(data_string)
+            data = self._convert_from_file()
+        elif self.in_format == "file":
+            data = self._convert_from_file()
         elif self.in_format == "LDTD":
             data = self._convert_from_LDTD()
         return data
 
-    def _convert_from_LCMS(self):
-        file_ext = self.inpath.split(".")[-1]
-        if "csv" in file_ext:
-            # TODO : beware of the sep (, or ;)
-            header = pd.read_csv(self.inpath, header=None, sep=",", nrows=3, index_col=0).fillna('').to_numpy()
-            datatable = pd.read_csv(self.inpath, header=[0, 1, 2], sep=",", index_col=0)
+    def _convert_from_file(self):
+        """
+        take a file path or an StringIO object and read it as a pandas Dataframe
+
+        """
+        file_ext = self.filename.split(".")[-1]
+        # TODO : beware of the sep (, or ;)
+        if "csv" in file_ext:  # Abundance matrices of Progenesis are always in csv format, so its checked first
+            if self.in_format == "base64":  # this condition is to make readable the input data from dcc.Upload
+                self.data = io.StringIO(self.data.decode('utf-8'))
+            else:  # this else is to enable the pd dataframe to be read from full file path
+                self.data = self.filename
+            header = pd.read_csv(self.data, header=None, sep=",", nrows=3, index_col=0).fillna('').to_numpy()
+            print("---> DataFormat.py -> _convert_from_file : header")
+            print(header)
+            if "Normalised abundance" in header[0] or "Raw abundance" in header[0]:
+                datatable = pd.read_csv(self.data, header=[0, 1, 2], sep=","
+                                        , index_col=0)
+                return self._read_Progenesis_data_table(datatable, header)
+            else:
+                datatable = pd.read_csv(self.data, sep=",", index_col=0)
+                return self._read_general_data_table(datatable)
+
         elif "xls" in file_ext or "od" in file_ext:  #TODO : restrict the "od" condition, might be too large
-            datatable = pd.read_excel(self.inpath, header=2, index_col=0)
-            header = pd.read_excel(self.inpath, nrows=1, index_col=0)
+            if self.in_format == "base64":  # same as above
+                self.data = io.StringIO(io.BytesIO(self.data))
+            else:
+                self.data = self.filename
+            datatable = pd.read_excel(self.data, index_col=0)
+            return self._read_general_data_table(datatable)
+
         else:
             raise TypeError("The input file is not of the right type, must be excel, odt or csv.")
-        return self._read_Progenesis_data_table(datatable, header)
+
 
     def _convert_from_LDTD(self):
         # TODO :  implement the handling of LDTD data format
         return ""
+
+    def _read_general_data_table(self, datatable):
+        """
+        for now does nothing, but might be the place to deal with custom format of matrices with extra/unecessary columns
+        or informations
+        ! careful : output only the datable and 3 empty strings because the functio that calls it only needs datatable,
+        but that might change
+        """
+
+        return "", datatable, "", ""
 
     def _read_Progenesis_data_table(self, datatable, header):
         """

@@ -14,13 +14,59 @@ class Plots():
     def show_algo_comparison_by_heatmap(self):
         return
 
-    def show_umap_2D(self, umap_data, classes):
+    def show_umap(self, umap_data, classes):
         fig = px.scatter(
-            umap_data, x=0, y=1,
-            # color=classes,
+            umap_data[0], x=0, y=1,
+            color=classes,
             color_continuous_scale=self.colors,
 
         )
+
+        # Add dropdown
+        fig.update_layout(
+            updatemenus=[
+                dict(
+                    buttons=list([
+                        dict(
+                            args=["data_frame", umap_data[0]],
+                            label="10 best features",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["data_frame", umap_data[1]],
+                            label="40 best features",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["data_frame", umap_data[2]],
+                            label="100 best features",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["data_frame", umap_data[3]],
+                            label="All features",
+                            method="restyle"
+                        )
+                    ]),
+                    direction="down",
+                    pad={"r": 10, "t": 10},
+                    showactive=True,
+                    x=0.1,
+                    xanchor="left",
+                    y=1.1,
+                    yanchor="top"
+                ),
+            ]
+        )
+
+        # Add annotation
+        fig.update_layout(
+            annotations=[
+                dict(text="Number of features:", showarrow=False,
+                     x=0, y=1.085, yref="paper", align="left")
+            ]
+        )
+
         fig.update_layout({
             "plot_bgcolor": "rgba(0, 0, 0, 0)",
             "paper_bgcolor": "rgba(0, 0, 0, 0)",

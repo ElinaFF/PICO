@@ -1,5 +1,7 @@
 import datetime
 import json
+import base64
+import io
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -8,6 +10,7 @@ from dash import html, Output, Input, dash, State, dcc
 from metabodashboard.service.DataFormat import DataFormat
 from metabodashboard.service.SamplesPairing import SamplesPairing
 from .MetaTab import MetaTab
+from ...service import Utils
 
 
 class SplitsTab(MetaTab):
@@ -18,11 +21,12 @@ class SplitsTab(MetaTab):
                     [
                         html.Div(
                             "In this tab, you will create a setting file with all info necessary "
-                            "to run a machine learning experiment. This file will even contain a copy of the data "
-                            "to avoid broken paths (after some times, files might be moved or deleted and the path pointing "
-                            "to their location will then be not valid). An * besides the name of the field means a value "
+                            "to run a machine learning experiment. An * besides the name of the field means a value "
                             "is required, all other fields can be left untouched and will use default values."),
                     ]
+                    #This file will even contain a copy of the data "
+                    #"to avoid broken paths (after some times, files might be moved or deleted and the path pointing "
+                    #"to their location will then be not valid).
                 ),
             ]),
         ])
@@ -30,8 +34,13 @@ class SplitsTab(MetaTab):
         __dataFile = html.Div(
             [
                 dbc.Label("Data file(s) *", className="form_labels"),
-                dbc.Input(id="path_to_data_file", placeholder="Enter path",
-                          className="form_input_text"),
+                # dbc.Input(id="path_to_data_file", placeholder="Enter path",
+                #           className="form_input_text"),
+                dcc.Upload(id="upload_datatable",
+                           children=[dbc.Button("Upload File",
+                                                id="upload_datatable_button",
+                                                # className="custom_buttons",
+                                                color="outline-primary")]),
                 dbc.FormText(
                     "Write the path to the data files (spectra). You can use either absolute or relative path.",
                 ),
@@ -42,8 +51,13 @@ class SplitsTab(MetaTab):
         __metaDataFile = html.Div(
             [
                 dbc.Label("Metadata file *", className="form_labels"),
-                dbc.Input(id="in_path_to_metadata", placeholder="Enter path",
-                          debounce=True, className="form_input_text"),
+                # dbc.Input(id="in_path_to_metadata", placeholder="Enter path",
+                #           debounce=True, className="form_input_text"),
+                dcc.Upload(id="upload_metadata",
+                           children=[dbc.Button("Upload File",
+                                                id="upload_metadata_button",
+                                                # className="custom_buttons",
+                                                color="outline-primary")]),
                 dbc.FormText(
                     "Write the path of the metadata file.You can use either absolute or relative path. "
                     "Press Enter when you are done to update other forms.",
@@ -82,105 +96,20 @@ class SplitsTab(MetaTab):
                     ],
                     value=False,
                     labelCheckedStyle={"color": "#13BD00"},
-                )
+                ),
+
             ],
+            className="form_field"
         )
 
         _file = html.Div(className="title_and_form", children=[
             html.H4(id="CreateSplits_paths_title", children="A) Files"),
             dbc.Form(children=[
-                dbc.Col(children=[__dataFile, __metaDataFile, __outputFile, __useRawData
+                dbc.Col(children=[__useRawData, __dataFile, __metaDataFile, __outputFile
                                   ]),
 
             ]),
 
-        ])
-
-        __posNegPairing = html.Div(
-            [
-                dbc.Checklist(
-                    id="in_pairing_pos_neg",
-                    options=[
-                        {"label": "Pos and Neg pairing",
-                         "value": 0},
-                    ],
-                    labelCheckedStyle={"color": "#13BD00"},
-                )
-            ],
-        )
-
-        __posPattern = html.Div(
-            [
-                dbc.Input(id="distinct_id_pos_samples",
-                          className="form_input_text",
-                          placeholder="Pattern for positive samples"),
-            ],
-        )
-
-        __negPattern = html.Div(
-            [
-                dbc.Input(id="distinct_id_neg_samples",
-                          className="form_input_text",
-                          placeholder="Pattern for negative samples"),
-            ],
-        )
-
-        __otherPairing = html.Div(
-            [
-                dbc.Checklist(
-                    id="in_pairing_samples",
-                    options=[
-                        {"label": "Other pairing", "value": 0},
-                    ],
-                    labelCheckedStyle={"color": "#13BD00"},
-                )
-            ],
-        )
-
-        _type1Pattern = html.Div(
-            [
-                dbc.Input(id="distinct_id_1_samples",
-                          className="form_input_text",
-                          placeholder="Pattern for type 1 of samples"),
-            ],
-        )
-
-        _type2Pattern = html.Div(
-            [
-                dbc.Input(id="distinct_id_2_samples",
-                          className="form_input_text",
-                          placeholder="Pattern for type 2 of samples"),
-            ],
-        )
-
-        _dataFusion = html.Div(className="title_and_form", children=[
-            html.H4(id="sep_samples_title", children="B) Data Fusion"),
-            dbc.Form(children=[
-                dbc.Col(children=[
-                    dbc.FormText(
-                        "A pattern for a positive file could be '_pos_' if the file name was"
-                        " : sample1_pos_JH35.lcs it means that all positive files would have"
-                        " the pattern in the middle of their name."),
-                    dbc.FormText(
-                        "We consider that the name of a pos file is in all point identical"
-                        " to the name of the neg file corresponding, except for the pos/neg"
-                        " pattern. It is the same consideration for the other potential"
-                        " pairing."
-                    ),
-                    html.Br(),
-                    __posNegPairing,
-                    html.Div(id="div_pair_pn", children=[
-                        __posPattern,
-                        __negPattern
-                    ], style={'display': 'none'}),
-                    __otherPairing,
-                    html.Div(id="div_pair_12", children=[
-                        _type1Pattern,
-                        _type2Pattern
-                    ], style={"display": "none"}),
-
-                ])
-            ])
         ])
 
         __typeGroupLink = dbc.Card([
@@ -264,7 +193,7 @@ class SplitsTab(MetaTab):
         _experimentalDesigns = html.Div(className="title_and_form",
                                         children=[
                                             html.H4(id="Exp_desg_title",
-                                                    children="C) Define Experimental designs"),
+                                                    children="B) Define Experimental designs"),
                                             dbc.Form(children=[
                                                 dbc.Col(children=[
 
@@ -285,6 +214,94 @@ class SplitsTab(MetaTab):
 
                                             ]),
                                         ])
+
+        __posNegPairing = html.Div(
+            [
+                dbc.Checklist(
+                    id="in_pairing_pos_neg",
+                    options=[
+                        {"label": "Pos and Neg pairing",
+                         "value": 0},
+                    ],
+                    labelCheckedStyle={"color": "#13BD00"},
+                )
+            ],
+        )
+
+        __posPattern = html.Div(
+            [
+                dbc.Input(id="distinct_id_pos_samples",
+                          className="form_input_text",
+                          placeholder="Pattern for positive samples"),
+            ],
+        )
+
+        __negPattern = html.Div(
+            [
+                dbc.Input(id="distinct_id_neg_samples",
+                          className="form_input_text",
+                          placeholder="Pattern for negative samples"),
+            ],
+        )
+
+        __otherPairing = html.Div(
+            [
+                dbc.Checklist(
+                    id="in_pairing_samples",
+                    options=[
+                        {"label": "Other pairing", "value": 0},
+                    ],
+                    labelCheckedStyle={"color": "#13BD00"},
+                )
+            ],
+        )
+
+        _type1Pattern = html.Div(
+            [
+                dbc.Input(id="distinct_id_1_samples",
+                          className="form_input_text",
+                          placeholder="Pattern for type 1 of samples"),
+            ],
+        )
+
+        _type2Pattern = html.Div(
+            [
+                dbc.Input(id="distinct_id_2_samples",
+                          className="form_input_text",
+                          placeholder="Pattern for type 2 of samples"),
+            ],
+        )
+
+        _dataFusion = html.Div(className="title_and_form", children=[
+            html.H4(id="sep_samples_title", children="C) Data Fusion"),
+            dbc.Form(children=[
+                dbc.Col(children=[
+                    dbc.FormText(
+                        "A pattern for a positive file could be '_pos_' if the file name was"
+                        " : sample1_pos_JH35.lcs it means that all positive files would have"
+                        " the pattern in the middle of their name."),
+                    dbc.FormText(
+                        "We consider that the name of a pos file is in all point identical"
+                        " to the name of the neg file corresponding, except for the pos/neg"
+                        " pattern. It is the same consideration for the other potential"
+                        " pairing."
+                    ),
+                    html.Br(),
+                    __posNegPairing,
+                    html.Div(id="div_pair_pn", children=[
+                        __posPattern,
+                        __negPattern
+                    ], style={'display': 'none'}),
+                    __otherPairing,
+                    html.Div(id="div_pair_12", children=[
+                        _type1Pattern,
+                        _type2Pattern
+                    ], style={"display": "none"}),
+
+                ])
+            ])
+        ])
+
         __sampleProportion = html.Div([
             dbc.Label(
                 "Proportion of samples in test"),
@@ -309,28 +326,6 @@ class SplitsTab(MetaTab):
         ],
             className="form_field")
 
-        __peakThreshold = html.Div([
-            dbc.Label(
-                "Peak Threshold"),
-            dbc.Input(
-                id="in_peak_threshold_value",
-                value="500",
-                type="number",
-                min=1,
-                size="5")
-        ], className="form_field")
-
-        __autoOptimizeNumber = html.Div([
-            dbc.Label(
-                "AutoOptimize number"),
-            dbc.Input(
-                id="in_autoOptimize_value",
-                value="20",
-                type="number",
-                min=1,
-                size="5")
-        ], className="form_field")
-
         _splitDefinition = html.Div(className="title_and_form",
                                     children=[
                                         html.H4(
@@ -338,9 +333,7 @@ class SplitsTab(MetaTab):
                                             children="D) Define splits"),
                                         dbc.Form(children=[
                                             dbc.Col(children=[__sampleProportion,
-                                                              __splitsNumber,
-                                                              __peakThreshold,
-                                                              __autoOptimizeNumber
+                                                              __splitsNumber
                                                               ]),
                                         ])
                                     ])
@@ -430,6 +423,28 @@ class SplitsTab(MetaTab):
                     ]),
             ], className="form_field")
 
+        __peakThreshold = html.Div([
+            dbc.Label(
+                "Peak Threshold"),
+            dbc.Input(
+                id="in_peak_threshold_value",
+                value="500",
+                type="number",
+                min=1,
+                size="5")
+        ], className="form_field")
+
+        __autoOptimizeNumber = html.Div([
+            dbc.Label(
+                "AutoOptimize number"),
+            dbc.Input(
+                id="in_autoOptimize_value",
+                value="20",
+                type="number",
+                min=1,
+                size="5")
+        ], className="form_field")
+
         _otherProcessing = html.Div(className="title_and_form",
                                     children=[
                                         html.H4(id="preprocess_title",
@@ -444,7 +459,9 @@ class SplitsTab(MetaTab):
                                                             children=[__LDTDDataType,
                                                                       __LDTDPeakPicking,
                                                                       __LDTDAlignment,
-                                                                      __LDTDNormalization
+                                                                      __LDTDNormalization,
+                                                                      __peakThreshold,
+                                                                      __autoOptimizeNumber
                                                                       ]
                                                         )
                                                     ),
@@ -497,11 +514,12 @@ class SplitsTab(MetaTab):
                        children=[_introductionNotice,
                                  html.Div(className="fig_group",
                                           children=[_file,
-                                                    _dataFusion,
+                                                    _experimentalDesigns,
+
                                                     ]),
 
                                  html.Div(className="fig_group",
-                                          children=[_experimentalDesigns,
+                                          children=[_dataFusion,
                                                     _splitDefinition
                                                     ]),
 
@@ -512,7 +530,31 @@ class SplitsTab(MetaTab):
                                  dcc.Download(id="download-save-file")
                                  ])
 
+
     def _registerCallbacks(self) -> None:
+
+        @self.app.callback(
+            Output('upload_datatable_button', 'style'),
+            [Input('upload_datatable', 'contents')],
+            [State('upload_datatable', 'filename'),
+             State('upload_datatable', 'last_modified'),
+             State("in_use_raw", "value")
+             ]
+        )
+        def upload_data(list_of_contents, list_of_names, list_of_dates, use_raw):
+            if list_of_contents is not None:
+                print("---> len list_of_names")
+                print(len(list_of_names))
+                print(list_of_names)
+                print("---> content")
+                print(len(list_of_contents))
+                print(list_of_contents[:50])
+
+                self.metabo_controller.set_data_matrix_from_path(list_of_names,
+                                                                 data=list_of_contents,
+                                                                 use_raw=use_raw)
+                return dash.no_update
+
         @self.app.callback(
             [Output("div_pair_pn", "style"),
              Output("div_pair_12", "style")],
@@ -529,13 +571,32 @@ class SplitsTab(MetaTab):
             else:
                 return {"display": "none"}, {"display": "none"}
 
+        @self.app.callback(
+            Output('upload_metadata_button', 'style'),
+            [Input('upload_metadata', 'contents')],
+            [State('upload_metadata', 'filename'),
+             State('upload_metadata', 'last_modified'),
+             ]
+        )
+        def upload_metadata(list_of_contents, list_of_names):
+            if list_of_contents is not None:
+                self.metabo_controller.set_data_matrix_from_path(list_of_names,
+                                                                 data=list_of_contents,
+                                                                 )
+                return dash.no_update
+
         @self.app.callback([Output("in_target_col_name", "options"),
                             Output("in_ID_col_name", "options"),
                             Output("output_in_case_of_error_in_path_to_metadata", "children")],
-                           [Input("in_path_to_metadata", "value")])
-        def get_metadata_cols_names_to_choose_from(path_value):
-            if path_value is None:
-                return dash.no_update
+                           [Input('upload_metadata', 'contents')],
+                           [State('upload_metadata', 'filename'),
+                            State('upload_metadata', 'last_modified'),
+                            ]
+                           )
+        def get_metadata_cols_names_to_choose_from(list_of_contents, list_of_names):
+            if list_of_contents is not None:
+                self.metabo_controller.set_data_matrix_from_path(list_of_names,
+                                                                 data=list_of_contents)
 
             if self.metabo_controller.set_metadata_dataframe_from_path(path_value):
                 formatted_columns = self.metabo_controller.get_formatted_columns()
@@ -670,7 +731,7 @@ class SplitsTab(MetaTab):
              State("in_use_raw", "value"),
              State('in_nbr_splits', 'value'),
              State('in_nbr_processes', 'value'),
-             State("path_to_data_file", "value"),
+             # State("path_to_data_file", "value"),
              State('in_peak_threshold_value', 'value'),
              State('in_percent_samples_in_test', 'value'),
              State('in_autoOptimize_value', 'value'),
@@ -689,7 +750,7 @@ class SplitsTab(MetaTab):
              State("distinct_id_2_samples", "value"),
              ]
         )
-        def saving_params_of_splits_batch(n, name_of_the_file, use_raw, nbr_splits, nbr_processes, path_data_files,
+        def saving_params_of_splits_batch(n, name_of_the_file, use_raw, nbr_splits, nbr_processes, #path_data_files,
                                           peakT, percent_in_test, autoOpt, path_to_metadata, ID_col_name,
                                           targets_col_name,
                                           type_of_processing, peak_pick, align, normalize, pair_pn, pair_id_pos,
@@ -700,7 +761,9 @@ class SplitsTab(MetaTab):
             if n >= 1:
                 self.metabo_controller.set_id_column(ID_col_name)
                 self.metabo_controller.set_splits_parameters(int(nbr_splits), float(percent_in_test))
-                print("oui")
+
+                Utils.dump_metabo_expe(self.metabo_controller._metabo_experiment)
+
                 return "The parameters file is created, the splits's creation should start shortly..."
             else:
                 return dash.no_update
@@ -716,6 +779,23 @@ class SplitsTab(MetaTab):
                                                       "justify-content": "space-between", "align-items": "center"}))
         return children_container
 
-
-
+    # def parse_contents(self, contents, filename):
+    #     content_type, content_string = contents.split(',')
+    #
+    #     decoded = base64.b64decode(content_string)
+    #     try:
+    #         if 'csv' in filename:
+    #             # Assume that the user uploaded a CSV file
+    #             df = pd.read_csv(
+    #                 io.StringIO(decoded.decode('utf-8')))
+    #         elif 'xls' in filename:
+    #             # Assume that the user uploaded an excel file
+    #             df = pd.read_excel(io.BytesIO(decoded))
+    #     except Exception as e:
+    #         print(e)
+    #         return html.Div([
+    #             "There was an error processing this file. Can't detect if there is the csv or xls file extension."
+    #         ])
+    #
+    #     return df
 

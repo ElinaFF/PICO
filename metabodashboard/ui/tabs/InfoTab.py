@@ -1,11 +1,28 @@
 import dash_bootstrap_components as dbc
-from dash import html
+from dash import html, dcc
 
 from .MetaTab import MetaTab
 
 
 class InfoTab(MetaTab):
     def getLayout(self) -> dbc.Tab:
+        _loadExpe = dbc.Card(className="cards_info", children=[
+            dbc.CardHeader("Load MetaboExperiment"),
+            dbc.CardBody(
+                [
+                    html.P(
+                        "You can load the file of a previous experiment and resume your analysis."
+                        ),
+                    dcc.Upload(id="load_expe", disabled=True,
+                               children=[dbc.Button("Select File",
+                                                    disabled=True,
+                                                    id="load_expe_button",
+                                                    className="custom_buttons",
+                                                    color="primary")]),
+                ]
+            ),
+        ])
+
         _splitsInfo = dbc.Card(className="cards_info", children=[
             dbc.CardHeader("Splits"),
             dbc.CardBody(
@@ -81,7 +98,7 @@ class InfoTab(MetaTab):
                 html.Div(className="fig_group", children=[
                     html.Div(className="column_content",
                              # WARNING !! : _infoFigure is not with the card, it's in a separate column
-                             children=[_splitsInfo, _MLInfo, _resultInfo]), _infoFigure])]) #_interpretInfo
+                             children=[_loadExpe, _splitsInfo, _MLInfo, _resultInfo]), _infoFigure])]) #_interpretInfo
 
     def _registerCallbacks(self) -> None:
         pass

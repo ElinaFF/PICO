@@ -146,6 +146,11 @@ th{
     justify-content:right;
 }
 
+.btn{
+    margin:1.5em;
+    font-size:1em;
+}
+
 .custom_buttons{
     margin:1.5em;
     font-size:1em;
@@ -204,7 +209,8 @@ th{
 
 #title_bg{
     background-color:#00143e;
-    width:30%;
+    min-width:35em;
+    max-width: 40%;
     padding:1em;
     margin:0.5em;
 }
@@ -222,6 +228,11 @@ th{
 #custom_big_tabs{
     width:96%;
     margin:auto auto 2em auto;
+}
+
+.nav-tabs .nav-link{
+    background-color: rgba(255,255,255,1);
+    border-color: #fff #fff #eceeef #fff;
 }
 
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link{

@@ -8,6 +8,7 @@ from dash import html, State, Input, Output, dash
 from .MetaTab import MetaTab
 from metabodashboard.service.RunMLalgo import runAlgo
 from metabodashboard.service.Utils import retrieve_data_from_sample_name
+from ...service import Utils
 
 
 class MLTab(MetaTab):
@@ -124,7 +125,6 @@ class MLTab(MetaTab):
                 new_algo_params = {"function": name_new, "ParamGrid": {name_param: values_param},
                                    "importing": import_new}
 
-                all_algo = {}
                 with open(sklearn_algo_file, "r+") as algo_file:
                     data = json.load(algo_file)
 
@@ -138,7 +138,6 @@ class MLTab(MetaTab):
                 return [{"label": a, "value": a} for a in all_algo.keys()], "", "", "", ""
 
             else:
-                all_algo = {}
                 with open(sklearn_algo_file, "r+") as algo_file:
                     all_algo = json.load(algo_file)
                 return [{"label": a, "value": a} for a in all_algo.keys()], "", "", "", ""
@@ -157,6 +156,9 @@ class MLTab(MetaTab):
                 print(selected_models)
                 self.metabo_controller.set_selected_models(selected_models)
                 self.metabo_controller.learn(int(cv_folds))
+
+                Utils.dump_metabo_expe(self.metabo_controller._metabo_experiment)
+
                 return "Done!"
             else:
                 return dash.no_update

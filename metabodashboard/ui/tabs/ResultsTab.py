@@ -76,57 +76,26 @@ class ResultsTab(MetaTab):
             __currentExperimentInfo,
         ])
 
-        ___accuracyPlot = html.Div(className="acc_plot_and_title", children=[
+        ___pcaPlot = html.Div(className="pca_plot_and_title", children=[
             html.Div(className="title_and_help",
-                     children=[html.H6("Accuracy plot"),
-                               dbc.Button("[?]",
-                                          className="text-muted btn-secondary",
-                                          id="help_accPlot"),
-                               dbc.Popover(children=[
-                                   dbc.PopoverBody(
-                                       "Blablabla wout wout")
-                               ],
-                                   id="pop_help_accPlot",
-                                   is_open=False,
-                                   target="help_accPlot")
-                               ])
-            ,
-            dcc.Loading(dcc.Graph(id="accuracy_overview"),
-                        type="dot", color="#13BD00")]
-        )
-
-        ___globalMetric = html.Div(className="w-25", children=[
-            html.H6("Global confusion matrix"),
-            dcc.Loading(dcc.Graph(id="conf_matrix"),
+                     children=[
+                         html.H6("PCA", id="PCA_title"),
+                         dbc.Button("[?]",
+                                    className="text-muted btn-secondary",
+                                    id="help_pcaPlot"),
+                         dbc.Popover(children=[
+                             dbc.PopoverBody(
+                                 "Blablabla wout wout")
+                         ],
+                             id="pop_help_pcaPlot",
+                             is_open=False,
+                             target="help_pcaPlot")
+                     ]
+                     ),
+            # Should we put the title on the plot?
+            dcc.Loading(dcc.Graph(id="PCA"),
                         type="dot", color="#13BD00")
-            # dcc.Loading(
-            #     id="loading_global_metrics",
-            #     children=html.Div(id="global_metrics",
-            #                       children=""),
-            #     type="circle"
-            # ),
 
-        ]
-
-                                   )
-
-        ___featuresTable = html.Div(className="table_features", children=[
-            dcc.Loading(
-                id="loading_features_table",
-                children=html.Div(id="features_table", children=""),
-                type="circle"),
-
-
-            # dcc.Loading(
-            #     dbc.Table.from_dataframe(
-            #         df=pd.DataFrame({
-            #             "Feature": [],
-            #             "Number of models": []
-            #         }),
-            #         id="features_table",
-            #         striped=True, bordered=True,
-            #         hover=True)
-            # ),
         ])
 
         ___umap = html.Div(className="umap_plot_and_title",
@@ -150,21 +119,42 @@ class ResultsTab(MetaTab):
 
                            ])
 
-        __globalResultTab = dbc.Tab(className="sub_tab",
-                                    label="Global results",
+        __dataResultTab = dbc.Tab(className="sub_tab",
+                                    label="Data",
                                     children=[
                                         html.Div(className="fig_group",
                                                  children=[
-                                                     ___accuracyPlot,
-                                                     ___globalMetric
-                                                 ]),
-                                        html.Div(className="fig_group",
-                                                 children=[
-                                                     ___featuresTable,
+                                                     ___pcaPlot,
                                                      ___umap
-                                                 ])
+                                                 ]),
+
                                     ])
 
+        ___accuracyPlot = html.Div(className="acc_plot_and_title", children=[
+            html.Div(className="title_and_help",
+                     children=[html.H6("Accuracy plot"),
+                               dbc.Button("[?]",
+                                          className="text-muted btn-secondary",
+                                          id="help_accPlot"),
+                               dbc.Popover(children=[
+                                   dbc.PopoverBody(
+                                       "Blablabla wout wout")
+                               ],
+                                   id="pop_help_accPlot",
+                                   is_open=False,
+                                   target="help_accPlot")
+                               ])
+            ,
+            dcc.Loading(dcc.Graph(id="accuracy_overview"),
+                        type="dot", color="#13BD00")]
+                                   )
+
+        ___globalMetric = html.Div(className="w-25", children=[
+            html.H6("Global confusion matrix"),
+            dcc.Loading(dcc.Graph(id="conf_matrix"),
+                        type="dot", color="#13BD00")
+
+        ])
         ___specificFilters = html.Div(className="fig_group_col", children=[
             html.Div(className="", children=[
                 html.H6("Splits number"),
@@ -173,14 +163,6 @@ class ResultsTab(MetaTab):
                            options=[{"label": "None", "value": "None"}],
                            value="None",
                            ),
-                # html.H6("Show QCs"),
-                # dbc.Checklist(id="show_qc_checklist",
-                #               # switch=True,
-                #               options=[
-                #                   # Not sure how to label these
-                #                   {"label": "QC all run",
-                #                    "value": "true"}]
-                #               ),
 
                 dbc.Button("Update", color="primary",
                            id="update_specific_results_button",
@@ -197,38 +179,26 @@ class ResultsTab(MetaTab):
                      ])
         ])
 
-        ___pcaPlot = html.Div(className="pca_plot_and_title", children=[
-            html.Div(className="title_and_help",
-                     children=[
-                         html.H6("PCA", id="PCA_title"),
-                         dbc.Button("[?]",
-                                    className="text-muted btn-secondary",
-                                    id="help_pcaPlot"),
-                         dbc.Popover(children=[
-                             dbc.PopoverBody(
-                                 "Blablabla wout wout")
-                         ],
-                             id="pop_help_pcaPlot",
-                             is_open=False,
-                             target="help_pcaPlot")
-                     ]
-                     ),
-            # Should we put the title on the plot?
-            dcc.Loading(dcc.Graph(id="PCA"),
-                        type="dot", color="#13BD00")
-            # dcc.Loading(
-            #     dcc.Graph(id="PCA",
-            #               figure=go.Figure(
-            #                   data=[go.Scatter(
-            #                       x=[0, 1, 3, 4],
-            #                       y=[0, 2, 3, 4])],
-            #                   layout=go.Layout(
-            #                       paper_bgcolor='rgba(0,0,0,0)',
-            #                       plot_bgcolor='rgba(0,0,0,0)'))
-            #               )
-            # )
-        ])
+        __algoResultsTab = dbc.Tab(className="sub_tab",
+                                       label="Algorithm",
+                                       children=[
+                                           html.Div(className="fig_group", children=[
+                                               ___accuracyPlot,
+                                               ___globalMetric
+                                           ]),
+                                           html.Div(className="fig_group", children=[
+                                               ___specificFilters
+                                           ]),
 
+                                       ])
+
+        ___featuresTable = html.Div(className="table_features", children=[
+            dcc.Loading(
+                id="loading_features_table",
+                children=html.Div(id="features_table", children=""),
+                type="circle"),
+
+        ])
         ___metaboliteLevelBoxplot = html.Div(className="bxplot_plot_select_and_title",
                                              children=[
                                                  html.Div(className="title_and_help",
@@ -318,15 +288,14 @@ class ResultsTab(MetaTab):
 
                                                         ])
 
-        __specificResultsTab = dbc.Tab(className="sub_tab",
-                                       label="Specific results",
+        __featuresResultsTab = dbc.Tab(className="sub_tab",
+                                       label="Features",
                                        children=[
                                            html.Div(className="fig_group", children=[
-                                               ___specificFilters,
-                                               ___pcaPlot
+                                               ___featuresTable,
+                                               ___metaboliteLevelBoxplot
                                            ]),
                                            html.Div(className="fig_group", children=[
-                                               ___metaboliteLevelBoxplot,
                                                ___heatMap
                                            ]),
                                        ]
@@ -336,8 +305,9 @@ class ResultsTab(MetaTab):
             dbc.Tabs(className="custom_sub_tabs",
                      id="sub_tabs",
                      children=[
-                         __globalResultTab,
-                         __specificResultsTab
+                         __dataResultTab,
+                         __algoResultsTab,
+                         __featuresResultsTab
                      ])
         ])
 
@@ -457,7 +427,7 @@ class ResultsTab(MetaTab):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["umap_data"]
                 classes = self.r[design_name][algo].results["classes_train"]
-                return self._plots.show_umap_2D(df, classes)
+                return self._plots.show_umap(df, classes)
             else:
                 return dash.no_update
 
@@ -682,12 +652,11 @@ class ResultsTab(MetaTab):
 
         @self.app.callback(
             Output("PCA", "figure"),
-            [Input("update_specific_results_button", "n_clicks")],
+            [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"),
-             State("design_dropdown", "value"),
-             State("splits_dropdown", "value")]
+             State("design_dropdown", "value")]
         )
-        def show_pca(n_clicks, algo, design_name, s):
+        def show_pca(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["pca_data"]
                 classes = self.r[design_name][algo].results["classes_train"]

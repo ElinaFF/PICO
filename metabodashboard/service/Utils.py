@@ -7,6 +7,20 @@ from .ExperimentDesign import *
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 
+ROOT_PATH = os.path.dirname(__file__)
+DUMP_PATH = os.path.join(ROOT_PATH, "dumps")
+DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "metaboExpe.p")
+
+def dump_metabo_expe(obj):
+    with open(DUMP_EXPE_PATH, "w+b") as expe_file:
+        pkl.dump(obj, expe_file)
+
+def load_metabo_expe(path):
+    if os.path.isfile(DUMP_EXPE_PATH):
+        with open(path, "rb") as expe_file:
+            return pkl.load(expe_file)
+    else:
+        return None
 
 def retrieve_data_from_sample_name(names_list, dataframe):
     """

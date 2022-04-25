@@ -35,7 +35,7 @@ class Results:
         """
         pass
 
-    def add_results_from_one_algo_on_one_split(self, model, x_train, y_train_true: list, y_train_pred: list,
+    def add_results_from_one_algo_on_one_split(self, model, data, y_train_true: list, y_train_pred: list,
                                                y_test_true: list, y_test_pred: list, algo_name: str, split_number: str):
         """
         Besoin modèle pour extraire features, features importance
@@ -56,8 +56,8 @@ class Results:
             print("------> last split, start features importance")
             self.results["features_table"] = self.produce_features_importance_table()
             self.results["accuracies_table"] = self.produce_accuracy_plot_all()
-            self.results["umap_data"] = self._produce_UMAP_2D(x_train)
-            self.results["pca_data"] = self._produce_PCA(x_train)
+            self.results["umap_data"] = self._produce_UMAP(data, self.results["features_table"])
+            self.results["pca_data"] = self._produce_PCA(data, self.results["features_table"])
             self.results["classes_train"] = y_train_true
 
 
@@ -89,15 +89,35 @@ class Results:
         labels = list(set(y_test_true))
         return labels, confusion_matrix(y_test_true, y_test_pred, labels=labels, normalize="true")
 
-    def _produce_UMAP_2D(self, X: pd.DataFrame):
+    def _produce_UMAP(self, X: pd.DataFrame, features_df: pd.DataFrame):
+        nbr_feat = [10, 40, 100]
+        umaps = []
+        for nbr in nbr_feat:
+            selected_feat = features_df["features"][:nbr]
+            x = X.loc[:, selected_feat]
+            x = x.to_numpy()
+            umap = umap.UMAP(n_components=2, init='random', random_state=13)
+            umaps.append(umap.fit_transform(x))
+        # Redo the umap but on all the data
         x = X.to_numpy()
-        umap_2d = umap.UMAP(n_components=2, init='random', random_state=13)
-        return umap_2d.fit_transform(x)
+        umap = umap.UMAP(n_components=2, init='random', random_state=13)
+        umaps.append(umap.fit_transform(x))
+        return umaps
 
-    def _produce_PCA(self, X: pd.DataFrame):
+    def _produce_PCA(self, X: pd.DataFrame, features_df: pd.DataFrame):
+        nbr_feat = [10, 40, 100]
+        pcas = []
+        for nbr in nbr_feat:
+            selected_feat = features_df["features"][:nbr]
+            x = X.loc[:, selected_feat]
+            x = x.to_numpy()
+            pca = PCA(n_components=2)
+            pcas.append(pca.fit_transform(x))
+        # Redo the umap but on all the data
         x = X.to_numpy()
         pca = PCA(n_components=2)
-        return pca.fit_transform(x)
+        pcas.append(pca.fit_transform(x))
+        return pcas
 
     def _produce_info_expe(self, y_train_true, y_test_true):
         """
@@ -126,8 +146,6 @@ class Results:
         les résultats de splits)
         """
         features, times_used_all_splits, importance_or_usage_or_ = self._aggregate_features_info()
-
-
         print("--> aggregating done, importances : {}".format(importance_or_usage_or_))
 
         d = {"features": features, "times_used": times_used_all_splits, "importance_usage": importance_or_usage_or_}
@@ -254,6 +272,56 @@ class ResultsRF(Results):
         times_used_all_splits = [dict_top[f][0] for f in dict_top.keys()]
         importance_or_usage_or_ = [str(dict_top[f][1]) for f in dict_top.keys()] #+ "_(" + str(dict_complet[f][1]) + ")"
         return features, times_used_all_splits, importance_or_usage_or_
+
+
+class ResultsSVM(Results):
+    """
+    Contains all results of an experimental design, is an attribute of class Experimental_design, and gives info to class "Plotter".
+    Has results of all algorithms for all splits on one experimental design (so almost only numbers/floats/ints).
+    Can be kept in RAM as it is not supposed to be too big, and prevents the reading/writing of models and splits files.
+    """
+
+    def _get_features_importance(self, model):
+        if self.f_names is None:
+            raise RuntimeError("Features names are not retrieved yet")
+
+        features = []
+        importances = []
+        for DT in model.estimators_:
+            i = DT.feature_importances_
+            zipped = list(zip(self.f_names, i))
+            feat_sort = sorted(zipped, key=lambda x: x[1], reverse=True)
+            top_x = feat_sort[-50:]
+            f, i = zip(*top_x)
+            features.extend(f)
+            importances.extend(i)
+        zipped = zip(features, importances)
+        return zipped
+
+    def _aggregate_features_info(self):
+        """
+        When all splits are done and saved, aggregate feature info from every split to compute stats
+        from all splits, concatenate in the same list the name of features, and another list their importance
+        """
+        features = []
+        imp = []
+        # imp_complet = []
+        # Get values of all splits in two lists
+        for split in self.splits_number:
+            f, i = zip(*self.results[split]["feature_importances"])
+            features.extend(f)
+            imp.extend(i)
+
+        # Store the mean importance, and the number of time used, per feature
+        dict_top = self.format_name_and_associated_values(features, imp)
+
+        # Top 5 of sub-classifier (DT) for features, and times_used
+        # Top 5 of sub-classifier (DT) for importance_(mean global importance in RF)
+        features = [f for f in dict_top.keys()]
+        times_used_all_splits = [dict_top[f][0] for f in dict_top.keys()]
+        importance_or_usage_or_ = [str(dict_top[f][1]) for f in dict_top.keys()] #+ "_(" + str(dict_complet[f][1]) + ")"
+        return features, times_used_all_splits, importance_or_usage_or_
+
 
 
 

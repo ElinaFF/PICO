@@ -8,33 +8,21 @@ from .Results import *
 
 
 class MetaboController:
-    def __init__(self):
-        self._metabo_experiment = MetaboExperiment()
+    def __init__(self, metaboExp: MetaboExperiment=None):
+        if metaboExp is None:
+            self._metabo_experiment = MetaboExperiment()
+        else:
+            self._metabo_experiment = metaboExp
         self._plots = Plots("blues")
 
-    def set_metadata(self) -> bool:
+    def set_metadata(self, filename: str, data=None, from_base64=True) -> bool:
+        return self._metabo_experiment.set_metadata(filename=filename, data=data, from_base64=from_base64)
 
-        return self._metabo_experiment.set_metadata()
-
-    # TODO: Déplacer dans metaboexperiment
-    def set_metadata_dataframe_from_path(self, path: str):
-        if path.split(".")[-1] == "csv":
-            self._metabo_experiment.set_metadata_with_dataframe(pd.read_csv(path, sep=";",na_filter=False))
-            return True
-        if "xls" in path.split(".")[-1] or "od" in path.split(".")[-1]:
-            # TODO: WARNING -> no na filter at all
-            self._metabo_experiment.set_metadata_with_dataframe(pd.read_excel(path, na_filter=False))
-            return True
-        return False
-
-    def set_data_matrix_from_path(self, path_data_matrix, use_raw):
-        return self._metabo_experiment.set_data_matrix(path_data_matrix, use_raw)
+    def set_data_matrix_from_path(self, path_data_matrix, data=None, use_raw=False, from_base64=True):
+        return self._metabo_experiment.set_data_matrix(path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64)
 
     def get_formatted_columns(self) -> list:
         return self._metabo_experiment.get_formatted_columns()
-
-    def set_target_column(self, target_column: str):
-        self._metabo_experiment.set_target_column(target_column)
 
     def get_formatted_unique_targets(self) -> list:
         return self._metabo_experiment.get_formatted_unique_targets()
@@ -53,6 +41,9 @@ class MetaboController:
 
     def set_splits_parameters(self, number_of_splits: int, train_test_split: float):
         self._metabo_experiment.set_splits_parameters(number_of_splits, train_test_split)
+
+    def set_target_column(self, target_column: str):
+        self._metabo_experiment.set_target_column(target_column)
 
     def set_id_column(self, id_column: str):
         self._metabo_experiment.set_id_column(id_column)
@@ -84,7 +75,7 @@ class MetaboController:
             algo].produce_features_importance_table()
 
     def show_umap(self, df: pd.DataFrame):
-        return self._plots.show_umap_2D(df)
+        return self._plots.show_umap(df)
 
     def produce_umap(self, design_name: str, algo: str):
         return self._metabo_experiment.experimental_designs[design_name].results[

@@ -6,12 +6,17 @@ from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
 from . import ExperimentalDesign
 from .ModelFactory import ModelFactory
+import os
+import pickle
 
 X_TRAIN_INDEX = 0
 X_TEST_INDEX = 1
 y_TRAIN_INDEX = 2
 y_TEST_INDEX = 3
 
+ROOT_PATH = os.path.dirname(__file__)
+DUMP_PATH = os.path.join(ROOT_PATH, "dumps")
+DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "metaboExpe.p")
 
 class MetaboExperiment:
     def __init__(self):
@@ -32,11 +37,30 @@ class MetaboExperiment:
     def set_metadata(self):
         self._metadata = MetaData()
 
-    def set_metadata_with_dataframe(self, metadata_dataframe: pd.DataFrame):
-        self._metadata = MetaData(metadata_dataframe)
+    def set_metadata_with_dataframe(self, metadata_dataframe: pd.DataFrame, filename, data=None, from_base64=True):
+        self.set_metadata()
+        df = self._metadata.read_format_and_store_metadata()
+        if filename.split(".")[-1] == "csv":
+            self._metadata = MetaData(pd.read_csv(filename, sep=";", na_filter=False))
+            return True
+        if "xls" in filename.split(".")[-1] or "od" in filename.split(".")[-1]:
+            # TODO: WARNING -> no na filter at all
+            self._metadata = MetaData(pd.read_excel(filename, na_filter=False))
+            return True
+        return False
 
-    def set_data_matrix(self, path_data_matrix: str, use_raw: bool):
-        self._data_matrix.read_format_and_store_data(path_data_matrix, use_raw)
+    # def set_metadata_dataframe_from_path(self, path: str):
+    #     if path.split(".")[-1] == "csv":
+    #         self._metabo_experiment.set_metadata_with_dataframe(pd.read_csv(path, sep=";",na_filter=False))
+    #         return True
+    #     if "xls" in path.split(".")[-1] or "od" in path.split(".")[-1]:
+    #         # TODO: WARNING -> no na filter at all
+    #         self._metabo_experiment.set_metadata_with_dataframe(pd.read_excel(path, na_filter=False))
+    #         return True
+    #     return False
+
+    def set_data_matrix(self, path_data_matrix: str, data=None, use_raw: bool = False, from_base64: bool = True):
+        self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64)
 
     def _update_experimental_design(self):
         for _, experimental_design in self.experimental_designs.items():
@@ -119,7 +143,7 @@ class MetaboExperiment:
                     best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX])
                     y_train_pred = best_model.predict(x_train)
                     y_test_pred = best_model.predict(x_test)
-                    results[model_name].add_results_from_one_algo_on_one_split(best_model, x_train, split[y_TRAIN_INDEX], y_train_pred,
+                    results[model_name].add_results_from_one_algo_on_one_split(best_model, self._data_matrix.data, split[y_TRAIN_INDEX], y_train_pred,
                                                                               split[y_TEST_INDEX], y_test_pred, model_name,
                                                                               str(split_index))
         self._data_matrix.data = None
