@@ -15,6 +15,7 @@ class Results:
     Has results of all algorithms for all splits on one experimental design (so almost only numbers/floats/ints).
     Can be kept in RAM as it is not supposed to be too big, and prevents the reading/writing of models and splits files.
     """
+
     def __init__(self, splits_number: int):
         self.splits_number = [str(s) for s in range(splits_number)]
         self.results = {s: {} for s in self.splits_number}
@@ -63,8 +64,8 @@ class Results:
             self.results["accuracies_table"] = self.produce_accuracy_plot_all()
             self.results["umap_data"] = self._produce_UMAP(data, self.results["features_table"])
             self.results["pca_data"] = self._produce_PCA(data, self.results["features_table"])
-            self.results["classes_train"] = y_train_true
-
+            self.results["classes"] = y_train_true + y_test_true
+            self.results["metrics_table"] = self.produce_metrics_table()
 
     def set_feature_names(self, x: pd.DataFrame):
         """
@@ -99,14 +100,14 @@ class Results:
         umaps = []
         for nbr in nbr_feat:
             selected_feat = features_df["features"][:nbr]
-            x = X.loc[:, selected_feat]
-            x = x.to_numpy()
+            selected_x = X.loc[:, selected_feat]
+            selected_x = selected_x.to_numpy()
             umap_data = umap.UMAP(n_components=2, init='random', random_state=13)
-            umaps.append(umap_data.fit_transform(x))
+            umaps.append(umap_data.fit_transform(selected_x))
         # Redo the umap but on all the data
-        x = X.to_numpy()
+        selected_x = X.to_numpy()
         umap_data = umap.UMAP(n_components=2, init='random', random_state=13)
-        umaps.append(umap_data.fit_transform(x))
+        umaps.append(umap_data.fit_transform(selected_x))
         return umaps
 
     def _produce_PCA(self, X: pd.DataFrame, features_df: pd.DataFrame):
@@ -133,7 +134,7 @@ class Results:
         nbr_test = len(y_test_true)
         tot = nbr_train + nbr_test
         nom_stats = ["Number of samples (train:test)"]
-        valeurs_stats = [str(tot) +" ("+ str(int(nbr_train/tot*100)) +":"+ str(int(nbr_test/tot*100)) +")"]
+        valeurs_stats = [str(tot) + " (" + str(int(nbr_train / tot * 100)) + ":" + str(int(nbr_test / tot * 100)) + ")"]
         y = y_train_true + y_test_true
         c = Counter(y)
         for k in c.keys():
@@ -168,7 +169,7 @@ class Results:
         y_splits_acc = []
         traces = []
         for s in self.splits_number:
-            x_splits_num.append(str(s))
+            x_splits_num.append(str(s))  # c'est normal
             x_splits_num.append(str(s))
             y_splits_acc.append(self.results[s]["train_accuracy"])
             traces.append("train")
@@ -179,6 +180,12 @@ class Results:
         df = pd.DataFrame(data=d)
 
         return df
+
+    # TODO: faire une fonction qui produce metrics table pour tous les splits
+    def produce_metrics_table(self):
+        metric_table = pd.DataFrame()
+        metric_table.append([])
+        return None
 
 
 class ResultsDT(Results):
@@ -195,10 +202,7 @@ class ResultsDT(Results):
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
         print("----> entered in _get_features_importance of DT, importances :")
-        importances = model.feature_importances_
-        for i in importances:
-            if i > 0:
-                print(i)
+        importances = map(lambda x: round(float(x), 7), model.feature_importances_)
         zipped = zip(self.f_names, importances)
         return zipped
 
@@ -235,19 +239,26 @@ class ResultsRF(Results):
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
 
-        features = []
-        importances = []
-        for DT in model.estimators_:
-            i = DT.feature_importances_
-            zipped = list(zip(self.f_names, i))
-            feat_sort = sorted(zipped, key=lambda x: x[1], reverse=True)
-            top_x = feat_sort[-50:]
-            f, i = zip(*top_x)
-            features.extend(f)
-            importances.extend(i)
-        zipped = zip(features, importances)
-        #zipped_complet = zip(model.feature_names_in_, model.feature_importances_)
-        return zipped#, zipped_complet
+        # features = []
+        # importances = []
+        # for DT in model.estimators_:
+        #     i = DT.feature_importances_
+        #     zipped = list(zip(self.f_names, i))
+        #     feat_sort = sorted(zipped, key=lambda x: x[1], reverse=True)
+        #     top_x = feat_sort[:50]
+        #     f, i = zip(*top_x)
+        #     features.extend(f)
+        #     importances.extend(i)
+        # zipped = zip(features, importances)
+
+        # TODO: ne marche pas (il y est instantanément remis en notation scientifique)
+        importances = list(map(lambda x: round(float(x), 4),
+                               model.feature_importances_))
+
+        # importances = model.feature_importances_
+        zipped = zip(self.f_names, importances)
+        # zipped_complet = zip(model.feature_names_in_, model.feature_importances_)
+        return zipped  # , zipped_complet
 
     def _aggregate_features_info(self):
         """
@@ -260,7 +271,7 @@ class ResultsRF(Results):
         # imp_complet = []
         # Get values of all splits in two lists
         for split in self.splits_number:
-            f, i = zip(*self.results[split]["feature_importances"])
+            f, i = list(zip(*self.results[split]["feature_importances"]))
             features.extend(f)
             imp.extend(i)
             # f_complet, i_complet = zip(*self.results[split]["feature_importances"][1])
@@ -275,7 +286,8 @@ class ResultsRF(Results):
         # Top 5 of sub-classifier (DT) for importance_(mean global importance in RF)
         features = [f for f in dict_top.keys()]
         times_used_all_splits = [dict_top[f][0] for f in dict_top.keys()]
-        importance_or_usage_or_ = [str(dict_top[f][1]) for f in dict_top.keys()] #+ "_(" + str(dict_complet[f][1]) + ")"
+        importance_or_usage_or_ = [str(dict_top[f][1]) for f in
+                                   dict_top.keys()]  # + "_(" + str(dict_complet[f][1]) + ")"
         return features, times_used_all_splits, importance_or_usage_or_
 
 
@@ -324,9 +336,6 @@ class ResultsSVM(Results):
         # Top 5 of sub-classifier (DT) for importance_(mean global importance in RF)
         features = [f for f in dict_top.keys()]
         times_used_all_splits = [dict_top[f][0] for f in dict_top.keys()]
-        importance_or_usage_or_ = [str(dict_top[f][1]) for f in dict_top.keys()] #+ "_(" + str(dict_complet[f][1]) + ")"
+        importance_or_usage_or_ = [str(dict_top[f][1]) for f in
+                                   dict_top.keys()]  # + "_(" + str(dict_complet[f][1]) + ")"
         return features, times_used_all_splits, importance_or_usage_or_
-
-
-
-
