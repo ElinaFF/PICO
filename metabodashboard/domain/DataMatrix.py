@@ -3,7 +3,7 @@ import pickle
 
 import pandas as pd
 
-from metabodashboard.service import DataFormat
+from ..service import DataFormat
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, "dumps")

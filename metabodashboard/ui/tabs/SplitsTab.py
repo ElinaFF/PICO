@@ -1,14 +1,6 @@
-import datetime
-import json
-import base64
-import io
-
 import dash_bootstrap_components as dbc
-import pandas as pd
 from dash import html, Output, Input, dash, State, dcc
 
-from metabodashboard.service.DataFormat import DataFormat
-from metabodashboard.service.SamplesPairing import SamplesPairing
 from .MetaTab import MetaTab
 from ...service import Utils
 
@@ -203,8 +195,10 @@ class SplitsTab(MetaTab):
                                                     __typeGroupLink
                                                     ,
                                                     html.Br(),
-                                                    dbc.Card(id="setted_classes_container",
-                                                             style={'display': 'none'}),
+                                                    dbc.FormText(
+                                                        "Experimental Designs."
+                                                    ),
+                                                    dbc.Card(id="setted_classes_container", children=[html.P("No experimental design setted yet.")], style={"display": "block", "padding": "1em"}),
                                                     dbc.FormText(
                                                         "Define labels and filter out samples."
                                                     ),

@@ -1,4 +1,4 @@
-from typing import Generator, Tuple
+from typing import Generator, Tuple, Dict
 
 from . import SplitGroup, MetaData
 from .Results import *
@@ -42,7 +42,7 @@ class ExperimentalDesign:
             elif n == "DecisionTree":
                 self.results[n] = ResultsDT(self._split_group.get_number_of_splits())
 
-    def get_results(self) -> dict:
+    def get_results(self) -> Dict[str, Results]:
         if self.results == {}:
             raise RuntimeError("The name of the selected models has to be set before accessing results.")
         return self.results

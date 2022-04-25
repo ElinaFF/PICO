@@ -11,17 +11,13 @@ from dash import html, dcc, Output, Input, State, dash, Dash
 import plotly.graph_objs as go
 import pickle as pkl
 
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 
-from metabodashboard.conf.MetaboDashboardConfig import STATISTICS
 from .MetaTab import MetaTab
-from metabodashboard.conf.LearnConfig import LEARN_CONFIG
 from ...service import Plots
-from metabodashboard.domain import MetaboController
-
+from ...domain import MetaboController
 
 
 class ResultsTab(MetaTab):

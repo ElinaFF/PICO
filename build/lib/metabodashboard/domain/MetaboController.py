@@ -2,7 +2,7 @@ from typing import Generator, Tuple
 
 import pandas as pd
 
-from metabodashboard.domain import MetaboExperiment
+from . import MetaboExperiment
 from ..service import Plots
 from .Results import *
 
