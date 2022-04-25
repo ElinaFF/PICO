@@ -5,7 +5,6 @@ from dash import html
 import umap
 
 
-
 class Plots():
     def __init__(self, colors: str):
         self.colors = colors
@@ -16,55 +15,9 @@ class Plots():
 
     def show_umap(self, umap_data, classes):
         fig = px.scatter(
-            umap_data[0], x=0, y=1,
+            umap_data, x=0, y=1,
             color=classes,
             color_continuous_scale=self.colors,
-
-        )
-
-        # Add dropdown
-        fig.update_layout(
-            updatemenus=[
-                dict(
-                    buttons=list([
-                        dict(
-                            args=["data_frame", umap_data[0]],
-                            label="10 best features",
-                            method="restyle"
-                        ),
-                        dict(
-                            args=["data_frame", umap_data[1]],
-                            label="40 best features",
-                            method="restyle"
-                        ),
-                        dict(
-                            args=["data_frame", umap_data[2]],
-                            label="100 best features",
-                            method="restyle"
-                        ),
-                        dict(
-                            args=["data_frame", umap_data[3]],
-                            label="All features",
-                            method="restyle"
-                        )
-                    ]),
-                    direction="down",
-                    pad={"r": 10, "t": 10},
-                    showactive=True,
-                    x=0.1,
-                    xanchor="left",
-                    y=1.1,
-                    yanchor="top"
-                ),
-            ]
-        )
-
-        # Add annotation
-        fig.update_layout(
-            annotations=[
-                dict(text="Number of features:", showarrow=False,
-                     x=0, y=1.085, yref="paper", align="left")
-            ]
         )
 
         fig.update_layout({
@@ -88,20 +41,20 @@ class Plots():
         # labels = ["0", "1"]
 
         fig = go.Figure(data=go.Heatmap(
-            #labels=dict(x="Prediciton", y="Vérité", color="Nombre de prédictions"),
+            # labels=dict(x="Prediciton", y="Vérité", color="Nombre de prédictions"),
             z=cm,
             x=labels,
             y=labels,
             # text=text,
             colorscale=self.colors,
             showscale=False
-            #texttemplate="%{text}",
+            # texttemplate="%{text}",
         ))
         fig = fig.update_traces(text=text, texttemplate="%{text}", hovertemplate=None)
         fig.update_layout(xaxis_title="Prediciton",
                           yaxis_title="Truth",
 
-                         )
+                          )
 
         # fig = px.imshow(
         #         cm,
@@ -166,8 +119,9 @@ class Plots():
         if "times_used" not in df.columns:
             raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'times_used' column")
         if "importance_usage" not in df.columns:
-            raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'importance_usage' column")
-        #TODO : sort data by times_used or importance, and take only top 10-20 to display
+            raise RuntimeError(
+                "To show the global accuracies plot, the dataframe needs to have a 'importance_usage' column")
+        # TODO : sort data by times_used or importance, and take only top 10-20 to display
 
         fig = go.Figure(
             data=[go.Table(
@@ -177,7 +131,6 @@ class Plots():
                            align="center"))
             ])
         return fig
-
 
     def show_split_metrics(self):
         """
@@ -191,23 +144,3 @@ class Plots():
         And show the intensity of this metabolite/ this feature in each class (one box per class)
         """
         return
-
-# def show_info_exp ancienne
-#with open("testest", "r") as conf_file:
-#    splits_config = json.load(conf_file)
-
-#splits_dict = splits_config["Splits"]
-#nbr_in_train = len(splits_dict["split0"][0])
-#nbr_in_test = len(splits_dict["split0"][1])
-#nbr_tot = nbr_in_train + nbr_in_test
-#classes_train = splits_dict["split0"][2]
-#classes_tot = classes_train.extend(splits_dict["split0"][3])
-#count_per_class = Counter(classes_tot)
-
-#row1 = html.Tr([html.Td("Total number of samples"), html.Td(str(nbr_tot))])
-#row2 = html.Tr([html.Td("Number of samples in train"), html.Td(str(nbr_in_train))])
-#row3 = html.Tr([html.Td("Number of samples in test"), html.Td(str(nbr_in_test))])
-## row4 = html.Tr([html.Td(list(count_per_class.keys())[0]), html.Td("Astra")])
-
-#table_body = [html.Tbody([row1, row2, row3])]
-#table = dbc.Table(table_body, id="table_exp_info", borderless=True, hover=True)
