@@ -18,6 +18,7 @@ ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, "dumps")
 DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "metaboExpe.p")
 
+
 class MetaboExperiment:
     def __init__(self):
         self._model_factory = ModelFactory()
@@ -56,7 +57,8 @@ class MetaboExperiment:
     #     return False
 
     def set_data_matrix(self, path_data_matrix: str, data=None, use_raw: bool = False, from_base64: bool = True):
-        self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64)
+        self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, use_raw=use_raw,
+                                                     from_base64=from_base64)
 
     def _update_experimental_design(self):
         for _, experimental_design in self.experimental_designs.items():
@@ -79,7 +81,8 @@ class MetaboExperiment:
         self.experimental_designs.pop(name)
 
     def add_custom_model(self, model_name: str, needed_import: str, grid_search_param: dict):
-        self._custom_models[model_name] = self._model_factory.create_custom_model(model_name, needed_import, grid_search_param)
+        self._custom_models[model_name] = self._model_factory.create_custom_model(model_name, needed_import,
+                                                                                  grid_search_param)
 
     def set_selected_models(self, selected_models: list):
         self._selected_models = selected_models
@@ -110,7 +113,8 @@ class MetaboExperiment:
         elif model_name in self._custom_models.keys():
             return self._custom_models[model_name]
         else:
-            raise RuntimeError("The model '"+model_name+"' has not been found neither in supported and custom lists.")
+            raise RuntimeError(
+                "The model '" + model_name + "' has not been found neither in supported and custom lists.")
 
     def _check_experimental_design(self):
         error_message = "Train test proportion, number of splits and metadata need to be set before start learning: "
@@ -139,9 +143,11 @@ class MetaboExperiment:
                     best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX])
                     y_train_pred = best_model.predict(x_train)
                     y_test_pred = best_model.predict(x_test)
-                    results[model_name].add_results_from_one_algo_on_one_split(best_model, self._data_matrix.data, split[y_TRAIN_INDEX], y_train_pred,
-                                                                              split[y_TEST_INDEX], y_test_pred, model_name,
-                                                                              str(split_index))
+                    results[model_name].add_results_from_one_algo_on_one_split(best_model, self._data_matrix.data,
+                                                                               split[y_TRAIN_INDEX], y_train_pred,
+                                                                               split[y_TEST_INDEX], y_test_pred,
+                                                                               model_name,
+                                                                               str(split_index))
         self._data_matrix.data = None
 
     def get_results(self, classes_design: str, algo_name) -> dict:
@@ -152,6 +158,5 @@ class MetaboExperiment:
         for name in self.experimental_designs:
             results[name] = self.experimental_designs[name].get_results()
         return results
-
 
 # TODO: print current algo when training
