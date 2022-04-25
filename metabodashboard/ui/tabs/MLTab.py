@@ -15,13 +15,9 @@ class MLTab(MetaTab):
     def getLayout(self) -> dbc.Tab:
         __splitConfigFile = html.Div(
             [
-                dbc.Label("Name of splits config file *",
+                dbc.Label("Select CV search type",
                           className="form_labels"),
-                dbc.Input(id="name_splits_config", placeholder="Enter Name",
-                          className="form_input_text"),
-                dbc.FormText(
-                    "Write a name for this batch of splits that will be used to identify its parameters file",
-                ),
+                dbc.RadioItems(options=[{'label': "GridSearchCV", "value": "GridSearchCV"}, {'label': "RandomizedSearchCV", "value": "RandomizedSearchCV", "disabled": True}], value="GridSearchCV", id="radio_cv_types"),
             ],
             className="form_field"
         )
@@ -42,7 +38,9 @@ class MLTab(MetaTab):
         _definitionLearningConfig = html.Div(className="title_and_form", children=[
             html.H4(id="Learn_conf_title", children="Define Learning configs"),
             dbc.Form(children=[
-                dbc.Col(children=[__splitConfigFile, __CVConfig, __processNumberConfig
+                dbc.Col(children=[__splitConfigFile,
+                                  __CVConfig,
+                                  __processNumberConfig
                                   ],
                         )
             ])
@@ -140,17 +138,22 @@ class MLTab(MetaTab):
             else:
                 with open(sklearn_algo_file, "r+") as algo_file:
                     all_algo = json.load(algo_file)
-                return [{"label": a, "value": a} for a in all_algo.keys()], "", "", "", ""
+                avail_algo = []
+                for a in all_algo.keys():
+                    if a == "SVM_L1":
+                        avail_algo.append({"label": a, "value": a, "disabled": True})
+                    else:
+                        avail_algo.append({"label": a, "value": a})
+                return avail_algo, "", "", "", ""
 
         @self.app.callback(
             Output("output_button_ml", "children"),
             [Input("start_learning_button", "n_clicks")],
             [State("in_algo_ML", "value"),
-             State("name_splits_config", "value"),
              State("in_nbr_CV_folds", "value"),
              State("in_nbr_processes", "value")]
         )
-        def start_machine_learning(n, selected_models, split_config_file, cv_folds, nbr_process):
+        def start_machine_learning(n, selected_models, cv_folds, nbr_process):
             if n >= 1:
                 print("in")
                 print(selected_models)
