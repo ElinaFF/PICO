@@ -121,6 +121,8 @@ class DataFormat:
         datatable.columns = datatable.columns.droplevel(0)
         datatable = datatable.T
 
+        datatable = datatable.loc[[index for index in datatable.index if "QC" not in index]]
+
         return datatable_compoundsInfo, datatable, labels, sample_names
 
 
