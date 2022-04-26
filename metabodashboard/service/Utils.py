@@ -1,3 +1,5 @@
+from typing import List
+
 import pandas as pd
 import numpy as np
 import pickle as pkl
@@ -194,3 +196,16 @@ def reverse_dict(dictionnary: dict) -> dict:
         else:
             reversed_dict[value] = key
     return reversed_dict
+
+
+def load_classes_from_targets(classes_design: dict, targets: List[str]) -> List[str]:
+    reverse_classes_design = reverse_dict(classes_design)
+    classes = []
+    for target in targets:
+        classes.append(reverse_classes_design[target])
+    return classes
+
+
+# TODO: need to support multi-classification
+def get_binary(list_to_convert: List[str], classes: List[str]) -> List[int]:
+    return [1 if class_value == classes[1] else 0 for class_value in list_to_convert]

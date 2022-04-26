@@ -11,7 +11,8 @@ DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
 
 
 class SplitGroup:
-    def __init__(self, metadata: MetaData, train_test_proportion: float, number_of_splits: int, classes_design: dict, experiment_name: str):
+    def __init__(self, metadata: MetaData, train_test_proportion: float, number_of_splits: int, classes_design: dict,
+                 experiment_name: str):
         self._metadata = metadata
         self._template_file_name = experiment_name + "_split_{}.p"
         self._number_of_split = number_of_splits
@@ -19,19 +20,11 @@ class SplitGroup:
         self._target_to_class = {item: key for key, item_list in classes_design.items() for item in item_list}
         self._compute_splits(train_test_proportion, number_of_splits)
 
-    def _load_classes(self):
-        targets = self._metadata.load_targets()
-        print("targets _load_classes : {}".format(targets))
-        reverse_classes_design = Utils.reverse_dict(self._classes_design)
-        classes = []
-        for target in targets:
-            classes.append(reverse_classes_design[target])
-        return classes
-
     def _compute_splits(self, train_test_proportion: float, number_of_splits: int):
         for split_index in range(number_of_splits):
             X_train, X_test, y_train, y_test = train_test_split(self._metadata.load_samples_id(),
-                                                                self._load_classes(),
+                                                                Utils.load_classes_from_targets(self._classes_design,
+                                                                                                self._metadata.load_targets()),
                                                                 test_size=train_test_proportion,
                                                                 random_state=split_index)
 

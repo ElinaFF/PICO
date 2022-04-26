@@ -10,6 +10,8 @@ import pandas as pd
 from dash import html, dcc, Output, Input, State, dash, Dash
 import plotly.graph_objs as go
 import pickle as pkl
+from matplotlib import pyplot as plt
+from sklearn import tree
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
@@ -436,7 +438,7 @@ class ResultsTab(MetaTab):
         )
         def show_metrics(n_clicks, algo, design_name):
             if n_clicks >= 1:
-                df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
+                df = self.r[design_name][algo].results["metrics_table"]
                 return dbc.Table.from_dataframe(df, borderless=True)
             else:
                 return dash.no_update
@@ -453,6 +455,7 @@ class ResultsTab(MetaTab):
                 df = self.r[design_name][algo].results["umap_data"]
                 classes = self.r[design_name][algo].results["classes"]
                 print(slider_value)
+                print(df[0])
                 return self._plots.show_umap(df[slider_value], classes)
             else:
                 return dash.no_update
@@ -532,6 +535,16 @@ class ResultsTab(MetaTab):
         def disable_DTTT(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 if algo == "DecisionTree":
-                    # model = self.r[design_name][algo].results["best_model"]
-                    return False, html.Img(src=self.app.get_asset_url("../assets/help_icon.png"))
+                    model = self.r[design_name][algo].results["best_model"]
+                    classes = self.r[design_name][algo].results["classes"]
+                    fig = plt.figure(figsize=(25, 20))
+                    plt.margins(0.05)
+                    _ = tree.plot_tree(model,
+                                       # feature_names=iris.feature_names,
+                                       class_names=classes,
+                                       filled=True)
+                    img_path = os.path.join(os.path.dirname(__file__), "..", "assets", "DecisionTree.png")
+                    fig.savefig(img_path, bbox_inches='tight')
+
+                    return False, html.Img(src=self.app.get_asset_url("../assets/DecisionTree.png"), style={'width': '100%'})
             return True, ""

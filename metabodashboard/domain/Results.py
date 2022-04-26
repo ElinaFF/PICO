@@ -3,10 +3,13 @@ import pandas as pd
 from abc import abstractmethod
 
 import sklearn
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score, roc_auc_score
 from collections import Counter
 import umap
 from sklearn.decomposition import PCA
+
+from . import MetaData
+from ..service import Utils
 
 
 class Results:
@@ -37,7 +40,7 @@ class Results:
         """
         pass
 
-    def add_results_from_one_algo_on_one_split(self, model, data, y_train_true: list, y_train_pred: list,
+    def add_results_from_one_algo_on_one_split(self, model: sklearn, data: pd.DataFrame, classes: list, y_train_true: list, y_train_pred: list,
                                                y_test_true: list, y_test_pred: list, algo_name: str, split_number: str):
         """
         Besoin modèle pour extraire features, features importance
@@ -50,6 +53,17 @@ class Results:
         print(algo_name)
         self.results[split_number]["train_accuracy"] = accuracy_score(y_train_true, y_train_pred)
         self.results[split_number]["test_accuracy"] = accuracy_score(y_test_true, y_test_pred)
+        binary_y_train_true = Utils.get_binary(y_train_true, classes)
+        binary_y_train_pred = Utils.get_binary(y_train_pred, classes)
+        self.results[split_number]["train_precision"] = precision_score(binary_y_train_true, binary_y_train_pred)
+        self.results[split_number]["test_precision"] = precision_score(binary_y_train_true, binary_y_train_pred)
+        self.results[split_number]["train_recall"] = recall_score(binary_y_train_true, binary_y_train_pred)
+        self.results[split_number]["test_recall"] = recall_score(binary_y_train_true, binary_y_train_pred)
+        self.results[split_number]["train_f1"] = f1_score(binary_y_train_true, binary_y_train_pred)
+        self.results[split_number]["test_f1"] = f1_score(binary_y_train_true, binary_y_train_pred)
+        self.results[split_number]["train_roc_auc"] = roc_auc_score(binary_y_train_true, binary_y_train_pred)
+        self.results[split_number]["test_roc_auc"] = roc_auc_score(binary_y_train_true, binary_y_train_pred)
+        
         print('self.results[split_number]["test_accuracy"] = {}'.format(self.results[split_number]["test_accuracy"]))
         if self.results[split_number]["test_accuracy"] > self.best_acc:
             self.best_acc = self.results[split_number]["test_accuracy"]
@@ -62,9 +76,9 @@ class Results:
             print("------> last split, start features importance")
             self.results["features_table"] = self.produce_features_importance_table()
             self.results["accuracies_table"] = self.produce_accuracy_plot_all()
+            self.results["classes"] = classes
             self.results["umap_data"] = self._produce_UMAP(data, self.results["features_table"])
             self.results["pca_data"] = self._produce_PCA(data, self.results["features_table"])
-            self.results["classes"] = y_train_true + y_test_true
             self.results["metrics_table"] = self.produce_metrics_table()
 
     def set_feature_names(self, x: pd.DataFrame):
@@ -101,6 +115,7 @@ class Results:
         for nbr in nbr_feat:
             selected_feat = features_df["features"][:nbr]
             selected_x = X.loc[:, selected_feat]
+            print(list(zip(selected_x.index, self.results["classes"])))
             selected_x = selected_x.to_numpy()
             umap_data = umap.UMAP(n_components=2, init='random', random_state=13)
             umaps.append(umap_data.fit_transform(selected_x))
@@ -185,9 +200,48 @@ class Results:
 
     # TODO: faire une fonction qui produce metrics table pour tous les splits
     def produce_metrics_table(self):
-        metric_table = pd.DataFrame()
-        metric_table.append([])
-        return None
+        metrics = ["accuracy", "precision", "recall", "f1", "roc_auc"]
+        trains_metrics = []
+        tests_metrics = []
+        acctrain = []
+        acctest = []
+        precisiontrain = []
+        precisiontest = []
+        recalltrain = []
+        recalltest = []
+        f1train = []
+        f1test = []
+        roc_auc_train = []
+        roc_auc_test = []
+        for s in self.splits_number:
+            acctrain.append(self.results[s]["train_accuracy"])
+            acctest.append(self.results[s]["test_accuracy"])
+            precisiontrain.append(self.results[s]["train_precision"])
+            precisiontest.append(self.results[s]["test_precision"])
+            recalltrain.append(self.results[s]["train_recall"])
+            recalltest.append(self.results[s]["test_recall"])
+            f1train.append(self.results[s]["train_f1"])
+            f1test.append(self.results[s]["test_f1"])
+            roc_auc_train.append(self.results[s]["train_roc_auc"])
+            roc_auc_test.append(self.results[s]["test_roc_auc"])
+            
+        trains_metrics.append(str(round(float(np.mean(acctrain)), 4))+"("+str(round(float(np.std(acctrain)), 4))+")")
+        trains_metrics.append(str(round(float(np.mean(precisiontrain)), 4))+"("+str(round(float(np.std(precisiontrain)), 4))+")")
+        trains_metrics.append(str(round(float(np.mean(recalltrain)), 4))+"("+str(round(float(np.std(recalltrain)), 4))+")")
+        trains_metrics.append(str(round(float(np.mean(f1train)), 4))+"("+str(round(float(np.std(f1train)), 4))+")")
+        trains_metrics.append(str(round(float(np.mean(roc_auc_train)), 4))+"("+str(round(float(np.std(roc_auc_train)), 4))+")")
+
+        tests_metrics.append(str(round(float(np.mean(acctest)), 4))+"("+str(round(float(np.std(acctest)), 4))+")")
+        tests_metrics.append(str(round(float(np.mean(precisiontest)), 4))+"("+str(round(float(np.std(precisiontest)), 4))+")")
+        tests_metrics.append(str(round(float(np.mean(recalltest)), 4))+"("+str(round(float(np.std(recalltest)), 4))+")")
+        tests_metrics.append(str(round(float(np.mean(f1test)), 4))+"("+str(round(float(np.std(f1test)), 4))+")")
+        tests_metrics.append(str(round(float(np.mean(roc_auc_test)), 4))+"("+str(round(float(np.std(roc_auc_test)), 4))+")")
+
+
+        d = {"metrics": metrics, "train": trains_metrics, "test": tests_metrics}
+        df = pd.DataFrame(data=d)
+
+        return df
 
 
 class ResultsDT(Results):
