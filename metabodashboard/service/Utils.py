@@ -9,8 +9,8 @@ from .ExperimentDesign import *
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 
-ROOT_PATH = os.path.dirname(__file__)
-DUMP_PATH = os.path.join(ROOT_PATH, "dumps")
+PACKAGE_ROOT_PATH = os.sep.join(os.path.dirname(__file__).split(os.sep)[:-1])
+DUMP_PATH = os.path.join(PACKAGE_ROOT_PATH, "domain", "dumps")
 DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "metaboExpe.p")
 
 def dump_metabo_expe(obj):

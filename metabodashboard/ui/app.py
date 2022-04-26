@@ -8,8 +8,8 @@ from ..service import Utils
 from .tabs import *
 from ..domain import MetaboController
 
-ROOT_PATH = os.path.dirname(__file__)
-DUMP_PATH = os.path.join(ROOT_PATH, "dumps")
+PACKAGE_ROOT_PATH = os.sep.join(os.path.dirname(__file__).split(os.sep)[:-1])
+DUMP_PATH = os.path.join(PACKAGE_ROOT_PATH, "domain", "dumps")
 DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "metaboExpe.p")
 
 
