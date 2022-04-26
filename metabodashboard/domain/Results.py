@@ -156,6 +156,8 @@ class Results:
 
         d = {"features": features, "times_used": times_used_all_splits, "importance_usage": importance_or_usage_or_}
         df = pd.DataFrame(data=d)
+        df["times_used"] = pd.to_numeric(df["times_used"])
+        df["importance_usage"] = pd.to_numeric(df["importance_usage"])
         df = df.sort_values(by=['importance_usage'], ascending=False)
         return df
 
@@ -202,7 +204,7 @@ class ResultsDT(Results):
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
         print("----> entered in _get_features_importance of DT, importances :")
-        importances = map(lambda x: round(float(x), 7), model.feature_importances_)
+        importances = model.feature_importances_
         zipped = zip(self.f_names, importances)
         return zipped
 
@@ -215,7 +217,7 @@ class ResultsDT(Results):
         imp = []
         # Get values of all splits in two lists
         for split in self.splits_number:
-            f, i = zip(*self.results[split]["feature_importances"])
+            f, i = list(zip(*self.results[split]["feature_importances"]))
             features.extend(f)
             imp.extend(i)
 
@@ -251,9 +253,7 @@ class ResultsRF(Results):
         #     importances.extend(i)
         # zipped = zip(features, importances)
 
-        # TODO: ne marche pas (il y est instantanément remis en notation scientifique)
-        importances = list(map(lambda x: round(float(x), 4),
-                               model.feature_importances_))
+        importances = model.feature_importances_
 
         # importances = model.feature_importances_
         zipped = zip(self.f_names, importances)
