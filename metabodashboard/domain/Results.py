@@ -225,17 +225,17 @@ class Results:
             roc_auc_train.append(self.results[s]["train_roc_auc"])
             roc_auc_test.append(self.results[s]["test_roc_auc"])
             
-        trains_metrics.append(str(round(float(np.mean(acctrain)), 4))+"("+str(round(float(np.std(acctrain)), 4))+")")
-        trains_metrics.append(str(round(float(np.mean(precisiontrain)), 4))+"("+str(round(float(np.std(precisiontrain)), 4))+")")
-        trains_metrics.append(str(round(float(np.mean(recalltrain)), 4))+"("+str(round(float(np.std(recalltrain)), 4))+")")
-        trains_metrics.append(str(round(float(np.mean(f1train)), 4))+"("+str(round(float(np.std(f1train)), 4))+")")
-        trains_metrics.append(str(round(float(np.mean(roc_auc_train)), 4))+"("+str(round(float(np.std(roc_auc_train)), 4))+")")
+        trains_metrics.append(str(round(float(np.mean(acctrain)), 4))+" ("+str(round(float(np.std(acctrain)), 4))+")")
+        trains_metrics.append(str(round(float(np.mean(precisiontrain)), 4))+" ("+str(round(float(np.std(precisiontrain)), 4))+")")
+        trains_metrics.append(str(round(float(np.mean(recalltrain)), 4))+" ("+str(round(float(np.std(recalltrain)), 4))+")")
+        trains_metrics.append(str(round(float(np.mean(f1train)), 4))+" ("+str(round(float(np.std(f1train)), 4))+")")
+        trains_metrics.append(str(round(float(np.mean(roc_auc_train)), 4))+" ("+str(round(float(np.std(roc_auc_train)), 4))+")")
 
-        tests_metrics.append(str(round(float(np.mean(acctest)), 4))+"("+str(round(float(np.std(acctest)), 4))+")")
-        tests_metrics.append(str(round(float(np.mean(precisiontest)), 4))+"("+str(round(float(np.std(precisiontest)), 4))+")")
-        tests_metrics.append(str(round(float(np.mean(recalltest)), 4))+"("+str(round(float(np.std(recalltest)), 4))+")")
-        tests_metrics.append(str(round(float(np.mean(f1test)), 4))+"("+str(round(float(np.std(f1test)), 4))+")")
-        tests_metrics.append(str(round(float(np.mean(roc_auc_test)), 4))+"("+str(round(float(np.std(roc_auc_test)), 4))+")")
+        tests_metrics.append(str(round(float(np.mean(acctest)), 4))+" ("+str(round(float(np.std(acctest)), 4))+")")
+        tests_metrics.append(str(round(float(np.mean(precisiontest)), 4))+" ("+str(round(float(np.std(precisiontest)), 4))+")")
+        tests_metrics.append(str(round(float(np.mean(recalltest)), 4))+" ("+str(round(float(np.std(recalltest)), 4))+")")
+        tests_metrics.append(str(round(float(np.mean(f1test)), 4))+" ("+str(round(float(np.std(f1test)), 4))+")")
+        tests_metrics.append(str(round(float(np.mean(roc_auc_test)), 4))+" ("+str(round(float(np.std(roc_auc_test)), 4))+")")
 
 
         d = {"metrics": metrics, "train": trains_metrics, "test": tests_metrics}
