@@ -91,7 +91,7 @@ class ResultsTab(MetaTab):
             # Should we put the title on the plot?
             dcc.Loading(dcc.Graph(id="PCA"),
                         type="dot", color="#13BD00"),
-            dcc.Slider(0, 3, 1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"}, id="pca_slider")
+            dcc.Slider(min=0, max=3, step=1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"}, id="pca_slider")
         ])
 
         ___umap = html.Div(className="umap_plot_and_title",
@@ -112,7 +112,7 @@ class ResultsTab(MetaTab):
                                                   ]),
                                dcc.Loading(dcc.Graph(id="umap_overview"),
                                            type="dot", color="#13BD00"),
-                               dcc.Slider(0, 3, 1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"},
+                               dcc.Slider(min=0, max=3, step=1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"},
                                           id="umap_slider")
 
                            ])
@@ -136,7 +136,9 @@ class ResultsTab(MetaTab):
                                           id="help_accPlot"),
                                dbc.Popover(children=[
                                    dbc.PopoverBody(
-                                       "Blablabla wout wout")
+                                       "Accuracies for each split on train and test set. Here you would want to check"
+                                       "the difference between each set, because a really good train performance and a mediocre"
+                                       "or bad test performance is a sign of over-fitting.")
                                ],
                                    id="pop_help_accPlot",
                                    is_open=False,
@@ -530,6 +532,6 @@ class ResultsTab(MetaTab):
         def disable_DTTT(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 if algo == "DecisionTree":
-                    model = self.r[design_name][algo]["best_model"]
+                    # model = self.r[design_name][algo].results["best_model"]
                     return False, html.Img(src=self.app.get_asset_url("../assets/help_icon.png"))
             return True, ""

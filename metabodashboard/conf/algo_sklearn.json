@@ -40,5 +40,12 @@
     "ParamGrid": {
       "C": "np.logspace(-5, 5, 20)"
     }
+  },
+  "SCM": {
+
+
+  },
+  "RandomSCM": {
+
   }
 }

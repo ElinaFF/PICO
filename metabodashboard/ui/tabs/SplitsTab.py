@@ -34,7 +34,7 @@ class SplitsTab(MetaTab):
                                                 # className="custom_buttons",
                                                 color="outline-primary")]),
                 dbc.FormText(
-                    "Write the path to the data files (spectra). You can use either absolute or relative path.",
+                    "You can give a Progenesis abundance file, or a matrix with samples as lines and features as columns.",
                 ),
             ],
             className="form_field"
@@ -51,8 +51,8 @@ class SplitsTab(MetaTab):
                                                 # className="custom_buttons",
                                                 color="outline-primary")]),
                 dbc.FormText(
-                    "Write the path of the metadata file.You can use either absolute or relative path. "
-                    "Press Enter when you are done to update other forms.",
+                    "The metadata file should at least contain : one column with samples name corresponding to names in the"
+                    "data file, and one column of target/class/condition.",
                 ),
                 html.Div(id="output_in_case_of_error_in_path_to_metadata")
             ],
@@ -66,7 +66,7 @@ class SplitsTab(MetaTab):
                 dbc.Input(id="name_splits_batch", placeholder="Enter Name",
                           className="form_input_text"),
                 dbc.FormText(
-                    "Write a unique name for the output file.",
+                    "Give a name to the output file, it will have this format : 'DD-MM-YYYY_CUSTOMNAME.metaboexpe'.",
                 ),
             ],
             className="form_field"
@@ -78,7 +78,7 @@ class SplitsTab(MetaTab):
                           className="form_labels"),
                 dbc.FormText(
                     "If there is normalized and raw data in your file, you can choose to use raw by selecting yes. "
-                    "Default is no and will use normalized data",
+                    "Default is no and will use normalized data.",
                 ),
                 dbc.RadioItems(
                     id="in_use_raw",
@@ -190,7 +190,7 @@ class SplitsTab(MetaTab):
                                                 dbc.Col(children=[
 
                                                     dbc.FormText(
-                                                        "Allows to link each file to its type/group to separate them self.approprietly afterwards."
+                                                        "Link each sample to its target/class."
                                                     ),
                                                     __typeGroupLink
                                                     ,

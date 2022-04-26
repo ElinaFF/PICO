@@ -140,7 +140,7 @@ class MLTab(MetaTab):
                     all_algo = json.load(algo_file)
                 avail_algo = []
                 for a in all_algo.keys():
-                    if a == "SVM_L1":
+                    if a == "SVM_L1" or a == "SCM" or a == "RandomSCM":
                         avail_algo.append({"label": a, "value": a, "disabled": True})
                     else:
                         avail_algo.append({"label": a, "value": a})
