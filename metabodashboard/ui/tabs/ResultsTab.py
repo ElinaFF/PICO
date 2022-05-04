@@ -25,7 +25,7 @@ from ...domain import MetaboController
 class ResultsTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
-        self.r = pkl.load(open("big_results.p", "rb"))
+        self.r = None # pkl.load(open("big_results.p", "rb"))
         self._plots = Plots("blues")
 
     def getLayout(self) -> dbc.Tab:
