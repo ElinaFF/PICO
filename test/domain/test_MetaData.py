@@ -25,7 +25,7 @@ def testLoadSamplesId(input_meta_data):
 
 
 def testThrowRuntimeErrorWhenLoadSamplesIdBeforeSettingIdColumn(input_meta_data):
-    with pytest.raises(RuntimeError) as e_info:
+    with pytest.raises(RuntimeError):
         input_meta_data.load_samples_id()
 
 
@@ -35,6 +35,6 @@ def testLoadTargets(input_meta_data):
 
 
 def testThrowRuntimeErrorWhenLoadTargetsBeforeSettingTargetsColumn(input_meta_data):
-    with pytest.raises(RuntimeError) as e_info:
+    with pytest.raises(RuntimeError):
         input_meta_data.load_targets()
 
