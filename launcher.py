@@ -1,7 +1,7 @@
 import os
 import pkg_resources
 
-REQUIREMENT_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), 'requirement.txt'))
+REQUIREMENT_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), 'requirements.txt'))
 
 
 def main():
