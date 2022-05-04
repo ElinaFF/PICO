@@ -3,8 +3,8 @@ import pickle
 
 from sklearn.model_selection import train_test_split
 
-from metabodashboard.domain import MetaData
-from metabodashboard.service import Utils
+from . import MetaData
+from ..service import Utils
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
