@@ -3,9 +3,9 @@ from unittest.mock import patch
 import pytest
 from sklearn.model_selection import train_test_split
 
-from metabodashboard.domain import SplitGroup
+from ...metabodashboard.domain import SplitGroup
 
-from TestsUtility import MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN, EXPERIMENT_NAME, \
+from .TestsUtility import MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN, EXPERIMENT_NAME, \
     SPLITS
 
 

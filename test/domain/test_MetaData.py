@@ -1,8 +1,8 @@
 import pytest as pytest
 
-from metabodashboard.domain.MetaData import MetaData
+from ...metabodashboard.domain.MetaData import MetaData
 
-from TestsUtility import METADATA_DATAFRAME, SAMPLES_ID_COLUMN, TARGETS_COLUMN, SAMPLES_ID, TARGETS
+from .TestsUtility import METADATA_DATAFRAME, SAMPLES_ID_COLUMN, TARGETS_COLUMN, SAMPLES_ID, TARGETS
 
 
 @pytest.fixture

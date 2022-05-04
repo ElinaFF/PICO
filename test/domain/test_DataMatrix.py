@@ -1,9 +1,9 @@
 from unittest.mock import patch, mock_open
 import pytest
 
-from metabodashboard.domain import DataMatrix
+from ...metabodashboard.domain import DataMatrix
 
-from TestsUtility import DATAMATRIX, SAMPLES_ID
+from .TestsUtility import DATAMATRIX, SAMPLES_ID
 
 
 @pytest.fixture

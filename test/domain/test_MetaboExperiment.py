@@ -1,9 +1,9 @@
 from unittest.mock import patch
 import pytest as pytest
 
-from metabodashboard.domain import MetaboExperiment
+from ...metabodashboard.domain import MetaboExperiment
 
-from TestsUtility import TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN, EXPERIMENT_NAME
+from .TestsUtility import TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN, EXPERIMENT_NAME
 
 
 @pytest.fixture

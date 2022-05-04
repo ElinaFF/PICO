@@ -3,8 +3,8 @@ from unittest.mock import patch
 import pytest
 from sklearn.svm import SVC
 
-from metabodashboard.domain import ModelFactory
-from TestsUtility import SUPPORTED_MODEL
+from ...metabodashboard.domain import ModelFactory
+from .TestsUtility import SUPPORTED_MODEL
 
 
 @pytest.fixture
