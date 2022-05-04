@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, mock_open
 
 import pytest
 from sklearn.model_selection import train_test_split
@@ -11,12 +11,14 @@ from .TestsUtility import MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLI
 
 @pytest.fixture
 def input_splits():
-    splits = SplitGroup(MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN,
+    with patch('builtins.open', new_callable=mock_open()):
+        return SplitGroup(MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN,
                         EXPERIMENT_NAME)
-    return splits
 
 
-def test_givenASplitGroup_whenLoadSplitWithIndex_thenTheSplitsAreReproducible(input_splits):
+@patch('pickle.load', side_effect=SPLITS)
+@patch('builtins.open', new_callable=mock_open())
+def test_givenASplitGroup_whenLoadSplitWithIndex_thenTheSplitsAreReproducible(pickle_mock, open_mock, input_splits):
     for split_index in range(NUMBER_OF_SPLITS):
         assert input_splits.load_split_with_index(split_index) == SPLITS[split_index]
 
