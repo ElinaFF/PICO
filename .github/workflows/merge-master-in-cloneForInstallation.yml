@@ -1,0 +1,32 @@
+# Thanks to Cluster (https://stackoverflow.com/questions/35445186/can-github-automatically-merge-branches)
+
+name: Merge master in branch cloneForInstallation
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+env:
+  REPO: https://ElinaFF:${{secrets.GITHUB_TOKEN}}@github.com/ElinaFF/MetaboDashboard.git
+
+  TARGET_BRANCH: long-lived_branch_name
+
+  MASTER_BRANCH: origin/setupAction
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Merge with master
+        run: |
+          git clone ${{env.MY_REPO}} -b ${{env.TARGET_BRANCH}} tmp
+          cd tmp
+          git config user.name "Automerge Bot"
+          git config user.email "bot@example.com"
+          git merge ${{env.MASTER_BRANCH}}
+          git push
