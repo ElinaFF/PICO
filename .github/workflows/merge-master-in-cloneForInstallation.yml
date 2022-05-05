@@ -15,7 +15,7 @@ env:
 
   TARGET_BRANCH: cloneForInstallation
 
-  MASTER_BRANCH: origin/setupAction
+  MASTER_BRANCH: origin/master
 
 jobs:
   merge:
@@ -29,4 +29,10 @@ jobs:
           git config user.name "Automerge Bot"
           git config user.email "bot@example.com"
           git merge ${{env.MASTER_BRANCH}}
+          git push
+      - name: Delete launcher.py
+        run: |
+          rm -f launcher.py
+          git add .
+          git commit -m "Remove launcher.py"
           git push
