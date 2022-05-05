@@ -28,7 +28,7 @@ jobs:
           cd tmp
           git config user.name "Automerge Bot"
           git config user.email "bot@example.com"
-          git merge ${{env.MASTER_BRANCH}}
+          git rebase ${{env.MASTER_BRANCH}}
           git push
       - name: Delete launcher.py
         run: |
