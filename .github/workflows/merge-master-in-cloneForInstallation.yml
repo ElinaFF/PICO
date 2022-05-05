@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Merge with master
         run: |
-          git clone ${{env.MY_REPO}} -b ${{env.TARGET_BRANCH}} tmp
+          git clone ${{env.REPO}} -b ${{env.TARGET_BRANCH}} tmp
           cd tmp
           git config user.name "Automerge Bot"
           git config user.email "bot@example.com"
