@@ -36,4 +36,4 @@ jobs:
           rm -f launcher.py
           git add .
           git commit -m "Remove launcher.py"
-          git push
+          git push --force
