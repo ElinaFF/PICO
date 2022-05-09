@@ -28,12 +28,15 @@ jobs:
           cd tmp
           git config user.name "Automerge Bot"
           git config user.email "bot@example.com"
-          git rebase ${{env.MASTER_BRANCH}}
+          git merge ${{env.MASTER_BRANCH}}
           git push
-      - name: Delete launcher.py
+      - name: Delete launcher.py, workflows, tests and root init
         run: |
           cd tmp
           rm -f launcher.py
+          rm -rf .github/
+          rm -rf test/
+          rm -f __init__.py
           git add .
           git commit -m "Remove launcher.py"
-          git push --force
+          git push
