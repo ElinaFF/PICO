@@ -12,3 +12,4 @@ plotly
 scikit-learn
 umap-learn
 openpyxl
+matplotlib
