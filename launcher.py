@@ -2,19 +2,22 @@ import os
 import pkg_resources
 import platform
 import subprocess
-#import git
+import requests
+
+# import git
 
 REQUIREMENT_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), 'requirement.txt'))
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 MINICONDA_EXEFILE = os.path.abspath(os.path.join(ROOT_DIR, 'Miniconda3-latest.exe'))
 
+
 def checkIfMinimumFileRequirementExist():
-    print("Checking minimum file requirement...")
     return os.path.exists('matabodashboard') and os.path.exists('requirement.txt')
 
 
 def installFromGitHub():
-    print("installing from git \n")
+    # TODO : mettre repo en public
+    subprocess.check_call("git clone https://github.com/ElinaFF/MetaboDashboard@cloneForInstallation", shell=True)
 
 
 def downloadMiniconda(url_for_download: str):
