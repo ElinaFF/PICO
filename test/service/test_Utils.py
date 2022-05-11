@@ -1,6 +1,6 @@
 import pytest
 import os
-from metabodashboard.service import Utils
+from ...metabodashboard.service import Utils
 
 
 def test_givenUtils_whenGetFilePath_thenReturnFilePath():
