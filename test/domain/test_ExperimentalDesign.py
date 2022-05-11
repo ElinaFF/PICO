@@ -1,12 +1,12 @@
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, mock_open
 
 import pandas as pd
 import pytest as pytest
 from sklearn.model_selection import train_test_split
 
-from metabodashboard.domain import ExperimentalDesign, MetaData, SplitGroup
+from ...metabodashboard.domain import ExperimentalDesign, MetaData, SplitGroup
 
-from TestsUtility import MOCKED_METADATA, CLASSES_DESIGN, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, \
+from .TestsUtility import MOCKED_METADATA, CLASSES_DESIGN, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, \
     EXPERIMENT_NAME, EXPERIMENT_FULL_NAME, SPLITS
 
 
@@ -16,18 +16,15 @@ def input_experimental_design():
     return experimental_design
 
 
-def test_givenAnExperimentalDesign_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(input_experimental_design):
+@patch('builtins.open', new_callable=mock_open())
+def test_givenAnExperimentalDesign_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(open_mock, input_experimental_design):
     input_experimental_design.set_split_parameter(TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA)
     assert input_experimental_design.get_number_of_splits() == NUMBER_OF_SPLITS
 
 
-@patch('metabodashboard.domain.SplitGroup.get_number_of_splits', return_value=NUMBER_OF_SPLITS)
-@patch('metabodashboard.domain.SplitGroup.load_split_with_index', side_effect=lambda index: SPLITS[index])
-@patch('metabodashboard.domain.SplitGroup.__init__', return_value=None)
-def test_givenAnExperimentalDesign_whenGetAllSplit_thenTheSplitsAreReproducible(splitgroup_init,
-                                                                                load_split_with_index_mock,
-                                                                                get_number_of_splits_mock,
-                                                                                input_experimental_design):
+@patch('pickle.load', side_effect=SPLITS)
+@patch('builtins.open', new_callable=mock_open())
+def test_givenAnExperimentalDesign_whenGetAllSplit_thenTheSplitsAreReproducible(open_mock, pickle_mock, input_experimental_design):
     input_experimental_design.set_split_parameter(TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA)
     for split_index, (real_split_index, actual_split) in enumerate(input_experimental_design.all_splits()):
         assert split_index == real_split_index

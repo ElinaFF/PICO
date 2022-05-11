@@ -6,8 +6,6 @@ import pandas as pd
 from dash import html, State, Input, Output, dash
 
 from .MetaTab import MetaTab
-from metabodashboard.service.RunMLalgo import runAlgo
-from metabodashboard.service.Utils import retrieve_data_from_sample_name
 from ...service import Utils
 
 
