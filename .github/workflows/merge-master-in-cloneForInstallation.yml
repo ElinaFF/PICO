@@ -5,8 +5,6 @@ name: Merge master in branch cloneForInstallation
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
   workflow_dispatch:
 
@@ -22,21 +20,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Merge with master
+      - name: Clone github repository
         run: |
-          git clone ${{env.REPO}} -b ${{env.TARGET_BRANCH}} tmp
+          git clone ${{env.REPO}} tmp
           cd tmp
           git config user.name "Automerge Bot"
           git config user.email "bot@example.com"
-          git merge ${{env.MASTER_BRANCH}}
-          git push
+
+      - name: Re-create target branch
+        run: |
+            - git branch -D ${{env.TARGET_BRANCH}}
+            - git branch ${{env.TARGET_BRANCH}}
+
       - name: Delete launcher.py, workflows, tests and root init
         run: |
           cd tmp
+          git checkout ${{env.TARGET_BRANCH}}
           rm -f launcher.py
           rm -rf .github/
           rm -rf test/
           rm -f __init__.py
           git add .
-          git commit -m "Remove launcher.py"
+          git commit -m "Remove necessary files"
           git push
