@@ -181,6 +181,7 @@ class ResultsTab(MetaTab):
                      ])
         ])
         ___metricsTable = html.Div(className="table_features", children=[
+            html.H6("Metrics table : mean(std)"),
             dcc.Loading(
                 id="loading_metrics_table",
                 children=html.Div(id="metrics_score_table", children=""),
@@ -204,6 +205,7 @@ class ResultsTab(MetaTab):
         __DTTreeTab = dbc.Tab(id="DTTT" ,className="sub_tab", label="DT Tree", disabled=True)
 
         ___featuresTable = html.Div(className="table_features", children=[
+            html.H6("Top 10 features sorted by importance"),
             dcc.Loading(
                 id="loading_features_table",
                 children=html.Div(id="features_table", children=""),
