@@ -3,7 +3,9 @@ import pandas as pd
 from abc import abstractmethod
 
 import sklearn
-from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, \
+    recall_score, f1_score, roc_auc_score, balanced_accuracy_score
+
 from collections import Counter
 import umap
 from sklearn.decomposition import PCA
@@ -53,6 +55,8 @@ class Results:
         print(algo_name)
         self.results[split_number]["train_accuracy"] = accuracy_score(y_train_true, y_train_pred)
         self.results[split_number]["test_accuracy"] = accuracy_score(y_test_true, y_test_pred)
+        self.results[split_number]["balanced_train_accuracy"] = balanced_accuracy_score(y_train_true, y_train_pred)
+        self.results[split_number]["balanced_test_accuracy"] = balanced_accuracy_score(y_test_true, y_test_pred)
         binary_y_train_true = Utils.get_binary(y_train_true, classes)
         binary_y_train_pred = Utils.get_binary(y_train_pred, classes)
         self.results[split_number]["train_precision"] = precision_score(binary_y_train_true, binary_y_train_pred)
@@ -205,6 +209,8 @@ class Results:
         tests_metrics = []
         acctrain = []
         acctest = []
+        balacctrain = []
+        balacctest = []
         precisiontrain = []
         precisiontest = []
         recalltrain = []
@@ -216,6 +222,8 @@ class Results:
         for s in self.splits_number:
             acctrain.append(self.results[s]["train_accuracy"])
             acctest.append(self.results[s]["test_accuracy"])
+            balacctrain.append(self.results[s]["balanced_train_accuracy"])
+            balacctest.append(self.results[s]["balanced_test_accuracy"])
             precisiontrain.append(self.results[s]["train_precision"])
             precisiontest.append(self.results[s]["test_precision"])
             recalltrain.append(self.results[s]["train_recall"])
@@ -226,12 +234,14 @@ class Results:
             roc_auc_test.append(self.results[s]["test_roc_auc"])
             
         trains_metrics.append(str(round(float(np.mean(acctrain)), 4))+" ("+str(round(float(np.std(acctrain)), 4))+")")
+        trains_metrics.append(str(round(float(np.mean(balacctrain)), 4)) + " (" + str(round(float(np.std(balacctrain)), 4)) + ")")
         trains_metrics.append(str(round(float(np.mean(precisiontrain)), 4))+" ("+str(round(float(np.std(precisiontrain)), 4))+")")
         trains_metrics.append(str(round(float(np.mean(recalltrain)), 4))+" ("+str(round(float(np.std(recalltrain)), 4))+")")
         trains_metrics.append(str(round(float(np.mean(f1train)), 4))+" ("+str(round(float(np.std(f1train)), 4))+")")
         trains_metrics.append(str(round(float(np.mean(roc_auc_train)), 4))+" ("+str(round(float(np.std(roc_auc_train)), 4))+")")
 
         tests_metrics.append(str(round(float(np.mean(acctest)), 4))+" ("+str(round(float(np.std(acctest)), 4))+")")
+        tests_metrics.append(str(round(float(np.mean(balacctest)), 4)) + " (" + str(round(float(np.std(balacctest)), 4)) + ")")
         tests_metrics.append(str(round(float(np.mean(precisiontest)), 4))+" ("+str(round(float(np.std(precisiontest)), 4))+")")
         tests_metrics.append(str(round(float(np.mean(recalltest)), 4))+" ("+str(round(float(np.std(recalltest)), 4))+")")
         tests_metrics.append(str(round(float(np.mean(f1test)), 4))+" ("+str(round(float(np.std(f1test)), 4))+")")
