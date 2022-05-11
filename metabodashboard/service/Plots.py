@@ -147,9 +147,14 @@ class Plots():
         """
         return
 
-    def show_metabolite_levels(self):
+    def show_metabolite_levels(self, features_data):
         """
-        Plot in boxplot (with a dropdown to select the metabolite, max of N? metabolite)
+        Plot in stripchart (boxplot with point and no box)
+        (with a dropdown to select the metabolite, max of N? metabolite)
         And show the intensity of this metabolite/ this feature in each class (one box per class)
         """
-        return
+        feature = ""
+        df = features_data.loc[:, feature]
+        fig = px.strip(df, x='targets', y=feature)
+
+        return fig
