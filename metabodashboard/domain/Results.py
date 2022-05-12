@@ -205,7 +205,7 @@ class Results:
 
     # TODO: faire une fonction qui produce metrics table pour tous les splits
     def produce_metrics_table(self):
-        metrics = ["accuracy", "precision", "recall", "f1", "roc_auc"]
+        metrics = ["accuracy", "balanced accuracy", "precision", "recall", "f1", "roc_auc"]
         trains_metrics = []
         tests_metrics = []
         acctrain = []

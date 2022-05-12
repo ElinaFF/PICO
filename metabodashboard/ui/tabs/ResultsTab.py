@@ -25,7 +25,7 @@ from ...domain import MetaboController
 class ResultsTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
-        self.r = None # pkl.load(open("big_results.p", "rb"))
+        self.r = pkl.load(open("big_results.p", "rb"))
         self._plots = Plots("blues")
 
     def getLayout(self) -> dbc.Tab:
@@ -212,57 +212,29 @@ class ResultsTab(MetaTab):
                 type="circle"),
 
         ])
-        ___metaboliteLevelBoxplot = html.Div(className="bxplot_plot_select_and_title",
-                                             children=[
-                                                 html.Div(className="title_and_help",
-                                                          children=[html.H6(
-                                                              "Metabolite Level"),
-                                                              dbc.Button("[?]",
-                                                                         className="text-muted btn-secondary",
-                                                                         id="help_BxPlot"),
-                                                              dbc.Popover(
-                                                                  children=[
-                                                                      dbc.PopoverBody(
-                                                                          "Blablabla wout wout")
-                                                                  ],
-                                                                  id="pop_help_BxPlot",
-                                                                  is_open=False,
-                                                                  target="help_BxPlot")
-                                                          ]
-                                                          ),
-                                                 html.Div(id="metrics_table",
-                                                          style={"margin": "auto",
-                                                                 "display": "flex",
-                                                                 "justify-content": "center"}),
-                                                 html.Div(
-                                                     id="metabolite_dropdown_container",
-                                                     children=[
-                                                         dbc.Select(
-                                                             id="metabolite_dropdown",
-                                                             className="form_select_large",
-                                                             options=[],
-                                                         )
-                                                     ]),
-                                                 dcc.Graph(id="metabo_boxplot",
-                                                           figure=go.Figure(
-                                                               data=[go.Box(
-                                                                   x=[1, 2, 3, 4, 5, 5,
-                                                                      5, 5, 5, 5, 5, 6,
-                                                                      7,
-                                                                      8]),
-                                                                   go.Box(
-                                                                       x=[10, 10, 10,
-                                                                          10, 9, 9, 9,
-                                                                          9, 9, 7,
-                                                                          8, 5, 12, 12,
-                                                                          15])],
-                                                               layout=go.Layout(
-                                                                   paper_bgcolor='rgba(0,0,0,0)',
-                                                                   plot_bgcolor='rgba(0,0,0,0)')
-                                                           )
-                                                           )
+        ___stripChart = html.Div(className="umap_plot_and_title",
+                           children=[
+                               html.Div(className="title_and_help",
+                                        children=[
+                                                # html.H6("Umap"),
+                                                  dbc.Button("[?]",
+                                                             className="text-muted btn-secondary",
+                                                             id="help_stripChart"),
+                                                  dbc.Popover(
+                                                      children=[
+                                                          dbc.PopoverBody(
+                                                              "Blablabla wout wout")
+                                                      ],
+                                                      id="pop_help_stripChart",
+                                                      is_open=False,
+                                                      target="help_stripChart")
+                                                  ]),
+                               dcc.Loading(dcc.Graph(id="features_stripChart"),
+                                           type="dot", color="#13BD00"),
+                               # dcc.Slider(min=0, max=3, step=1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"},
+                               #            id="features_stripChart_dropdown")
 
-                                             ])
+                           ])
 
         ___heatMap = html.Div(className="heatmap_plot_and_title",
                               children=[
@@ -306,7 +278,7 @@ class ResultsTab(MetaTab):
                                        children=[
                                            html.Div(className="fig_group", children=[
                                                ___featuresTable,
-                                               ___metaboliteLevelBoxplot
+                                               ___stripChart
                                            ]),
                                            html.Div(className="fig_group", children=[
                                                ___heatMap
@@ -524,6 +496,19 @@ class ResultsTab(MetaTab):
                         text_mat[i].append(str(col))
 
                 return self._plots.show_general_confusion_matrix(cm, labels, text_mat)
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+             Output("features_stripChart", "figure"),
+            [Input("load_ML_results_button", "n_clicks")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")]
+        )
+        def show_stripChart_features(n_clicks, algo, design_name):
+            if n_clicks >= 1:
+                df = self.r[design_name][algo].results["features_stripchart"]
+                return self._plots.show_metabolite_levels(df)
             else:
                 return dash.no_update
 
