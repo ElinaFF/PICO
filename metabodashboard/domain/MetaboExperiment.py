@@ -10,7 +10,7 @@ from .ModelFactory import ModelFactory
 import os
 import pickle
 
-from ..conf.supported_models import CV_ALGORITHMS
+from ..conf.SupportedCV import CV_ALGORITHMS
 from ..service import Utils
 
 X_TRAIN_INDEX = 0
