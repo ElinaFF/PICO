@@ -1,6 +1,7 @@
-from typing import Generator, Tuple
+from typing import Generator, Tuple, List
 
 import pandas as pd
+import sklearn
 
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
@@ -9,6 +10,7 @@ from .ModelFactory import ModelFactory
 import os
 import pickle
 
+from ..conf.supported_models import CV_ALGORITHMS
 from ..service import Utils
 
 X_TRAIN_INDEX = 0
@@ -36,6 +38,8 @@ class MetaboExperiment:
         self._supported_model = self._model_factory.create_supported_models()
         self._custom_models = {}
         self._selected_models = []
+        self._cv_algorithms = CV_ALGORITHMS
+        self._selected_cv_type = list(self._cv_algorithms.keys())[0]
 
     def set_metadata(self):
         self._metadata = MetaData()
@@ -132,6 +136,7 @@ class MetaboExperiment:
             yield name, experimental_design.get_full_name()
 
     def learn(self, folds: int):
+        cv_algorithm = self.get_cv_algorithm()
         self._check_experimental_design()
         self._data_matrix.load_data()
         for _, experimental_design in self.experimental_designs.items():
@@ -144,7 +149,7 @@ class MetaboExperiment:
                 for model_name in self._selected_models:
                     results[model_name].set_feature_names(x_train)
                     metabo_model = self.get_model_from_name(model_name)
-                    best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX])
+                    best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX], cv_algorithm)
                     y_train_pred = best_model.predict(x_train)
                     y_test_pred = best_model.predict(x_test)
                     results[model_name].add_results_from_one_algo_on_one_split(best_model, self._data_matrix.data,
@@ -162,5 +167,20 @@ class MetaboExperiment:
         for name in self.experimental_designs:
             results[name] = self.experimental_designs[name].get_results()
         return results
+
+    def set_cv_type(self, cv_type: str):
+        if cv_type not in self._cv_algorithms:
+            raise ValueError("CV type '" + cv_type + "' is not supported.")
+        self._selected_cv_type = cv_type
+        print("CV type set to " + cv_type)
+
+    def get_selected_cv_type(self) -> str:
+        return self._selected_cv_type
+
+    def get_cv_algorithm(self) -> sklearn.model_selection:
+        return self._cv_algorithms[self._selected_cv_type]
+
+    def get_cv_types(self) -> List[str]:
+        return list(self._cv_algorithms.keys())
 
 # TODO: print current algo when training
