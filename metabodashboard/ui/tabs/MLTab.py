@@ -2,7 +2,6 @@ import json
 import os
 
 import dash_bootstrap_components as dbc
-import pandas as pd
 from dash import html, State, Input, Output, dash
 
 from .MetaTab import MetaTab
@@ -15,7 +14,10 @@ class MLTab(MetaTab):
             [
                 dbc.Label("Select CV search type",
                           className="form_labels"),
-                dbc.RadioItems(options=[{'label': "GridSearchCV", "value": "GridSearchCV"}, {'label': "RandomizedSearchCV", "value": "RandomizedSearchCV", "disabled": True}], value="GridSearchCV", id="radio_cv_types"),
+                dbc.RadioItems(
+                    options=[{"label": cv_type, "value": cv_type} for cv_type in self.metabo_controller.get_cv_types()],
+                    value=self.metabo_controller.get_selected_cv_type(),
+                    id="radio_cv_types"),
             ],
             className="form_field"
         )
@@ -96,7 +98,8 @@ class MLTab(MetaTab):
         return dbc.Tab(className="global_tab", label="Machine Learning",
                        children=[
                            html.Div(className="fig_group",
-                                    children=[_definitionLearningConfig, _definitionLearningAlgorithm
+                                    children=[_definitionLearningConfig,
+                                              _definitionLearningAlgorithm
                                               ]),
                        ])
 
@@ -163,3 +166,11 @@ class MLTab(MetaTab):
                 return "Done!"
             else:
                 return dash.no_update
+
+        @self.app.callback(
+            Output("radio_cv_types", "value"),
+            [Input("radio_cv_types", "value")]
+        )
+        def set_cv_type(value):
+            self.metabo_controller.set_cv_type(value)
+            return value
