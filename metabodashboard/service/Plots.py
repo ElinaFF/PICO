@@ -147,35 +147,12 @@ class Plots():
         """
         return
 
-    def show_metabolite_levels(self, features_data):
+    def show_metabolite_levels(self, features_data, feature):
         """
         Plot in stripchart (boxplot with point and no box)
         (with a dropdown to select the metabolite, max of N? metabolite)
         And show the intensity of this metabolite/ this feature in each class (one box per class)
         """
-        df = features_data#.loc[:, feature]
-        fig = px.strip(df, x='targets', y=df.columns, title="Abundance of metabolite {} in each sample".format("---"))
-        features = list(features_data.columns)[:-1]
-        list_opt = []
-        for f in features:
-            list_opt.append(dict(label=f, method='update', args=[{'visible': df.columns.isin([f]),
-                                                                  'title': f,
-                                                                  'showlegend': True}]))
-
-        # Add dropdown
-        fig.update_layout(
-            updatemenus=[
-                dict(
-                    buttons=list(list_opt),
-                    direction="down",
-                    pad={"r": 10, "t": 10},
-                    showactive=True,
-                    x=0.1,
-                    xanchor="left",
-                    y=1.1,
-                    yanchor="top"
-                ),
-            ]
-        )
-
+        df = features_data
+        fig = px.strip(df, x='targets', y=feature, title="Abundance of metabolite {} in each sample by class".format(feature))
         return fig

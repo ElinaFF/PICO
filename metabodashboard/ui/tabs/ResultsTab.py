@@ -216,7 +216,7 @@ class ResultsTab(MetaTab):
                            children=[
                                html.Div(className="title_and_help",
                                         children=[
-                                                # html.H6("Umap"),
+                                            html.H6("StripChart of features"),
                                                   dbc.Button("[?]",
                                                              className="text-muted btn-secondary",
                                                              id="help_stripChart"),
@@ -229,49 +229,17 @@ class ResultsTab(MetaTab):
                                                       is_open=False,
                                                       target="help_stripChart")
                                                   ]),
+                               dbc.Select(id="features_dropdown",
+                                          className="form_select",
+                                          options=[{"label": "None", "value": "None"}],
+                                          value="None",
+                                          ),
                                dcc.Loading(dcc.Graph(id="features_stripChart"),
                                            type="dot", color="#13BD00"),
                                # dcc.Slider(min=0, max=3, step=1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"},
                                #            id="features_stripChart_dropdown")
 
                            ])
-
-        ___heatMap = html.Div(className="heatmap_plot_and_title",
-                              children=[
-                                  html.Div(className="title_and_help",
-                                           children=[html.H6("Heatmap",
-                                                             id="heatmap_title"),
-                                                     dbc.Button("[?]",
-                                                                className="text-muted btn-secondary",
-                                                                id="help_heatmapPlot"),
-                                                     dbc.Popover(
-                                                         children=[
-                                                             dbc.PopoverBody(
-                                                                 "Blablabla wout wout")
-                                                         ],
-                                                         id="pop_help_heatmapPlot",
-                                                         is_open=False,
-                                                         target="help_heatmapPlot")
-                                                     ]
-                                           ),
-                                  # Heat-map.
-                                  # Should we put the title on the plot?
-                                  dcc.Loading(children=[
-                                      html.Img(id='heatmap'),
-                                      # dcc.Graph(id="heatmap",
-                                      #    figure=go.Figure(
-                                      #        data=[
-                                      #            go.Scatter(
-                                      #                x=[0,1,3,4],
-                                      #                y=[0,2,3,4]
-                                      #            )
-                                      #        ]
-                                      #    )
-                                      # )
-                                  ]
-                                  )
-
-                              ])
 
         __featuresResultsTab = dbc.Tab(className="sub_tab",
                                        label="Features",
@@ -280,9 +248,7 @@ class ResultsTab(MetaTab):
                                                ___featuresTable,
                                                ___stripChart
                                            ]),
-                                           html.Div(className="fig_group", children=[
-                                               ___heatMap
-                                           ]),
+
                                        ]
                                        )
 
@@ -391,18 +357,6 @@ class ResultsTab(MetaTab):
             else:
                 return dash.no_update
 
-        @self.app.callback(
-            Output("features_table", "children"),
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"),
-             State("design_dropdown", "value")]
-        )
-        def show_features(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
-                return dbc.Table.from_dataframe(df, borderless=True)
-            else:
-                return dash.no_update
 
         @self.app.callback(
             Output("metrics_score_table", "children"),
@@ -500,15 +454,44 @@ class ResultsTab(MetaTab):
                 return dash.no_update
 
         @self.app.callback(
-             Output("features_stripChart", "figure"),
+            Output("features_table", "children"),
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"),
              State("design_dropdown", "value")]
         )
-        def show_stripChart_features(n_clicks, algo, design_name):
+        def show_features(n_clicks, algo, design_name):
             if n_clicks >= 1:
+                df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
+                return dbc.Table.from_dataframe(df, borderless=True)
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+            [Output("features_dropdown", "options"),
+             Output("features_dropdown", "value")],
+            [Input("load_ML_results_button", "n_clicks")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")]
+        )
+        def update_results_dropdown_features(n_click, algo, design_name):
+            if n_click >= 1:
+                df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
+                features = list(df.iloc[:, 0])
+                return [{"label": i, "value": i} for i in features], features[0]
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+             Output("features_stripChart", "figure"),
+            [Input("features_dropdown", "value")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")]
+        )
+        def show_stripChart_features(feature, algo, design_name):
+            if feature != "None":
                 df = self.r[design_name][algo].results["features_stripchart"]
-                return self._plots.show_metabolite_levels(df)
+                df = df.loc[:, [feature, "targets"]]
+                return self._plots.show_metabolite_levels(df, feature)
             else:
                 return dash.no_update
 
