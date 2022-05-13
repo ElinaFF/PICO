@@ -39,7 +39,7 @@ class Loader:
         self.timeout = timeout
 
         self._thread = threading.Thread(target=self._animate, daemon=True)
-        self.steps = ['|...>   |', '| ...>  |', '|  ...> |', '|   ...>|', '|    ...|', '|>   ...|', '|.>   ..|', '|..>   .|']
+        self.steps = ["|MetaboDashboard   |", "| MetaboDashboard  |", "|  MetaboDashboard |" , "|   MetaboDashboard|", "|    MetaboDashboar|", "|d    MetaboDashboa|", "|rd    MetaboDashbo|", "|ard    MetaboDashb|", "|oard    MetaboDash|", "|board    MetaboDas|", "|hboard    MetaboDa|", "|shboard    MetaboD|", "|ashboard    Metabo|", "|Dashboard    Metab|", "|oDashboard    Meta|", "|boDashboard    Met|", "|aboDashboard    Me|", "|etaboDashboard    M|"]
         self.done = False
 
     def start(self):
