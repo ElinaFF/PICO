@@ -55,6 +55,8 @@ class Results:
         print(algo_name)
         self.results[split_number]["train_accuracy"] = accuracy_score(y_train_true, y_train_pred)
         self.results[split_number]["test_accuracy"] = accuracy_score(y_test_true, y_test_pred)
+        self.results[split_number]["y_test_true"] = y_test_true
+        self.results[split_number]["y_test_pred"] = y_test_pred
         self.results[split_number]["balanced_train_accuracy"] = balanced_accuracy_score(y_train_true, y_train_pred)
         self.results[split_number]["balanced_test_accuracy"] = balanced_accuracy_score(y_test_true, y_test_pred)
         binary_y_train_true = Utils.get_binary(y_train_true, classes)
