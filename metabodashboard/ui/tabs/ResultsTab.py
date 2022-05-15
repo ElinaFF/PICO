@@ -79,7 +79,7 @@ class ResultsTab(MetaTab):
                      children=[
                          html.H6("PCA", id="PCA_title"),
                          dbc.Button("[?]",
-                                    className="text-muted btn-secondary",
+                                    className="popover_btn text-muted btn-secondary",
                                     id="help_pcaPlot"),
                          dbc.Popover(children=[
                              dbc.PopoverBody(
@@ -101,7 +101,7 @@ class ResultsTab(MetaTab):
                                html.Div(className="title_and_help",
                                         children=[html.H6("Umap"),
                                                   dbc.Button("[?]",
-                                                             className="text-muted btn-secondary",
+                                                             className="text-muted btn-secondary popover_btn",
                                                              id="help_umapPlot"),
                                                   dbc.Popover(
                                                       children=[
@@ -134,7 +134,7 @@ class ResultsTab(MetaTab):
             html.Div(className="title_and_help",
                      children=[html.H6("Accuracy plot"),
                                dbc.Button("[?]",
-                                          className="text-muted btn-secondary",
+                                          className="text-muted btn-secondary popover_btn",
                                           id="help_accPlot"),
                                dbc.Popover(children=[
                                    dbc.PopoverBody(
@@ -206,6 +206,9 @@ class ResultsTab(MetaTab):
 
         ___featuresTable = html.Div(className="table_features", children=[
             html.H6("Top 10 features sorted by importance"),
+            dbc.Button("Export", color="primary", id="export_features",
+                       className="custom_buttons", n_clicks=0),
+            dcc.Download(id="download_dataframe_csv"),
             dcc.Loading(
                 id="loading_features_table",
                 children=html.Div(id="features_table", children=""),
@@ -218,7 +221,7 @@ class ResultsTab(MetaTab):
                                         children=[
                                             html.H6("StripChart of features"),
                                                   dbc.Button("[?]",
-                                                             className="text-muted btn-secondary",
+                                                             className="text-muted btn-secondary popover_btn",
                                                              id="help_stripChart"),
                                                   dbc.Popover(
                                                       children=[
@@ -463,6 +466,20 @@ class ResultsTab(MetaTab):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
                 return dbc.Table.from_dataframe(df, borderless=True)
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+            Output("download_dataframe_csv", "data"),
+            [Input("export_features", "n_clicks")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")],
+            prevent_initial_call=True,
+        )
+        def export_download_features_table(n_click, algo, design_name):
+            if n_click >= 1:
+                df = self.r[design_name][algo].results["features_table"]
+                return dcc.send_data_frame(df.to_csv, "featuresImportancesTable.csv")
             else:
                 return dash.no_update
 
