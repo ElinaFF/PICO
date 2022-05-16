@@ -52,6 +52,12 @@ class MetaboExperiment:
         self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, use_raw=use_raw,
                                                      from_base64=from_base64)
 
+    def get_train_test_proportion(self) -> float:
+        return self._train_test_proportion
+
+    def get_number_of_splits(self) -> int:
+        return self._number_of_splits
+
     def _update_experimental_design(self):
         for _, experimental_design in self.experimental_designs.items():
             experimental_design.set_split_parameter(self._train_test_proportion, self._number_of_splits, self._metadata)
