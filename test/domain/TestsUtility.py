@@ -81,6 +81,12 @@ MOCKED_METADATA.load_targets.return_value = TARGETS
 
 SPLITS = _get_splits(NUMBER_OF_SPLITS, TRAIN_TEST_PROPORTION, SAMPLES_ID, CLASSES)
 
+FOLDS = 5
+PARAMETER_GRID = {
+    'criterion': ['gini', 'entropy'],
+    "max_depth": [1, 2, 3, 4, 5, 10]
+}
+
 SUPPORTED_MODEL = LEARN_CONFIG = {
     "DecisionTree": {
         "function": DecisionTreeClassifier,
