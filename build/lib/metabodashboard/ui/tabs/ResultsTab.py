@@ -18,7 +18,6 @@ from sklearn.tree import DecisionTreeClassifier
 
 from metabodashboard.conf.MetaboDashboardConfig import STATISTICS
 from .MetaTab import MetaTab
-from metabodashboard.conf.LearnConfig import LEARN_CONFIG
 from ...service import Plots
 from metabodashboard.domain import MetaboController
 
