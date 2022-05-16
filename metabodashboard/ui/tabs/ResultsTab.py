@@ -231,8 +231,6 @@ class ResultsTab(MetaTab):
                                           ),
                                dcc.Loading(dcc.Graph(id="features_stripChart"),
                                            type="dot", color="#13BD00"),
-                               # dcc.Slider(min=0, max=3, step=1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"},
-                               #            id="features_stripChart_dropdown")
 
                            ])
 
