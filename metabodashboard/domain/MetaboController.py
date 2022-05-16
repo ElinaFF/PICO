@@ -86,3 +86,9 @@ class MetaboController:
 
     def get_all_results(self):
         return self._metabo_experiment.get_all_results()
+
+    def add_custom_model(self, model_name: str, needed_import: str, grid_search_param: dict):
+        self._metabo_experiment.add_custom_model(model_name, needed_import, grid_search_param)
+
+    def get_all_algos_names(self) -> list:
+        return self._metabo_experiment.get_all_algos_names()
