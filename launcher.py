@@ -12,6 +12,12 @@ except ImportError:
     subprocess.call(['pip', 'install', 'requests'])
     import requests
 
+try:
+    import argparse
+except ImportError:
+    subprocess.call(['pip', 'install', 'argparse'])
+    import requests
+
 REQUIREMENT_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 'requirements.txt'))
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -19,6 +25,11 @@ MINICONDA_FILE = os.path.abspath(
     os.path.join(ROOT_DIR, 'Miniconda3-latest'))
 
 RO_TEMP_TOKEN = "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"
+
+parser = argparse.ArgumentParser(description='Installation parameter')
+parser.add_argument('-e', '--environment', help='Conda environment name')
+condaEnvName = parser.parse_args()
+print(condaEnvName)
 
 
 class Loader:
@@ -39,7 +50,11 @@ class Loader:
         self.timeout = timeout
 
         self._thread = threading.Thread(target=self._animate, daemon=True)
-        self.steps = ["|MetaboDashboard   |", "| MetaboDashboard  |", "|  MetaboDashboard |" , "|   MetaboDashboard|", "|    MetaboDashboar|", "|d    MetaboDashboa|", "|rd    MetaboDashbo|", "|ard    MetaboDashb|", "|oard    MetaboDash|", "|board    MetaboDas|", "|hboard    MetaboDa|", "|shboard    MetaboD|", "|ashboard    Metabo|", "|Dashboard    Metab|", "|oDashboard    Meta|", "|boDashboard    Met|", "|aboDashboard    Me|", "|etaboDashboard    M|"]
+        self.steps = ["|MetaboDashboard   |", "| MetaboDashboard  |", "|  MetaboDashboard |", "|   MetaboDashboard|",
+                      "|    MetaboDashboar|", "|d    MetaboDashboa|", "|rd    MetaboDashbo|", "|ard    MetaboDashb|",
+                      "|oard    MetaboDash|", "|board    MetaboDas|", "|hboard    MetaboDa|", "|shboard    MetaboD|",
+                      "|ashboard    Metabo|", "|Dashboard    Metab|", "|oDashboard    Meta|", "|boDashboard    Met|",
+                      "|aboDashboard    Me|", "|etaboDashboard    M|"]
         self.done = False
 
     def start(self):
@@ -73,10 +88,11 @@ def checkIfMinimumFileRequirementExist():
 
 def installFromGitHubForWindows():
     # TODO : mettre repo en public
-    subprocess.call("rmdir /s /q cloneForInstallation", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.call("rmdir /s /q cloneForInstallation", shell=True, stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL)
     subprocess.call("git clone -b cloneForInstallation "
-                          f"https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard cloneForInstallation",
-                          shell=True, stdout=subprocess.DEVNULL)
+                    f"https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard cloneForInstallation",
+                    shell=True, stdout=subprocess.DEVNULL)
     subprocess.call("robocopy /s cloneForInstallation .", shell=True)
     subprocess.call("rmdir /q /s cloneForInstallation", shell=True)
 
@@ -133,7 +149,7 @@ def is_conda_installed() -> bool:
 
 def is_metabodashboard_env_exist() -> bool:
     enviList = subprocess.check_output("conda env list", shell=True)
-    if "metabodashboard" in enviList.decode('utf-8').lower():
+    if "\n" + condaEnvName.environment + " " in enviList.decode('utf-8').lower():
         return True
     return False
 
@@ -145,7 +161,7 @@ def create_metabodashboard_env():
 
 def install_dependencies():
     subprocess.check_call(
-        "conda env update -n metabodashboard -f environment.yml", shell=True,
+        "conda run -n " + condaEnvName.environment + " pip install -r requirements.txt --user", shell=True,
         stdout=subprocess.DEVNULL)
 
 
@@ -206,23 +222,31 @@ def main():
 
     loader.stop()
 
-    loader = Loader(desc="Checking for metabodashboard environment...").start()
-    if not is_metabodashboard_env_exist():
-        loader.stop(fail=True)
-        print("metabodashboard environment not found !")
-        with Loader(desc="\tCreating metabodashboard environment..."):
-            create_metabodashboard_env()
-        with Loader(desc="\tInstalling dependencies in environment..."):
-            install_dependencies()
-
-        internal_loader = Loader(
-            desc="Re-checking for metabodashboard environment...").start()
+    if not condaEnvName.environment:
+        condaEnvName.environment = "metabodashboard"
+        loader = Loader(desc="Checking for metabodashboard environment...").start()
         if not is_metabodashboard_env_exist():
-            internal_loader.stop(fail=True)
-            raise Exception("metabodashboard environment couldn't be created")
-        internal_loader.stop()
+            loader.stop(fail=True)
+            print("metabodashboard environment not found !")
+            with Loader(desc="\tCreating metabodashboard environment..."):
+                create_metabodashboard_env()
+            with Loader(desc="\tInstalling dependencies in environment..."):
+                install_dependencies()
 
-    loader.stop()
+            internal_loader = Loader(
+                desc="Re-checking for metabodashboard environment...").start()
+            if not is_metabodashboard_env_exist():
+                internal_loader.stop(fail=True)
+                raise Exception("metabodashboard environment couldn't be created")
+            internal_loader.stop()
+        loader.stop()
+    else:
+        loader = Loader(desc="Checking for metabodashboard environment...").start()
+        print(is_metabodashboard_env_exist())
+        if not is_metabodashboard_env_exist():
+            print("Error : environment not found\n\n\n\n\n\n")
+            loader.stop(fail=True)
+            exit(0)
 
     loader = Loader(desc="Checking dependencies...").start()
     if not env_dependencies_verification():
@@ -239,7 +263,10 @@ def main():
 
     loader.stop()
 
-    print("Success !")
+    print("Successfully installed !\n")
+
+    from metabodashboard import app
+    app.run_server(debug=True, host='127.0.0.1', port=5000)
 
 
 if __name__ == "__main__":
