@@ -33,7 +33,7 @@ class MetaboExperiment:
 
         self.experimental_designs = {}
 
-        self._supported_model = self._model_factory.create_supported_models()
+        self._supported_models = self._model_factory.create_supported_models()
         self._custom_models = {}
         self._selected_models = []
 
@@ -47,16 +47,6 @@ class MetaboExperiment:
             return True
         except RuntimeError:
             return False
-
-    # def set_metadata_dataframe_from_path(self, path: str):
-    #     if path.split(".")[-1] == "csv":
-    #         self._metabo_experiment.set_metadata_with_dataframe(pd.read_csv(path, sep=";",na_filter=False))
-    #         return True
-    #     if "xls" in path.split(".")[-1] or "od" in path.split(".")[-1]:
-    #         # TODO: WARNING -> no na filter at all
-    #         self._metabo_experiment.set_metadata_with_dataframe(pd.read_excel(path, na_filter=False))
-    #         return True
-    #     return False
 
     def set_data_matrix(self, path_data_matrix: str, data=None, use_raw: bool = False, from_base64: bool = True):
         self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, use_raw=use_raw,
@@ -110,8 +100,8 @@ class MetaboExperiment:
         return self._metadata.get_formatted_unique_targets()
 
     def get_model_from_name(self, model_name: str) -> MetaboModel:
-        if model_name in self._supported_model.keys():
-            return self._supported_model[model_name]
+        if model_name in self._supported_models.keys():
+            return self._supported_models[model_name]
         elif model_name in self._custom_models.keys():
             return self._custom_models[model_name]
         else:
@@ -162,5 +152,8 @@ class MetaboExperiment:
         for name in self.experimental_designs:
             results[name] = self.experimental_designs[name].get_results()
         return results
+
+    def get_all_algos_names(self) -> list:
+        return list(self._supported_models.keys()) + list(self._custom_models.keys())
 
 # TODO: print current algo when training
