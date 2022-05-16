@@ -84,6 +84,7 @@ class Results:
             self.results["umap_data"] = self._produce_UMAP(data, self.results["features_table"])
             self.results["pca_data"] = self._produce_PCA(data, self.results["features_table"])
             self.results["metrics_table"] = self.produce_metrics_table()
+            self.results["features_stripchart"] = self.features_strip_chart_abundance_each_class(self.results["features_table"], data)
 
     def set_feature_names(self, x: pd.DataFrame):
         """
@@ -204,7 +205,7 @@ class Results:
 
     # TODO: faire une fonction qui produce metrics table pour tous les splits
     def produce_metrics_table(self):
-        metrics = ["accuracy", "precision", "recall", "f1", "roc_auc"]
+        metrics = ["accuracy", "balanced accuracy", "precision", "recall", "f1", "roc_auc"]
         trains_metrics = []
         tests_metrics = []
         acctrain = []
@@ -251,6 +252,17 @@ class Results:
         d = {"metrics": metrics, "train": trains_metrics, "test": tests_metrics}
         df = pd.DataFrame(data=d)
 
+        return df
+
+    def features_strip_chart_abundance_each_class(self, feature_df, data):
+        """
+        store data for the 10 most important feature (mean of all split)
+        as well as the class for each sample
+        allows ploting the stripchart in Plots
+        """
+        important_features = list(feature_df["features"])[:10]
+        df = data.loc[:, important_features]
+        df["targets"] = self.results["classes"]
         return df
 
 
