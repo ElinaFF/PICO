@@ -1,4 +1,4 @@
-from typing import Generator, Tuple
+from typing import Generator, Tuple, List
 
 import pandas as pd
 
@@ -86,3 +86,12 @@ class MetaboController:
 
     def get_all_results(self):
         return self._metabo_experiment.get_all_results()
+
+    def set_cv_type(self, cv_type: str):
+        self._metabo_experiment.set_cv_type(cv_type)
+
+    def get_cv_types(self) -> List[str]:
+        return self._metabo_experiment.get_cv_types()
+
+    def get_selected_cv_type(self) -> str:
+        return self._metabo_experiment.get_selected_cv_type()

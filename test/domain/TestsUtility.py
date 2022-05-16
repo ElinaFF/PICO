@@ -100,3 +100,9 @@ SUPPORTED_MODEL = {
         }
     },
 }
+
+FOLDS = 5
+PARAMETER_GRID = {
+    'criterion': ['gini', 'entropy'],
+    "max_depth": [1, 2, 3, 4, 5, 10]
+}
