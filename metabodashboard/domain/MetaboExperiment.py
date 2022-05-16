@@ -167,4 +167,19 @@ class MetaboExperiment:
     def get_all_algos_names(self) -> list:
         return list(self._supported_models.keys()) + list(self._custom_models.keys())
 
+    def set_cv_type(self, cv_type: str):
+        if cv_type not in self._cv_algorithms:
+            raise ValueError("CV type '" + cv_type + "' is not supported.")
+        self._selected_cv_type = cv_type
+        print("CV type set to " + cv_type)
+
+    def get_selected_cv_type(self) -> str:
+        return self._selected_cv_type
+
+    def get_cv_algorithm(self) -> sklearn.model_selection:
+        return self._cv_algorithms[self._selected_cv_type]
+
+    def get_cv_types(self) -> List[str]:
+        return list(self._cv_algorithms.keys())
+
 # TODO: print current algo when training
