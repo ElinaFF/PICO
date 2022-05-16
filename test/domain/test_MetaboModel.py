@@ -19,7 +19,9 @@ def test_givenModel_whenTuningWithGridSearch_thenReturnBestModel(input_metabomod
 
 
 def test_givenModel_whenTuningWithRandomizedSearch_thenReturnBestModel(input_metabomodel):
-    best_model = input_metabomodel.train(FOLDS, DATA, CLASSES, RandomizedSearchCV)
-    real_model = RandomizedSearchCV(DecisionTreeClassifier(random_state=42), PARAMETER_GRID, cv=FOLDS)
+    real_model = RandomizedSearchCV(DecisionTreeClassifier(random_state=42), PARAMETER_GRID, cv=FOLDS, random_state=42)
     real_model.fit(DATA, CLASSES)
-    assert best_model.get_params() == real_model.best_estimator_.get_params()
+    for i in range(10):
+        print(f"Run {i}")
+        best_model = input_metabomodel.train(FOLDS, DATA, CLASSES, RandomizedSearchCV)
+        assert best_model.get_params() == real_model.best_estimator_.get_params()
