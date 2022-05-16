@@ -244,7 +244,7 @@ def main():
         loader = Loader(desc="Checking for metabodashboard environment...").start()
         print(is_metabodashboard_env_exist())
         if not is_metabodashboard_env_exist():
-            print("Error : environment not found\n\n\n\n\n\n")
+            print("Error : environment not found")
             loader.stop(fail=True)
             exit(0)
 
