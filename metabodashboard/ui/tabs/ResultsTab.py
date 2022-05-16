@@ -1,31 +1,23 @@
-import glob
-import json
 import os
 import time
-from collections import Counter
 
 import dash_bootstrap_components as dbc
 import numpy as np
-import pandas as pd
 from dash import html, dcc, Output, Input, State, dash, Dash
-import plotly.graph_objs as go
 import pickle as pkl
 from matplotlib import pyplot as plt
 from sklearn import tree
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.tree import DecisionTreeClassifier
 
 from .MetaTab import MetaTab
 from ...service import Plots
 from ...domain import MetaboController
 
+PATH_TO_BIGRESULTS = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "big_results.p"))
 
 class ResultsTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
-        self.r = pkl.load(open("big_results.p", "rb"))
+        self.r = pkl.load(open(PATH_TO_BIGRESULTS, "rb"))
         self._plots = Plots("blues")
 
     def getLayout(self) -> dbc.Tab:
@@ -79,7 +71,7 @@ class ResultsTab(MetaTab):
                      children=[
                          html.H6("PCA", id="PCA_title"),
                          dbc.Button("[?]",
-                                    className="text-muted btn-secondary",
+                                    className="popover_btn text-muted btn-secondary",
                                     id="help_pcaPlot"),
                          dbc.Popover(children=[
                              dbc.PopoverBody(
@@ -101,7 +93,7 @@ class ResultsTab(MetaTab):
                                html.Div(className="title_and_help",
                                         children=[html.H6("Umap"),
                                                   dbc.Button("[?]",
-                                                             className="text-muted btn-secondary",
+                                                             className="text-muted btn-secondary popover_btn",
                                                              id="help_umapPlot"),
                                                   dbc.Popover(
                                                       children=[
@@ -134,7 +126,7 @@ class ResultsTab(MetaTab):
             html.Div(className="title_and_help",
                      children=[html.H6("Accuracy plot"),
                                dbc.Button("[?]",
-                                          className="text-muted btn-secondary",
+                                          className="text-muted btn-secondary popover_btn",
                                           id="help_accPlot"),
                                dbc.Popover(children=[
                                    dbc.PopoverBody(
@@ -181,6 +173,7 @@ class ResultsTab(MetaTab):
                      ])
         ])
         ___metricsTable = html.Div(className="table_features", children=[
+            html.H6("Metrics table : mean(std)"),
             dcc.Loading(
                 id="loading_metrics_table",
                 children=html.Div(id="metrics_score_table", children=""),
@@ -204,111 +197,51 @@ class ResultsTab(MetaTab):
         __DTTreeTab = dbc.Tab(id="DTTT" ,className="sub_tab", label="DT Tree", disabled=True)
 
         ___featuresTable = html.Div(className="table_features", children=[
+            html.H6("Top 10 features sorted by importance"),
+            dbc.Button("Export", color="primary", id="export_features",
+                       className="custom_buttons", n_clicks=0),
+            dcc.Download(id="download_dataframe_csv"),
             dcc.Loading(
                 id="loading_features_table",
                 children=html.Div(id="features_table", children=""),
                 type="circle"),
 
         ])
-        ___metaboliteLevelBoxplot = html.Div(className="bxplot_plot_select_and_title",
-                                             children=[
-                                                 html.Div(className="title_and_help",
-                                                          children=[html.H6(
-                                                              "Metabolite Level"),
-                                                              dbc.Button("[?]",
-                                                                         className="text-muted btn-secondary",
-                                                                         id="help_BxPlot"),
-                                                              dbc.Popover(
-                                                                  children=[
-                                                                      dbc.PopoverBody(
-                                                                          "Blablabla wout wout")
-                                                                  ],
-                                                                  id="pop_help_BxPlot",
-                                                                  is_open=False,
-                                                                  target="help_BxPlot")
-                                                          ]
-                                                          ),
-                                                 html.Div(id="metrics_table",
-                                                          style={"margin": "auto",
-                                                                 "display": "flex",
-                                                                 "justify-content": "center"}),
-                                                 html.Div(
-                                                     id="metabolite_dropdown_container",
-                                                     children=[
-                                                         dbc.Select(
-                                                             id="metabolite_dropdown",
-                                                             className="form_select_large",
-                                                             options=[],
-                                                         )
-                                                     ]),
-                                                 dcc.Graph(id="metabo_boxplot",
-                                                           figure=go.Figure(
-                                                               data=[go.Box(
-                                                                   x=[1, 2, 3, 4, 5, 5,
-                                                                      5, 5, 5, 5, 5, 6,
-                                                                      7,
-                                                                      8]),
-                                                                   go.Box(
-                                                                       x=[10, 10, 10,
-                                                                          10, 9, 9, 9,
-                                                                          9, 9, 7,
-                                                                          8, 5, 12, 12,
-                                                                          15])],
-                                                               layout=go.Layout(
-                                                                   paper_bgcolor='rgba(0,0,0,0)',
-                                                                   plot_bgcolor='rgba(0,0,0,0)')
-                                                           )
-                                                           )
+        ___stripChart = html.Div(className="umap_plot_and_title",
+                           children=[
+                               html.Div(className="title_and_help",
+                                        children=[
+                                            html.H6("StripChart of features"),
+                                                  dbc.Button("[?]",
+                                                             className="text-muted btn-secondary popover_btn",
+                                                             id="help_stripChart"),
+                                                  dbc.Popover(
+                                                      children=[
+                                                          dbc.PopoverBody(
+                                                              "Blablabla wout wout")
+                                                      ],
+                                                      id="pop_help_stripChart",
+                                                      is_open=False,
+                                                      target="help_stripChart")
+                                                  ]),
+                               dbc.Select(id="features_dropdown",
+                                          className="form_select",
+                                          options=[{"label": "None", "value": "None"}],
+                                          value="None",
+                                          ),
+                               dcc.Loading(dcc.Graph(id="features_stripChart"),
+                                           type="dot", color="#13BD00"),
 
-                                             ])
-
-        ___heatMap = html.Div(className="heatmap_plot_and_title",
-                              children=[
-                                  html.Div(className="title_and_help",
-                                           children=[html.H6("Heatmap",
-                                                             id="heatmap_title"),
-                                                     dbc.Button("[?]",
-                                                                className="text-muted btn-secondary",
-                                                                id="help_heatmapPlot"),
-                                                     dbc.Popover(
-                                                         children=[
-                                                             dbc.PopoverBody(
-                                                                 "Blablabla wout wout")
-                                                         ],
-                                                         id="pop_help_heatmapPlot",
-                                                         is_open=False,
-                                                         target="help_heatmapPlot")
-                                                     ]
-                                           ),
-                                  # Heat-map.
-                                  # Should we put the title on the plot?
-                                  dcc.Loading(children=[
-                                      html.Img(id='heatmap'),
-                                      # dcc.Graph(id="heatmap",
-                                      #    figure=go.Figure(
-                                      #        data=[
-                                      #            go.Scatter(
-                                      #                x=[0,1,3,4],
-                                      #                y=[0,2,3,4]
-                                      #            )
-                                      #        ]
-                                      #    )
-                                      # )
-                                  ]
-                                  )
-
-                              ])
+                           ])
 
         __featuresResultsTab = dbc.Tab(className="sub_tab",
                                        label="Features",
                                        children=[
                                            html.Div(className="fig_group", children=[
                                                ___featuresTable,
-                                               ___metaboliteLevelBoxplot
+                                               ___stripChart
                                            ]),
-                                           html.Div(className="fig_group", children=[
-                                               ___heatMap
-                                           ]),
+
                                        ]
                                        )
 
@@ -417,18 +350,6 @@ class ResultsTab(MetaTab):
             else:
                 return dash.no_update
 
-        @self.app.callback(
-            Output("features_table", "children"),
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"),
-             State("design_dropdown", "value")]
-        )
-        def show_features(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
-                return dbc.Table.from_dataframe(df, borderless=True)
-            else:
-                return dash.no_update
 
         @self.app.callback(
             Output("metrics_score_table", "children"),
@@ -522,6 +443,62 @@ class ResultsTab(MetaTab):
                         text_mat[i].append(str(col))
 
                 return self._plots.show_general_confusion_matrix(cm, labels, text_mat)
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+            Output("features_table", "children"),
+            [Input("load_ML_results_button", "n_clicks")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")]
+        )
+        def show_features(n_clicks, algo, design_name):
+            if n_clicks >= 1:
+                df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
+                return dbc.Table.from_dataframe(df, borderless=True)
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+            Output("download_dataframe_csv", "data"),
+            [Input("export_features", "n_clicks")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")],
+            prevent_initial_call=True,
+        )
+        def export_download_features_table(n_click, algo, design_name):
+            if n_click >= 1:
+                df = self.r[design_name][algo].results["features_table"]
+                return dcc.send_data_frame(df.to_csv, "featuresImportancesTable.csv")
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+            [Output("features_dropdown", "options"),
+             Output("features_dropdown", "value")],
+            [Input("load_ML_results_button", "n_clicks")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")]
+        )
+        def update_results_dropdown_features(n_click, algo, design_name):
+            if n_click >= 1:
+                df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
+                features = list(df.iloc[:, 0])
+                return [{"label": i, "value": i} for i in features], features[0]
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+             Output("features_stripChart", "figure"),
+            [Input("features_dropdown", "value")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")]
+        )
+        def show_stripChart_features(feature, algo, design_name):
+            if feature != "None":
+                df = self.r[design_name][algo].results["features_stripchart"]
+                df = df.loc[:, [feature, "targets"]]
+                return self._plots.show_metabolite_levels(df, feature)
             else:
                 return dash.no_update
 

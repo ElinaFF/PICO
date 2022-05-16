@@ -1,5 +1,5 @@
-scipy~=1.8.0
-dash~=2.3.1
+scipy
+dash
 dash-bio
 dash-bootstrap-components
 dash-core-components==2.0.0
@@ -7,12 +7,9 @@ dash-html-components==2.0.0
 dash-renderer
 dash-table==5.0.0
 numpy==1.21.4
-pandas~=1.4.2
-plotly~=5.7.0
-scikit-learn~=1.0.2
+pandas
+plotly
+scikit-learn
 umap-learn
 openpyxl
-pytest~=7.1.2
-matplotlib~=3.5.2
-pyscm-ml@git+https://github.com/aldro61/pyscm.git#egg=pyscm-ml
-randomscm@git+https://github.com/thibgo/randomscm.git#egg=randomscm
+matplotlib

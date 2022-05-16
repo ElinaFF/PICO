@@ -1,8 +1,8 @@
-from typing import Generator, Tuple
+from typing import Generator, Tuple, List
 
 import pandas as pd
 
-from metabodashboard.domain import MetaboExperiment
+from . import MetaboExperiment
 from ..service import Plots
 from .Results import *
 

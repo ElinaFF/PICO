@@ -1,6 +1,7 @@
-from typing import Generator, Tuple
+from typing import Generator, Tuple, List
 
 import pandas as pd
+import sklearn
 
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
@@ -9,6 +10,7 @@ from .ModelFactory import ModelFactory
 import os
 import pickle
 
+from ..conf.SupportedCV import CV_ALGORITHMS
 from ..service import Utils
 
 X_TRAIN_INDEX = 0
@@ -36,6 +38,8 @@ class MetaboExperiment:
         self._supported_models = self._model_factory.create_supported_models()
         self._custom_models = {}
         self._selected_models = []
+        self._cv_algorithms = CV_ALGORITHMS
+        self._selected_cv_type = list(self._cv_algorithms.keys())[0]
 
     def set_metadata(self):
         self._metadata = MetaData()
@@ -128,6 +132,7 @@ class MetaboExperiment:
             yield name, experimental_design.get_full_name()
 
     def learn(self, folds: int):
+        cv_algorithm = self.get_cv_algorithm()
         self._check_experimental_design()
         self._data_matrix.load_data()
         for _, experimental_design in self.experimental_designs.items():
@@ -140,7 +145,7 @@ class MetaboExperiment:
                 for model_name in self._selected_models:
                     results[model_name].set_feature_names(x_train)
                     metabo_model = self.get_model_from_name(model_name)
-                    best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX])
+                    best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX], cv_algorithm)
                     y_train_pred = best_model.predict(x_train)
                     y_test_pred = best_model.predict(x_test)
                     results[model_name].add_results_from_one_algo_on_one_split(best_model, self._data_matrix.data,

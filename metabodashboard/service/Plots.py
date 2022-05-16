@@ -18,12 +18,15 @@ class Plots():
             umap_data, x=0, y=1,
             color=classes,
             color_continuous_scale=self.colors,
+            title=""
         )
 
         fig.update_layout({
             "plot_bgcolor": "rgba(0, 0, 0, 0)",
             "paper_bgcolor": "rgba(0, 0, 0, 0)",
-        })
+        },
+            title="UMAP applied on top X features selected by the algorithm"
+        )
         return fig
 
     def show_PCA(self, pca_data, classes):
@@ -34,7 +37,9 @@ class Plots():
         fig.update_layout({
             "plot_bgcolor": "rgba(0, 0, 0, 0)",
             "paper_bgcolor": "rgba(0, 0, 0, 0)",
-        })
+        },
+            title="PCA applied on top X features selected by the algorithm"
+        )
         return fig
 
     def show_general_confusion_matrix(self, cm, labels, text):
@@ -79,7 +84,8 @@ class Plots():
         if "color" not in df.columns:
             raise RuntimeError("To show the global accuracies plot, the dataframe needs to have a 'color' column")
 
-        fig = px.line(df, x='splits', y='accuracies', color='color')
+        fig = px.line(df, x='splits', y='accuracies', color='color', title="Accuracies on train and test sets for each split")
+        fig.update_yaxes(range=[0, 1.1])
         fig.update_layout({
             "plot_bgcolor": "rgba(246, 247, 247, 0.4)",
             "paper_bgcolor": "rgba(0, 0, 0, 0)"
@@ -130,6 +136,9 @@ class Plots():
                                    df.iloc[:10, :].importance_usage],
                            align="center"))
             ])
+        fig.update_layout(
+            title="Table of top 10 features sorted by importance"
+        )
         return fig
 
     def show_split_metrics(self):
@@ -138,9 +147,12 @@ class Plots():
         """
         return
 
-    def show_metabolite_levels(self):
+    def show_metabolite_levels(self, features_data, feature):
         """
-        Plot in boxplot (with a dropdown to select the metabolite, max of N? metabolite)
+        Plot in stripchart (boxplot with point and no box)
+        (with a dropdown to select the metabolite, max of N? metabolite)
         And show the intensity of this metabolite/ this feature in each class (one box per class)
         """
-        return
+        df = features_data
+        fig = px.strip(df, x='targets', y=feature, title="Abundance of metabolite {} in each sample by class".format(feature))
+        return fig

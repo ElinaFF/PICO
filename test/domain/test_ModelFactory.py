@@ -3,8 +3,8 @@ from unittest.mock import patch
 import pytest
 from sklearn.svm import SVC
 
-from metabodashboard.domain import ModelFactory
-from TestsUtility import SUPPORTED_MODEL
+from ...metabodashboard.domain import ModelFactory
+from .TestsUtility import SUPPORTED_MODEL
 
 
 @pytest.fixture
@@ -20,7 +20,10 @@ def test_givenAModelFactory_whenCreateSupportedModel_thenTheSupportedModelsAreCo
     for index, (name, metabomodel) in enumerate(models.items()):
         assert name == supported_model_names[index]
         assert metabomodel.model == SUPPORTED_MODEL[name]["function"]
-        assert metabomodel.grid_search_param == SUPPORTED_MODEL[name]["ParamGrid"]
+        for key, value in SUPPORTED_MODEL[name]["ParamGrid"].items():
+            assert key in metabomodel.grid_search_param
+            for param in value:
+                assert param in metabomodel.grid_search_param[key]
 
 
 def test_givenAModelFactory_whenCreateCustomModel_thenTheCustomModelIsCorrect_2(input_model_factory):
