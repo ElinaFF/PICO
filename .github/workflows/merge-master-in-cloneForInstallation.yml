@@ -29,8 +29,8 @@ jobs:
 
       - name: Re-create target branch
         run: |
-            - git branch -D ${{env.TARGET_BRANCH}}
-            - git branch ${{env.TARGET_BRANCH}}
+          git branch -D ${{env.TARGET_BRANCH}}
+          git branch ${{env.TARGET_BRANCH}}
 
       - name: Delete launcher.py, workflows, tests and root init
         run: |
