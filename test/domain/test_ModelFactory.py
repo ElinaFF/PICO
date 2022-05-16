@@ -13,7 +13,7 @@ def input_model_factory():
     return model_factory
 
 
-@patch.dict('metabodashboard.conf.supported_models.LEARN_CONFIG', SUPPORTED_MODEL)
+@patch.dict('metabodashboard.conf.SupportedModels.LEARN_CONFIG', SUPPORTED_MODEL)
 def test_givenAModelFactory_whenCreateSupportedModel_thenTheSupportedModelsAreCorrect(input_model_factory):
     models = input_model_factory.create_supported_models()
     supported_model_names = list(SUPPORTED_MODEL.keys())
