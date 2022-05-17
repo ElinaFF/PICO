@@ -201,6 +201,12 @@ def env_dependencies_verification():
     return True
 
 
+def launch_metabodashboard():
+    subprocess.check_call(
+        "conda run -n " + condaEnvName.environment + " python main.py", shell=True,
+        stdout=subprocess.DEVNULL)
+
+
 def condaHandler():
     osUsed = platform.system()
     loader = Loader(desc="Checking for conda installation...").start()
@@ -327,8 +333,8 @@ def main():
     logging.info("Successfully installed !")
     print("Successfully installed !\n")
 
-    from metabodashboard import app
-    app.run_server(debug=True, host='127.0.0.1', port=5000)
+    with Loader(desc="Metabodashboard Runing at http://127.0.0.1:5000..."):
+        launch_metabodashboard()
 
 
 if __name__ == "__main__":
