@@ -168,7 +168,8 @@ def is_metabodashboard_env_exist() -> bool:
 
 
 def create_metabodashboard_env():
-    subprocess.check_call("conda create -n metabodashboard -y", shell=True,
+    logging.info("metadashboard conda environment creation")
+    subprocess.check_call("conda create -n metabodashboard -y python=3.8", shell=True,
                           stdout=subprocess.DEVNULL)
 
 
