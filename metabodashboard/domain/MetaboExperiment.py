@@ -1,15 +1,12 @@
+import os
 from typing import Generator, Tuple, List
 
-import pandas as pd
 import sklearn
 
+from . import ExperimentalDesign
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
-from . import ExperimentalDesign
 from .ModelFactory import ModelFactory
-import os
-import pickle
-
 from ..conf.SupportedCV import CV_ALGORITHMS
 from ..service import Utils
 
@@ -148,7 +145,8 @@ class MetaboExperiment:
                     best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX], cv_algorithm)
                     y_train_pred = best_model.predict(x_train)
                     y_test_pred = best_model.predict(x_test)
-                    results[model_name].add_results_from_one_algo_on_one_split(best_model, self._data_matrix.data,
+                    results[model_name].add_results_from_one_algo_on_one_split(best_model,
+                                                                               self._data_matrix.get_scale_data(),
                                                                                classes, split[y_TRAIN_INDEX],
                                                                                y_train_pred, split[y_TEST_INDEX],
                                                                                y_test_pred, model_name,
