@@ -32,7 +32,7 @@ class Results:
         """
         retrieve features and their importance from a model to save it in the Results dict after each split
         """
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def _aggregate_features_info(self):
@@ -40,9 +40,10 @@ class Results:
         When all splits are done and saved, aggregate feature info from every split to compute stats
         from all splits, concatenate in the same list the name of features, and another list their importance
         """
-        pass
+        raise NotImplementedError()
 
-    def add_results_from_one_algo_on_one_split(self, model: sklearn, data: pd.DataFrame, classes: list, y_train_true: list, y_train_pred: list,
+    def add_results_from_one_algo_on_one_split(self, model: sklearn, data: pd.DataFrame, classes: list,
+                                               y_train_true: list, y_train_pred: list,
                                                y_test_true: list, y_test_pred: list, algo_name: str, split_number: str):
         """
         Besoin modèle pour extraire features, features importance
@@ -67,7 +68,7 @@ class Results:
         self.results[split_number]["test_f1"] = f1_score(binary_y_train_true, binary_y_train_pred)
         self.results[split_number]["train_roc_auc"] = roc_auc_score(binary_y_train_true, binary_y_train_pred)
         self.results[split_number]["test_roc_auc"] = roc_auc_score(binary_y_train_true, binary_y_train_pred)
-        
+
         print('self.results[split_number]["test_accuracy"] = {}'.format(self.results[split_number]["test_accuracy"]))
         if self.results[split_number]["test_accuracy"] > self.best_acc:
             self.best_acc = self.results[split_number]["test_accuracy"]
@@ -233,21 +234,27 @@ class Results:
             f1test.append(self.results[s]["test_f1"])
             roc_auc_train.append(self.results[s]["train_roc_auc"])
             roc_auc_test.append(self.results[s]["test_roc_auc"])
-            
-        trains_metrics.append(str(round(float(np.mean(acctrain)), 4))+" ("+str(round(float(np.std(acctrain)), 4))+")")
-        trains_metrics.append(str(round(float(np.mean(balacctrain)), 4)) + " (" + str(round(float(np.std(balacctrain)), 4)) + ")")
-        trains_metrics.append(str(round(float(np.mean(precisiontrain)), 4))+" ("+str(round(float(np.std(precisiontrain)), 4))+")")
-        trains_metrics.append(str(round(float(np.mean(recalltrain)), 4))+" ("+str(round(float(np.std(recalltrain)), 4))+")")
-        trains_metrics.append(str(round(float(np.mean(f1train)), 4))+" ("+str(round(float(np.std(f1train)), 4))+")")
-        trains_metrics.append(str(round(float(np.mean(roc_auc_train)), 4))+" ("+str(round(float(np.std(roc_auc_train)), 4))+")")
 
-        tests_metrics.append(str(round(float(np.mean(acctest)), 4))+" ("+str(round(float(np.std(acctest)), 4))+")")
-        tests_metrics.append(str(round(float(np.mean(balacctest)), 4)) + " (" + str(round(float(np.std(balacctest)), 4)) + ")")
-        tests_metrics.append(str(round(float(np.mean(precisiontest)), 4))+" ("+str(round(float(np.std(precisiontest)), 4))+")")
-        tests_metrics.append(str(round(float(np.mean(recalltest)), 4))+" ("+str(round(float(np.std(recalltest)), 4))+")")
-        tests_metrics.append(str(round(float(np.mean(f1test)), 4))+" ("+str(round(float(np.std(f1test)), 4))+")")
-        tests_metrics.append(str(round(float(np.mean(roc_auc_test)), 4))+" ("+str(round(float(np.std(roc_auc_test)), 4))+")")
+        trains_metrics.append(
+            str(round(float(np.mean(acctrain)), 4)) + " (" + str(round(float(np.std(acctrain)), 4)) + ")")
+        trains_metrics.append(
+            str(round(float(np.mean(precisiontrain)), 4)) + " (" + str(round(float(np.std(precisiontrain)), 4)) + ")")
+        trains_metrics.append(
+            str(round(float(np.mean(recalltrain)), 4)) + " (" + str(round(float(np.std(recalltrain)), 4)) + ")")
+        trains_metrics.append(
+            str(round(float(np.mean(f1train)), 4)) + " (" + str(round(float(np.std(f1train)), 4)) + ")")
+        trains_metrics.append(
+            str(round(float(np.mean(roc_auc_train)), 4)) + " (" + str(round(float(np.std(roc_auc_train)), 4)) + ")")
 
+        tests_metrics.append(
+            str(round(float(np.mean(acctest)), 4)) + " (" + str(round(float(np.std(acctest)), 4)) + ")")
+        tests_metrics.append(
+            str(round(float(np.mean(precisiontest)), 4)) + " (" + str(round(float(np.std(precisiontest)), 4)) + ")")
+        tests_metrics.append(
+            str(round(float(np.mean(recalltest)), 4)) + " (" + str(round(float(np.std(recalltest)), 4)) + ")")
+        tests_metrics.append(str(round(float(np.mean(f1test)), 4)) + " (" + str(round(float(np.std(f1test)), 4)) + ")")
+        tests_metrics.append(
+            str(round(float(np.mean(roc_auc_test)), 4)) + " (" + str(round(float(np.std(roc_auc_test)), 4)) + ")")
 
         d = {"metrics": metrics, "train": trains_metrics, "test": tests_metrics}
         df = pd.DataFrame(data=d)
@@ -367,49 +374,70 @@ class ResultsRF(Results):
         return features, times_used_all_splits, importance_or_usage_or_
 
 
-class ResultsSVM(Results):
-    """
-    Contains all results of an experimental design, is an attribute of class Experimental_design, and gives info to class "Plotter".
-    Has results of all algorithms for all splits on one experimental design (so almost only numbers/floats/ints).
-    Can be kept in RAM as it is not supposed to be too big, and prevents the reading/writing of models and splits files.
-    """
-
+class ResultsSCM(Results):
     def _get_features_importance(self, model):
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
 
-        features = []
-        importances = []
-        for DT in model.estimators_:
-            i = DT.feature_importances_
-            zipped = list(zip(self.f_names, i))
-            feat_sort = sorted(zipped, key=lambda x: x[1], reverse=True)
-            top_x = feat_sort[-50:]
-            f, i = zip(*top_x)
-            features.extend(f)
-            importances.extend(i)
-        zipped = zip(features, importances)
+        features = pd.DataFrame(0, index=self.f_names, columns=["importance"])
+        number_of_rules = 0
+        for rule in model.model_.rules:
+            feature_name = self.f_names[rule.feature_idx]
+            features.loc[feature_name, "importance"] += 1
+            number_of_rules += 1
+
+        features["importance"] = features["importance"] / number_of_rules
+        features.sort_values(by="importance", ascending=False, inplace=True)
+
+        zipped = zip(features.index.values.tolist(), features["importance"].values)
         return zipped
 
     def _aggregate_features_info(self):
-        """
-        When all splits are done and saved, aggregate feature info from every split to compute stats
-        from all splits, concatenate in the same list the name of features, and another list their importance
-        """
         features = []
-        imp = []
-        # imp_complet = []
-        # Get values of all splits in two lists
+        importances = []
+
         for split in self.splits_number:
             f, i = zip(*self.results[split]["feature_importances"])
             features.extend(f)
-            imp.extend(i)
+            importances.extend(i)
 
-        # Store the mean importance, and the number of time used, per feature
-        dict_top = self.format_name_and_associated_values(features, imp)
+        dict_top = self.format_name_and_associated_values(features, importances)
+        features = [f for f in dict_top.keys()]
+        times_used_all_splits = [dict_top[f][0] for f in dict_top.keys()]
+        importance_or_usage_or_ = [str(dict_top[f][1]) for f in
+                                   dict_top.keys()]  # + "_(" + str(dict_complet[f][1]) + ")"
+        return features, times_used_all_splits, importance_or_usage_or_
 
-        # Top 5 of sub-classifier (DT) for features, and times_used
-        # Top 5 of sub-classifier (DT) for importance_(mean global importance in RF)
+
+class ResultsRSCM(Results):
+    def _get_features_importance(self, model):
+        if self.f_names is None:
+            raise RuntimeError("Features names are not retrieved yet")
+
+        features = pd.DataFrame(0, index=self.f_names, columns=["importance"])
+        number_of_rules = 0
+        for estimator in model.get_estimators():
+            for rule in estimator.model_.rules:
+                feature_name = self.f_names[rule.feature_idx]
+                features.loc[feature_name, "importance"] += 1
+                number_of_rules += 1
+
+        features["importance"] = features["importance"] / number_of_rules
+        features.sort_values(by="importance", ascending=False, inplace=True)
+
+        zipped = zip(features.index.values.tolist(), features["importance"].values)
+        return zipped
+
+    def _aggregate_features_info(self):
+        features = []
+        importances = []
+
+        for split in self.splits_number:
+            f, i = zip(*self.results[split]["feature_importances"])
+            features.extend(f)
+            importances.extend(i)
+
+        dict_top = self.format_name_and_associated_values(features, importances)
         features = [f for f in dict_top.keys()]
         times_used_all_splits = [dict_top[f][0] for f in dict_top.keys()]
         importance_or_usage_or_ = [str(dict_top[f][1]) for f in

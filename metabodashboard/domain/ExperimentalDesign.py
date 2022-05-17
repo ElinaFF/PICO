@@ -41,6 +41,12 @@ class ExperimentalDesign:
                 self.results[n] = ResultsRF(self._split_group.get_number_of_splits())
             elif n == "DecisionTree":
                 self.results[n] = ResultsDT(self._split_group.get_number_of_splits())
+            elif n == "SCM":
+                self.results[n] = ResultsSCM(self._split_group.get_number_of_splits())
+            elif n == "RandomSCM":
+                self.results[n] = ResultsRSCM(self._split_group.get_number_of_splits())
+            else:
+                raise NotImplementedError(f"{n} is not implemented")
 
     def get_results(self) -> Dict[str, Results]:
         if self.results == {}:
