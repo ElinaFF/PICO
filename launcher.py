@@ -73,7 +73,7 @@ class Loader:
 
     def stop(self, fail=False):
         self.done = True
-        print(f"\r{self.desc}    {self.end if not fail else self.fail}                               ",
+        print(f"\r{self.desc}       {self.end if not fail else self.fail}                               ",
               flush=True)
 
     def __exit__(self, exc_type, exc_value, tb):
@@ -195,7 +195,6 @@ def env_dependencies_verification():
             lineWithoutVersion = line.split('==')[0].strip()
             if lineWithoutVersion not in actualPackageInstalledList:
                 logging.info(f"{lineWithoutVersion} dependency isn't installed")
-                print(f"\n{lineWithoutVersion} couldn't be installed")
                 return False
             line = f.readline()
     logging.info("All dependencies are installed")
@@ -244,6 +243,7 @@ def codeSourceHandler():
 def createMetabodashboardCondaEnv():
     condaEnvName.environment = "metabodashboard"
     loader = Loader(desc="Checking for metabodashboard environment...").start()
+    print(is_metabodashboard_env_exist)
     if not is_metabodashboard_env_exist():
         loader.stop(fail=True)
         print("metabodashboard environment not found !")
@@ -273,6 +273,7 @@ def checkOtherEnv():
         loader.stop(fail=True)
         print(f"Error : environment {condaEnvName.environment} not found")
         exit(0)
+    loader.stop()
 
 
 def dependencyHandler():
