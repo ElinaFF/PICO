@@ -292,13 +292,15 @@ def dependency_handler():
     loader = Loader(desc="Checking dependencies...").start()
     if not env_dependencies_verification():
         loader.stop(fail=True)
-        with Loader(desc="\tInstalling dependencies in environment..."):
-            try:
-                install_dependencies()
-            except:
-                logging.error(
-                    f"Installation of the dependencies in {conda_env_name.environment} conda environment failed")
-                exit(0)
+        loader = Loader(desc="\tInstalling dependencies in environment...").start()
+        try:
+            install_dependencies()
+        except:
+            logging.error(
+                f"Installation of the dependencies in {conda_env_name.environment} conda environment failed")
+            loader.stop(fail=True)
+            exit(0)
+        loader.stop()
 
         internal_loader = Loader(
             desc="\tRe-checking dependencies...").start()
