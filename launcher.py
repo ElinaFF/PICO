@@ -133,7 +133,7 @@ def install_miniconda_for_linux():
     conda_for_linux = f"https:F//repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86{'_64' if is_os_64bit() else ''}.sh"
     download_miniconda(conda_for_linux)
     logging.info("Installing MiniConda for Linux")
-    install_conda_command = f"bash {MINICONDA_FILE + '.sh'}"
+    install_conda_command = f"bash {MINICONDA_FILE + '.sh -b -p {HOME}/miniconda3'}"
     subprocess.check_call(install_conda_command, shell=True)
 
 
