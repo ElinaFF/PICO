@@ -4,6 +4,8 @@ from unittest.mock import Mock
 
 import numpy as np
 import pandas as pd
+from pyscm import SetCoveringMachineClassifier
+from randomscm.randomscm import RandomScmClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
@@ -79,7 +81,13 @@ MOCKED_METADATA.load_targets.return_value = TARGETS
 
 SPLITS = _get_splits(NUMBER_OF_SPLITS, TRAIN_TEST_PROPORTION, SAMPLES_ID, CLASSES)
 
-SUPPORTED_MODEL = {
+FOLDS = 5
+PARAMETER_GRID = {
+    'criterion': ['gini', 'entropy'],
+    "max_depth": [1, 2, 3, 4, 5, 10]
+}
+
+SUPPORTED_MODEL = LEARN_CONFIG = {
     "DecisionTree": {
         "function": DecisionTreeClassifier,
         "ParamGrid": {
@@ -93,10 +101,21 @@ SUPPORTED_MODEL = {
             "n_estimators": [1, 2, 4, 10, 30, 70, 100, 500, 1000]
         }
     },
-    "SVM_L1": {
-        "function": LinearSVC,
+    "SCM": {
+        "function": SetCoveringMachineClassifier,
         "ParamGrid": {
-            "C": np.logspace(-5, 5, 20)
+            "p": [0.5, 1., 2.],
+            "max_rules": [1, 2, 3, 4, 5],
+            "model_type": ["conjunction", "disjunction"]
+        }
+    },
+    "RandomSCM": {
+        "function": RandomScmClassifier,
+        "ParamGrid": {
+            "p_options": [[0.5, 1., 2.]],
+            "max_rules": [1, 2, 3, 4, 5],
+            "model_type": ["conjunction", "disjunction"],
         }
     },
 }
+

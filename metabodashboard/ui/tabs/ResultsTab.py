@@ -1,31 +1,23 @@
-import glob
-import json
 import os
 import time
-from collections import Counter
 
 import dash_bootstrap_components as dbc
 import numpy as np
-import pandas as pd
 from dash import html, dcc, Output, Input, State, dash, Dash
-import plotly.graph_objs as go
 import pickle as pkl
 from matplotlib import pyplot as plt
 from sklearn import tree
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.tree import DecisionTreeClassifier
 
 from .MetaTab import MetaTab
 from ...service import Plots
 from ...domain import MetaboController
 
+PATH_TO_BIGRESULTS = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "big_results.p"))
 
 class ResultsTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
-        self.r = pkl.load(open("big_results.p", "rb"))
+        self.r = pkl.load(open(PATH_TO_BIGRESULTS, "rb"))
         self._plots = Plots("blues")
 
     def getLayout(self) -> dbc.Tab:
@@ -239,8 +231,6 @@ class ResultsTab(MetaTab):
                                           ),
                                dcc.Loading(dcc.Graph(id="features_stripChart"),
                                            type="dot", color="#13BD00"),
-                               # dcc.Slider(min=0, max=3, step=1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"},
-                               #            id="features_stripChart_dropdown")
 
                            ])
 

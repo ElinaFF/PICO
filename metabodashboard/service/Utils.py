@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import pickle as pkl
 import random, os
-from ..conf.LearnConfig import *
 from .ExperimentDesign import *
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
@@ -110,74 +109,6 @@ def filter_sample_based_on_labels(data, labels, labels_to_keep):
     d = data.iloc[labels_filter]
     l = np.array(labels)[labels_filter]
     return d, l
-
-def generate_splits(df, labels):
-    for design_name in EXPERIMENT_DESIGNS:
-        label = np.array(labels)
-        classes = list(EXPERIMENT_DESIGNS[design_name]["classes"].keys())
-        group_to_class = get_group_to_class(EXPERIMENT_DESIGNS[design_name]["classes"])
-        groups_to_keep = [item for sublist in EXPERIMENT_DESIGNS[design_name]["classes"].values() for item in sublist]
-        design_df, labels_design = filter_sample_based_on_labels(df, labels, groups_to_keep)
-        #study_unique_patients_id = set(design_df["subject"])
-        for split_number in range(LEARN_CONFIG["Nsplit"]):
-            #test_subjects_id = random.sample(study_unique_patients_id, 
-            #    int(EXPERIMENT_DESIGNS[design_name]["TestSize"]*len(study_unique_patients_id)))
-            #train_subjects_id = [i for i in study_unique_patients_id if i not in test_subjects_id]
-
-            # Create train-test mask and create x_train, y_train, x_test, y_test
-            #train_mask = np.array([i in train_subjects_id for i in design_df["subject"]])
-            #test_mask = np.array([i in test_subjects_id for i in design_df["subject"]])
-            #train_df = design_df[train_mask]
-            #train_targets = [group_to_class[i] for i in labels_design[train_mask]]
-            #test_df = design_df[test_mask]
-            #test_targets = [group_to_class[i] for i in labels_design[test_mask]]
-            train_df, test_df, train_targets, test_targets = train_test_split(design_df, \
-                labels_design, test_size=EXPERIMENT_DESIGNS[design_name]["TestSize"])
-            # Write split to files
-            with open(os.path.join("Splits", "{}_{}".format(design_name, split_number)), "wb") as fo:
-                pkl.dump(train_df, fo)
-                pkl.dump(train_targets, fo)
-                pkl.dump(test_df, fo)
-                pkl.dump(test_targets, fo)
-                #pkl.dump(train_subjects_id, fo)
-                #pkl.dump(test_subjects_id, fo)
-
-def run_learning_job(job_config):
-    # (filename, algo_config_name, algo_function, grid)
-    filename = job_config[0]
-    grp1, vs, grp2, split_number = os.path.split(filename)[1].split("_")
-    design_name = grp1 +"_"+ vs +"_"+ grp2
-    algo_config_name = job_config[1]
-    learning_function = job_config[2]
-    param_grid = job_config[3]
-    print("Processing {} using design {}".format(filename, design_name))
-
-    # Load file
-    with open(filename, "rb") as fi:
-        train_df = pkl.load(fi, encoding='latin1')
-        train_targets = pkl.load(fi, encoding='latin1')
-        test_df = pkl.load(fi, encoding='latin1')
-        test_targets = pkl.load(fi, encoding='latin1')
-    #train_df = train_df.drop(["subject"], axis=1) # We don't want to learn something using the Subject column.
-    #test_df = test_df.drop(["subject"], axis=1)
-    # Run grid search.
-    gc = GridSearchCV(learning_function(), param_grid, cv=LEARN_CONFIG["CV_folds"])
-    gc.fit(train_df, train_targets)
-    # Predict on train.
-    train_predict = gc.predict(train_df)
-
-    # Predict on test.
-    test_predict = gc.predict(test_df)
-
-    # Save to file.
-    with open(os.path.join("Results", 
-        "{}_{}_{}.pkl".format(design_name, split_number, algo_config_name)), "wb") as fo:
-        pkl.dump(gc, fo)
-        pkl.dump(train_predict, fo)
-        pkl.dump(test_predict, fo)
-        pkl.dump(train_targets, fo)
-        pkl.dump(test_targets, fo)
-
 
 def get_group_to_class(classes):
     group_to_class = {}

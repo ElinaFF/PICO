@@ -2,7 +2,6 @@ import json
 import os
 
 import dash_bootstrap_components as dbc
-import pandas as pd
 from dash import html, State, Input, Output, dash
 
 from .MetaTab import MetaTab
@@ -15,7 +14,10 @@ class MLTab(MetaTab):
             [
                 dbc.Label("Select CV search type",
                           className="form_labels"),
-                dbc.RadioItems(options=[{'label': "GridSearchCV", "value": "GridSearchCV"}, {'label': "RandomizedSearchCV", "value": "RandomizedSearchCV", "disabled": True}], value="GridSearchCV", id="radio_cv_types"),
+                dbc.RadioItems(
+                    options=[{"label": cv_type, "value": cv_type} for cv_type in self.metabo_controller.get_cv_types()],
+                    value=self.metabo_controller.get_selected_cv_type(),
+                    id="radio_cv_types"),
             ],
             className="form_field"
         )
@@ -96,7 +98,8 @@ class MLTab(MetaTab):
         return dbc.Tab(className="global_tab", label="Machine Learning",
                        children=[
                            html.Div(className="fig_group",
-                                    children=[_definitionLearningConfig, _definitionLearningAlgorithm
+                                    children=[_definitionLearningConfig,
+                                              _definitionLearningAlgorithm
                                               ]),
                        ])
 
@@ -114,35 +117,13 @@ class MLTab(MetaTab):
              State("values_param", "value")]
         )
         def add_refresh_available_sklearn_algorithms(n, import_new, name_new, name_param, values_param):
-            sklearn_algo_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../conf/algo_sklearn.json"))
-
             if n >= 1:
                 new_algo_name = name_new
                 new_algo_params = {"function": name_new, "ParamGrid": {name_param: values_param},
                                    "importing": import_new}
 
-                with open(sklearn_algo_file, "r+") as algo_file:
-                    data = json.load(algo_file)
-
-                    data[new_algo_name] = new_algo_params
-                    all_algo = data
-
-                    algo_file.seek(0)
-                    json.dump(data, algo_file)
-                    algo_file.truncate()
-
-                return [{"label": a, "value": a} for a in all_algo.keys()], "", "", "", ""
-
-            else:
-                with open(sklearn_algo_file, "r+") as algo_file:
-                    all_algo = json.load(algo_file)
-                avail_algo = []
-                for a in all_algo.keys():
-                    if a == "SVM_L1" or a == "SCM" or a == "RandomSCM":
-                        avail_algo.append({"label": a, "value": a, "disabled": True})
-                    else:
-                        avail_algo.append({"label": a, "value": a})
-                return avail_algo, "", "", "", ""
+                self.metabo_controller.add_custom_model(new_algo_name, import_new, new_algo_params)
+            return [{"label": algo_name, "value": algo_name} for algo_name in self.metabo_controller.get_all_algos_names()], "", "", "", ""
 
         @self.app.callback(
             Output("output_button_ml", "children"),
@@ -163,3 +144,11 @@ class MLTab(MetaTab):
                 return "Done!"
             else:
                 return dash.no_update
+
+        @self.app.callback(
+            Output("radio_cv_types", "value"),
+            [Input("radio_cv_types", "value")]
+        )
+        def set_cv_type(value):
+            self.metabo_controller.set_cv_type(value)
+            return value

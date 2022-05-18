@@ -1,6 +1,6 @@
-from typing import Generator, Tuple
 import os
 import pickle
+from typing import Generator, Tuple, List
 
 import pandas as pd
 
@@ -97,3 +97,18 @@ class MetaboController:
 
     def get_all_results(self):
         return self._metabo_experiment.get_all_results()
+
+    def add_custom_model(self, model_name: str, needed_import: str, grid_search_param: dict):
+        self._metabo_experiment.add_custom_model(model_name, needed_import, grid_search_param)
+
+    def get_all_algos_names(self) -> list:
+        return self._metabo_experiment.get_all_algos_names()
+
+    def set_cv_type(self, cv_type: str):
+        self._metabo_experiment.set_cv_type(cv_type)
+
+    def get_cv_types(self) -> List[str]:
+        return self._metabo_experiment.get_cv_types()
+
+    def get_selected_cv_type(self) -> str:
+        return self._metabo_experiment.get_selected_cv_type()

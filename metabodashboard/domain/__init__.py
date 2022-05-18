@@ -6,3 +6,4 @@ from .ModelFactory import ModelFactory
 from .Results import Results, ResultsDT, ResultsRF
 from .MetaboController import MetaboController
 from .DataMatrix import DataMatrix
+from .MetaboModel import MetaboModel

@@ -1,6 +1,7 @@
-from typing import Generator, Tuple
+from typing import Generator, Tuple, List
 
 import pandas as pd
+import sklearn
 
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
@@ -9,6 +10,7 @@ from .ModelFactory import ModelFactory
 import os
 import pickle
 
+from ..conf.SupportedCV import CV_ALGORITHMS
 from ..service import Utils
 
 X_TRAIN_INDEX = 0
@@ -33,9 +35,11 @@ class MetaboExperiment:
 
         self.experimental_designs = {}
 
-        self._supported_model = self._model_factory.create_supported_models()
+        self._supported_models = self._model_factory.create_supported_models()
         self._custom_models = {}
         self._selected_models = []
+        self._cv_algorithms = CV_ALGORITHMS
+        self._selected_cv_type = list(self._cv_algorithms.keys())[0]
 
     def set_metadata(self):
         self._metadata = MetaData()
@@ -48,19 +52,15 @@ class MetaboExperiment:
         except RuntimeError:
             return False
 
-    # def set_metadata_dataframe_from_path(self, path: str):
-    #     if path.split(".")[-1] == "csv":
-    #         self._metabo_experiment.set_metadata_with_dataframe(pd.read_csv(path, sep=";",na_filter=False))
-    #         return True
-    #     if "xls" in path.split(".")[-1] or "od" in path.split(".")[-1]:
-    #         # TODO: WARNING -> no na filter at all
-    #         self._metabo_experiment.set_metadata_with_dataframe(pd.read_excel(path, na_filter=False))
-    #         return True
-    #     return False
-
     def set_data_matrix(self, path_data_matrix: str, data=None, use_raw: bool = False, from_base64: bool = True):
         self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, use_raw=use_raw,
                                                      from_base64=from_base64)
+
+    def get_train_test_proportion(self) -> float:
+        return self._train_test_proportion
+
+    def get_number_of_splits(self) -> int:
+        return self._number_of_splits
 
     def _update_experimental_design(self):
         for _, experimental_design in self.experimental_designs.items():
@@ -110,8 +110,8 @@ class MetaboExperiment:
         return self._metadata.get_formatted_unique_targets()
 
     def get_model_from_name(self, model_name: str) -> MetaboModel:
-        if model_name in self._supported_model.keys():
-            return self._supported_model[model_name]
+        if model_name in self._supported_models.keys():
+            return self._supported_models[model_name]
         elif model_name in self._custom_models.keys():
             return self._custom_models[model_name]
         else:
@@ -132,6 +132,7 @@ class MetaboExperiment:
             yield name, experimental_design.get_full_name()
 
     def learn(self, folds: int):
+        cv_algorithm = self.get_cv_algorithm()
         self._check_experimental_design()
         self._data_matrix.load_data()
         for _, experimental_design in self.experimental_designs.items():
@@ -146,7 +147,7 @@ class MetaboExperiment:
                     print("----> design name:{}--".format(experimental_design.get_name()))
                     results[model_name].design_name = experimental_design.get_name()
                     metabo_model = self.get_model_from_name(model_name)
-                    best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX])
+                    best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX], cv_algorithm)
                     y_train_pred = best_model.predict(x_train)
                     y_test_pred = best_model.predict(x_test)
                     results[model_name].add_results_from_one_algo_on_one_split(best_model, self._data_matrix.data,
@@ -164,5 +165,23 @@ class MetaboExperiment:
         for name in self.experimental_designs:
             results[name] = self.experimental_designs[name].get_results()
         return results
+
+    def get_all_algos_names(self) -> list:
+        return list(self._supported_models.keys()) + list(self._custom_models.keys())
+
+    def set_cv_type(self, cv_type: str):
+        if cv_type not in self._cv_algorithms:
+            raise ValueError("CV type '" + cv_type + "' is not supported.")
+        self._selected_cv_type = cv_type
+        print("CV type set to " + cv_type)
+
+    def get_selected_cv_type(self) -> str:
+        return self._selected_cv_type
+
+    def get_cv_algorithm(self) -> sklearn.model_selection:
+        return self._cv_algorithms[self._selected_cv_type]
+
+    def get_cv_types(self) -> List[str]:
+        return list(self._cv_algorithms.keys())
 
 # TODO: print current algo when training
