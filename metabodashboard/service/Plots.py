@@ -156,3 +156,26 @@ class Plots():
         df = features_data
         fig = px.strip(df, x='targets', y=feature, title="Abundance of metabolite {} in each sample by class".format(feature))
         return fig
+
+    def show_heatmap_wrong_samples(self, data_train, data_test, samples_names, algos):
+        fig = go.Figure()
+        # fig.add_trace(
+        #     go.Heatmap(
+        #         z=data_train,
+        #         x=algos,
+        #         y=samples_names,
+        #         opacity=1,
+        #         colorscale="Blues"
+        #     )
+        # )
+        fig.add_trace(
+            go.Heatmap(
+                z=data_test,
+                x=algos,
+                y=samples_names,
+                opacity=1,
+                colorscale="Reds"
+            )
+        )
+
+        return fig

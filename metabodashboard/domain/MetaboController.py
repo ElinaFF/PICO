@@ -50,7 +50,7 @@ class MetaboController:
         samples_list = []
         for s in nbr_split_list:
             with open(os.path.join(DUMP_PATH, design+"_split_{}.p".format(s)), "rb") as split_file:
-                samples_list.append(pickle.load(split_file)[1])  # append list of X_test samples names
+                samples_list.append(pickle.load(split_file)[:2])  # append list of X_train & X_test samples names
         return samples_list
 
     def set_target_column(self, target_column: str):

@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from abc import abstractmethod
+import os
+import pickle
 
 import sklearn
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, \
@@ -13,6 +15,8 @@ from sklearn.decomposition import PCA
 from . import MetaData
 from ..service import Utils
 
+ROOT_PATH = os.path.dirname(__file__)
+DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
 
 class Results:
     """
@@ -26,6 +30,7 @@ class Results:
         self.results = {s: {} for s in self.splits_number}
         self.f_names = []
         self.best_acc = 0
+        self.design_name = ""
 
     @abstractmethod
     def _get_features_importance(self, model):
@@ -53,10 +58,12 @@ class Results:
         X : entièreté du dataset (autant train que test) c'est simplement pour voir le clustering de tous les individus
         """
         print(algo_name)
-        self.results[split_number]["train_accuracy"] = accuracy_score(y_train_true, y_train_pred)
-        self.results[split_number]["test_accuracy"] = accuracy_score(y_test_true, y_test_pred)
         self.results[split_number]["y_test_true"] = y_test_true
         self.results[split_number]["y_test_pred"] = y_test_pred
+        self.results[split_number]["y_train_true"] = y_train_true
+        self.results[split_number]["y_train_pred"] = y_train_pred
+        self.results[split_number]["train_accuracy"] = accuracy_score(y_train_true, y_train_pred)
+        self.results[split_number]["test_accuracy"] = accuracy_score(y_test_true, y_test_pred)
         self.results[split_number]["balanced_train_accuracy"] = balanced_accuracy_score(y_train_true, y_train_pred)
         self.results[split_number]["balanced_test_accuracy"] = balanced_accuracy_score(y_test_true, y_test_pred)
         binary_y_train_true = Utils.get_binary(y_train_true, classes)
@@ -69,6 +76,9 @@ class Results:
         self.results[split_number]["test_f1"] = f1_score(binary_y_train_true, binary_y_train_pred)
         self.results[split_number]["train_roc_auc"] = roc_auc_score(binary_y_train_true, binary_y_train_pred)
         self.results[split_number]["test_roc_auc"] = roc_auc_score(binary_y_train_true, binary_y_train_pred)
+        self.results[split_number]["failed_samples"] = self.produce_always_wrong_samples(y_train_true, y_train_pred,
+                                                                                         y_test_true, y_test_pred,
+                                                                                         split_number)
         
         print('self.results[split_number]["test_accuracy"] = {}'.format(self.results[split_number]["test_accuracy"]))
         if self.results[split_number]["test_accuracy"] > self.best_acc:
@@ -135,10 +145,12 @@ class Results:
     def _produce_PCA(self, X: pd.DataFrame, features_df: pd.DataFrame):
         nbr_feat = [10, 40, 100]
         pcas = []
+
         for nbr in nbr_feat:
             selected_feat = features_df["features"][:nbr]
             x = X.loc[:, selected_feat]
             x = x.to_numpy()
+
             pca = PCA(n_components=2)
             pcas.append(pca.fit_transform(x))
         # Redo the umap but on all the data
@@ -266,6 +278,38 @@ class Results:
         df = data.loc[:, important_features]
         df["targets"] = self.results["classes"]
         return df
+
+    def produce_always_wrong_samples(self, y_train_true, y_train_pred, y_test_true, y_test_pred, split_number):
+        """
+        return: two dicts with sample names as keys, and wrongly predicted as values (0:good pred, 1:bad pred)
+        """
+
+        with open(os.path.join(DUMP_PATH, self.design_name + "_split_{}.p".format(split_number)), "rb") as split_file:
+            samples_list = pickle.load(split_file)[:2]  # append list of X_train & X_test samples names
+
+        train_samples = {t: 0 for t in samples_list[0]}
+        test_samples = {t: 0 for t in samples_list[1]}
+
+        labels = {l: idx for idx, l in enumerate(list(set(y_train_true)))}
+
+        print("y_train_pred : ", y_train_pred)
+
+        y_train_true = [labels[l] for l in y_train_true]
+        y_train_pred = [labels[l] for l in y_train_pred]
+        y_test_true = [labels[l] for l in y_test_true]
+        y_test_pred = [labels[l] for l in y_test_pred]
+
+        train_nbr = [sum(x) for x in list(zip(y_train_true, y_train_pred))]
+        for i, n in enumerate(samples_list[0]):
+            if train_nbr[i] == 1:
+                train_samples[n] += 1
+
+        test_nbr = [sum(x) for x in list(zip(y_test_true, y_test_pred))]
+        for i, n in enumerate(samples_list[1]):
+            if test_nbr[i] == 1:
+                test_samples[n] += 1
+
+        return train_samples, test_samples
 
 
 class ResultsDT(Results):
