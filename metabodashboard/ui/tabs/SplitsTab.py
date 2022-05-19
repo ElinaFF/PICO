@@ -28,15 +28,19 @@ class SplitsTab(MetaTab):
                 dbc.Label("Data file(s) *", className="form_labels"),
                 # dbc.Input(id="path_to_data_file", placeholder="Enter path",
                 #           className="form_input_text"),
-                dcc.Upload(id="upload_datatable",
-                           children=[dbc.Button("Upload File",
-                                                id="upload_datatable_button",
-                                                # className="custom_buttons",
-                                                color="outline-primary")]),
+                dbc.Col(children=[
+                    dbc.FormText(id="confirm_data_upload", children=[""]),
+                    dcc.Upload(id="upload_datatable",
+                               children=[dbc.Button("Upload File",
+                                                    id="upload_datatable_button",
+                                                    # className="custom_buttons",
+                                                    color="outline-primary")]),
+                ]),
                 dbc.FormText(
                     "You can give a Progenesis abundance file, or a matrix with samples as lines and features as columns.",
                 ),
             ],
+
             className="form_field"
         )
 
@@ -528,7 +532,7 @@ class SplitsTab(MetaTab):
     def _registerCallbacks(self) -> None:
 
         @self.app.callback(
-            Output('upload_datatable_button', 'style'),
+            Output('confirm_data_upload', 'children'),
             [Input('upload_datatable', 'contents')],
             [State('upload_datatable', 'filename'),
              State("in_use_raw", "value")
@@ -546,7 +550,7 @@ class SplitsTab(MetaTab):
                 self.metabo_controller.set_data_matrix_from_path(list_of_names,
                                                                  data=list_of_contents,
                                                                  use_raw=use_raw)
-                return dash.no_update
+                return "The file has been uploaded successfully."
             else:
                 return dash.no_update
 
