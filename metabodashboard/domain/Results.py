@@ -79,7 +79,6 @@ class Results:
         self.results[split_number]["failed_samples"] = self.produce_always_wrong_samples(y_train_true, y_train_pred,
                                                                                          y_test_true, y_test_pred,
                                                                                          split_number)
-        print('self.results[split_number]["test_accuracy"] = {}'.format(self.results[split_number]["test_accuracy"]))
         if self.results[split_number]["test_accuracy"] > self.best_acc:
             self.best_acc = self.results[split_number]["test_accuracy"]
             self.results["best_model"] = model
