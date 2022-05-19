@@ -207,6 +207,7 @@ def env_dependencies_verification():
     actual_package_installed_list = subprocess.check_output(
         f"{CONDA_PATH} run -n {conda_env_name.environment} python -m pip freeze", shell=True).decode('utf-8')
     actual_package_installed_list = re.findall(r"(\w+)==", actual_package_installed_list)
+    print("scipy" in actual_package_installed_list)
     with open(REQUIREMENT_FILE, 'r') as f:
         line = f.readline()
         while line:
