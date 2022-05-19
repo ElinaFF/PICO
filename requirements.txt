@@ -14,5 +14,3 @@ umap-learn
 openpyxl
 pytest~=7.1.2
 matplotlib~=3.5.2
-pyscm-ml@git+https://github.com/aldro61/pyscm.git#egg=pyscm-ml
-randomscm@git+https://github.com/thibgo/randomscm.git#egg=randomscm
