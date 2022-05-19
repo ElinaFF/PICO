@@ -186,7 +186,7 @@ def install_dependencies():
     logging.info(f"Installation of the dependencies in {conda_env_name.environment} conda environment")
     subprocess.check_call(
         f"{CONDA_PATH} run -n " + conda_env_name.environment + " pip install -r requirements.txt --user", shell=True,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        stdout=subprocess.DEVNULL)
 
 
 def is_os_64bit():
