@@ -111,7 +111,6 @@ class ResultsSummaryTab(MetaTab):
                 all_samples = []
 
                 for i, a in enumerate(algos):
-                    print("---> a : {}".format(a))
                     data_train.append([])
                     data_test.append([])
                     train = []
