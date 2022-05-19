@@ -209,10 +209,10 @@ def env_dependencies_verification():
         line = f.readline()
         while line:
             if re.match(matching_regex, line):
-                line_without_version = re.findall(regex, line)[0][0]
-            if line_without_version not in actual_package_installed_list:
-                logging.info(f"{line_without_version} dependency isn't installed")
-                print(f"{line_without_version} dependency isn't installed")
+                line = re.findall(regex, line)[0][0]
+            if line not in actual_package_installed_list:
+                logging.info(f"{line} dependency isn't installed")
+                print(f"{line} dependency isn't installed")
                 return False
             line = f.readline()
     logging.info("All dependencies are installed")
