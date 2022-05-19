@@ -207,13 +207,13 @@ def env_dependencies_verification():
     actual_package_installed_list = subprocess.check_output(
         f"{CONDA_PATH} run -n {conda_env_name.environment} python -m pip freeze", shell=True).decode('utf-8')
     actual_package_installed_list = re.findall(r"([\w\-]+)==", actual_package_installed_list)
-    print(actual_package_installed_list)
 
     with open(REQUIREMENT_FILE, 'r') as f:
         line = f.readline()
         while line:
             line = line.strip() #permet de retirer les retour à la ligne
             if re.match(matching_regex, line):
+                print(re.findall(regex, line),"\n")
                 line = re.findall(regex, line)[0][0]
             if line not in actual_package_installed_list:
                 logging.info(f"{line} dependency isn't installed")
