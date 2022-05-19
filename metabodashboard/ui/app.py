@@ -27,6 +27,7 @@ infoTab = InfoTab(app, metabo_controller)
 splitsTab = SplitsTab(app, metabo_controller)
 mLTab = MLTab(app, metabo_controller)
 resultsTab = ResultsTab(app, metabo_controller)
+resultsSummaryTab = ResultsSummaryTab(app, metabo_controller)
 interpretTab = InterpretTab(app, metabo_controller)
 
 
@@ -47,6 +48,7 @@ app.layout = html.Div(id="page", children=[
                          splitsTab.getLayout(),
                          mLTab.getLayout(),
                          resultsTab.getLayout(),
+                         resultsSummaryTab.getLayout()
                          #interpretTab.getLayout()
                      ]
                      )

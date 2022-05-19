@@ -144,6 +144,7 @@ class MetaboExperiment:
                 x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(split[X_TEST_INDEX])
                 for model_name in self._selected_models:
                     results[model_name].set_feature_names(x_train)
+                    results[model_name].design_name = experimental_design.get_name()
                     metabo_model = self.get_model_from_name(model_name)
                     best_model = metabo_model.train(folds, x_train, split[y_TRAIN_INDEX], cv_algorithm)
                     y_train_pred = best_model.predict(x_train)

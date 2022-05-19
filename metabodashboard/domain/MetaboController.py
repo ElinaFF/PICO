@@ -1,3 +1,5 @@
+import os
+import pickle
 from typing import Generator, Tuple, List
 
 import pandas as pd
@@ -6,6 +8,8 @@ from . import MetaboExperiment
 from ..service import Plots
 from .Results import *
 
+ROOT_PATH = os.path.dirname(__file__)
+DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
 
 class MetaboController:
     def __init__(self, metaboExp: MetaboExperiment=None):
@@ -41,6 +45,13 @@ class MetaboController:
 
     def set_splits_parameters(self, number_of_splits: int, train_test_split: float):
         self._metabo_experiment.set_splits_parameters(number_of_splits, train_test_split)
+
+    def get_samples_id_from_splits(self, nbr_split_list, design):
+        samples_list = []
+        for s in nbr_split_list:
+            with open(os.path.join(DUMP_PATH, design+"_split_{}.p".format(s)), "rb") as split_file:
+                samples_list.append(pickle.load(split_file)[:2])  # append list of X_train & X_test samples names
+        return samples_list
 
     def set_target_column(self, target_column: str):
         self._metabo_experiment.set_target_column(target_column)
