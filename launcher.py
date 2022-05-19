@@ -208,6 +208,7 @@ def env_dependencies_verification():
             line_without_version = line.split('==')[0].strip() #TODO : why .strip (), necessaire ?
             if line_without_version not in actual_package_installed_list:
                 logging.info(f"{line_without_version} dependency isn't installed")
+                print(f"{line_without_version} dependency isn't installed")
                 return False
             line = f.readline()
     logging.info("All dependencies are installed")
