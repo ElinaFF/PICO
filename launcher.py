@@ -231,7 +231,7 @@ def conda_handler():
             elif os_used == "Darwin":
                 install_miniconda_for_mac_os()
         print("\nPlease restart the launcher")
-        exit(0)
+        exit(1)
     loader.stop()
 
 
@@ -287,7 +287,7 @@ def check_other_env():
     if not is_metabodashboard_env_exist():
         loader.stop(fail=True)
         print(f"Error : environment {conda_env_name.environment} not found")
-        exit(0)
+        exit(1)
     loader.stop()
 
 
@@ -302,7 +302,7 @@ def dependency_handler():
             logging.error(
                 f"Installation of the dependencies in {conda_env_name.environment} conda environment failed")
             loader.stop(fail=True)
-            exit(0)
+            exit(1)
         loader.stop()
 
         internal_loader = Loader(
@@ -325,7 +325,7 @@ def check_python_version():
         logging.error("Wrong version of python installed, please install python 3.8")
         print(f"Wrong version of python installed {python_version}, please install python 3.8")
         loader.stop(fail=True)
-        exit(0)
+        exit(1)
 
 
 def main():
