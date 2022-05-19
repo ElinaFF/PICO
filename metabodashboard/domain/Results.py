@@ -298,7 +298,6 @@ class Results:
 
         labels = {l: idx for idx, l in enumerate(list(set(y_train_true)))}
 
-        print("y_train_pred : ", y_train_pred)
 
         y_train_true = [labels[l] for l in y_train_true]
         y_train_pred = [labels[l] for l in y_train_pred]
