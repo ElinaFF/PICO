@@ -58,7 +58,6 @@ class Results:
         graphique pour l'onglet résultat
         X : entièreté du dataset (autant train que test) c'est simplement pour voir le clustering de tous les individus
         """
-        print(algo_name)
         self.results[split_number]["y_test_true"] = y_test_true
         self.results[split_number]["y_test_pred"] = y_test_pred
         self.results[split_number]["y_train_true"] = y_train_true
