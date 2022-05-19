@@ -117,7 +117,6 @@ class ResultsSummaryTab(MetaTab):
                     train = []
                     test = []
                     for j, s in enumerate(self.r[design][a].splits_number):
-                        print("---> split : {}".format(s))
                         train_d, test_d = self.r[design][a].results[s]["failed_samples"]
                         train.append(train_d)
                         test.append(test_d)
