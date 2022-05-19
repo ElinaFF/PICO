@@ -185,6 +185,9 @@ def create_metabodashboard_env():
 def install_dependencies():
     logging.info(f"Installation of the dependencies in {conda_env_name.environment} conda environment")
     subprocess.check_call(
+        f"{CONDA_PATH} run -n " + conda_env_name.environment + " pip install numpy", shell=True,
+        stdout=subprocess.DEVNULL)
+    subprocess.check_call(
         f"{CONDA_PATH} run -n " + conda_env_name.environment + " pip install -r requirements.txt --user", shell=True,
         stdout=subprocess.DEVNULL)
 
