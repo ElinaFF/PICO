@@ -207,6 +207,7 @@ def env_dependencies_verification():
     actual_package_installed_list = subprocess.check_output(
         f"{CONDA_PATH} run -n {conda_env_name.environment} python -m pip freeze", shell=True).decode('utf-8')
     actual_package_installed_list = re.findall(r"(\w+)==", actual_package_installed_list)
+    print(actual_package_installed_list)
 
     with open(REQUIREMENT_FILE, 'r') as f:
         line = f.readline()
@@ -242,8 +243,6 @@ def conda_handler():
                 install_miniconda_for_linux()
             elif os_used == "Darwin":
                 install_miniconda_for_mac_os()
-        print("\nPlease restart the launcher")
-        exit(1)
     loader.stop()
 
 
