@@ -26,7 +26,7 @@ def main():
             print()
             print("Installation failed with error:", str(error))
             print("Please install MetaboDashboard dependencies manually.")
-            exit()
+            exit(1)
 
     print("Dependencies are OK.")
     print()
