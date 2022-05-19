@@ -213,6 +213,7 @@ def env_dependencies_verification():
         while line:
             line = line.strip() #permet de retirer les retour à la ligne
             if re.match(matching_regex, line):
+                print("vvvvVVVVvvvv")
                 print(re.findall(regex, line),"\n")
                 line = re.findall(regex, line)[0][0]
             if line not in actual_package_installed_list:
