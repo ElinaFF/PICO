@@ -200,8 +200,7 @@ def is_os_64bit():
 
 # TODO : add version verification (useless at first sight)
 def env_dependencies_verification():
-    matching_regex = r"(~|==)|@git"
-    regex = r"([\w\-]+)((~|==)|@git)"
+    regex = r"([-\w]+)(([=~<>]=)|@git).*"
     logging.info(f"Verification of the dependencies in {conda_env_name.environment} conda environment")
     # Contient OBLIGATOIREMENT un '=={version}'
     actual_package_installed_list = subprocess.check_output(
