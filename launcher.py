@@ -36,6 +36,7 @@ parser.add_argument('-e', '--environment', help='Conda environment name')
 conda_env_name = parser.parse_args()
 logging.basicConfig(level=logging.INFO, filename='MetabodashboardInstallation.log', filemode='w', format='%(asctime)s - %(levelname)s - %(funcName)s (ligne %(lineno)d) - %(message)s')
 
+
 class Loader:
     def __init__(self, desc="Loading...", end="checked", fail="fail",
                  timeout=0.1):
@@ -129,9 +130,9 @@ def install_miniconda_for_windows():
     subprocess.check_call(install_conda_command, shell=True,
                           stdout=subprocess.DEVNULL)
     subprocess.check_call("SET PATH=%PATH%;%UserProfile%\\Miniconda3\\Library\\bin", shell=True,
-        stdout=subprocess.DEVNULL)
+                          stdout=subprocess.DEVNULL)
     global CONDA_PATH
-    CONDA_PATH="%UserProfile%\\Miniconda3\\Library\\bin\\conda"
+    CONDA_PATH = "%UserProfile%\\Miniconda3\\Library\\bin\\conda"
 
 
 def install_miniconda_for_linux():
@@ -142,7 +143,7 @@ def install_miniconda_for_linux():
     subprocess.check_call(install_conda_command, shell=True)
     subprocess.check_call("export PATH='~/miniconda3/bin:$PATH'", shell=True, stdout=subprocess.DEVNULL)
     global CONDA_PATH
-    CONDA_PATH="~/miniconda3/bin/conda"
+    CONDA_PATH = "~/miniconda3/bin/conda"
 
 
 def install_miniconda_for_mac_os():
@@ -210,7 +211,7 @@ def env_dependencies_verification():
     with open(REQUIREMENT_FILE, 'r') as f:
         line = f.readline()
         while line:
-            line = line.strip() #permet de retirer les retour à la ligne
+            line = line.strip()  # permet de retirer les retour à la ligne
             if re.match(regex, line):
                 line = re.findall(regex, line)[0][0]
             if line not in actual_package_installed_list:
