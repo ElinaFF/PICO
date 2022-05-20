@@ -36,6 +36,7 @@ parser.add_argument('-e', '--environment', help='Conda environment name')
 parser.add_argument('-l', '--no-launch', help='Install without launching ', action='store_true')
 parser.add_argument('-c', '--no-check', help='Install without checking environment', action='store_true')
 arg = parser.parse_args()
+env_name_not_set = False if arg.environment else True
 conda_env_name = arg.environment if arg.environment else 'metabodashboard'
 no_launch = arg.no_launch
 no_check = arg.no_check
@@ -282,7 +283,7 @@ def create_metabodashboard_conda_env():
             create_metabodashboard_env()
 
         internal_loader = Loader(
-            desc="Re-checking for metabodashboard environment...").start()
+            desc="\tRe-checking for metabodashboard environment...").start()
         if not is_metabodashboard_env_exist():
             internal_loader.stop(fail=True)
             logging.error("metabodashboard environment couldn't be created")
@@ -352,7 +353,7 @@ def main():
 
     code_source_handler()  # Check if code of Metabodashboard is present, if not : clone it from github
 
-    if not conda_env_name:  # Check if environment has been specified
+    if env_name_not_set:  # Check if environment has been specified
         create_metabodashboard_conda_env()  # If not create a conda environment "metabodashboard"
     else:
         check_other_env()  # If it has been specified, check if exist
