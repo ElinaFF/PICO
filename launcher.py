@@ -21,6 +21,12 @@ except ImportError:
     subprocess.call(['pip', 'install', 'argparse'])
     import requests
 
+try:
+    import progressbar
+except ImportError:
+    subprocess.call(['pip', 'install', 'progressbar'])
+    import progressbar
+
 REQUIREMENT_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 'requirements.txt'))
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -197,9 +203,16 @@ def install_dependencies():
     subprocess.check_call(
         f"{CONDA_PATH} run -n " + conda_env_name + " pip install numpy", shell=True,
         stdout=subprocess.DEVNULL)
-    subprocess.check_call(
-        f"{CONDA_PATH} run -n " + conda_env_name + " pip install -r requirements.txt --user", shell=True,
-        stdout=subprocess.DEVNULL)
+    with open(REQUIREMENT_FILE, 'r') as f:
+        position_ligne = 0
+        line = f.readline()
+        with progressbar.ProgressBar(max_value=10) as bar:
+            while line:
+                bar.update(position_ligne)
+                subprocess.check_call(
+                    f"{CONDA_PATH} run -n " + conda_env_name + f" pip install {line}", shell=True,
+                    stdout=subprocess.DEVNULL)
+                position_ligne += 1
 
 
 def is_os_64bit():
