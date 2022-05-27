@@ -220,23 +220,25 @@ def env_dependencies_verification():
 
 
 def move_files_from_clone_to_project_folder():
-    allContent = os.listdir('./testDirectory/')
+    allContent = os.listdir('./temporary_installation_folder/')
 
     for item in allContent:
-        shutil.move("./cloneForInstallation/" + item, ".")
-    os.remove("./cloneForInstallation")
+        if item == "launcher.py":
+            os.remove('.' + "/launcher.py")
+        shutil.move("./temporary_installation_folder/" + item, ".")
 
 
 def install_from_github_on_os():
     logging.info("Downloading project file from github")
 
     try:
-        os.remove("./cloneForInstallation")
+        os.remove("./temporary_installation_folder")
     except FileNotFoundError:
         pass
 
-    subprocess.check_call("git clone -b cloneForInstallation "
-                          f"https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard cloneForInstallation",
+    subprocess.check_call("git clone "
+                          f"https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard "
+                          f"temporary_installation_folder",
                           shell=True, stdout=subprocess.DEVNULL)
 
     move_files_from_clone_to_project_folder()
