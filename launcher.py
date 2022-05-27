@@ -106,6 +106,11 @@ def check_if_minimum_file_requirement_exist():
         'requirements.txt')
 
 
+def check_if_git_folder_exist():
+    logging.info("Checking if the git folder is already downloaded")
+    return os.path.exists('.git')
+
+
 def download_miniconda(url_for_download: str, extension: str = ".sh"):
     logging.info("Downloading MiniConda")
     request = requests.get(url_for_download)
@@ -236,12 +241,25 @@ def install_from_github_on_os():
     except FileNotFoundError:
         pass
 
-    subprocess.check_call("git clone "
+    subprocess.check_call("git clone -q "
                           f"https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard "
                           f"temporary_installation_folder",
                           shell=True, stdout=subprocess.DEVNULL)
 
     move_files_from_clone_to_project_folder()
+
+
+def pull_from_github():
+    logging.info("Pulling project file from github")
+    loader = Loader(desc="Updating project...").start()
+    if check_if_git_folder_exist():
+        subprocess.check_call(f"git pull -q https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard",
+                              shell=True, stdout=subprocess.DEVNULL)
+        logging.info("Project updated")
+        loader.stop()
+    else:
+        logging.info("Couldn't find the .git folder")
+        loader.stop(fail=True)
 
 
 def launch_metabodashboard():
@@ -368,6 +386,11 @@ def main():
         if not no_launch:
             with Loader(desc="Metabodashboard running at http://127.0.0.1:5000... or localhost:5000 on Windows"):
                 launch_metabodashboard()
+        exit(0)
+
+    if update:
+        pull_from_github()
+        dependency_handler()
         exit(0)
 
     conda_handler()  # Check if conda is installed, if not : download & install for appropriate OS
