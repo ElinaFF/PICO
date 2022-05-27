@@ -8,6 +8,7 @@ from pyscm import SetCoveringMachineClassifier
 from randomscm.randomscm import RandomScmClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
@@ -65,6 +66,7 @@ TRAIN_TEST_PROPORTION = 0.75
 SAMPLES_ID = _get_samples_id(SIZE)
 TARGETS, CLASSES = _get_targets_and_classes(SIZE, CLASSES_DESIGN)
 DATA = _get_random_data(SIZE, COLUMNS)
+SCALED_DATA = pd.DataFrame(StandardScaler().fit_transform(DATA), columns=DATA.columns)
 
 SAMPLES_ID_COLUMN = "samples_id"
 TARGETS_COLUMN = "target"
