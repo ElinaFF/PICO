@@ -182,6 +182,10 @@ th{
     width:20%;
 }
 
+.push {
+    margin-left: auto;
+}
+
 
 /*************
 *    Toast   *

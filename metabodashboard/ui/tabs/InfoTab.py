@@ -91,14 +91,112 @@ class InfoTab(MetaTab):
                 dbc.CardImg(src="/assets/Figure_home_wider.png", bottom=True)
             ])
         ])
+        # TODO : add the filename
+        _modal = dbc.Modal(children=[
+            dbc.ModalHeader(style={"padding": "2rem 3rem"},
+                            children=[html.H6("Warning: Saved local files does not match")]),
+            dbc.ModalBody(style={"padding": "2em"}, children=[
+                html.P("The data and/or metadata used in the MetaboExperiment file are not the same as the "
+                       "local ones."),
+                html.P("Please restore the correct data (filename) and/or metadata (filename) if you want "
+                       "to continue the same experiment."),
+                html.P("Otherwise, you can use the same parameters with new data and/or metadata (Partial restore) "
+                       "but the sample column name, target column name and experimental designs won't be "
+                       "restored."),
+                html.P("If you load "),
+                dcc.Upload(id="upload_datatable_modal",
+                           children=[dbc.Button("Upload Data Matrix",
+                                                id="upload_datatable_modal_button",
+                                                # className="custom_buttons",
+                                                color="outline-primary")]),
+                dcc.Upload(id="upload_metadata_modal",
+                           children=[dbc.Button("Upload Metadata",
+                                                id="upload_metadata_modal_button",
+                                                # className="custom_buttons",
+                                                color="outline-primary")]),
+            ]),
+            dbc.ModalFooter(
+                style={"padding-left": "1em"},
+                children=[
+                    dbc.Button(
+                        "Close", id="close", className="custom_buttons", n_clicks=0
+                    ),
+                    # Show diff
+                    dbc.Button(
+                        "Load results", id="loadAnyway", className="custom_buttons push", n_clicks=0
+                    ),
+                    # NO FILES
+                    dbc.Button(
+                        "Partial restore", id="partialRestore", className="custom_buttons", n_clicks=0
+                    ),
+                    # require files
+                    dbc.Button(
+                        "Full restore", id="fullRestore", className="custom_buttons", n_clicks=0
+                    ),
+                ]),
+        ],
+            id="warning-not-match",
+            size="lg",
+            is_open=False,
+
+        )
+
+        _hidden_div = html.Div(id="hidden_div", style={"display": "none"})
 
         return dbc.Tab(className="global_tab",
                        tab_style={"margin-left": "auto"},
-                       label="Home", children=[
-                html.Div(className="fig_group", children=[
-                    html.Div(className="column_content",
-                             # WARNING !! : _infoFigure is not with the card, it's in a separate column
-                             children=[_loadExpe, _splitsInfo, _MLInfo, _resultInfo]), _infoFigure])]) #_interpretInfo
+                       label="Home", children=[_modal,
+                                               html.Div(className="fig_group", children=[
+                                                   html.Div(className="column_content",
+                                                            # WARNING !! : _infoFigure is not with the card, it's in a separate column
+                                                            children=[_loadExpe, _splitsInfo, _MLInfo, _resultInfo, _hidden_div]),
+                                                   _infoFigure])])  # _interpretInfo
 
     def _registerCallbacks(self) -> None:
-        pass
+        @self.app.callback(
+            [Output("warning-not-match", "is_open"),
+             Output("hidden_div", "children")],
+            [Input("close", "n_clicks"),
+             Input("loadAnyway", "n_clicks"),
+             Input("partialRestore", "n_clicks"),
+             Input("fullRestore", "n_clicks"),
+             Input("load_expe", "contents"),
+             Input("upload_datatable_modal", "contents"),
+             Input("upload_metadata_modal", "contents"),
+             Input("upload_datatable_modal", "filename"),
+             Input("upload_metadata_modal", "filename")],
+            [State("warning-not-match", "is_open"),
+             State("load_expe", "filename")]
+        )
+        def toggle_modal(close, load_anyway, partial_restore, full_restore, file, data, metadata, data_name, metadata_name, is_open, filename):
+            if full_restore:
+                metabo_exp_dto = decode_pickle_from_base64(file)
+                if Utils.are_files_corresponding(data, metadata, metabo_exp_dto):
+                    self.metabo_controller.full_restore(metabo_exp_dto)
+                    return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+                else:
+                    return True, ""
+            if partial_restore:
+                if data and metadata:
+                    metabo_exp_dto = decode_pickle_from_base64(file)
+                    self.metabo_controller.partial_restore(metabo_exp_dto, data_name, metadata_name, data=data, metadata=metadata)
+                    print("partial restore")
+                    print(self.metabo_controller.get_features())
+                    return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+                else:
+                    return True, ""
+            if load_anyway:
+                metabo_exp_dto = decode_pickle_from_base64(file)
+                self.metabo_controller.load_results(metabo_exp_dto)
+                return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+            if close:
+                return False, dash.no_update
+            if filename is not None:
+                metabo_exp_dto = decode_pickle_from_base64(file)
+                if self.metabo_controller.is_save_safe(metabo_exp_dto):
+                    self.metabo_controller.full_restore(metabo_exp_dto)
+                    return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+                else:
+                    return True, dash.no_update
+            return is_open, dash.no_update
+
