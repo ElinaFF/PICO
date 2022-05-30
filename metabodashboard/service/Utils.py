@@ -1,20 +1,26 @@
-from typing import List
+import base64
+import pickle
+from typing import List, Dict
 
 import pandas as pd
 import numpy as np
 import pickle as pkl
-import random, os
-from .ExperimentDesign import *
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
+import os
+import hashlib
 
 PACKAGE_ROOT_PATH = os.sep.join(os.path.dirname(__file__).split(os.sep)[:-1])
 DUMP_PATH = os.path.join(PACKAGE_ROOT_PATH, "domain", "dumps")
-DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "metaboExpe.p")
+DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "save.meat")
+
 
 def dump_metabo_expe(obj):
     with open(DUMP_EXPE_PATH, "w+b") as expe_file:
         pkl.dump(obj, expe_file)
+
+
+def get_metabo_experiment_path() -> str:
+    return DUMP_EXPE_PATH
+
 
 def load_metabo_expe(path):
     if os.path.isfile(DUMP_EXPE_PATH):
@@ -22,6 +28,7 @@ def load_metabo_expe(path):
             return pkl.load(expe_file)
     else:
         return None
+
 
 def retrieve_data_from_sample_name(names_list, dataframe):
     """
@@ -140,3 +147,33 @@ def load_classes_from_targets(classes_design: dict, targets: List[str]) -> List[
 # TODO: need to support multi-classification
 def get_binary(list_to_convert: List[str], classes: List[str]) -> List[int]:
     return [1 if class_value == classes[1] else 0 for class_value in list_to_convert]
+
+
+def compute_hash(data: str) -> str:
+    return hashlib.sha256(data.encode("utf-8")).hexdigest()
+
+
+def is_save_safe(saved_metabo_experiment_dto) -> bool:
+    return saved_metabo_experiment_dto.metadata.is_data_the_same() and \
+           saved_metabo_experiment_dto.data_matrix.is_data_the_same()
+
+
+def format_list_for_checklist(list_to_format: List[str]) -> List[Dict[str, str]]:
+    return [{'label': value, 'value': value} for value in list_to_format]
+
+
+def check_if_column_exist(datatable: pd.DataFrame, column_name: str) -> bool:
+    return column_name in datatable.columns
+
+
+def decode_pickle_from_base64(encoded_object: str):
+    return pickle.loads(base64.b64decode(encoded_object.split(",")[1]))
+
+
+def are_files_corresponding(data: str, metadata: str, metabo_experiment_dto) -> bool:
+    return metabo_experiment_dto.metadata.get_hash() == compute_hash(metadata) and \
+           metabo_experiment_dto.data_matrix.get_hash() == compute_hash(data)
+
+
+def reset_file(file_path: str):
+    open(file_path, "w+b").close()
