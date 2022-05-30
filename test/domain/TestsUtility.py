@@ -15,6 +15,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
+from ...metabodashboard.conf.SupportedModels import LEARN_CONFIG
+
 
 def _get_samples_id(size: int) -> List[str]:
     return ["patient-" + str(patient_id) for patient_id in range(size)]
@@ -188,34 +190,4 @@ PARAMETER_GRID = {
     "max_depth": [1, 2, 3, 4, 5, 10]
 }
 
-SUPPORTED_MODEL = LEARN_CONFIG = {
-    "DecisionTree": {
-        "function": DecisionTreeClassifier,
-        "ParamGrid": {
-            "max_depth": [1, 2, 3, 4, 5, 10],
-            "min_samples_split": [2, 4, 6, 8, 10]
-        }
-    },
-    "RandomForest": {
-        "function": RandomForestClassifier,
-        "ParamGrid": {
-            "n_estimators": [1, 2, 4, 10, 30, 70, 100, 500, 1000]
-        }
-    },
-    "SCM": {
-        "function": SetCoveringMachineClassifier,
-        "ParamGrid": {
-            "p": [0.5, 1., 2.],
-            "max_rules": [1, 2, 3, 4, 5],
-            "model_type": ["conjunction", "disjunction"]
-        }
-    },
-    "RandomSCM": {
-        "function": RandomScmClassifier,
-        "ParamGrid": {
-            "p_options": [[0.5, 1., 2.]],
-            "max_rules": [1, 2, 3, 4, 5],
-            "model_type": ["conjunction", "disjunction"],
-        }
-    },
-}
+SUPPORTED_MODEL = LEARN_CONFIG
