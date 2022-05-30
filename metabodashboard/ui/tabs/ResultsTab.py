@@ -4,12 +4,11 @@ import time
 import dash_bootstrap_components as dbc
 import numpy as np
 from dash import html, dcc, Output, Input, State, dash, Dash
-import pickle as pkl
 from matplotlib import pyplot as plt
 from sklearn import tree
 
 from .MetaTab import MetaTab
-from ...service import Plots
+from ...service import Plots, Utils
 from ...domain import MetaboController
 
 PATH_TO_BIGRESULTS = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "big_results.p"))
@@ -17,7 +16,8 @@ PATH_TO_BIGRESULTS = os.path.abspath(os.path.join(os.path.dirname(__file__), "..
 class ResultsTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
-        self.r = pkl.load(open(PATH_TO_BIGRESULTS, "rb"))
+        # self.r = pkl.load(open(PATH_TO_BIGRESULTS, "rb"))
+        self.r = self.metabo_controller.get_all_results()
         self._plots = Plots("blues")
 
     def getLayout(self) -> dbc.Tab:
@@ -282,6 +282,7 @@ class ResultsTab(MetaTab):
         )
         def update_results_dropdown_design(active):
             if active == "tab-3":
+                self.r = self.metabo_controller.get_all_results()
                 a = list(self.r.keys())
                 return [{"label": i, "value": i} for i in a], a[0]
             else:
@@ -349,7 +350,6 @@ class ResultsTab(MetaTab):
                 return self._plots.show_accuracy_all(df)
             else:
                 return dash.no_update
-
 
         @self.app.callback(
             Output("metrics_score_table", "children"),
@@ -484,7 +484,7 @@ class ResultsTab(MetaTab):
             if n_click >= 1:
                 df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
                 features = list(df.iloc[:, 0])
-                return [{"label": i, "value": i} for i in features], features[0]
+                return Utils.format_list_for_checklist(features), features[0]
             else:
                 return dash.no_update
 
