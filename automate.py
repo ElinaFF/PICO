@@ -29,7 +29,9 @@ def main():
     metabo_controller.add_experimental_design({"NA": "NA", "MED": ["MED", "MED/w"]})
     print("Experimental design added")
 
-    metabo_controller.set_splits_parameters(2, 0.2)
+    metabo_controller.set_train_test_proportion(0.2)
+    metabo_controller.set_number_of_splits(2)
+    metabo_controller.create_splits()
     metabo_controller.set_selected_models(['DecisionTree', "RandomForest"])
 
     print("Learning starts...")
