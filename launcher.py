@@ -21,12 +21,6 @@ except ImportError:
     subprocess.call(['pip', 'install', 'argparse'])
     import requests
 
-try:
-    import progressbar
-except ImportError:
-    subprocess.call(['pip', 'install', 'progressbar'])
-    import progressbar
-
 REQUIREMENT_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 'requirements.txt'))
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
