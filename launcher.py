@@ -288,7 +288,6 @@ def conda_handler():
                 install_miniconda_for_linux()
             elif os_used == "Darwin":
                 install_miniconda_for_mac_os()
-        print("\nPlease restart the launcher")
         exit(0)
     loader.stop()
 
