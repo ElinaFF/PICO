@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 import itertools
 import os
 import platform
+import re
 import subprocess
 import threading
 from itertools import cycle
@@ -31,8 +33,16 @@ RO_TEMP_TOKEN = "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"
 
 parser = argparse.ArgumentParser(description='Installation parameter')
 parser.add_argument('-e', '--environment', help='Conda environment name')
-conda_env_name = parser.parse_args()
-logging.basicConfig(level=logging.INFO, filename='MetabodashboardInstallation.log', filemode='w', format='%(asctime)s - %(levelname)s - %(funcName)s (ligne %(lineno)d) - %(message)s')
+parser.add_argument('-l', '--no-launch', help='Install without launching ', action='store_true')
+parser.add_argument('-c', '--no-check', help='Install without checking environment', action='store_true')
+arg = parser.parse_args()
+env_name_not_set = False if arg.environment else True
+conda_env_name = arg.environment if arg.environment else 'metabodashboard'
+no_launch = arg.no_launch
+no_check = arg.no_check
+logging.basicConfig(level=logging.INFO, filename='MetabodashboardInstallation.log', filemode='w',
+                    format='%(asctime)s - %(levelname)s - %(funcName)s (ligne %(lineno)d) - %(message)s')
+
 
 class Loader:
     def __init__(self, desc="Loading...", end="checked", fail="fail",
@@ -127,9 +137,9 @@ def install_miniconda_for_windows():
     subprocess.check_call(install_conda_command, shell=True,
                           stdout=subprocess.DEVNULL)
     subprocess.check_call("SET PATH=%PATH%;%UserProfile%\\Miniconda3\\Library\\bin", shell=True,
-        stdout=subprocess.DEVNULL)
+                          stdout=subprocess.DEVNULL)
     global CONDA_PATH
-    CONDA_PATH="%UserProfile%\\Miniconda3\\Library\\bin\\conda"
+    CONDA_PATH = "%UserProfile%\\Miniconda3\\Library\\bin\\conda"
 
 
 def install_miniconda_for_linux():
@@ -140,7 +150,7 @@ def install_miniconda_for_linux():
     subprocess.check_call(install_conda_command, shell=True)
     subprocess.check_call("export PATH='~/miniconda3/bin:$PATH'", shell=True, stdout=subprocess.DEVNULL)
     global CONDA_PATH
-    CONDA_PATH="~/miniconda3/bin/conda"
+    CONDA_PATH = "~/miniconda3/bin/conda"
 
 
 def install_miniconda_for_mac_os():
@@ -167,12 +177,12 @@ def is_conda_installed() -> bool:
 
 
 def is_metabodashboard_env_exist() -> bool:
-    logging.info(f"Checking for {conda_env_name.environment} conda environment")
+    logging.info(f"Checking for {conda_env_name} conda environment")
     enviList = subprocess.check_output(f"{CONDA_PATH} env list", shell=True)
-    if "\n" + conda_env_name.environment + " " in enviList.decode('utf-8').lower():
-        logging.info(f"{conda_env_name.environment} conda environment found")
+    if "\n" + conda_env_name + " " in enviList.decode('utf-8').lower():
+        logging.info(f"{conda_env_name} conda environment found")
         return True
-    logging.info(f"{conda_env_name.environment} conda environment not found")
+    logging.info(f"{conda_env_name} conda environment not found")
     return False
 
 
@@ -183,10 +193,13 @@ def create_metabodashboard_env():
 
 
 def install_dependencies():
-    logging.info(f"Installation of the dependencies in {conda_env_name.environment} conda environment")
+    logging.info(f"Installation of the dependencies in {conda_env_name} conda environment")
     subprocess.check_call(
-        f"{CONDA_PATH} run -n " + conda_env_name.environment + " pip install -r requirements.txt --user", shell=True,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        f"{CONDA_PATH} run -n " + conda_env_name + " pip install numpy", shell=True,
+        stdout=subprocess.DEVNULL)
+    subprocess.check_call(
+        f"{CONDA_PATH} run -n " + conda_env_name + " pip install -r requirements.txt --user", shell=True,
+        stdout=subprocess.DEVNULL)
 
 
 def is_os_64bit():
@@ -195,16 +208,23 @@ def is_os_64bit():
 
 # TODO : add version verification (useless at first sight)
 def env_dependencies_verification():
-    logging.info(f"Verification of the dependencies in {conda_env_name.environment} conda environment")
+    regex = r"([-\w]+)(([=~<>]=)|@git).*"
+    logging.info(f"Verification of the dependencies in {conda_env_name} conda environment")
     # Contient OBLIGATOIREMENT un '=={version}'
     actual_package_installed_list = subprocess.check_output(
-        f"{CONDA_PATH} run -n {conda_env_name.environment} python -m pip freeze", shell=True).decode('utf-8')
+        f"{CONDA_PATH} run -n {conda_env_name} python -m pip freeze", shell=True).decode('utf-8')
+    actual_package_installed_list = [package[0] for package in
+                                     re.findall(r"([-\w]+)([=~<>]=|( @ git))", actual_package_installed_list)]
+
     with open(REQUIREMENT_FILE, 'r') as f:
         line = f.readline()
         while line:
-            line_without_version = line.split('==')[0].strip() #TODO : why .strip (), necessaire ?
-            if line_without_version not in actual_package_installed_list:
-                logging.info(f"{line_without_version} dependency isn't installed")
+            line = line.strip()  # permet de retirer les retour à la ligne
+            if re.match(regex, line):
+                line = re.findall(regex, line)[0][0]
+            if line not in actual_package_installed_list:
+                logging.info(f"{line} dependency isn't installed")
+                print(f"{line} dependency isn't installed")
                 return False
             line = f.readline()
     logging.info("All dependencies are installed")
@@ -213,7 +233,7 @@ def env_dependencies_verification():
 
 def launch_metabodashboard():
     subprocess.check_call(
-        f"{CONDA_PATH} run -n " + conda_env_name.environment + " python main.py", shell=True,
+        f"{CONDA_PATH} run -n " + conda_env_name + " python main.py", shell=True,
         stdout=subprocess.DEVNULL)
 
 
@@ -257,23 +277,14 @@ def code_source_handler():
 
 
 def create_metabodashboard_conda_env():
-    conda_env_name.environment = "metabodashboard"
     loader = Loader(desc="Checking for metabodashboard environment...").start()
     if not is_metabodashboard_env_exist():
         loader.stop(fail=True)
         print("metabodashboard environment not found !")
         with Loader(desc="\tCreating metabodashboard environment..."):
             create_metabodashboard_env()
-        # with Loader(desc="\tInstalling dependencies in environment..."):
-        #     try:
-        #         install_dependencies()
-        #     except:
-        #         logging.error(
-        #             f"Installation of the dependencies in {condaEnvName.environment} conda environment failed")
-        #         exit(0)
-
         internal_loader = Loader(
-            desc="Re-checking for metabodashboard environment...").start()
+            desc="\tRe-checking for metabodashboard environment...").start()
         if not is_metabodashboard_env_exist():
             internal_loader.stop(fail=True)
             logging.error("metabodashboard environment couldn't be created")
@@ -283,11 +294,11 @@ def create_metabodashboard_conda_env():
 
 
 def check_other_env():
-    loader = Loader(desc=f"Checking for {conda_env_name.environment} environment...").start()
+    loader = Loader(desc=f"Checking for {conda_env_name} environment...").start()
     if not is_metabodashboard_env_exist():
         loader.stop(fail=True)
-        print(f"Error : environment {conda_env_name.environment} not found")
-        exit(0)
+        print(f"Error : environment {conda_env_name} not found")
+        exit(1)
     loader.stop()
 
 
@@ -300,9 +311,9 @@ def dependency_handler():
             install_dependencies()
         except:
             logging.error(
-                f"Installation of the dependencies in {conda_env_name.environment} conda environment failed")
+                f"Installation of the dependencies in {conda_env_name} conda environment failed")
             loader.stop(fail=True)
-            exit(0)
+            exit(1)
         loader.stop()
 
         internal_loader = Loader(
@@ -316,7 +327,8 @@ def dependency_handler():
 
 def check_python_version():
     loader = Loader(desc=f"Checking of the python version installed...").start()
-    python_version = subprocess.check_output(f"{CONDA_PATH} run -n {conda_env_name.environment} python --version", shell=True).decode('utf-8')
+    python_version = subprocess.check_output(f"{CONDA_PATH} run -n {conda_env_name} python --version",
+                                             shell=True).decode('utf-8')
     if "3.8" in python_version:
         logging.info("The correct version of python (3.8) is installed.")
         logging.info(f"(python version is {python_version})")
@@ -325,10 +337,15 @@ def check_python_version():
         logging.error("Wrong version of python installed, please install python 3.8")
         print(f"Wrong version of python installed {python_version}, please install python 3.8")
         loader.stop(fail=True)
-        exit(0)
+        exit(1)
 
 
 def main():
+    if no_check:
+        if not no_launch:
+            with Loader(desc="Metabodashboard running at http://127.0.0.1:5000... or localhost:5000 on Windows"):
+                launch_metabodashboard()
+        exit(0)
 
     conda_handler()  # Check if conda is installed, if not : download & install for appropriate OS
 
@@ -337,7 +354,7 @@ def main():
 
     code_source_handler()  # Check if code of Metabodashboard is present, if not : clone it from github
 
-    if not conda_env_name.environment:  # Check if environment has been specified
+    if env_name_not_set:  # Check if environment has been specified
         create_metabodashboard_conda_env()  # If not create a conda environment "metabodashboard"
     else:
         check_other_env()  # If it has been specified, check if exist
@@ -348,6 +365,9 @@ def main():
 
     logging.info("Successfully installed !")
     print("Successfully installed !\n")
+
+    if no_launch:
+        exit(0)
 
     with Loader(desc="Metabodashboard running at http://127.0.0.1:5000... or localhost:5000 on Windows"):
         launch_metabodashboard()

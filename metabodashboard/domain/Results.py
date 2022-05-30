@@ -47,7 +47,7 @@ class Results:
         """
         raise NotImplementedError()
 
-    def add_results_from_one_algo_on_one_split(self, model: sklearn, data: pd.DataFrame, classes: list,
+    def add_results_from_one_algo_on_one_split(self, model: sklearn, scaled_data: pd.DataFrame, classes: list,
                                                y_train_true: list, y_train_pred: list,
                                                y_test_true: list, y_test_pred: list, algo_name: str, split_number: str):
         """
@@ -91,10 +91,10 @@ class Results:
             self.results["features_table"] = self.produce_features_importance_table()
             self.results["accuracies_table"] = self.produce_accuracy_plot_all()
             self.results["classes"] = classes
-            self.results["umap_data"] = self._produce_UMAP(data, self.results["features_table"])
-            self.results["pca_data"] = self._produce_PCA(data, self.results["features_table"])
+            self.results["umap_data"] = self._produce_UMAP(scaled_data, self.results["features_table"])
+            self.results["pca_data"] = self._produce_PCA(scaled_data, self.results["features_table"])
             self.results["metrics_table"] = self.produce_metrics_table()
-            self.results["features_stripchart"] = self.features_strip_chart_abundance_each_class(self.results["features_table"], data)
+            self.results["features_stripchart"] = self.features_strip_chart_abundance_each_class(self.results["features_table"], scaled_data)
 
     def set_feature_names(self, x: pd.DataFrame):
         """
@@ -251,6 +251,8 @@ class Results:
         trains_metrics.append(
             str(round(float(np.mean(precisiontrain)), 4)) + " (" + str(round(float(np.std(precisiontrain)), 4)) + ")")
         trains_metrics.append(
+            str(round(float(np.mean(balacctest)), 4)) + " (" + str(round(float(np.std(balacctest)), 4)) + ")")
+        trains_metrics.append(
             str(round(float(np.mean(recalltrain)), 4)) + " (" + str(round(float(np.std(recalltrain)), 4)) + ")")
         trains_metrics.append(
             str(round(float(np.mean(f1train)), 4)) + " (" + str(round(float(np.std(f1train)), 4)) + ")")
@@ -262,10 +264,13 @@ class Results:
         tests_metrics.append(
             str(round(float(np.mean(precisiontest)), 4)) + " (" + str(round(float(np.std(precisiontest)), 4)) + ")")
         tests_metrics.append(
+            str(round(float(np.mean(balacctest)), 4)) + " (" + str(round(float(np.std(balacctest)), 4)) + ")")
+        tests_metrics.append(
             str(round(float(np.mean(recalltest)), 4)) + " (" + str(round(float(np.std(recalltest)), 4)) + ")")
         tests_metrics.append(str(round(float(np.mean(f1test)), 4)) + " (" + str(round(float(np.std(f1test)), 4)) + ")")
         tests_metrics.append(
             str(round(float(np.mean(roc_auc_test)), 4)) + " (" + str(round(float(np.std(roc_auc_test)), 4)) + ")")
+
 
         d = {"metrics": metrics, "train": trains_metrics, "test": tests_metrics}
         df = pd.DataFrame(data=d)

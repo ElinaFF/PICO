@@ -2,6 +2,7 @@ import os
 import pickle
 
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 from ..service import DataFormat
 
@@ -14,12 +15,25 @@ class DataMatrix:
     def __init__(self):
         # TODO : implémenter test format de matrice (progenesis -> ML ready)
         self.data = None
+        self._scaler = StandardScaler()
 
     def read_format_and_store_data(self, path: str, data=None, use_raw: bool=False, from_base64: bool=True):
         data_df = self._load_and_format(path, data=data, is_raw=use_raw, from_base64=from_base64)
 
         with open(DUMP_DATA_MATRIX_PATH, "w+b") as data_matrix_file:
             pickle.dump(data_df, data_matrix_file)
+
+        self._scaler.fit(data_df)
+
+    def get_scale_data(self) -> pd.DataFrame:
+        """
+        Scale the dataframe to be ready for ML
+        :param data: the dataframe to scale
+        :return: the scaled dataframe
+        """
+        if self.data is None:
+            raise RuntimeError("Need to load data from file before scaling")
+        return pd.DataFrame(self._scaler.transform(self.data), columns=self.data.columns)
 
     def _load_and_format(self, path, data=None, is_raw=False, from_base64=True) -> pd.DataFrame:
         """
