@@ -8,10 +8,6 @@ from ..service import Utils
 from .tabs import *
 from ..domain import MetaboController
 
-PACKAGE_ROOT_PATH = os.sep.join(os.path.dirname(__file__).split(os.sep)[:-1])
-DUMP_PATH = os.path.join(PACKAGE_ROOT_PATH, "domain", "dumps")
-DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "metaboExpe.p")
-
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX], meta_tags=[{"name": "viewport", "content": "width=device-width"}])
 server = app.server
@@ -22,7 +18,7 @@ app.css.append_css({
     "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
 })
 
-metabo_controller = MetaboController(Utils.load_metabo_expe(DUMP_EXPE_PATH))
+metabo_controller = MetaboController()
 infoTab = InfoTab(app, metabo_controller)
 splitsTab = SplitsTab(app, metabo_controller)
 mLTab = MLTab(app, metabo_controller)
@@ -31,7 +27,8 @@ resultsSummaryTab = ResultsSummaryTab(app, metabo_controller)
 interpretTab = InterpretTab(app, metabo_controller)
 
 
-app.layout = html.Div(id="page", children=[
+app.layout = html.Div(id="page",
+                      children=[
         html.Div(id="dataCache", children=[
 
         ],
@@ -42,6 +39,7 @@ app.layout = html.Div(id="page", children=[
         ]),
         html.Div(id="main-content", children=[
             dbc.Tabs(id="custom_big_tabs",
+                     persistence=True,
                      className="global_tabs_container",
                      children=[
                          infoTab.getLayout(),

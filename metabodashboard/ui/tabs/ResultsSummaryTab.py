@@ -25,7 +25,7 @@ from ...domain import MetaboController
 class ResultsSummaryTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
-        self.r = pkl.load(open("big_results.p", "rb"))
+        self.r = self.metabo_controller.get_all_results()
         self._plots = Plots("blues")
 
     def getLayout(self) -> dbc.Tab:
@@ -90,6 +90,7 @@ class ResultsSummaryTab(MetaTab):
         )
         def update_results_dropdown_design(active):
             if active == "tab-4":
+                self.r = self.metabo_controller.get_all_results()
                 a = list(self.r.keys())
                 return [{"label": i, "value": i} for i in a], a[0]
             else:

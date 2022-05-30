@@ -5,6 +5,7 @@ from typing import Generator, Tuple, List
 import pandas as pd
 
 from . import MetaboExperiment
+from .MetaboExperimentDTO import MetaboExperimentDTO
 from ..service import Plots
 from .Results import *
 
@@ -25,11 +26,11 @@ class MetaboController:
     def set_data_matrix_from_path(self, path_data_matrix, data=None, use_raw=False, from_base64=True):
         return self._metabo_experiment.set_data_matrix(path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64)
 
-    def get_formatted_columns(self) -> list:
-        return self._metabo_experiment.get_formatted_columns()
+    def get_features(self) -> list:
+        return self._metabo_experiment.get_features()
 
-    def get_formatted_unique_targets(self) -> list:
-        return self._metabo_experiment.get_formatted_unique_targets()
+    def get_unique_targets(self) -> list:
+        return self._metabo_experiment.get_unique_targets()
 
     def add_experimental_design(self, classes_design: dict):
         self._metabo_experiment.add_experimental_design(classes_design)
@@ -40,11 +41,14 @@ class MetaboController:
     def all_experimental_designs_names(self) -> Generator[Tuple[str, str], None, None]:
         return self._metabo_experiment.all_experimental_designs_names()
 
+    def get_all_experimental_designs_names(self) -> List[Tuple[str, str]]:
+        return list(self._metabo_experiment.all_experimental_designs_names())
+
+    def reset_experimental_designs(self):
+        self._metabo_experiment.reset_experimental_designs()
+
     def remove_experimental_design(self, name: str):
         self._metabo_experiment.remove_experimental_design(name)
-
-    def set_splits_parameters(self, number_of_splits: int, train_test_split: float):
-        self._metabo_experiment.set_splits_parameters(number_of_splits, train_test_split)
 
     def get_samples_id_from_splits(self, nbr_split_list, design):
         samples_list = []
@@ -112,3 +116,48 @@ class MetaboController:
 
     def get_selected_cv_type(self) -> str:
         return self._metabo_experiment.get_selected_cv_type()
+
+    def generate_save(self) -> MetaboExperimentDTO:
+        return self._metabo_experiment.generate_save()
+
+    def is_save_safe(self, saved_metabo_experiment_dto: MetaboExperimentDTO) -> bool:
+        return self._metabo_experiment.is_save_safe(saved_metabo_experiment_dto)
+
+    def full_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
+        self._metabo_experiment.full_restore(saved_metabo_experiment_dto)
+
+    def partial_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO, filename_data: str,
+                        filename_metadata: str, data=None, use_raw_data: bool = False, from_base64_data: bool = True,
+                        metadata=None, from_base64_metadata=True):
+        self._metabo_experiment.partial_restore(saved_metabo_experiment_dto, filename_data, filename_metadata,
+                                                data, use_raw_data, from_base64_data, metadata, from_base64_metadata)
+
+    def load_results(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
+        self._metabo_experiment.load_results(saved_metabo_experiment_dto)
+
+    def get_target_column(self) -> str:
+        return self._metabo_experiment.get_target_column()
+
+    def get_id_column(self) -> str:
+        return self._metabo_experiment.get_id_column()
+
+    def set_number_of_splits(self, number_of_splits: int):
+        self._metabo_experiment.set_number_of_splits(number_of_splits)
+
+    def get_number_of_splits(self) -> int:
+        return self._metabo_experiment.get_number_of_splits()
+
+    def set_train_test_proportion(self, train_test_proportion: float):
+        self._metabo_experiment.set_train_test_proportion(train_test_proportion)
+
+    def get_train_test_proportion(self) -> float:
+        return self._metabo_experiment.get_train_test_proportion()
+
+    def create_splits(self):
+        self._metabo_experiment.create_splits()
+
+    def get_selected_models(self) -> List[str]:
+        return self._metabo_experiment.get_selected_models()
+
+    def are_files_corresponding(self, data_file: str, metadata_file: str) -> bool:
+        return self._metabo_experiment.are_files_corresponding(data_file, metadata_file)

@@ -12,8 +12,7 @@ from .TestsUtility import MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLI
 @pytest.fixture
 def input_splits():
     with patch('builtins.open', new_callable=mock_open()):
-        return SplitGroup(MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN,
-                        EXPERIMENT_NAME)
+        return SplitGroup(MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN)
 
 
 @patch('pickle.load', side_effect=SPLITS)
