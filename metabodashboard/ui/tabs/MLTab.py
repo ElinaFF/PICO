@@ -1,8 +1,5 @@
-import json
-import os
-
 import dash_bootstrap_components as dbc
-from dash import html, State, Input, Output, dash
+from dash import html, State, Input, Output, dash, dcc, callback_context
 
 from .MetaTab import MetaTab
 from ...service import Utils
@@ -15,7 +12,7 @@ class MLTab(MetaTab):
                 dbc.Label("Select CV search type",
                           className="form_labels"),
                 dbc.RadioItems(
-                    options=[{"label": cv_type, "value": cv_type} for cv_type in self.metabo_controller.get_cv_types()],
+                    options=Utils.format_list_for_checklist(self.metabo_controller.get_cv_types()),
                     value=self.metabo_controller.get_selected_cv_type(),
                     id="radio_cv_types"),
             ],
@@ -101,32 +98,40 @@ class MLTab(MetaTab):
                                     children=[_definitionLearningConfig,
                                               _definitionLearningAlgorithm
                                               ]),
+                           dcc.Download(id="download-save-file-ml")
                        ])
 
     def _registerCallbacks(self) -> None:
         @self.app.callback(
             [Output("in_algo_ML", "options"),
+             Output("in_algo_ML", "value"),
              Output("import_new_algo", "value"),
              Output("name_new_algo", "value"),
              Output("name_param", "value"),
              Output("values_param", "value")],
-            [Input("add_n_refresh_sklearn_algo_button", "n_clicks")],
+            [Input("add_n_refresh_sklearn_algo_button", "n_clicks"),
+             Input("in_algo_ML", "value")],
             [State("import_new_algo", "value"),
              State("name_new_algo", "value"),
              State("name_param", "value"),
              State("values_param", "value")]
         )
-        def add_refresh_available_sklearn_algorithms(n, import_new, name_new, name_param, values_param):
+        def add_refresh_available_sklearn_algorithms(n, value, import_new, name_new, name_param, values_param):
             if n >= 1:
                 new_algo_name = name_new
                 new_algo_params = {"function": name_new, "ParamGrid": {name_param: values_param},
                                    "importing": import_new}
 
                 self.metabo_controller.add_custom_model(new_algo_name, import_new, new_algo_params)
-            return [{"label": algo_name, "value": algo_name} for algo_name in self.metabo_controller.get_all_algos_names()], "", "", "", ""
+            if callback_context.triggered[0]["prop_id"] == "in_algo_ML.value":
+                self.metabo_controller.set_selected_models(value)
+            return Utils.format_list_for_checklist(
+                self.metabo_controller.get_all_algos_names()), \
+                self.metabo_controller.get_selected_models(), "", "", "", ""
 
         @self.app.callback(
-            Output("output_button_ml", "children"),
+            [Output("output_button_ml", "children"),
+             Output("download-save-file-ml", "data")],
             [Input("start_learning_button", "n_clicks")],
             [State("in_algo_ML", "value"),
              State("in_nbr_CV_folds", "value"),
@@ -135,13 +140,12 @@ class MLTab(MetaTab):
         def start_machine_learning(n, selected_models, cv_folds, nbr_process):
             if n >= 1:
                 print("in")
-                print(selected_models)
-                self.metabo_controller.set_selected_models(selected_models)
+                print(self.metabo_controller.get_selected_models())
                 self.metabo_controller.learn(int(cv_folds))
 
-                Utils.dump_metabo_expe(self.metabo_controller._metabo_experiment)
+                Utils.dump_metabo_expe(self.metabo_controller.generate_save())
 
-                return "Done!"
+                return "Done!", dcc.send_file(Utils.get_metabo_experiment_path())
             else:
                 return dash.no_update
 
@@ -150,5 +154,7 @@ class MLTab(MetaTab):
             [Input("radio_cv_types", "value")]
         )
         def set_cv_type(value):
-            self.metabo_controller.set_cv_type(value)
-            return value
+            if callback_context.triggered[0]["prop_id"] == "radio_cv_types.value":
+                self.metabo_controller.set_cv_type(value)
+
+            return self.metabo_controller.get_selected_cv_type()

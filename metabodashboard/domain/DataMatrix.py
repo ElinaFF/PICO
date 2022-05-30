@@ -4,7 +4,7 @@ import pickle
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-from ..service import DataFormat
+from ..service import DataFormat, compute_hash, Utils
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, "dumps")
@@ -16,14 +16,24 @@ class DataMatrix:
         # TODO : implémenter test format de matrice (progenesis -> ML ready)
         self.data = None
         self._scaler = StandardScaler()
+        self._hash = None
+
+        Utils.reset_file(DUMP_DATA_MATRIX_PATH)
 
     def read_format_and_store_data(self, path: str, data=None, use_raw: bool=False, from_base64: bool=True):
         data_df = self._load_and_format(path, data=data, is_raw=use_raw, from_base64=from_base64)
+        self._hash = compute_hash(data)
 
         with open(DUMP_DATA_MATRIX_PATH, "w+b") as data_matrix_file:
             pickle.dump(data_df, data_matrix_file)
 
         self._scaler.fit(data_df)
+
+    def get_hash(self) -> str:
+        """
+        :return: the hash of the dataframe
+        """
+        return self._hash
 
     def get_scale_data(self) -> pd.DataFrame:
         """
@@ -60,3 +70,5 @@ class DataMatrix:
         df = self.data.loc[id_list, :]
         return df
 
+    def unload_data(self):
+        self.data = None
