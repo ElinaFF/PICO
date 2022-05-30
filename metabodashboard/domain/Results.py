@@ -47,7 +47,7 @@ class Results:
         """
         raise NotImplementedError()
 
-    def add_results_from_one_algo_on_one_split(self, model: sklearn, data: pd.DataFrame, classes: list,
+    def add_results_from_one_algo_on_one_split(self, model: sklearn, scaled_data: pd.DataFrame, classes: list,
                                                y_train_true: list, y_train_pred: list,
                                                y_test_true: list, y_test_pred: list, algo_name: str, split_number: str):
         """
@@ -93,10 +93,10 @@ class Results:
             self.results["features_table"] = self.produce_features_importance_table()
             self.results["accuracies_table"] = self.produce_accuracy_plot_all()
             self.results["classes"] = classes
-            self.results["umap_data"] = self._produce_UMAP(data, self.results["features_table"])
-            self.results["pca_data"] = self._produce_PCA(data, self.results["features_table"])
+            self.results["umap_data"] = self._produce_UMAP(scaled_data, self.results["features_table"])
+            self.results["pca_data"] = self._produce_PCA(scaled_data, self.results["features_table"])
             self.results["metrics_table"] = self.produce_metrics_table()
-            self.results["features_stripchart"] = self.features_strip_chart_abundance_each_class(self.results["features_table"], data)
+            self.results["features_stripchart"] = self.features_strip_chart_abundance_each_class(self.results["features_table"], scaled_data)
 
     def set_feature_names(self, x: pd.DataFrame):
         """
@@ -273,12 +273,7 @@ class Results:
         tests_metrics.append(
             str(round(float(np.mean(roc_auc_test)), 4)) + " (" + str(round(float(np.std(roc_auc_test)), 4)) + ")")
 
-        print(len(metrics))
-        print(len(trains_metrics))
-        print(len(tests_metrics))
-
         metrics_table = pd.DataFrame(data={"metrics": metrics, "train": trains_metrics, "test": tests_metrics})
-
         return metrics_table
 
     def features_strip_chart_abundance_each_class(self, feature_df, data):

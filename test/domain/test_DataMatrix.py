@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from ...metabodashboard.domain import DataMatrix
 
 from .TestsUtility import DATAMATRIX_DATAFRAME, SAMPLES_ID, SCALED_DATA, ENCODED_DATAMATRIX_DATAFRAME, \
-    assert_dataframe_approximately_equal
+    assert_dataframe_approximately_equal, SCALED_DATA
 
 
 @pytest.fixture

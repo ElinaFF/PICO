@@ -29,6 +29,7 @@ jobs:
 
       - name: Re-create target branch
         run: |
+          cd tmp
           git branch -D ${{env.TARGET_BRANCH}}
           git branch ${{env.TARGET_BRANCH}}
 

@@ -1,16 +1,15 @@
+import os
 from typing import Generator, Tuple, List
 
 import pandas as pd
 import sklearn
 
+from . import ExperimentalDesign
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
 from . import ExperimentalDesign
 from .MetaboExperimentDTO import MetaboExperimentDTO
 from .ModelFactory import ModelFactory
-import os
-import pickle
-
 from ..conf.SupportedCV import CV_ALGORITHMS
 from ..service import Utils
 

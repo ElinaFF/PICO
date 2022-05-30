@@ -12,6 +12,7 @@ from randomscm.randomscm import RandomScmClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
 
