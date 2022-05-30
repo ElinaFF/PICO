@@ -10,7 +10,7 @@ import hashlib
 
 PACKAGE_ROOT_PATH = os.sep.join(os.path.dirname(__file__).split(os.sep)[:-1])
 DUMP_PATH = os.path.join(PACKAGE_ROOT_PATH, "domain", "dumps")
-DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "save.meat")
+DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "save.mtxp")
 
 
 def dump_metabo_expe(obj):
