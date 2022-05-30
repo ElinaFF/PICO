@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import itertools
 import os
 import platform
 import re
@@ -8,6 +7,7 @@ import threading
 from itertools import cycle
 from time import sleep
 import logging
+import shutil
 
 try:
     import requests
@@ -31,15 +31,22 @@ CONDA_PATH = "conda"
 
 RO_TEMP_TOKEN = "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"
 
+# setup parser for command line arguments
 parser = argparse.ArgumentParser(description='Installation parameter')
 parser.add_argument('-e', '--environment', help='Conda environment name')
 parser.add_argument('-l', '--no-launch', help='Install without launching ', action='store_true')
 parser.add_argument('-c', '--no-check', help='Install without checking environment', action='store_true')
+parser.add_argument('-u', '--update', help='Update to last version available on GitHub', action='store_true')
 arg = parser.parse_args()
+
+# setup constants from parameters
 env_name_not_set = False if arg.environment else True
 conda_env_name = arg.environment if arg.environment else 'metabodashboard'
 no_launch = arg.no_launch
 no_check = arg.no_check
+update = arg.update
+
+# setup logging file content and format
 logging.basicConfig(level=logging.INFO, filename='MetabodashboardInstallation.log', filemode='w',
                     format='%(asctime)s - %(levelname)s - %(funcName)s (ligne %(lineno)d) - %(message)s')
 
@@ -99,26 +106,9 @@ def check_if_minimum_file_requirement_exist():
         'requirements.txt')
 
 
-def install_from_git_hub_for_windows():
-    # TODO : mettre repo en public
-    logging.info("Downloading project file from github")
-    subprocess.call("rmdir /s /q cloneForInstallation", shell=True, stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL)
-    subprocess.call("git clone -b cloneForInstallation "
-                    f"https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard cloneForInstallation",
-                    shell=True, stdout=subprocess.DEVNULL)
-    subprocess.call("robocopy /s cloneForInstallation .", shell=True)
-    subprocess.call("rmdir /q /s cloneForInstallation", shell=True)
-
-
-def install_from_git_hub_for_linux():
-    logging.info("Downloading project file from github")
-    subprocess.call("rm -rf MetaboDashboard", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    subprocess.check_call("git clone -b cloneForInstallation "
-                          f"https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard",
-                          shell=True, stdout=subprocess.DEVNULL)
-    subprocess.check_call("mv MetaboDashboard/* ../", shell=True)
-    subprocess.check_call("rm -r MetaboDashboard", shell=True)
+def check_if_git_folder_exist():
+    logging.info("Checking if the git folder is already downloaded")
+    return os.path.exists('.git')
 
 
 def download_miniconda(url_for_download: str, extension: str = ".sh"):
@@ -129,11 +119,12 @@ def download_miniconda(url_for_download: str, extension: str = ".sh"):
 
 
 def install_miniconda_for_windows():
-    conda_for_windows = f"https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86{'_64' if is_os_64bit() else ''}.exe"
+    conda_for_windows = f"https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86" \
+                        f"{'_64' if is_os_64bit() else ''}.exe"
     download_miniconda(conda_for_windows, extension=".exe")
     logging.info("Installing MiniConda for Windows")
-    install_conda_command = f"start /wait {MINICONDA_FILE + '.exe'} /InstallationType=JustMe /RegisterPython=0 /S " \
-                            f"/AddToPath=1 /D=%UserProfile%\Miniconda3"
+    install_conda_command = f"start /wait {MINICONDA_FILE + '.exe'} /InstallationType=JustMe /RegisterPython=0 " \
+                            f"/S /AddToPath=1 /D=%UserProfile%\\Miniconda3"
     subprocess.check_call(install_conda_command, shell=True,
                           stdout=subprocess.DEVNULL)
     subprocess.check_call("SET PATH=%PATH%;%UserProfile%\\Miniconda3\\Library\\bin", shell=True,
@@ -143,7 +134,8 @@ def install_miniconda_for_windows():
 
 
 def install_miniconda_for_linux():
-    conda_for_linux = f"https:F//repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86{'_64' if is_os_64bit() else ''}.sh"
+    conda_for_linux = f"https:F//repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86" \
+                      f"{'_64' if is_os_64bit() else ''}.sh "
     download_miniconda(conda_for_linux)
     logging.info("Installing MiniConda for Linux")
     install_conda_command = f"bash {MINICONDA_FILE + '.sh -b -p ~/miniconda3'}"
@@ -154,7 +146,8 @@ def install_miniconda_for_linux():
 
 
 def install_miniconda_for_mac_os():
-    conda_for_macos = f"https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86{'_64' if is_os_64bit() else ''}.sh"
+    conda_for_macos = f"https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86" \
+                      f"{'_64' if is_os_64bit() else ''}.sh "
     download_miniconda(conda_for_macos)
     logging.info("Installing MiniConda for MacOs")
     install_conda_command = f"bash {MINICONDA_FILE + '.sh'}"
@@ -231,6 +224,44 @@ def env_dependencies_verification():
     return True
 
 
+def move_files_from_clone_to_project_folder():
+    allContent = os.listdir('./temporary_installation_folder/')
+
+    for item in allContent:
+        if item == "launcher.py":
+            os.remove('.' + "/launcher.py")
+        shutil.move("./temporary_installation_folder/" + item, ".")
+
+
+def install_from_github_on_os():
+    logging.info("Downloading project file from github")
+
+    try:
+        os.remove("./temporary_installation_folder")
+    except FileNotFoundError:
+        pass
+
+    subprocess.check_call("git clone -q "
+                          f"https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard "
+                          f"temporary_installation_folder",
+                          shell=True, stdout=subprocess.DEVNULL)
+
+    move_files_from_clone_to_project_folder()
+
+
+def pull_from_github():
+    logging.info("Pulling project file from github")
+    loader = Loader(desc="Updating project...").start()
+    if check_if_git_folder_exist():
+        subprocess.check_call(f"git pull -q https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard",
+                              shell=True, stdout=subprocess.DEVNULL)
+        logging.info("Project updated")
+        loader.stop()
+    else:
+        logging.info("Couldn't find the .git folder")
+        loader.stop(fail=True)
+
+
 def launch_metabodashboard():
     subprocess.check_call(
         f"{CONDA_PATH} run -n " + conda_env_name + " python main.py", shell=True,
@@ -255,25 +286,32 @@ def conda_handler():
     loader.stop()
 
 
+def raise_error_if_minimum_file_requirement_exist(internal_loader):
+    if not check_if_minimum_file_requirement_exist():
+        internal_loader.stop(fail=True)
+        raise Exception("Source code couldn't be downloaded")
+
+
 def code_source_handler():
-    os_used = platform.system()
     loader = Loader(desc="Checking for source code...").start()
     if not check_if_minimum_file_requirement_exist():
         loader.stop(fail=True)
         print("Source code not found !")
         with Loader(desc="\tDownloading source code..."):
-            if os_used == "Windows":
-                install_from_git_hub_for_windows()
-            elif os_used == "Linux" or os_used == "Darwin":
-                install_from_git_hub_for_linux()
+            install_from_github_on_os()
 
         internal_loader = Loader(
             desc="\tRe-checking for source code...").start()
-        if not check_if_minimum_file_requirement_exist():
-            internal_loader.stop(fail=True)
-            raise Exception("Source code couldn't be downloaded")
+        raise_error_if_minimum_file_requirement_exist(internal_loader)
         internal_loader.stop()
     loader.stop()
+
+
+def raise_error_if_env_still_does_not_exist(internal_loader):
+    if not is_metabodashboard_env_exist():
+        internal_loader.stop(fail=True)
+        logging.error("metabodashboard environment couldn't be created")
+        raise Exception("metabodashboard environment couldn't be created")
 
 
 def create_metabodashboard_conda_env():
@@ -285,10 +323,7 @@ def create_metabodashboard_conda_env():
             create_metabodashboard_env()
         internal_loader = Loader(
             desc="\tRe-checking for metabodashboard environment...").start()
-        if not is_metabodashboard_env_exist():
-            internal_loader.stop(fail=True)
-            logging.error("metabodashboard environment couldn't be created")
-            raise Exception("metabodashboard environment couldn't be created")
+        raise_error_if_env_still_does_not_exist(internal_loader)
         internal_loader.stop()
     loader.stop()
 
@@ -302,25 +337,33 @@ def check_other_env():
     loader.stop()
 
 
+def raise_error_if_can_not_install_dependencies(internal_loader):
+    if not env_dependencies_verification():
+        internal_loader.stop(fail=True)
+        raise Exception("Dependencies couldn't be installed")
+
+
+def install_dependencies_or_raise_error(loader):
+    try:
+        install_dependencies()
+    except:
+        logging.error(
+            f"Installation of the dependencies in {conda_env_name} conda environment failed")
+        loader.stop(fail=True)
+        exit(1)
+
+
 def dependency_handler():
     loader = Loader(desc="Checking dependencies...").start()
     if not env_dependencies_verification():
         loader.stop(fail=True)
         loader = Loader(desc="\tInstalling dependencies in environment...").start()
-        try:
-            install_dependencies()
-        except:
-            logging.error(
-                f"Installation of the dependencies in {conda_env_name} conda environment failed")
-            loader.stop(fail=True)
-            exit(1)
+        install_dependencies_or_raise_error(loader)
         loader.stop()
 
         internal_loader = Loader(
             desc="\tRe-checking dependencies...").start()
-        if not env_dependencies_verification():
-            internal_loader.stop(fail=True)
-            raise Exception("Dependencies couldn't be installed")
+        raise_error_if_can_not_install_dependencies(internal_loader)
         internal_loader.stop()
     loader.stop()
 
@@ -345,6 +388,11 @@ def main():
         if not no_launch:
             with Loader(desc="Metabodashboard running at http://127.0.0.1:5000... or localhost:5000 on Windows"):
                 launch_metabodashboard()
+        exit(0)
+
+    if update:
+        pull_from_github()
+        dependency_handler()
         exit(0)
 
     conda_handler()  # Check if conda is installed, if not : download & install for appropriate OS
