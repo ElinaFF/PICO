@@ -1,0 +1,25 @@
+name: .exe file creation
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  create_exe_for_windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.8", "3.9", "3.10" ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: create exe file
+        run: |
+          pip install pyinstaller
+          pyinstaller -w launcher.py
+          git config user.name "Blop Bot"
+          git config user.email "blop@metabodashboard.mtxp"
+          cp build/launcher/launcher.exe .
+          git add launcher.exe
+          git commit -m "Add launcher.exe"
+          git push
