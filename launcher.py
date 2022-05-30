@@ -250,6 +250,8 @@ def conda_handler():
                 install_miniconda_for_linux()
             elif os_used == "Darwin":
                 install_miniconda_for_mac_os()
+        print("\nPlease restart the launcher")
+        exit(0)
     loader.stop()
 
 
@@ -281,7 +283,6 @@ def create_metabodashboard_conda_env():
         print("metabodashboard environment not found !")
         with Loader(desc="\tCreating metabodashboard environment..."):
             create_metabodashboard_env()
-
         internal_loader = Loader(
             desc="\tRe-checking for metabodashboard environment...").start()
         if not is_metabodashboard_env_exist():
