@@ -193,13 +193,11 @@ def install_dependencies():
     with open(REQUIREMENT_FILE, 'r') as f:
         position_ligne = 0
         line = f.readline()
-        with progressbar.ProgressBar(max_value=10) as bar:
-            while line:
-                bar.update(position_ligne)
-                subprocess.check_call(
-                    f"{CONDA_PATH} run -n " + conda_env_name + f" pip install {line}", shell=True,
-                    stdout=subprocess.DEVNULL)
-                position_ligne += 1
+        while line:
+            subprocess.check_call(
+                f"{CONDA_PATH} run -n " + conda_env_name + f" pip install {line}", shell=True,
+                stdout=subprocess.DEVNULL)
+            position_ligne += 1
 
 
 def is_os_64bit():
