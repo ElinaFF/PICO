@@ -193,7 +193,6 @@ def install_dependencies():
     with open(REQUIREMENT_FILE, 'r') as f:
         position_ligne = 0
         line = f.readline()
-        print(line)
         while line:
             subprocess.check_call(
                 f"{CONDA_PATH} run -n " + conda_env_name + f" pip install {line}", shell=True,
