@@ -101,12 +101,14 @@ class InfoTab(MetaTab):
             dbc.ModalBody(style={"padding": "2em"}, children=[
                 html.P("The data and/or metadata used in the MetaboExperiment file are not the same as the "
                        "local ones."),
-                html.P("Please restore the correct data (filename) and/or metadata (filename) if you want "
-                       "to continue the same experiment."),
+                html.P("Please restore the correct data and/or metadata if you want "
+                       "to continue the same experiment. (Full restore)"),
                 html.P("Otherwise, you can use the same parameters with new data and/or metadata (Partial restore) "
                        "but the sample column name, target column name and experimental designs won't be "
                        "restored."),
-                html.P("If you load "),
+                html.P("If you load the results, metadata and data matrix will be reset, as well as the "
+                       "experimental design. However, the results will be available in the 'Results' tab. "
+                       "(Load results)"),
                 dcc.Upload(id="upload_datatable_modal",
                            children=[dbc.Button("Upload Data Matrix",
                                                 id="upload_datatable_modal_button",
