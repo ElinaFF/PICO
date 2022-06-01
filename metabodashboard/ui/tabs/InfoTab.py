@@ -106,9 +106,8 @@ class InfoTab(MetaTab):
                 html.P("Otherwise, you can use the same parameters with new data and/or metadata (Partial restore) "
                        "but the sample column name, target column name and experimental designs won't be "
                        "restored."),
-                html.P("If you load the results, metadata and data matrix will be reset, as well as the "
-                       "experimental design. However, the results will be available in the 'Results' tab. "
-                       "(Load results)"),
+                html.P("If you only want to see the results, it will be available (Load results) but metadata and data "
+                       "matrix will be reset, as well as the experimental designs."),
                 dcc.Upload(id="upload_datatable_modal",
                            children=[dbc.Button("Upload Data Matrix",
                                                 id="upload_datatable_modal_button",
