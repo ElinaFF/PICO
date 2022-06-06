@@ -1,123 +1,57 @@
 ---
 layout: default
 ---
+# Index
 
-Text can be **bold**, _italic_, or ~~strikethrough~~.
+1. [Installation](./index.md#1-installation)  
+    <ol type="a">
+      <li>Python installation</li>
+      <li>Git installation</li>
+      <li>Launcher</li>
+    </ol>
+2. [Utilization](./index.md#2-utilization)  
+    <ol type="a">
+      <li>Set the metadata and data</li>
+      <li>Split parameters</li>
+      <li>Machine Learning parameters</li>
+      <li>Look at the results for each algorithms</li>
+      <li>Compare algorithms results</li>
+      <li>Restore previous experiment</li>
+    </ol>
+3. [Implementation](./index.md#3-installation)  
+    <ol type="a">
+      <li>Architecture</li>
+      <li>Controller interface</li>
+    </ol>
+  
 
-[Link to another page](./another-page.html).
+# 1. Installation
 
-There should be whitespace between paragraphs.
+DONE BY VINCE
 
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
+# 2. Utilization
+Welcome into the MetaboDashboard!
 
-# Header 1
+The following sections will resume how to run a experiment and explore each parameters you can set.
 
-This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
+The image in Home tab give a great insight of how the pipeline works.
 
-## Header 2
+![](imgs/Figure_home_wider.png)
+*Pipeline explanation schema in Home tab*
 
-> This is a blockquote following a header.
->
-> When something is important enough, you do it even if the odds are not in your favor.
+## a. Set the metadata and data
 
-### Header 3
+Go to the Splits tab.
 
-```js
-// Javascript code with syntax highlighting.
-var fun = function lang(l) {
-  dateformat.i18n = require('./lang/' + l)
-  return true;
-}
-```
+![](imgs/2022-06-06-17-55-12.png)
+*Tab list with the Splits tab opened*
 
-```ruby
-# Ruby code with syntax highlighting
-GitHubPages::Dependencies.gems.each do |gem, version|
-  s.add_dependency(gem, "= #{version}")
-end
-```
+The following instruction are for the A) FILES section.
 
-#### Header 4
+If you use Progenesis abundance file, you can choose to use the raw data (instead of the normalized)
 
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
+To upload the data, drag and drop your data file in the DATA FILE(S) section 
+![](imgs/2022-06-06-17-58-03.png).
+*DATA FILE(S) section*
 
-##### Header 5
-
-1.  This is an ordered list following a header.
-2.  This is an ordered list following a header.
-3.  This is an ordered list following a header.
-
-###### Header 6
-
-| head1        | head two          | three |
-|:-------------|:------------------|:------|
-| ok           | good swedish fish | nice  |
-| out of stock | good and plenty   | nice  |
-| ok           | good `oreos`      | hmm   |
-| ok           | good `zoute` drop | yumm  |
-
-### There's a horizontal rule below this.
-
-* * *
-
-### Here is an unordered list:
-
-*   Item foo
-*   Item bar
-*   Item baz
-*   Item zip
-
-### And an ordered list:
-
-1.  Item one
-1.  Item two
-1.  Item three
-1.  Item four
-
-### And a nested list:
-
-- level 1 item
-  - level 2 item
-  - level 2 item
-    - level 3 item
-    - level 3 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-
-### Small image
-
-![Octocat](https://github.githubassets.com/images/icons/emoji/octocat.png)
-
-### Large image
-
-![Branching](https://guides.github.com/activities/hello-world/branching.png)
-
-
-### Definition lists can be used with HTML syntax.
-
-<dl>
-<dt>Name</dt>
-<dd>Godzilla</dd>
-<dt>Born</dt>
-<dd>1952</dd>
-<dt>Birthplace</dt>
-<dd>Japan</dd>
-<dt>Color</dt>
-<dd>Green</dd>
-</dl>
-
-```
-Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
-```
-
-```
-The final element.
-```
+You can also clic on the UPLOAD button and 
