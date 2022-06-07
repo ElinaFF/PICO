@@ -239,9 +239,11 @@ Here is a diagram that represents the communications between all three packages.
 
 ![](imgs/2022-06-07-15-17-45.png)
 
-This diagram shows all the classes that compose the Domain package of the Methabodashboard
+This diagram shows all the classes that compose the Domain package of the Methabodashboard and the interaction between them.
 
 ![](imgs/2022-06-07-16-37-38.png)
+
+This diagram shows all the classes that compose the UI package of the Methabodashboard and the interaction between them.
 
 ![](imgs/2022-06-07-16-37-55.png)
 
