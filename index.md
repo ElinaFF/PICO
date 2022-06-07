@@ -163,9 +163,9 @@ In the case you want to tune it by hand, the probability that a sample is never 
 The figure hereunder show $$P(X \gt 1)$$ (valeurs) as a function of the number of splits $$n$$ (1:nbr_limit) with $$m=250$$ samples and a test proportion of $$0.2$$ ($$k=50$$)
 
 
-![](imgs/2022-06-07-14-02-37.png)
-
-*$$P(X \gt 1)$$ (valeurs) as a function of the number of splits $$n$$ (1:nbr_limit) with $$m=250$$ samples and a test proportion of $$0.2$$ ($$k=50$$)*
+> ![](imgs/2022-06-07-14-02-37.png)
+>
+> *$$P(X \gt 1)$$ (valeurs) as a function of the number of splits $$n$$ (1:nbr_limit) with $$m=250$$ samples and a test proportion of $$0.2$$ ($$k=50$$)*
 
 ### 4. Other preprocessing
 > [Go back to index](#index)
@@ -185,9 +185,9 @@ These finals instructions are for the ```F) GENERATE FILE``` section.
 
 Once all the parameter, the samples id and target column, and **at least one** experimental design are set, you can run the splits computation by clicking on the ```CREATE``` button.
 
-![](imgs/2022-06-07-16-02-36.png)
-
-*```GENERATE FILE``` section*
+> ![](imgs/2022-06-07-16-02-36.png)
+>
+> *```GENERATE FILE``` section*
 
 ## C. Machine Learning parameters
 > [Go back to index](#index)
