@@ -154,7 +154,7 @@ If you don't feel confortable with theses parameters, the minimum you need to kn
 - 5 splits is quick to run but some samples may never be used to test the algorithms. If you want a complete run, 25 splits should be enough.
 
 In the case you want to tune it by hand, the probability that a sample is never in the test set follow a <a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank">Markov chain</a> with:
-- $$V_1=\begin{pmatrix} 0 & 1 & 0 & 0 & 0 \end{pmatrix}$$
+- Let $$V_1=\begin{pmatrix} 0 & 1 & 0 & 0 & 0 \end{pmatrix}$$
 - $$P(s_{t+1}=j\|s_t=i)=\frac{\begin{pmatrix} m-i \\ j-i \end{pmatrix}\begin{pmatrix} i \\ k-(j-i) \end{pmatrix}}{\begin{pmatrix} m \\ k \end{pmatrix}}$$ with $$s_t$$ a state at a $$t$$ moment, $$m$$ the total number of samples and $$k$$ the number of samples in the test set (test proportion$$\times m$$).
 - $$M$$ the $$5\times 5$$ matrix of $$P(s_{t+1}=j\|s_t=i)$$
 - $$V_n=V_1\times M^{n-1}$$ with $$n$$ the number of splits
