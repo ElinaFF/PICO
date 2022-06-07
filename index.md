@@ -10,21 +10,21 @@ layout: default
       <li>Launcher</li>
     </ol>
 2. [Utilization](#2-utilization)  
-        <ol type="A">
-          <li><a href="#a-set-the-metadata-and-data">Set the metadata and data</a></li>
-          <li><a href="#b-split-parameters">Split parameters</a></li>
-          <ol>
-            <li><a href="#1-define-experimental-designs">Define Experimental designs</a></li>
-            <li><a href="#2-data-fusion">Data fusion</a></li>
-            <li><a href="#3-define-split">Define split</a></li>
-            <li><a href="#4-other-preprocessing">Other preprocessing</a></li>
-            <li><a href="#5-generate-file">Generate file</a></li>
-          </ol>
-          <li><a href="#c-machine-learning-parameters">Machine Learning parameters</a></li>
-          <li><a href="#d-look-at-the-results-for-each-algorithms">Look at the results for each algorithms</a></li>
-          <li><a href="#e-compare-algorithms-results">Compare algorithms results</a></li>
-          <li><a href="#f-restore-previous-experiment">Restore previous experiment</a></li>
-        </ol>
+    <ol type="A">
+      <li><a href="#a-set-the-metadata-and-data">Set the metadata and data</a></li>
+      <li><a href="#b-split-parameters">Split parameters</a></li>
+      <ol>
+        <li><a href="#1-define-experimental-designs">Define Experimental designs</a></li>
+        <li><a href="#2-data-fusion">Data fusion</a></li>
+        <li><a href="#3-define-split">Define split</a></li>
+        <li><a href="#4-other-preprocessing">Other preprocessing</a></li>
+        <li><a href="#5-generate-file">Generate file</a></li>
+      </ol>
+      <li><a href="#c-machine-learning-parameters">Machine Learning parameters</a></li>
+      <li><a href="#d-look-at-the-results-for-each-algorithms">Look at the results for each algorithms</a></li>
+      <li><a href="#e-compare-algorithms-results">Compare algorithms results</a></li>
+      <li><a href="#f-restore-previous-experiment">Restore previous experiment</a></li>
+    </ol>
 3. [Implementation](#3-implementation)  
     <ol type="A">
       <li>Architecture</li>
@@ -238,6 +238,13 @@ The Methabodashboards software is organize in three main package.
 Here is a diagram that represents the communications between all three packages. 
 
 ![](imgs/2022-06-07-15-17-45.png)
+
+This diagram shows all the classes that compose the Domain package of the Methabodashboard
+
+![](imgs/2022-06-07-16-37-38.png)
+
+![](imgs/2022-06-07-16-37-55.png)
+
 
 ## B. Controller interface
 > [Go back to index](#index)
