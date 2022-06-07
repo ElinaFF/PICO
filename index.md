@@ -43,9 +43,9 @@ Welcome into the MetaboDashboard!
 
 The following sections will resume how to run a experiment and explore each parameters you can set.
 
-The image in Home tab give a great insight of how the pipeline works.
-
-![](imgs/Figure_home_wider.png)
+>The image in Home tab give a great insight of how the pipeline works.
+>
+> ![](imgs/Figure_home_wider.png)
 
 *Pipeline explanation schema in Home tab*
 
@@ -54,7 +54,7 @@ The image in Home tab give a great insight of how the pipeline works.
 
 Go to the Splits tab.
 
-![](imgs/2022-06-06-17-55-12.png)
+> ![](imgs/2022-06-06-17-55-12.png)
 
 *Tab list with the Splits tab opened*
 
@@ -64,17 +64,17 @@ If you use Progenesis abundance file, you can choose to use the raw data (instea
 
 To upload the data, drag and drop your data file in the ```DATA FILE(S)``` section 
 
-![](imgs/2022-06-06-17-58-03.png)
-
-*```DATA FILE(S)``` section*
+> ![](imgs/2022-06-06-17-58-03.png)
+>
+> *```DATA FILE(S)``` section*
 
 You can also clic on the ```UPLOAD FILE``` button and choose the right file.
 
 **You can repeat the operation for the metadata in the ```METADATA FILE``` section.**
 
-![](imgs/2022-06-07-11-16-23.png)
-
-*```MEATADATA FILE``` section*
+> ![](imgs/2022-06-07-11-16-23.png)
+>
+> *```MEATADATA FILE``` section*
 
 ## B. Split parameters
 > [Go back to index](#index)
@@ -93,39 +93,39 @@ First of all, you need to select the target column. To clarify,  the target colu
 
 The columns name prompted in the following figure are the column in the metadata file previously uploaded. If there are not the ones expected, please retry uploading the metadata in [this section](index.md#a-set-the-metadata-and-data)
 
-![](imgs/2022-06-07-11-35-52.png)
-
-*Targets column selection panel*
+> ![](imgs/2022-06-07-11-35-52.png)
+>
+> *Targets column selection panel*
 
 After setting the target column, we need to set the samples column. This column have to contains **unique IDs** for each samples.
 
-![](imgs/2022-06-07-11-44-48.png)
-
-*Samples column selection panel*
+> ![](imgs/2022-06-07-11-44-48.png)
+>
+> *Samples column selection panel*
 
 The main of the experimental designs configuration section is divided in two panel, respectively the *repository* and the *configuration* panel
 
 Once the target column are defined, the possible labels are updated in the *configuration* panel as shown in the following figure.
 
-![](imgs/2022-06-07-11-56-46.png)
-
-*Updated possible labels in the* configuration *panel*
+> ![](imgs/2022-06-07-11-56-46.png)
+> 
+> *Updated possible labels in the* configuration *panel*
 
 To build a binary design, you need to define the classes, in other words, to choose what you want to be opposed. An exemple using the previous values could be the identification of the sick person, opposing persons tagged with "Sickness A" and "Sickness B" and persons tagged "Control".
 
 Add the experimental design by clicking on the ```ADD``` button.
 
-![](imgs/2022-06-07-11-57-26.png)
-
-*Example of a experimental design*
+> ![](imgs/2022-06-07-11-57-26.png)
+>
+> *Example of a experimental design*
 
 Note that you need to set a name, a label, for each class. Also, you need to set at least one possible target per class but you don't need to assigned all possible targets.
 
 Once the designs are created, they will appear in the *repository* panel.
 
-![](imgs/2022-06-07-11-56-28.png)
-
-Repository *panel with two experimental design*
+> ![](imgs/2022-06-07-11-56-28.png)
+>
+> Repository *panel with two experimental design*
 
 The ```RESET``` button will delete all the designs.
 
@@ -145,9 +145,9 @@ You can also use any other pattern for pairing with ```Other pairing```.
 
 The following instructions are for the ```D) DEFINE SPLITS``` section.
 
-![](imgs/2022-06-07-13-59-10.png)
-
-*```DEFINE SPLITS``` splits section*
+> ![](imgs/2022-06-07-13-59-10.png)
+>
+> *```DEFINE SPLITS``` splits section*
 
 If you don't feel confortable with theses parameters, the minimum you need to know is:
 - the proportion is quite standard, it will suit most of the time
@@ -227,7 +227,7 @@ The Methabodashboards software is organize in three main package.
  It contains all the logic that compose the Metabodashboard.  
  This package can access freely the Service package.  
  All of the communication with the UI package must pass by the controller. This allows us to modify the Domain if necessary without having to modify the UI too.
- - The UI package :  
+ - The User Interface (UI) package :  
  It contains all the classes that are used to display the web interface of the Metabodashboard.  
  It manages only the interface and connects to the Domain by the controller only.
  - The Service package :  
@@ -235,16 +235,21 @@ The Methabodashboards software is organize in three main package.
 
 Here is a diagram that represents the communications between all three packages. 
 
-![](imgs/2022-06-07-15-17-45.png)
+> ![](imgs/2022-06-07-15-17-45.png)
+>
+> Package diagram
 
 This diagram shows all the classes that compose the Domain package of the Methabodashboard and the interaction between them.
 
-![](imgs/2022-06-07-16-37-38.png)
+> ![](imgs/2022-06-07-16-37-38.png)
+>
+> Simplified class diagram of the Domain package
 
 This diagram shows all the classes that compose the UI package of the Methabodashboard and the interaction between them.
 
-![](imgs/2022-06-07-16-37-55.png)
-
+> ![](imgs/2022-06-07-16-37-55.png)
+>
+> Simplified class diagram of the UI package
 
 ## B. Controller interface
 > [Go back to index](#index)
