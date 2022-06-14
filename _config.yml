@@ -1,5 +1,5 @@
-title: 'MeDIC: MetaboDashboard for Interpretable Classification'
-description: Using Machine Learning to discover biomarkers
+title: MeDIC
+description: MetaboDashboard for Interpretable Classification
 show_downloads: true
 remote_theme: pages-themes/cayman@v0.2.0
 plugins:

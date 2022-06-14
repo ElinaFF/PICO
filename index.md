@@ -305,8 +305,53 @@ The number of processes in the ```Number of processes``` is the number of parall
 ### 2. Define learning algorithms
 > [Go back to index](#index)
 
- - You have to choose the algorithms you want to use in the list of available algorithms.
- - Add sklearn algorithms
+The following instructions are for the ```DEFINE LEARNING ALGORITHMS``` section.
+
+The ```AVAILABLE ALGORITHMS``` are:
+- Decision Tree
+- Random Forest
+- SCM
+- Random SCM
+
+The first classifier implement a regular decision tree. To make a prediction, the data is the input of the root node. The root node, as the others, has a threshold for one feature : for example $$\text{cholesterol} \geq 2$$. If the value validate the threshold, it goes to the right node, otherwise it goes to the left, until it reach a leaf. The leaf assigns a class to the sample.
+
+The second classifier, the random forest, is a decision tree ensemble that classify independently the sample. Each DT vote the class of the sample. The class that has the most vote is assign to the sample.
+
+The Set Covering Machine (SCM) is a combination of rules. For exemple, if the cholesterol is greater than 2 g/l OR insulin is greater than 140 mg/dL AND insulin is less than 199 mg/dL.
+
+The last classifier is the Random SCM. As the random forest is a voting decision tree ensemble, the random SCM is a voting SCM ensemble.
+
+You have to tick **at least one** algorithms. 
+
+But because of their differences, some may perform better than others on different datasets. It is advised to take at least one SCM-type and one DecisionTree-type algorithms.
+
+If you want to add [scikit-learn algorithms](https://scikit-learn.org/stable/index.html) that isn't in the available algorithms, you can in the ```ADD SKLEARN ALGORITHMS```.
+
+You need to complete the import and specify the grid search parameter (for the CV search algorithm). 
+
+<details>
+<summary>Add a full custom algorithms (for expert)</summary>
+
+To add a full custom model, you need to add it to the comfiguration file located at ```metabodashboard/conf/SupportedModel.py```.
+Add a dictionary containing the **NON-INSTANTIATED** class and the param grid. Format is the following (change only the attribute \_xxx\_)
+```Python
+  "_Printed_name_": {
+        "function": _non-instantiated_class_,
+        "ParamGrid": {
+            "_p1_": _[0.5, 1., 2.]_,
+            "_p2_": _[1, 2, 3, 4, 5]_,
+            ...
+        }
+    },
+```
+
+After adding your configuration, **reboot** the MetaboDashboard by stopping and restarting the launcher.
+
+The algorithm should be in the ```AVAILABLE ALGORITHMS``` section with his printed name.
+
+Note, the custom model are in the save file (.mtxp) and will be restored.
+
+</details>
 
 ## D. Look at the results for each algorithms
 > [Go back to index](#index)
