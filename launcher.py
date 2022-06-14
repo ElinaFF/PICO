@@ -51,7 +51,7 @@ MINICONDA_FILE = os.path.abspath(
 
 CONDA_PATH = "conda"
 
-RO_TEMP_TOKEN = "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"
+RO_TEMP_TOKEN = "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"
 
 # setup parser for command line arguments
 parser = argparse.ArgumentParser(description='Installation parameter')
