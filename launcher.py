@@ -1,31 +1,47 @@
 # -*- coding: utf-8 -*-
+import logging
 import os
 import platform
 import re
+import shutil
 import subprocess
+import sys
 import threading
 from itertools import cycle
 from time import sleep
-import logging
-import shutil
 
 try:
     from tqdm import tqdm
 except ImportError:
-    subprocess.call(['pip', 'install', 'tqdm'])
-    from tqdm import tqdm
+    logging.info("tqdm not found, installing it")
+    subprocess.call(f"{sys.executable} -m pip install tqdm", shell=True, stdout=subprocess.DEVNULL)
+    try:
+        from tqdm import tqdm
+    except ImportError:
+        logging.error("tqdm failed to install")
+        sys.exit(1)
 
 try:
     import requests
 except ImportError:
-    subprocess.call(['pip', 'install', 'requests'])
-    import requests
+    logging.info("requests not found, installing it")
+    subprocess.call(f"{sys.executable} -m pip install requests", shell=True, stdout=subprocess.DEVNULL)
+    try:
+        import requests
+    except ImportError:
+        logging.error("requests failed to install")
+        sys.exit(1)
 
 try:
     import argparse
 except ImportError:
-    subprocess.call(['pip', 'install', 'argparse'])
-    import argparse
+    logging.info("argparse not found, installing it")
+    subprocess.call(f"{sys.executable} -m pip install argparse", shell=True, stdout=subprocess.DEVNULL)
+    try:
+        import argparse
+    except ImportError:
+        logging.error("argparse failed to install")
+        sys.exit(1)
 
 REQUIREMENT_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 'requirements.txt'))
@@ -61,6 +77,14 @@ SEPARATOR = "|"
 
 def conda_command(command: str):
     return f"{CONDA_PATH} activate {conda_env_name} {SEPARATOR} {command}"
+
+
+def in_env_python_command(command: str, is_module: bool = True):
+    return conda_command(f"python {'-m' if is_module else ''} {command}")
+
+
+def out_python_command(command: str, is_module: bool = True):
+    return f"{sys.executable} {'-m' if is_module else ''} {command}"
 
 
 class Loader:
@@ -183,8 +207,8 @@ def is_conda_installed() -> bool:
 
 def is_metabodashboard_env_exist() -> bool:
     logging.info(f"Checking for {conda_env_name} conda environment")
-    enviList = subprocess.check_output(f"{CONDA_PATH} env list", shell=True)
-    if "\n" + conda_env_name + " " in enviList.decode('utf-8').lower():
+    envi_list = subprocess.check_output(f"{CONDA_PATH} env list", shell=True)
+    if "\n" + conda_env_name + " " in envi_list.decode('utf-8').lower():
         logging.info(f"{conda_env_name} conda environment found")
         return True
     logging.info(f"{conda_env_name} conda environment not found")
@@ -197,17 +221,17 @@ def create_metabodashboard_env():
                           stdout=subprocess.DEVNULL)
 
 
-def install_dependencies():
+def install_dependencies(upgrade: bool = False):
     logging.info(f"Installation of the dependencies in {conda_env_name} conda environment")
     with open(REQUIREMENT_FILE, 'r') as f:
         lines = f.readlines()
     for dependency in tqdm(lines, desc="Installing dependencies "):
         try:
             subprocess.check_call(
-              conda_command(f"pip install {dependency}"),
-              shell=True, 
-              stdout=subprocess.DEVNULL, 
-              stderr=subprocess.DEVNULL)
+                in_env_python_command(f"pip install {dependency} {'--upgrade' if upgrade else ''}"),
+                shell=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError as err:
             logging.error(err)
             raise ImportError(dependency)
@@ -222,7 +246,7 @@ def env_dependencies_verification():
     regex = r"([-\w]+)(([=~<>]=)|@git).*"
     logging.info(f"Verification of the dependencies in {conda_env_name} conda environment")
     # Contient OBLIGATOIREMENT un '=={version}'
-    actual_package_installed_list = subprocess.check_output(conda_command("python -m pip freeze"),
+    actual_package_installed_list = subprocess.check_output(in_env_python_command("pip freeze"),
                                                             shell=True).decode('utf-8')
     actual_package_installed_list = [package[0] for package in
                                      re.findall(r"([-\w]+)([=~<>]=|( @ git))", actual_package_installed_list)]
@@ -242,9 +266,9 @@ def env_dependencies_verification():
 
 
 def move_files_from_clone_to_project_folder():
-    allContent = os.listdir('./temporary_installation_folder/')
+    all_content = os.listdir('./temporary_installation_folder/')
 
-    for item in allContent:
+    for item in all_content:
         if item == "launcher.py":
             os.remove('.' + "/launcher.py")
         shutil.move("./temporary_installation_folder/" + item, ".")
@@ -281,7 +305,7 @@ def pull_from_github():
 
 def launch_metabodashboard():
     subprocess.check_call(
-        conda_command("python main.py"),
+        in_env_python_command("main.py", is_module=False),
         shell=True,
         stdout=subprocess.DEVNULL)
 
@@ -359,9 +383,9 @@ def raise_error_if_can_not_install_dependencies(internal_loader):
         raise Exception("Dependencies couldn't be installed")
 
 
-def install_dependencies_or_raise_error():
+def install_dependencies_or_raise_error(upgrade: bool = False):
     try:
-        install_dependencies()
+        install_dependencies(upgrade)
     except ImportError as problematicPackage:
         logging.error(
             f"Installation of the dependencies {problematicPackage} in {conda_env_name} conda environment failed")
@@ -369,11 +393,11 @@ def install_dependencies_or_raise_error():
         exit(1)
 
 
-def dependency_handler():
+def dependency_handler(upgrade: bool = False):
     loader = Loader(desc="Checking dependencies...").start()
-    if not env_dependencies_verification():
+    if not env_dependencies_verification() or upgrade:
         loader.stop(fail=True)
-        install_dependencies_or_raise_error()
+        install_dependencies_or_raise_error(upgrade)
         loader.stop()
         internal_loader = Loader(
             desc="\tRe-checking dependencies...").start()
@@ -384,7 +408,9 @@ def dependency_handler():
 
 def check_python_version():
     loader = Loader(desc=f"Checking of the python version installed...").start()
-    python_version = subprocess.check_output(conda_command("python --version"), shell=True).decode('utf-8')
+    python_version = subprocess.check_output(
+        in_env_python_command("--version", is_module=False), shell=True
+    ).decode('utf-8')
     if "3.8" in python_version:
         logging.info("The correct version of python (3.8) is installed.")
         logging.info(f"(python version is {python_version})")
@@ -409,7 +435,7 @@ def main():
 
     if update:
         pull_from_github()
-        dependency_handler()
+        dependency_handler(upgrade=True)
         exit(0)
 
     conda_handler()  # Check if conda is installed, if not : download & install for appropriate OS
