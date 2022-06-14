@@ -19,7 +19,7 @@ try:
     import argparse
 except ImportError:
     subprocess.call(['pip', 'install', 'argparse'])
-    import requests
+    import argparse
 
 REQUIREMENT_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 'requirements.txt'))
@@ -49,6 +49,12 @@ update = arg.update
 # setup logging file content and format
 logging.basicConfig(level=logging.INFO, filename='MetabodashboardInstallation.log', filemode='w',
                     format='%(asctime)s - %(levelname)s - %(funcName)s (ligne %(lineno)d) - %(message)s')
+
+SEPARATOR = "|"
+
+
+def conda_command(command: str):
+    return f"{CONDA_PATH} activate {conda_env_name} {SEPARATOR} {command}"
 
 
 class Loader:
@@ -188,10 +194,12 @@ def create_metabodashboard_env():
 def install_dependencies():
     logging.info(f"Installation of the dependencies in {conda_env_name} conda environment")
     subprocess.check_call(
-        f"{CONDA_PATH} run -n " + conda_env_name + " pip install numpy", shell=True,
+        conda_command("pip install numpy"),
+        shell=True,
         stdout=subprocess.DEVNULL)
     subprocess.check_call(
-        f"{CONDA_PATH} run -n " + conda_env_name + " pip install -r requirements.txt --user", shell=True,
+        conda_command("pip install -r requirements.txt --user"),
+        shell=True,
         stdout=subprocess.DEVNULL)
 
 
@@ -204,8 +212,8 @@ def env_dependencies_verification():
     regex = r"([-\w]+)(([=~<>]=)|@git).*"
     logging.info(f"Verification of the dependencies in {conda_env_name} conda environment")
     # Contient OBLIGATOIREMENT un '=={version}'
-    actual_package_installed_list = subprocess.check_output(
-        f"{CONDA_PATH} run -n {conda_env_name} python -m pip freeze", shell=True).decode('utf-8')
+    actual_package_installed_list = subprocess.check_output(conda_command("python -m pip freeze"),
+                                                            shell=True).decode('utf-8')
     actual_package_installed_list = [package[0] for package in
                                      re.findall(r"([-\w]+)([=~<>]=|( @ git))", actual_package_installed_list)]
 
@@ -264,7 +272,8 @@ def pull_from_github():
 
 def launch_metabodashboard():
     subprocess.check_call(
-        f"{CONDA_PATH} run -n " + conda_env_name + " python main.py", shell=True,
+        conda_command("python main.py"),
+        shell=True,
         stdout=subprocess.DEVNULL)
 
 
@@ -368,8 +377,7 @@ def dependency_handler():
 
 def check_python_version():
     loader = Loader(desc=f"Checking of the python version installed...").start()
-    python_version = subprocess.check_output(f"{CONDA_PATH} run -n {conda_env_name} python --version",
-                                             shell=True).decode('utf-8')
+    python_version = subprocess.check_output(conda_command("python --version"), shell=True).decode('utf-8')
     if "3.8" in python_version:
         logging.info("The correct version of python (3.8) is installed.")
         logging.info(f"(python version is {python_version})")
@@ -382,6 +390,10 @@ def check_python_version():
 
 
 def main():
+    if platform.system() == "Windows":
+        global SEPARATOR
+        SEPARATOR = "&"
+
     if no_check:
         if not no_launch:
             with Loader(desc="Metabodashboard running at http://127.0.0.1:5000... or localhost:5000 on Windows"):
