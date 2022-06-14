@@ -10,6 +10,12 @@ import logging
 import shutil
 
 try:
+    from tqdm import tqdm
+except ImportError:
+    subprocess.call(['pip', 'install', 'tqdm'])
+    from tqdm import tqdm
+
+try:
     import requests
 except ImportError:
     subprocess.call(['pip', 'install', 'requests'])
@@ -187,12 +193,15 @@ def create_metabodashboard_env():
 
 def install_dependencies():
     logging.info(f"Installation of the dependencies in {conda_env_name} conda environment")
-    subprocess.check_call(
-        f"{CONDA_PATH} run -n " + conda_env_name + " pip install numpy", shell=True,
-        stdout=subprocess.DEVNULL)
-    subprocess.check_call(
-        f"{CONDA_PATH} run -n " + conda_env_name + " pip install -r requirements.txt --user", shell=True,
-        stdout=subprocess.DEVNULL)
+    with open(REQUIREMENT_FILE, 'r') as f:
+        lines = f.readlines()
+    for dependency in tqdm(lines, desc="Installing dependencies "):
+        try:
+            subprocess.check_call(f"{CONDA_PATH} run -n {conda_env_name} python -m pip install {dependency} --user",
+                                  shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except subprocess.CalledProcessError as err:
+            logging.error(err)
+            raise ImportError(dependency)
 
 
 def is_os_64bit():
@@ -217,7 +226,6 @@ def env_dependencies_verification():
                 line = re.findall(regex, line)[0][0]
             if line not in actual_package_installed_list:
                 logging.info(f"{line} dependency isn't installed")
-                print(f"{line} dependency isn't installed")
                 return False
             line = f.readline()
     logging.info("All dependencies are installed")
@@ -341,13 +349,13 @@ def raise_error_if_can_not_install_dependencies(internal_loader):
         raise Exception("Dependencies couldn't be installed")
 
 
-def install_dependencies_or_raise_error(loader):
+def install_dependencies_or_raise_error():
     try:
         install_dependencies()
-    except:
+    except ImportError as problematicPackage:
         logging.error(
-            f"Installation of the dependencies in {conda_env_name} conda environment failed")
-        loader.stop(fail=True)
+            f"Installation of the dependencies {problematicPackage} in {conda_env_name} conda environment failed")
+        print(f"Error while installing {problematicPackage}")
         exit(1)
 
 
@@ -355,10 +363,8 @@ def dependency_handler():
     loader = Loader(desc="Checking dependencies...").start()
     if not env_dependencies_verification():
         loader.stop(fail=True)
-        loader = Loader(desc="\tInstalling dependencies in environment...").start()
-        install_dependencies_or_raise_error(loader)
+        install_dependencies_or_raise_error()
         loader.stop()
-
         internal_loader = Loader(
             desc="\tRe-checking dependencies...").start()
         raise_error_if_can_not_install_dependencies(internal_loader)
