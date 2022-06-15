@@ -52,7 +52,7 @@ class MetaData:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(data)
         else:
-            raise RuntimeError
+            raise TypeError("The input file is not of the right type, must be excel, odt or csv.")
         return df
 
     def get_metadata(self) -> pd.DataFrame:
