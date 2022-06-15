@@ -48,11 +48,8 @@ class MetaboExperiment:
 
     def set_metadata_with_dataframe(self, filename, data=None, from_base64=True):
         self.init_metadata()
-        try:
-            self._metadata.read_format_and_store_metadata(filename, data=data, from_base64=from_base64)
-            return True
-        except RuntimeError:
-            return False
+        self._metadata.read_format_and_store_metadata(filename, data=data, from_base64=from_base64)
+
 
     def set_data_matrix(self, path_data_matrix: str, data=None, use_raw: bool = False, from_base64: bool = True):
         self.init_data_matrix()
