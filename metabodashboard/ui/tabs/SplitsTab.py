@@ -1,4 +1,5 @@
 import dash_bootstrap_components as dbc
+import pandas
 from dash import html, Output, Input, dash, State, dcc, callback_context
 from dash.dcc import send_file
 
@@ -34,16 +35,19 @@ class SplitsTab(MetaTab):
         __dataFile = html.Div(
             [
                 dbc.Label("Data file(s) *", className="form_labels"),
-                # dbc.Input(id="path_to_data_file", placeholder="Enter path",
-                #           className="form_input_text"),
-                dcc.Upload(id="upload_datatable",
-                           children=[dbc.Button("Upload File",
-                                                id="upload_datatable_button",
-                                                # className="custom_buttons",
-                                                color="outline-primary")]),
+                html.Div([
+                    dcc.Upload(id="upload_datatable",
+                               children=[dbc.Button("Upload File",
+                                                    id="upload_datatable_button",
+                                                    # className="custom_buttons",
+                                                    color="outline-primary")]),
+                    dcc.Loading(id="upload_datatable_loading", children=[
+                        html.Div(id="upload_datatable_output", style={"color": "green"})
+                    ], style={"width": "100%"}, type="dot", color="#13BD00"),
+                ], style={"display": "flex", "align-items": "center"}),
                 dbc.FormText(
                     "You can give a Progenesis abundance file, or a matrix with samples as lines and features as columns.",
-                ),
+                )
             ],
             className="form_field"
         )
@@ -51,18 +55,20 @@ class SplitsTab(MetaTab):
         __metaDataFile = html.Div(
             [
                 dbc.Label("Metadata file *", className="form_labels"),
-                # dbc.Input(id="in_path_to_metadata", placeholder="Enter path",
-                #           debounce=True, className="form_input_text"),
-                dcc.Upload(id="upload_metadata",
-                           children=[dbc.Button("Upload File",
-                                                id="upload_metadata_button",
-                                                # className="custom_buttons",
-                                                color="outline-primary")]),
+                html.Div([
+                    dcc.Upload(id="upload_metadata",
+                               children=[dbc.Button("Upload File",
+                                                    id="upload_metadata_button",
+                                                    # className="custom_buttons",
+                                                    color="outline-primary")]),
+                    dcc.Loading(id="upload_metadata_loading", children=[
+                        html.Div(id="upload_metadata_output", style={"color": "green"})
+                    ], style={"width": "100%"}, type="dot", color="#13BD00"),
+                ], style={"display": "flex", "align-items": "center"}),
                 dbc.FormText(
                     "The metadata file should at least contain : one column with samples name corresponding to names in the"
                     "data file, and one column of target/class/condition.",
-                ),
-                html.Div(id="output_in_case_of_error_in_path_to_metadata")
+                )
             ],
             className="form_field"
         )
@@ -563,7 +569,8 @@ class SplitsTab(MetaTab):
 
     def _registerCallbacks(self) -> None:
         @self.app.callback(
-            Output('upload_datatable_button', 'style'),
+            [Output('upload_datatable_output', 'children'),
+             Output('upload_datatable_output', 'style')],
             [Input('upload_datatable', 'contents')],
             [State('upload_datatable', 'filename'),
              State("in_use_raw", "value")
@@ -571,13 +578,19 @@ class SplitsTab(MetaTab):
         )
         def upload_data(list_of_contents, list_of_names, use_raw):
             if list_of_contents is not None:
-                self.metabo_controller.set_data_matrix_from_path(list_of_names,
-                                                                 data=list_of_contents,
-                                                                 use_raw=use_raw)
+                try:
+                    self.metabo_controller.set_data_matrix_from_path(list_of_names,
+                                                                     data=list_of_contents,
+                                                                     use_raw=use_raw)
+                except TypeError as err:
+                    return [html.P(str(err))], {"color": "red"}
+                except pandas.errors.ParserError as err:
+                    return [html.P("Rows must have an equal number of columns")], {"color": "red"}
                 self.metabo_controller.reset_experimental_designs()
-                return dash.no_update
+                print("Data uploaded")
+                return [html.P(f"\"{list_of_names}\" has successfully been uploaded !")], {"color": "green"}
             else:
-                return dash.no_update
+                return dash.no_update, dash.no_update
 
         @self.app.callback(
             [Output("div_pair_pn", "style"),
@@ -597,20 +610,21 @@ class SplitsTab(MetaTab):
 
         @self.app.callback([Output("in_target_col_name", "options"),
                             Output("in_ID_col_name", "options"),
-                            Output("output_in_case_of_error_in_path_to_metadata", "children")],
+                            Output("upload_metadata_output", "children"),
+                            Output("upload_metadata_output", "style")],
                            [Input('upload_metadata', 'contents')],
                            [State('upload_metadata', 'filename')]
                            )
         def get_metadata_cols_names_to_choose_from(list_of_contents, list_of_names):
             if list_of_contents is not None:
-                if self.metabo_controller.set_metadata(list_of_names, data=list_of_contents):
-                    formatted_columns = Utils.format_list_for_checklist(self.metabo_controller.get_features())
-                    self.metabo_controller.reset_experimental_designs()
-                    return formatted_columns, formatted_columns, ""
-                else:
-                    return [], [], "There is a problem, the format of your metadata file might not be supported. You " \
-                                   "need to give either a .csv, .xlsX or .odX (where X replace variation of format). Ex: " \
-                                   "file.xlsx, file.odt "
+                try:
+                    self.metabo_controller.set_metadata(list_of_names, data=list_of_contents)
+                except TypeError as err:
+                    return [], [], html.P(str(err)), {"color": "red"}
+                formatted_columns = Utils.format_list_for_checklist(self.metabo_controller.get_features())
+                self.metabo_controller.reset_experimental_designs()
+                return formatted_columns, formatted_columns, html.P(
+                    f"\"{list_of_names}\" has successfully been uploaded !"), {"color": "green"}
             else:
                 return dash.no_update
 
