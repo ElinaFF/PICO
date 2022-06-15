@@ -39,9 +39,46 @@ layout: default
 
 # 1. Installation
 
-The first step to use the Metabodahsboard is to install Python (METTRE UN LIEN ICI VERS PYTHON) and install git. This way the launcher file will be able to do all the installation steps for you.
+The first step to use MeDIC is to install Python and install git.
+Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10
+<details>
+  <summary>Python installation</summary>
+   In order to install Python, you need to go to this [link](https://www.python.org/downloads/) and select your operating system.
+   <details>
+      <summary>For Windows</summary>
+      You can download the latest version or a previous one if you prefer (Note : MeDIC supports python 3.10, 3.9 and 3.8).  
+      You just have to double-click and follow the installation instructions.  
+      You can also follow [this](https://phoenixnap.com/kb/how-to-install-python-3-windows) tutorial for further details.
+      WARNING : Don't forget the select Add Python 3.X to PATH on the first page ! #TODO screen
+      NOTE : To verify that Python is inb the PATH, you can open a new terminal, type Python and enter. If you get something like this, it's all good. #TODO screen
+            Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning and click repair. Then you can click on add to path and #TODO screen and button name
+   </details>
+   <details>
+      <summary>For Linux</summary>
+      You can select the latest Python source release for python3 or a stable release for 3.8 to 3.10. COMMAND  
+      You can also follow [this](https://www.scaler.com/topics/python/install-python-on-linux/) tutorial for further details
+   </details>  
+  
+</details>  
+<details>
+  <summary>Git installation</summary>
+  In order to install Git, you need to go to this [link](https://git-scm.com/downloads) and select your operating system. 
+   <details>
+      <summary>For Windows</summary>
+      You can then choose the Standalone Installer and take the 64 bits one if your computer is less than 10 or 15 years old.
+      After downloading the .exe file, double-click on it and follow the installation instructions.
+      Note : You'll have a lot of choices, leave them as default if you are not familiar with their implications.
+   </details>
+   <details>
+      <summary>For Linux</summary>
+      #TODO add steps
+   </details> 
 
-A launcher has been made for the metabodashboard to facilitate the installation process. This launcher can be used for the installation and to start the Metabodashboard.
+</details>  
+
+This way the launcher file will be able to do all the installation steps for you.
+
+A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the installation and to start MeDIC.
 ### A. Normal installation
 
  - (LIEN DE DOWNLOAD DIRECT DU LAUNCHER)
@@ -50,10 +87,15 @@ A launcher has been made for the metabodashboard to facilitate the installation 
     python launcher.py
  ```
 
- <h5 id="note1"> * You just need to execute the command ‘python launcher.py’ after opening a terminal in the folder where you downloaded the launcher.py. <br>No need to clone the repository, we will install everything we need. If you still want to do so and don’t want the launcher to redownload it during the installation process, make sure to clone the repository in the same folder as the launcher.<br> Metabodashboard uses conda for his environment, if you don’t have mini Conda installed on your machine, the launcher will install it.<br> All the dependencies necessary will be installed in the conda environment.</h5>
+ <h5 id="note1"> * You just need to execute the command ‘python launcher.py’ after opening a terminal in the folder 
+where you downloaded the launcher.py. <br>No need to clone the repository, we will install everything we need. 
+If you still want to do so and don’t want the launcher to redownload it during the installation process, make sure to 
+clone the repository in the same folder as the launcher.<br> Metabodashboard uses conda for his environment, 
+if you don’t have mini Conda installed on your machine, the launcher will install it.
+<br> All the dependencies necessary will be installed in the conda environment.</h5>
 
  ### B. Clone repository and normal installation
- -	Clone the github repository and run launcher.py with the commands.
+ -	Clone the Github repository and run launcher.py with the commands.
   ```
     git clone https://github.com/ElinaFF/MetaboDashboard
     python launcher.py
@@ -64,57 +106,60 @@ A launcher has been made for the metabodashboard to facilitate the installation 
   <details>
   <summary> C. Manual installation</summary>
   
- If you chose to install manually the Metabodashboard, considering you already cloned the git, you have to create a conda environement and install all the packages in the requirements.txt file.
+ If you chose to manually install MeDIC, considering you already cloned the git, you have to create a conda environment and install all the packages in the requirements.txt file.
 </details>   
 
 ___
 
 ## Metabodashboard launcher options
 
-Thoses commands are optionals but may help you to use the launcher in an easier way.  
-They can be combine or use indepedently.
+Those commands are optionals but may help you to use the launcher in an easier way.  
+They can be combined or use independently.
 
-### 1. Use an environnement you already have
- - The content of the metadashboard envrionment can be installed in another environment, if you don't want to create a new one, with the command : <a href="#note2">**</a> 
+### 1. Use an environment you already have
+ - The content of MeDIC environment can be installed in another environment, if you don't want to create a new one, with the command : <a href="#note2">**</a> 
   ```
     python launcher.py --environment <environment_name>
     python launcher.py -e <environment_name> 
   ```
-  <h5 id="note2"> ** It is recommanded not to create the metadashboard environment into another environment as it may causes problems.</h5>
+  <h5 id="note2"> ** It is recommended not to create MeDIC environment into another environment as it may cause problems.</h5>
 
-### 2. Fast launch for every day use
- - The Metabodashboard can be launch faster without any verifications of the environment with the command :
+### 2. Fast launch for everyday use
+ - MeDIC can be launch faster without any verifications of the environment with the command :
   ```
     python launcher.py --no-check
     python launcher.py -c
   ```
 
-### 3. Installing the Metabodashboard for later use
-  - The Metabodashboard can be installed without launching it at the end with the command :
+### 3. Installing MeDIC for later use
+  - MeDIC can be installed without launching it at the end with the command :
   ```
     python launcher.py --no-launch
     python launcher.py -l
   ```
 
 ### 4. Update the Matabodashboard to the latest version
-  - The Metabodashboard can be updated with the command :  
+  - MeDIC can be updated with the command :  
   ```
     python launcher.py --update
     python launcher.py -u
   ```
-  Note: This will verify the environnement and download pakcages if necessary, it also won't start the Metabodashboard.
+  Note: This will verify the environment and download packages if necessary, it also won't start MeDIC.
 
 # 2. Utilization
 > [Go back to index](#index)
 
 ## Saving file
-Before explaining the interface, lets see how the experiments are saved and shareable. To allow a better modularity of the experiments, the three major steps of the Metabodashboard are saved independently into a file after each step. Moreover, the data and metadata are only saved in local repository, not in the saving file, which allow the sharing of the file to outside collaborators. To continue an experiments and/or visualize its results, the Metabodashboard offers the possibility to load a saving file in the first tab (Home). However, to prevent any problem between a local data saving and a potentiel different saving file, a hashing process takes place to compare the file being loaded and the local dumps of data. To get more details on the hashing process see this resource (LIEN). 
+Before explaining the interface, lets see how the experiments are saved and shareable. 
+To allow a better modularity of the experiments, the three major steps of MeDIC are saved independently into a file after each step. 
+Moreover, the data and metadata are only saved in local repository, not in the saving file, which allow the sharing of the file to outside collaborators. 
+To continue an experiments and/or visualize its results, MeDIC offers the possibility to load a saving file in the first tab (Home). 
+However, to prevent any problem between a local data saving and a potential different saving file, a hashing process takes place to compare the file being loaded and the local dumps of data. 
+To get more details on the hashing process see this resource (LIEN).
 
+Welcome into MeDIC!
 
-
-Welcome into the MetaboDashboard!
-
-The following sections will resume how to run a experiment and explore each parameters you can set.
+The following sections will resume how to run an experiment and explore each parameter you can set.
 
 >The image in Home tab give a great insight of how the pipeline works.
 >
@@ -162,12 +207,12 @@ If the error "<span style="color: red">Rows must have an equal number of columns
 
 The following instructions are for the ```B) DEFINE EXPERIMENTAL DESIGNS``` section.
 
-With the board, you can run multiple experimental design, under certain conditions. Theses conditions are:
+With the board, you can run multiple experimental design, under certain conditions. These conditions are:
 - use the same split parameters
 - use the same Machine Learning (ML) algorithms
 - use the same ML parameters
 
-First of all, you need to select the target column. To clarify,  the target column contains the values that the algorithms will try to predict. A typical exemple is the column that contain the diagnosis.
+First, you need to select the target column. To clarify,  the target column contains the values that the algorithms will try to predict. A typical example is the column that contain the diagnosis.
 
 The columns name prompted in the following figure are the column in the metadata file previously uploaded. If there are not the ones expected, please retry uploading the metadata in [this section](index.md#a-set-the-metadata-and-data)
 
@@ -175,7 +220,7 @@ The columns name prompted in the following figure are the column in the metadata
 >
 > *Targets column selection panel*
 
-After setting the target column, we need to set the samples column. This column have to contains **unique IDs** for each samples.
+After setting the target column, we need to set the samples' column. This column has to contain **unique IDs** for each sample.
 
 > ![](imgs/2022-06-07-11-44-48.png)
 >
@@ -189,7 +234,7 @@ Once the target column are defined, the possible labels are updated in the *conf
 > 
 > *Updated possible labels in the* configuration *panel*
 
-To build a binary design, you need to define the classes, in other words, to choose what you want to be opposed. An exemple using the previous values could be the identification of the sick person, opposing persons tagged with "Sickness A" and "Sickness B" and persons tagged "Control".
+To build a binary design, you need to define the classes, in other words, to choose what you want to be opposed. An example using the previous values could be the identification of the sick person, opposing persons tagged with "Sickness A" and "Sickness B" and persons tagged "Control".
 
 Add the experimental design by clicking on the ```ADD``` button.
 
@@ -197,7 +242,7 @@ Add the experimental design by clicking on the ```ADD``` button.
 >
 > *Example of a experimental design*
 
-Note that you need to set a name, a label, for each class. Also, you need to set at least one possible target per class but you don't need to assigned all possible targets.
+Note that you need to set a name, a label, for each class. Also, you need to set at least one possible target per class, but you don't need to assign all possible targets.
 
 Once the designs are created, they will appear in the *repository* panel.
 
@@ -227,15 +272,15 @@ The following instructions are for the ```D) DEFINE SPLITS``` section.
 >
 > *```DEFINE SPLITS``` splits section*
 
-If you don't feel confortable with theses parameters, the minimum you need to know is:
+If you don't feel conformable with these parameters, the minimum you need to know is:
 - the proportion is quite standard, it will suit most of the time
 - 5 splits is quick to run but some samples may never be used to test the algorithms. If you want a complete run, 15 to 25 splits should be enough.
 
 In the other case, the splits are made by copying the dataset and applying a random separation with a different random seed at each time. This principle is called bootstrap.
 
-Most of the time, medical data are fat data ,i.e. contains may features (characteristic) for few samples, which can lead to many large when the training set is changed.
+Most of the time, medical data are fat data ,i.e. contains many features (characteristic) for few samples, which can lead to many large when the training set is changed.
 
-Moreover, as the cross validation (explained further in [2.C.1](#1-define-learning-configurations)), it allow the model(s) to be tested on most of the samples.
+Moreover, as the cross validation (explained further in [2.C.1](#1-define-learning-configurations)), it allows the model(s) to be tested on most of the samples.
 
 If you want to achieve it, the probability that all samples are seen in the test set, i.e. the probability that a sample is never in the test set, follow a <a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank">Markov chain</a>. With a example of 5 samples with 80-20 train-test repartition, the chain is as follow:
 - The initial state $$V_1=\begin{pmatrix} 0 & 1 & 0 & 0 & 0 \end{pmatrix}$$
@@ -267,7 +312,7 @@ You can show all the processing parameter by clicking on the ```OPEN``` button.
 
 These finals instructions are for the ```F) GENERATE FILE``` section.
 
-Once all the parameter, the samples id and target column, and **at least one** experimental design are set, you can run the splits computation by clicking on the ```CREATE``` button.
+Once all the parameter, the samples id and target column, and **at least one** experimental design are set, you can run the splits' computation by clicking on the ```CREATE``` button.
 
 > ![](imgs/2022-06-07-16-02-36.png)
 >
@@ -281,11 +326,11 @@ Once all the parameter, the samples id and target column, and **at least one** e
 
 The following instructions are for the ```DEFINE LEARNING CONFIGS``` section.
 
-If you're not confortable with theses parameters, you can safely keep the default values and jump to the [next section](#2-define-learning-algorithms).
+If you're not confortable with these parameters, you can safely keep the default values and jump to the [next section](#2-define-learning-algorithms).
 
 First, before choosing a Cross Validation (CV) search type, you need to understand the principle of CV.
 
-The method consist in separating the dataset in $$n$$ sections. At each iteration, the first or the next section will be used as the test set and the other sections will formed the training set. It allows us to train **and** test the model on all the dataset. Furthermore, the mean accurracy over
+The method consist in separating the dataset in $$n$$ sections. At each iteration, the first or the next section will be used as the test set and the other sections will form the training set. It allows us to train **and** test the model on all the dataset. Furthermore, the mean accuracy over
 
 The number of folds define the number of time the model(s) will be trained, and the number of division in the dataset.
 
@@ -322,7 +367,7 @@ The first classifier implement a regular decision tree. To make a prediction, th
 
 The second classifier, the random forest, is a decision tree ensemble that classify independently the sample. Each DT vote the class of the sample. The class that has the most vote is assign to the sample.
 
-The Set Covering Machine (SCM) is a combination of rules. For exemple, if the cholesterol is greater than 2 g/l OR insulin is greater than 140 mg/dL AND insulin is less than 199 mg/dL.
+The Set Covering Machine (SCM) is a combination of rules. For example, if the cholesterol is greater than 2 g/l OR insulin is greater than 140 mg/dL AND insulin is less than 199 mg/dL.
 
 The last classifier is the Random SCM. As the random forest is a voting decision tree ensemble, the random SCM is a voting SCM ensemble.
 
@@ -337,7 +382,7 @@ You need to complete the import and specify the grid search parameter (for the C
 <details>
 <summary>Add a full custom algorithms (for expert)</summary>
 
-To add a full custom model, you need to add it to the comfiguration file located at ```metabodashboard/conf/SupportedModel.py```.
+To add a full custom model, you need to add it to the configuration file located at ```metabodashboard/conf/SupportedModel.py```.
 Add a dictionary containing the **NON-INSTANTIATED** class and the param grid. Format is the following (change only the attribute \_xxx\_)
 ```Python
   "_Printed_name_": {
@@ -350,7 +395,7 @@ Add a dictionary containing the **NON-INSTANTIATED** class and the param grid. F
     },
 ```
 
-After adding your configuration, **reboot** the MetaboDashboard by stopping and restarting the launcher.
+After adding your configuration, **reboot** MeDIC by stopping and restarting the launcher.
 
 The algorithm should be in the ```AVAILABLE ALGORITHMS``` section with his printed name.
 
@@ -358,7 +403,7 @@ Note, the custom model are in the save file (.mtxp) and will be restored.
 
 </details>
 
-## D. Look at the results for each algorithms
+## D. Look at the results for each algorithm
 > [Go back to index](#index)
 
 ## E. Compare algorithms results
@@ -373,16 +418,16 @@ Note, the custom model are in the save file (.mtxp) and will be restored.
 ## A. Architecture
 > [Go back to index](#index)
 
-The Methabodashboards software is organize in three main package.
+MeDIC software is organized in three main package.
  - The Domain package :  
- It contains all the logic that compose the Metabodashboard.  
+ It contains all the logic that compose MeDIC.  
  This package can access freely the Service package.  
- All of the communication with the UI package must pass by the controller. This allows us to modify the Domain if necessary without having to modify the UI too.
+ All the communication with the UI package must pass by the controller. This allows us to modify the Domain if necessary without having to modify the UI too.
  - The User Interface (UI) package :  
- It contains all the classes that are used to display the web interface of the Metabodashboard.  
+ It contains all the classes that are used to display the web interface of MeDIC.  
  It manages only the interface and connects to the Domain by the controller only.
  - The Service package :  
- It can be access by both other packages and contains methods that are frequently used in different classes.
+ It can be accessed by both other packages and contains methods that are frequently used in different classes.
 
 Here is a diagram that represents the communications between all three packages. 
 
@@ -390,13 +435,13 @@ Here is a diagram that represents the communications between all three packages.
 >
 > Package diagram
 
-This diagram shows all the classes that compose the Domain package of the Methabodashboard and the interaction between them.
+This diagram shows all the classes that compose the Domain package of MeDIC and the interaction between them.
 
 > ![](imgs/2022-06-07-16-37-38.png)
 >
 > Simplified class diagram of the Domain package
 
-This diagram shows all the classes that compose the UI package of the Methabodashboard and the interaction between them.
+This diagram shows all the classes that compose the UI package of MeDIC and the interaction between them.
 
 > ![](imgs/2022-06-07-16-37-55.png)
 >
@@ -405,9 +450,9 @@ This diagram shows all the classes that compose the UI package of the Methabodas
 ## B. Controller interface
 > [Go back to index](#index)
 
-This section can be use as a high-level documentation of the MetaboController class that serves of controller in the Metabodashboard.
+This section can be use as a high-level documentation of the MetaboController class that serves of controller in MeDIC.
 
-This class can be used to integrate the MetaboDashboard in a Python script.
+This class can be used to integrate MeDIC in a Python script.
 
 The explanation of the concepts and the pipelines are in the ["2. Utilization"](#2-utilization) section. Don't hesitate to go back to this section while reading this one.
 
