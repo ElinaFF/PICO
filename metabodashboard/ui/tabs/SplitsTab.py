@@ -42,7 +42,8 @@ class SplitsTab(MetaTab):
                                                 # className="custom_buttons",
                                                 color="outline-primary")]),
                 dbc.FormText(
-                    "You can give a Progenesis abundance file, or a matrix with samples as lines and features as columns.",
+                    "You can give a Progenesis abundance file, or a matrix with samples as lines and features as "
+                    "columns.",
                 ),
             ],
             className="form_field"
@@ -50,7 +51,8 @@ class SplitsTab(MetaTab):
 
         __metaDataFile = html.Div(
             [
-                dbc.Label("Metadata file *", className="form_labels"),
+                dbc.Label(className="form_labels", children=[html.Span("Metadata file  "), html.Span(
+                    "(optionnal if Progenesis matrix given)", style={"font-size": "0.9em", "text-transform": "none"})]),
                 # dbc.Input(id="in_path_to_metadata", placeholder="Enter path",
                 #           debounce=True, className="form_input_text"),
                 dcc.Upload(id="upload_metadata",
@@ -114,7 +116,7 @@ class SplitsTab(MetaTab):
             ]),
 
         ])
-        print(self.metabo_controller.get_features())
+
         __typeGroupLink = dbc.Card([
             html.Div(
                 [
@@ -140,6 +142,10 @@ class SplitsTab(MetaTab):
                         inline=True),
                 ],
                 className="form_field"
+            ),
+            html.Div(
+                id="info_progenesis_loaded",
+                style={"color": "grey", "padding-left": "2em", "font-style": "italic"}
             )],
             body=True
         )
@@ -546,7 +552,6 @@ class SplitsTab(MetaTab):
                                  html.Div(className="fig_group",
                                           children=[_file,
                                                     _experimentalDesigns,
-
                                                     ]),
 
                                  html.Div(className="fig_group",
@@ -563,7 +568,7 @@ class SplitsTab(MetaTab):
 
     def _registerCallbacks(self) -> None:
         @self.app.callback(
-            Output('upload_datatable_button', 'style'),
+            Output('info_progenesis_loaded', 'children'),
             [Input('upload_datatable', 'contents')],
             [State('upload_datatable', 'filename'),
              State("in_use_raw", "value")
@@ -575,7 +580,11 @@ class SplitsTab(MetaTab):
                                                                  data=list_of_contents,
                                                                  use_raw=use_raw)
                 self.metabo_controller.reset_experimental_designs()
-                return dash.no_update
+
+                if self.metabo_controller.is_progenesis_data():
+                    # trigger the update of possible targets
+                    return "Info: Selection not needed, handled by Progenesis."
+                return ""
             else:
                 return dash.no_update
 
@@ -682,15 +691,23 @@ class SplitsTab(MetaTab):
              Output("possible_groups_for_class2", "options"),
              Output("output_btn_add_desgn_exp", "children"),
              Output("in_target_col_name", "value")],
-            [Input("in_target_col_name", "value")],
+            [Input("in_target_col_name", "value"),
+             Input('info_progenesis_loaded', 'children')],
         )
-        def update_possible_classes_exp_design(target_col):
-            if target_col is not None:
+        def update_possible_classes_exp_design(target_col, children):
+            triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
+
+            if triggered_id == "in_target_col_name":
                 self.metabo_controller.set_target_column(target_col)
                 formatted_possible_targets = Utils.format_list_for_checklist(
                     self.metabo_controller.get_unique_targets()
                 )
                 return formatted_possible_targets, formatted_possible_targets, "", target_col
+            elif triggered_id == "info_progenesis_loaded":
+                formatted_possible_targets = Utils.format_list_for_checklist(
+                    self.metabo_controller.get_unique_targets()
+                )
+                return formatted_possible_targets, formatted_possible_targets, "", None
             else:
                 return [], [], "", self.metabo_controller.get_target_column()
 
@@ -702,16 +719,19 @@ class SplitsTab(MetaTab):
              Output("setted_classes_container", "children"),
              Output("setted_classes_container", "style")],
             [Input("btn_add_design_exp", "n_clicks"),
-             Input("remove_experimental_design_button", "n_clicks")],
+             Input("remove_experimental_design_button", "n_clicks"),
+             Input("in_target_col_name", "value"),
+             Input("info_progenesis_loaded", "children")],
             [State("class1_name", "value"),
              State("possible_groups_for_class1", "value"),
              State("class2_name", "value"),
              State("possible_groups_for_class2", "value")],
         )
-        def add_n_reset_classes_exp_design(n_add, n_remove, c1, g1, c2, g2):
+        def add_n_reset_classes_exp_design(n_add, n_remove, target_col, children, c1, g1, c2, g2):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
-            if triggered_id == "remove_experimental_design_button":
+            if triggered_id == "remove_experimental_design_button" or triggered_id == "in_target_col_name" or \
+                    triggered_id == "info_progenesis_loaded":
                 self.metabo_controller.reset_experimental_designs()
             elif triggered_id == "btn_add_design_exp":
                 self.metabo_controller.add_experimental_design({c1: g1, c2: g2})
