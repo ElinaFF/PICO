@@ -161,3 +161,6 @@ class MetaboController:
 
     def are_files_corresponding(self, data_file: str, metadata_file: str) -> bool:
         return self._metabo_experiment.are_files_corresponding(data_file, metadata_file)
+
+    def is_progenesis_data(self) -> bool:
+        return self._metabo_experiment.is_progenesis_data()

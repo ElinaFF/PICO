@@ -1,13 +1,10 @@
-import os
 from typing import Generator, Tuple, List
 
-import pandas as pd
 import sklearn
 
 from . import ExperimentalDesign
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
-from . import ExperimentalDesign
 from .MetaboExperimentDTO import MetaboExperimentDTO
 from .ModelFactory import ModelFactory
 from ..conf.SupportedCV import CV_ALGORITHMS
@@ -24,6 +21,7 @@ class MetaboExperiment:
         self._model_factory = ModelFactory()
 
         self._data_matrix = DataMatrix()
+        self._is_progenesis_data = False
         self._metadata = MetaData()
 
         self._number_of_splits = 5
@@ -53,8 +51,15 @@ class MetaboExperiment:
 
     def set_data_matrix(self, path_data_matrix: str, data=None, use_raw: bool = False, from_base64: bool = True):
         self.init_data_matrix()
-        self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, use_raw=use_raw,
-                                                     from_base64=from_base64)
+        metadata_df = self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, use_raw=use_raw,
+                                                                   from_base64=from_base64)
+        if metadata_df is not None:
+            self._metadata = MetaData(metadata_df)
+            self._metadata.set_id_column("sample_names")
+            self._metadata.set_target_column("labels")
+            self._is_progenesis_data = True
+        else:
+            self._is_progenesis_data = False
 
     def get_data_matrix(self) -> DataMatrix:
         return self._data_matrix
@@ -248,5 +253,8 @@ class MetaboExperiment:
 
     def get_id_column(self) -> str:
         return self._metadata.get_id_column()
+
+    def is_progenesis_data(self) -> bool:
+        return self._is_progenesis_data
 
 # TODO: print current algo when training

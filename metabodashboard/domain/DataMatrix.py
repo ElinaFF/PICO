@@ -1,5 +1,6 @@
 import os
 import pickle
+from typing import Tuple, Union, Optional
 
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
@@ -20,14 +21,18 @@ class DataMatrix:
 
         Utils.reset_file(DUMP_DATA_MATRIX_PATH)
 
-    def read_format_and_store_data(self, path: str, data=None, use_raw: bool=False, from_base64: bool=True):
-        data_df = self._load_and_format(path, data=data, is_raw=use_raw, from_base64=from_base64)
+    def read_format_and_store_data(self, path: str, data=None, use_raw: bool = False, from_base64: bool = True) -> \
+            Optional[pd.DataFrame]:
+        data_df, metadata_df = self._load_and_format(path, data=data, is_raw=use_raw, from_base64=from_base64)
         self._hash = compute_hash(data)
 
         with open(DUMP_DATA_MATRIX_PATH, "w+b") as data_matrix_file:
             pickle.dump(data_df, data_matrix_file)
 
         self._scaler.fit(data_df)
+
+        if metadata_df is not None:
+            return metadata_df
 
     def get_hash(self) -> str:
         """
@@ -45,15 +50,18 @@ class DataMatrix:
             raise RuntimeError("Need to load data from file before scaling")
         return pd.DataFrame(self._scaler.transform(self.data), columns=self.data.columns)
 
-    def _load_and_format(self, path, data=None, is_raw=False, from_base64=True) -> pd.DataFrame:
+    def _load_and_format(self, path, data=None, is_raw=False, from_base64=True) -> Tuple[
+        pd.DataFrame, Optional[pd.DataFrame]]:
         """
         load the table from a path and process it to make it more easy to manipulate
         """
         formater = DataFormat(path, data=data, use_raw=is_raw, from_base64_str=from_base64)
         datatable_compoundsInfo, datatable, labels, sample_names = formater.convert()
-        return datatable
+        if labels is None or sample_names is None:
+            return datatable, None
+        return datatable, pd.DataFrame({"sample_names": sample_names, "labels": labels})
 
-    def load_data(self):  #loadDataMatrix
+    def load_data(self):  # loadDataMatrix
         with open(DUMP_DATA_MATRIX_PATH, "rb") as data_matrix_file:
             self.data = pickle.load(data_matrix_file)
 
