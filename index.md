@@ -149,6 +149,11 @@ You can also clic on the ```UPLOAD FILE``` button and choose the right file.
 >
 > *```MEATADATA FILE``` section*
 
+
+The supported files are excel, odt or csv.
+
+If the error "<span style="color: red">Rows must have an equal number of columns</span>" occurred, it means that some lines don't have cells for all columns.
+
 ## B. Split parameters
 > [Go back to index](#index)
 
