@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Generator, Tuple, List
+from typing import Generator, Tuple, List, Dict
 
 import pandas as pd
 
@@ -26,8 +26,8 @@ class MetaboController:
     def set_data_matrix_from_path(self, path_data_matrix, data=None, use_raw=False, from_base64=True):
         return self._metabo_experiment.set_data_matrix(path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64)
 
-    def get_features(self) -> list:
-        return self._metabo_experiment.get_features()
+    def get_metadata_columns(self) -> list:
+        return self._metabo_experiment.get_metadata_columns()
 
     def get_unique_targets(self) -> list:
         return self._metabo_experiment.get_unique_targets()
@@ -164,3 +164,12 @@ class MetaboController:
 
     def is_progenesis_data(self) -> bool:
         return self._metabo_experiment.is_progenesis_data()
+
+    def get_pairing_columns(self) -> Dict[str, List[str]]:
+        return self._metabo_experiment.get_pairing_columns()
+    
+    def add_pairing_columns(self, pairing_columns: List[str], pairing_type: str):
+        self._metabo_experiment.add_pairing_columns(pairing_columns, pairing_type)
+
+    def reset_pairing_columns(self):
+        self._metabo_experiment.reset_pairing_columns()

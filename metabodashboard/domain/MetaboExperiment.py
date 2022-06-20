@@ -1,4 +1,5 @@
-from typing import Generator, Tuple, List
+import itertools
+from typing import Generator, Tuple, List, Dict
 
 import sklearn
 
@@ -26,6 +27,8 @@ class MetaboExperiment:
 
         self._number_of_splits = 5
         self._train_test_proportion = 0.2
+        self._pairing_columns = None
+        self.reset_pairing_columns()
 
         self.experimental_designs = {}
 
@@ -47,7 +50,6 @@ class MetaboExperiment:
     def set_metadata_with_dataframe(self, filename, data=None, from_base64=True):
         self.init_metadata()
         self._metadata.read_format_and_store_metadata(filename, data=data, from_base64=from_base64)
-
 
     def set_data_matrix(self, path_data_matrix: str, data=None, use_raw: bool = False, from_base64: bool = True):
         self.init_data_matrix()
@@ -76,13 +78,46 @@ class MetaboExperiment:
     def set_train_test_proportion(self, train_test_proportion: float):
         self._train_test_proportion = train_test_proportion
 
+    def add_pairing_columns(self, pairing_columns: List[str], pairing_type: str):
+        if pairing_type == "none":
+            raise ValueError("Please specify a pairing type.")
+
+        used_columns = self._pairing_columns.get("group") + list(itertools.chain(*self._pairing_columns.get("pattern")))
+
+        if pairing_type == "group":
+            if pairing_columns is None:
+                raise ValueError("Please select a column for the pairing.")
+            if pairing_columns in used_columns:
+                raise ValueError("Column {} is already used for the pairing".format(pairing_columns))
+
+        if pairing_type == "pattern":
+            if len(pairing_columns) < 2 or not pairing_columns:
+                raise ValueError(
+                    "Please select at least two columns for the pairing pattern"
+                )
+            for column in pairing_columns:
+                if pairing_columns.count(column) > 1:
+                    raise ValueError("Please select only one column for each pairing pattern")
+                if column in used_columns:
+                    raise ValueError("Column {} is already used for the pairing".format(column))
+
+        self._pairing_columns[pairing_type].append(pairing_columns)
+
+    def get_pairing_columns(self) -> Dict[str, List[str]]:
+        return self._pairing_columns
+
+    def reset_pairing_columns(self):
+        self._pairing_columns = {"group": [], "pattern": []}
+
     def create_splits(self):
         if self._number_of_splits is None:
             raise RuntimeError("Number of splits not set")
         if self._train_test_proportion is None:
             raise RuntimeError("Train test proportion not set")
         for _, experimental_design in self.experimental_designs.items():
-            experimental_design.set_split_parameter(self._train_test_proportion, self._number_of_splits, self._metadata)
+            experimental_design.set_split_parameter_and_compute_splits(self._train_test_proportion,
+                                                                       self._number_of_splits, self._metadata,
+                                                                       self._pairing_columns)
 
     def get_experimental_designs(self) -> dict:
         return self.experimental_designs
@@ -109,7 +144,7 @@ class MetaboExperiment:
     def get_selected_models(self) -> list:
         return self._selected_models
 
-    def get_features(self) -> list:
+    def get_metadata_columns(self) -> list:
         if self._metadata is None:
             raise RuntimeError("Metadata is not set.")
         return self._metadata.get_columns()
