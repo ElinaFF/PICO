@@ -46,10 +46,10 @@ layout: default
 The first step to use MeDIC is to install Python and install git.
 Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10
 <details>
-  <summary><meta charset="CB 85"> Python installation</summary>
+  <summary>&#128214 Python installation</summary>
    In order to install Python, you need to go to this <a href="https://www.python.org/downloads/">link</a> and select your operating system.
    <details>
-      <summary><meta charset="CB 85"> For Windows</summary>
+      <summary>&cudarrr For Windows</summary>
       <p>You can download the latest version or a previous one if you prefer (Note : MeDIC supports python 3.10, 3.9 and 3.8).  
       You just have to double-click and follow the installation instructions.  
       You can also follow this <a href="https://phoenixnap.com/kb/how-to-install-python-3-windows">tutorial</a> for further details.</p>
@@ -58,23 +58,23 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
             Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning and click repair. Then click on Next. Then you can click on add to path and install. </p> <img src="imgs/addToPathAfterRepair.png" alt="addToPathAfterRepair"> <img src="imgs/img_1" alt="Repair">
    </details>
    <details>
-      <summary><meta charset="CB 85"> For Linux</summary>
+      <summary>&cudarrr For Linux</summary>
       <p>You can select the latest Python source release for python3 or a stable release for 3.8 to 3.10. COMMAND  
       You can also follow this <a href="https://www.scaler.com/topics/python/install-python-on-linux/">tutorial</a> for further details</p>
    </details>
 </details>  
 
 <details>
-  <summary><meta charset="CB 85"> Git installation</summary>
+  <summary>&#128214 Git installation</summary>
   In order to install Git, you need to go to this <a href="https://git-scm.com/downloads">link</a> and select your operating system. 
    <details>
-      <summary><meta charset="CB 85"> For Windows</summary>
+      <summary>&cudarrr For Windows</summary>
       <p>You can then choose the Standalone Installer and take the 64 bits one if your computer is less than 10 or 15 years old.
       After downloading the .exe file, double-click on it and follow the installation instructions.</p>
       <p>Note : You'll have a lot of choices, leave them as default if you are not familiar with their implications.</p>
    </details>
    <details>
-      <summary><meta charset="CB 85"> For Linux</summary>
+      <summary>&cudarrr For Linux</summary>
          Open a terminal and run the command :
             <code>
                 sudo apt-get install git
