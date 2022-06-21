@@ -116,7 +116,7 @@ if you don’t have mini Conda installed on your machine, the launcher will inst
 <details>
 <summary> C. Manual installation</summary>
   
- If you chose to manually install MeDIC, considering you already cloned the git, you have to create a conda environment and install all the packages in the requirements.txt file.
+ <p>If you chose to manually install MeDIC, considering you already cloned the git, you have to create a conda environment and install all the packages in the requirements.txt file.</p>
 </details>
 
 ## Metabodashboard launcher options
@@ -171,7 +171,7 @@ The following sections will resume how to run an experiment and explore each par
 
 >The image in Home tab give a great insight of how the pipeline works.
 >
-> ![](imgs/Figure_home_wider.png)
+> ![](imgs/update_figure_steps_MeDIC_4.svg)
 
 *Pipeline explanation schema in Home tab*
 
