@@ -3,6 +3,10 @@ layout: default
 ---
 # Index
 
+<style>
+  summary{text-decoration: underline}
+</style>
+
 1. [Installation](#1-installation)  
     <ol type="A">
       <li><a href="#a-python-installation">Python installation</a></li>
@@ -71,7 +75,12 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
    </details>
    <details>
       <summary>For Linux</summary>
-      #TODO add steps
+Open a terminal and type the command : 
+
+```Python
+  sudo apt-get install git 
+```
+follows the installation instructions 
    </details> 
 
 </details>  
@@ -94,22 +103,19 @@ clone the repository in the same folder as the launcher.<br> Metabodashboard use
 if you don’t have mini Conda installed on your machine, the launcher will install it.
 <br> All the dependencies necessary will be installed in the conda environment.</h5>
 
- ### B. Clone repository and normal installation
+### B. Clone repository and normal installation
  -	Clone the Github repository and run launcher.py with the commands.
   ```
     git clone https://github.com/ElinaFF/MetaboDashboard
     python launcher.py
   ```
-  TIP: Don't forget to move to the folder Metabodashboard, with the command cd, before starting the launcher. 
-  ___
+  TIP: Don't forget to move to the folder Metabodashboard, with the command cd, before starting the launcher.
 
-  <details>
-  <summary> C. Manual installation</summary>
+<details>
+<summary> C. Manual installation</summary>
   
  If you chose to manually install MeDIC, considering you already cloned the git, you have to create a conda environment and install all the packages in the requirements.txt file.
-</details>   
-
-___
+</details>
 
 ## Metabodashboard launcher options
 
