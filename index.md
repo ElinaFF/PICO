@@ -50,17 +50,17 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
    In order to install Python, you need to go to this <a href="https://www.python.org/downloads/">link</a> and select your operating system.
    <details>
       <summary>For Windows</summary>
-      You can download the latest version or a previous one if you prefer (Note : MeDIC supports python 3.10, 3.9 and 3.8).  
+      <p>You can download the latest version or a previous one if you prefer (Note : MeDIC supports python 3.10, 3.9 and 3.8).  
       You just have to double-click and follow the installation instructions.  
-      You can also follow <a href="https://phoenixnap.com/kb/how-to-install-python-3-windows">tutorial</a> for further details.
-      WARNING : Don't forget the select Add Python 3.X to PATH on the first page ! #TODO screen
-      NOTE : To verify that Python is inb the PATH, you can open a new terminal, type Python and enter. If you get something like this, it's all good. #TODO screen
-            Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning and click repair. Then you can click on add to path and #TODO screen and button name
+      You can also follow this <a href="https://phoenixnap.com/kb/how-to-install-python-3-windows">tutorial</a> for further details.
+      <p>WARNING : Don't forget the select Add Python 3.X to PATH on the first page !</p>![](imgs/addToPath.png)
+      <p>NOTE : To verify that Python is inb the PATH, you can open a new terminal, type Python and enter. If you get something like this, it's all good. ![img_1.png](img_1.png)
+            Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning and click repair. Then click on Next. Then you can click on add to path and install![](imgs/addToPathAfterRepair.png)</p>
    </details>
    <details>
       <summary>For Linux</summary>
-      You can select the latest Python source release for python3 or a stable release for 3.8 to 3.10. COMMAND  
-      You can also follow this <a href="https://www.scaler.com/topics/python/install-python-on-linux/">tutorial</a> for further details
+      <p>You can select the latest Python source release for python3 or a stable release for 3.8 to 3.10. COMMAND  
+      You can also follow this <a href="https://www.scaler.com/topics/python/install-python-on-linux/">tutorial</a> for further details</p>
    </details>  
   
 </details>  
@@ -70,9 +70,9 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
   In order to install Git, you need to go to this <a href="https://git-scm.com/downloads">link</a> and select your operating system. 
    <details>
       <summary>For Windows</summary>
-      You can then choose the Standalone Installer and take the 64 bits one if your computer is less than 10 or 15 years old.
-      After downloading the .exe file, double-click on it and follow the installation instructions.
-      Note : You'll have a lot of choices, leave them as default if you are not familiar with their implications.
+      </p>You can then choose the Standalone Installer and take the 64 bits one if your computer is less than 10 or 15 years old.
+      After downloading the .exe file, double-click on it and follow the installation instructions.</p>
+      <p>Note : You'll have a lot of choices, leave them as default if you are not familiar with their implications.</p>
    </details>
    <details>
       <summary>For Linux</summary>
