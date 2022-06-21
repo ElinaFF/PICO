@@ -81,7 +81,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
          sudo apt-get install git
 
          Enter your root password and follow the installation instructions. 
-         For more details follows [this](https://git-scm.com/download/linux) link.
+         For more details follows <a href="https://git-scm.com/download/linux">this</a> link.
    </details> 
 
 </details>  
