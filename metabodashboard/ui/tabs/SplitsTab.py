@@ -294,7 +294,7 @@ class SplitsTab(MetaTab):
         )
 
         _dataFusion = html.Div(className="title_and_form", children=[
-            html.H4(id="sep_samples_title", children="C) Data Fusion"),
+            html.H4(id="sep_samples_title", children="C) Sample pairing"),
             dbc.Form(children=[
                 dbc.Col(children=[
                     dbc.FormText(
