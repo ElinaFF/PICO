@@ -53,7 +53,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
       You can download the latest version or a previous one if you prefer (Note : MeDIC supports python 3.10, 3.9 and 3.8).  
       You just have to double-click and follow the installation instructions.  
       You can also follow this <a href="https://phoenixnap.com/kb/how-to-install-python-3-windows">tutorial</a> for further details.
-      WARNING : Don't forget the select Add Python 3.X to PATH on the first page ! ![](imgs/addToPath.png)
+      WARNING : Don't forget the select Add Python 3.X to PATH on the first page ! <img src="imgs/addToPath.png" alt="addToPath"> 
       NOTE : To verify that Python is inb the PATH, you can open a new terminal, type Python and enter. If you get something like this, it's all good. ![img_1.png](img_1.png)
             Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning and click repair. Then click on Next. Then you can click on add to path and install. ![](imgs/addToPathAfterRepair.png)
    </details>
