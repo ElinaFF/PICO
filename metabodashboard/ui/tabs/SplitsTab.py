@@ -75,21 +75,6 @@ class SplitsTab(MetaTab):
             className="form_field"
         )
 
-        __outputFile = html.Div(
-            [
-                dbc.Label("Output file *",
-                          className="form_labels"),
-                dbc.Input(id="name_splits_batch",
-
-                          placeholder="Enter Name",
-                          className="form_input_text"),
-                dbc.FormText(
-                    "Give a name to the output file, it will have this format : 'DD-MM-YYYY_CUSTOMNAME.metaboexpe'.",
-                ),
-            ],
-            className="form_field"
-        )
-
         __useRawData = html.Div(
             [
                 dbc.Label("DATA NORMALIZATION FOR PROGENESIS",
@@ -117,7 +102,7 @@ class SplitsTab(MetaTab):
         _file = html.Div(className="title_and_form", children=[
             html.H4(id="CreateSplits_paths_title", children="A) Files"),
             dbc.Form(children=[
-                dbc.Col(children=[__useRawData, __dataFile, __metaDataFile, __outputFile
+                dbc.Col(children=[__useRawData, __dataFile, __metaDataFile
                                   ]),
 
             ]),
@@ -817,8 +802,7 @@ class SplitsTab(MetaTab):
             [Output('output_button_split_file', 'children'),
              Output("download-save-file-split", "data")],
             [Input('split_dataset_button', 'n_clicks')],
-            [State("name_splits_batch", "value"),
-             State("in_use_raw", "value"),
+            [State("in_use_raw", "value"),
              State('in_nbr_splits', 'value'),
              State('in_nbr_processes', 'value'),
              # State("path_to_data_file", "value"),
@@ -840,7 +824,7 @@ class SplitsTab(MetaTab):
              State("distinct_id_2_samples", "value"),
              ]
         )
-        def saving_params_of_splits_batch(n, name_of_the_file, use_raw, nbr_splits, nbr_processes,  # path_data_files,
+        def saving_params_of_splits_batch(n, use_raw, nbr_splits, nbr_processes,  # path_data_files,
                                           peakT, percent_in_test, autoOpt, ID_col_name,  # path_to_metadata,
                                           targets_col_name,
                                           type_of_processing, peak_pick, align, normalize, pair_pn, pair_id_pos,
