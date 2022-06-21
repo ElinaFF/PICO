@@ -1,10 +1,15 @@
 ---
-layout: default
+layout: default   
 ---
 # Index
 
 <style>
   summary{text-decoration: underline}
+
+   details{
+      background-color: grey;
+      
+}
 </style>
 
 1. [Installation](#1-installation)  
@@ -46,7 +51,7 @@ layout: default
 The first step to use MeDIC is to install Python and install git.
 Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10
 <details>
-  <summary>Python installation &#128214;</summary>
+  <summary>Python installation &cudarrr;</summary>
    In order to install Python, you need to go to this <a href="https://www.python.org/downloads/">link</a> and select your operating system.
    <details>
       <summary>For Windows &cudarrr;</summary>
@@ -65,7 +70,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
 </details>  
 
 <details>
-  <summary>&#128214; Git installation</summary>
+  <summary>Git installation &cudarrr;</summary>
   In order to install Git, you need to go to this <a href="https://git-scm.com/downloads">link</a> and select your operating system. 
    <details>
       <summary>For Windows &cudarrr;</summary>
