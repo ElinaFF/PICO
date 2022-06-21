@@ -64,6 +64,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
    </details>  
   
 </details>  
+
 <details>
   <summary>Git installation</summary>
   In order to install Git, you need to go to this [link](https://git-scm.com/downloads) and select your operating system. 
@@ -75,12 +76,12 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
    </details>
    <details>
       <summary>For Linux</summary>
-Open a terminal and type the command : 
+         Open a terminal and run the command :
 
-```Python
-  sudo apt-get install git 
-```
-follows the installation instructions 
+         sudo apt-get install git
+
+         Enter your root password and follow the installation instructions. 
+         For more details follows [this](https://git-scm.com/download/linux) link.
    </details> 
 
 </details>  
@@ -90,7 +91,6 @@ This way the launcher file will be able to do all the installation steps for you
 A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the installation and to start MeDIC.
 ### A. Normal installation
 
- - (LIEN DE DOWNLOAD DIRECT DU LAUNCHER)
  - Download launcher.py on our github (https://github.com/ElinaFF/MetaboDashboard) and run it on your computer with the command : <a href="#note1">*</a> 
  ```
     python launcher.py
