@@ -474,6 +474,7 @@ class SplitsTab(MetaTab):
                 size="5")
         ], className="form_field")
 
+        # TODO: Not displayed
         _otherProcessing = html.Div(className="title_and_form",
                                     children=[
                                         html.H4(id="preprocess_title",
@@ -506,13 +507,14 @@ class SplitsTab(MetaTab):
 
                                             ])
                                         ])
-                                    ])
+                                    ],
+                                    style={"visibility": "hidden"})
 
         _generateFile = html.Div(className="title_and_form",
                                  children=[
                                      html.H4(
                                          id="create_split_title",
-                                         children="F) Generate file"),
+                                         children="E) Generate file"),
                                      dbc.Form(children=[
                                          dbc.Col(children=[
                                              html.Div(
