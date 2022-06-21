@@ -6,7 +6,7 @@ layout: default
 <style>
   summary{text-decoration: underline}
 
-   details details{
+   details p{
       background-color: rgba(199, 199, 199, 0.3);
 }
 </style>
@@ -85,8 +85,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
             </code>
          Enter your root password and follow the installation instructions. 
          For more details follows this <a href="https://git-scm.com/download/linux">link</a>.
-   </details> 
-
+   </details>
 </details>  
 
 This way the launcher file will be able to do all the installation steps for you.
