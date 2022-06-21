@@ -6,7 +6,7 @@ layout: default
 <style>
   summary{text-decoration: underline}
 
-   details{
+   details details{
       background-color: rgba(199, 199, 199, 0.3);
 }
 </style>
