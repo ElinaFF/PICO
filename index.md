@@ -47,7 +47,7 @@ layout: default
 
 # 1. Installation
 
-The first step to use MeDIC is to install Python and install git.
+The first step, to use MeDIC, is to install Python and install git.
 Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10
 <details>
   <summary>Python installation &cudarrr;</summary>
@@ -88,9 +88,11 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
    </details>
 </details>  
 
-This way the launcher file will be able to do all the installation steps for you.
+A launcher has been made for MeDIC to facilitate the installation process. 
+This launcher can be used for the installation and to start MeDIC.
 
-A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the installation and to start MeDIC.
+The launcher file needs Git and Python to be able to do all the installation steps for you.
+
 ### A. Normal installation
 
  - Download launcher.py on our <a href="https://github.com/ElinaFF/MetaboDashboard">github</a> and run it on your computer with the command : <a href="#note1">*</a> 
@@ -119,13 +121,13 @@ if you don’t have mini Conda installed on your machine, the launcher will inst
  <p>If you chose to manually install MeDIC, considering you already cloned the git, you have to create a conda environment and install all the packages in the requirements.txt file.</p>
 </details>
 
-## Metabodashboard launcher options
+## MeDIC launcher options
 
 Those commands are optionals but may help you to use the launcher in an easier way.  
 They can be combined or use independently.
 
 ### 1. Use an environment you already have
- - The content of MeDIC environment can be installed in another environment, if you don't want to create a new one, with the command : <a href="#note2">**</a> 
+ - The content of MeDICs environment can be installed in another environment, if you don't want to create a new one, with the command : <a href="#note2">**</a> 
   ```
     python launcher.py --environment <environment_name>
     python launcher.py -e <environment_name> 
@@ -133,7 +135,7 @@ They can be combined or use independently.
   <h5 id="note2"> ** It is recommended not to create MeDIC environment into another environment as it may cause problems.</h5>
 
 ### 2. Fast launch for everyday use
- - MeDIC can be launch faster without any verifications of the environment with the command :
+ - MeDIC can be launched faster without any verifications of the environment with the command :
   ```
     python launcher.py --no-check
     python launcher.py -c
@@ -158,7 +160,7 @@ They can be combined or use independently.
 > [Go back to index](#index)
 
 ## Saving file
-Before explaining the interface, lets see how the experiments are saved and shareable. 
+Before explaining the interface, lets see how the experiments are saved and how you can share them. 
 To allow a better modularity of the experiments, the three major steps of MeDIC are saved independently into a file after each step. 
 Moreover, the data and metadata are only saved in local repository, not in the saving file, which allow the sharing of the file to outside collaborators. 
 To continue an experiments and/or visualize its results, MeDIC offers the possibility to load a saving file in the first tab (Home). 
@@ -186,9 +188,9 @@ Go to the Splits tab.
 
 The following instructions are for the ```A) FILES``` section.
 
-If you use Progenesis abundance file, you can choose to use the raw data (instead of the normalized)
+If you use Progenesis abundance file, you can choose to use the raw data (instead of the normalized).
 
-To upload the data, drag and drop your data file in the ```DATA FILE(S)``` section 
+To upload the data, drag and drop your data file in the ```DATA FILE(S)``` section.
 
 > ![](imgs/2022-06-06-17-58-03.png)
 >
@@ -220,7 +222,7 @@ With the board, you can run multiple experimental design, under certain conditio
 - use the same Machine Learning (ML) algorithms
 - use the same ML parameters
 
-First, you need to select the target column. To clarify,  the target column contains the values that the algorithms will try to predict. A typical example is the column that contain the diagnosis.
+First, you need to select the target column. To clarify, the target column contains the values that the algorithms will try to predict. A typical example is the column that contain the diagnosis.
 
 The columns name prompted in the following figure are the column in the metadata file previously uploaded. If there are not the ones expected, please retry uploading the metadata in [this section](index.md#a-set-the-metadata-and-data)
 
@@ -236,7 +238,7 @@ After setting the target column, we need to set the samples' column. This column
 
 The main of the experimental designs configuration section is divided in two panel, respectively the *repository* and the *configuration* panel
 
-Once the target column are defined, the possible labels are updated in the *configuration* panel as shown in the following figure.
+Once the target columns are defined, the possible labels are updated in the *configuration* panel as shown in the following figure.
 
 > ![](imgs/2022-06-07-11-56-46.png)
 > 
@@ -284,24 +286,33 @@ If you don't feel conformable with these parameters, the minimum you need to kno
 - the proportion is quite standard, it will suit most of the time
 - 5 splits is quick to run but some samples may never be used to test the algorithms. If you want a complete run, 15 to 25 splits should be enough.
 
-In the other case, the splits are made by copying the dataset and applying a random separation with a different random seed at each time. This principle is called bootstrap.
+In the other case, the splits are made by copying the dataset and applying a random separation with a different 
+random seed at each time. This principle is called bootstrap.
 
-Most of the time, medical data are fat data ,i.e. contains many features (characteristic) for few samples, which can lead to many large when the training set is changed.
+Most of the time, medical data are fat data ,i.e. contains many features (characteristic) for few samples, 
+which can lead to many large when the training set is changed.
 
-Moreover, as the cross validation (explained further in [2.C.1](#1-define-learning-configurations)), it allows the model(s) to be tested on most of the samples.
+Moreover, as the cross validation (explained in further details in section [2.C.1](#1-define-learning-configurations)), 
+it allows the model(s) to be tested on most of the samples.
 
-If you want to achieve it, the probability that all samples are seen in the test set, i.e. the probability that a sample is never in the test set, follow a <a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank">Markov chain</a>. With a example of 5 samples with 80-20 train-test repartition, the chain is as follow:
+If you want to achieve it, the probability that all samples are seen in the test set, i.e. the 
+probability that a sample is never in the test set, follow a 
+<a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank">Markov chain</a>. With an
+example of 5 samples with 80-20 train-test repartition, the chain is as follows:
 - The initial state $$V_1=\begin{pmatrix} 0 & 1 & 0 & 0 & 0 \end{pmatrix}$$
 - $$P(s_{t+1}=j\|s_t=i)=\frac{\begin{pmatrix} m-i \\ j-i \end{pmatrix}\begin{pmatrix} i \\ k-(j-i) \end{pmatrix}}{\begin{pmatrix} m \\ k \end{pmatrix}}$$ with $$s_t$$ a state at a $$t$$ moment, $$m$$ the total number of samples and $$k$$ the number of samples in the test set (test proportion$$\times m$$).
 - $$M$$ the $$5\times 5$$ matrix of $$P(s_{t+1}=j\|s_t=i)$$
-- $$V_n=V_1\times M^{n-1}$$ with $$n$$ the number of splits- $$P(X \gt 1) = 1-V_n[5]$$ where $$X$$ is a random variable that model the number of samples that are never in the test set
+- $$V_n=V_1\times M^{n-1}$$ with $$n$$ the number of splits- $$P(X \gt 1) = 1-V_n[5]$$ where $$X$$ is a random variable
+- that model the number of samples that are never in the test set
 
-The figure hereunder show $$P(X \gt 1)$$ (valeurs) as a function of the number of splits $$n$$ (1:nbr_limit) with $$m=250$$ samples and a test proportion of $$0.2$$ ($$k=50$$)
+The figure hereunder shows $$P(X \gt 1)$$ (values) as a function of the number 
+of splits $$n$$ (1:nbr_limit) with $$m=250$$ samples and a test proportion of $$0.2$$ ($$k=50$$)
 
 
 > ![](imgs/2022-06-07-14-02-37.png)
 >
-> *$$P(X \gt 1)$$ (valeurs) as a function of the number of splits $$n$$ (1:nbr_limit) with $$m=250$$ samples and a test proportion of $$0.2$$ ($$k=50$$)*
+> *$$P(X \gt 1)$$ (valeurs) as a function of the number of splits $$n$$ (1:nbr_limit) 
+> with $$m=250$$ samples and a test proportion of  $$0.2$$ ($$k=50$$)*
 
 ### 4. Other preprocessing
 > [Go back to index](#index)
@@ -319,7 +330,8 @@ You can show all the processing parameter by clicking on the ```OPEN``` button.
 
 These finals instructions are for the ```F) GENERATE FILE``` section.
 
-Once all the parameter, the samples id and target column, and **at least one** experimental design are set, you can run the splits' computation by clicking on the ```CREATE``` button.
+Once all the parameters, the samples id and target columns, and **at least one** experimental design are set, you can
+run the splits' computation by clicking on the ```CREATE``` button.
 
 > ![](imgs/2022-06-07-16-02-36.png)
 >
@@ -333,31 +345,47 @@ Once all the parameter, the samples id and target column, and **at least one** e
 
 The following instructions are for the ```DEFINE LEARNING CONFIGS``` section.
 
-If you're not confortable with these parameters, you can safely keep the default values and jump to the [next section](#2-define-learning-algorithms).
+If you're not comfortable with these parameters, you can safely keep the default 
+values and jump to the [next section](#2-define-learning-algorithms).
 
-First, before choosing a Cross Validation (CV) search type, you need to understand the principle of CV.
+First, before choosing a Cross Validation (CV) search type, you need to understand 
+the principle of CV.
 
-The method consist in separating the dataset in $$n$$ sections. At each iteration, the first or the next section will be used as the test set and the other sections will form the training set. It allows us to train **and** test the model on all the dataset. Furthermore, the mean accuracy over
+The method consist in separating the dataset in $$n$$ sections. At each iteration, 
+the first or the next section will be used as the test set and the other sections will 
+form the training set. It allows us to train **and** test the model on all the dataset. 
+Furthermore, the mean accuracy over
 
-The number of folds define the number of time the model(s) will be trained, and the number of division in the dataset.
+The number of folds defines the number of time the model(s) will be trained, and the number 
+of division in the dataset.
 
-We use CV in order to make sure the model doesn't overfit, we keep a sample of the dataset to test it at the end. If the algorithm is overfitting, it will make a lot of errors when presented a new set of data. This also allows us to make sure the algorithm is tested on all samples.
+We use CV in order to make sure the model doesn't overfit, 
+we keep a sample of the dataset to test it at the end. If the algorithm is overfitting,
+it will make a lot of errors when presented a new set of data. This also allows us to 
+make sure the algorithm is tested on all samples.
 
-For more details, see [here](https://learn.g2.com/cross-validation).
+For more details, see this [explanation](https://learn.g2.com/cross-validation).
 
-The ability of a search algorithm is to train a set of models with a set of parameters, and compute a metric tested combination. This metric is most of the time the accuracy (the number of correct predictions on the total number of predictions (the number of samples)).
+The ability of a search algorithm is to train a set of models with a set of parameters, 
+and compute a metric tested combination. This metric is most of the time the accuracy 
+(the number of correct predictions over the total number of predictions (the number of samples)).
 
-After the computation, the algorithm is able to find the model combined with the parameters that perform best, in the tested combinations.
+After the computation, the algorithm is able to find the model combined with the parameters 
+that perform best, in the tested combinations.
 
-The ```GridSearchCV``` is a search algorithm using CV that test every possible combination of parameters, like in a grid. This method is effective but may take a long time to run and may test useless combination.
+The ```GridSearchCV``` is a search algorithm using CV that test every possible 
+combination of parameters, like in a grid. This method is effective but may take a long time 
+to run and may test useless combination.
 
-The ```RandomizedSearchCV``` come as a counterpoint and take random combinations of parameters. This method allow more values to be tested and run quicker but isn't as rigorous as the ```GridSearchCV```.  
+The ```RandomizedSearchCV``` comes as a counterpoint and take random combinations of parameters. This method allow 
+more values to be tested and runs faster but isn't as rigorous as the ```GridSearchCV```.  
 
 In the ```SELECT CV SEARCH TYPE``` panel, you can choose either ```GridSearchCV``` or ```RandomizedSearchCV```.
 
 You can set the number of folds in the ```NUMBER OF CROSS VALIDATION FOLDS```.
 
-The number of processes in the ```Number of processes``` is the number of parallel job you want to run. 2 is enough to increase the speed of computation. More processes might slow your PC.
+The number of processes in the ```Number of processes``` is the number of parallel job you want to run. Two is enough 
+to increase the speed of computation. More processes might slow down your PC.
 
 ### 2. Define learning algorithms
 > [Go back to index](#index)
@@ -370,27 +398,35 @@ The ```AVAILABLE ALGORITHMS``` are:
 - SCM
 - Random SCM
 
-The first classifier implement a regular decision tree. To make a prediction, the data is the input of the root node. The root node, as the others, has a threshold for one feature : for example $$\text{cholesterol} \geq 2$$. If the value validate the threshold, it goes to the right node, otherwise it goes to the left, until it reach a leaf. The leaf assigns a class to the sample.
+The first classifier implement a regular ***decision tree***. To make a prediction, the data is the input of the root node.
+The root node, as the others, has a threshold for one feature : for example $$\text{cholesterol} \geq 2$$.
+If the value validate the threshold, it goes to the right node, otherwise it goes to the left, until it reach a leaf.
+The leaf assigns a class to the sample.
 
-The second classifier, the random forest, is a decision tree ensemble that classify independently the sample. Each DT vote the class of the sample. The class that has the most vote is assign to the sample.
+The second classifier, the ***random forest***, is a decision tree (DT) ensemble that classify independently the sample. 
+Each DT vote the class of the sample. The class that has the most vote is assign to the sample.
 
-The Set Covering Machine (SCM) is a combination of rules. For example, if the cholesterol is greater than 2 g/l OR insulin is greater than 140 mg/dL AND insulin is less than 199 mg/dL.
+The ***Set Covering Machine (SCM)*** is a combination of rules. For example, if the cholesterol is greater than 2 g/l OR insulin is 
+greater than 140 mg/dL AND insulin is less than 199 mg/dL.
 
-The last classifier is the Random SCM. As the random forest is a voting decision tree ensemble, the random SCM is a voting SCM ensemble.
+The last classifier is the ***Random SCM***. As the random forest is a voting decision tree ensemble, the random SCM is a voting SCM ensemble.
 
 You have to tick **at least one** algorithms. 
 
-But because of their differences, some may perform better than others on different datasets. It is advised to take at least one SCM-type and one DecisionTree-type algorithms.
+But because of their differences, some may perform better than others on different datasets. 
+It is advised to take at least one SCM-type and one DecisionTree-type algorithms.
 
 If you want to add [scikit-learn algorithms](https://scikit-learn.org/stable/index.html) that isn't in the available algorithms, you can in the ```ADD SKLEARN ALGORITHMS```.
 
 You need to complete the import and specify the grid search parameter (for the CV search algorithm). 
 
 <details>
-<summary>Add a full custom algorithms (for expert)</summary>
+<summary>Add a full custom algorithms (for expert) &cudarrr;</summary>
 
-To add a full custom model, you need to add it to the configuration file located at ```metabodashboard/conf/SupportedModel.py```.
+To add a full custom model, you need to add it to the configuration file located at ```metabodashboard/conf/SupportedModel.py```.  
+
 Add a dictionary containing the **NON-INSTANTIATED** class and the param grid. Format is the following (change only the attribute \_xxx\_)
+
 ```Python
   "_Printed_name_": {
         "function": _non-instantiated_class_,
@@ -400,13 +436,13 @@ Add a dictionary containing the **NON-INSTANTIATED** class and the param grid. F
             ...
         }
     },
-```
+```  
 
-After adding your configuration, **reboot** MeDIC by stopping and restarting the launcher.
+After adding your configuration, **reboot** MeDIC by stopping and restarting the launcher.  
 
-The algorithm should be in the ```AVAILABLE ALGORITHMS``` section with his printed name.
+The algorithm should be in the ```AVAILABLE ALGORITHMS``` section with his printed name.  
 
-Note, the custom model are in the save file (.mtxp) and will be restored.
+Note, the custom model are in the save file (.mtxp) and will be restored.  
 
 </details>
 
