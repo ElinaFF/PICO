@@ -7,13 +7,9 @@ from unittest.mock import Mock
 
 import numpy as np
 import pandas as pd
-from pyscm import SetCoveringMachineClassifier
-from randomscm.randomscm import RandomScmClassifier
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.svm import LinearSVC
-from sklearn.tree import DecisionTreeClassifier
+
 
 from ...metabodashboard.conf.SupportedModels import LEARN_CONFIG
 
@@ -26,6 +22,26 @@ def _get_random_data(size: int, number_of_columns: int):
     data = np.random.rand(size, number_of_columns)
     column = ["feature-" + str(index) for index in range(number_of_columns)]
     return pd.DataFrame(data, columns=column)
+
+
+def _get_group_pairing_column_and_filtered_index(size: int):
+    data = []
+    selected_index = []
+    for index in range(size // 3):
+        data += [f"group-{index}", f"group-{index}", f"group-{index}"]
+        selected_index.append(f'patient-{index*3}')
+    if size % 3 != 0:
+        selected_index.append(f'patient-{size // 3 * 3}')
+        for index in range(size - size // 3 * 3):
+            data += [f"group-{size // 3}"]
+    return data, selected_index
+
+
+def _get_pattern_pairing(size: int):
+    column_1 = ["pattern-A" for _ in range(size//2)] + ["pattern-B" for _ in range(size//2, size)]
+    column_2 = ["pattern-1" for _ in range(size//3)] + ["pattern-2" for _ in range(size//3, size)]
+    column_3 = ["pattern-Y" for _ in range(size//4)] + ["pattern-N" for _ in range(size//4, size)]
+    return [column_1, column_2, column_3]
 
 
 def _get_targets_and_classes(size: int, classes_design: dict):
@@ -88,7 +104,6 @@ def _get_random_results(number_of_split: int):
     return results
 
 
-
 SIZE = 100
 COLUMNS = 1000
 
@@ -107,8 +122,18 @@ SCALED_DATA = pd.DataFrame(StandardScaler().fit_transform(DATA), columns=DATA.co
 
 SAMPLES_ID_COLUMN = "samples_id"
 TARGETS_COLUMN = "target"
+PAIRING_GROUP_COLUMN = "pairing_group"
+PAIRING_PATTERN_COLUMNS = ["pairing_pattern_AB", "pairing_pattern_12", "pairing_pattern_YN"]
 
-METADATA_DATAFRAME = pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID, TARGETS_COLUMN: TARGETS})
+PAIRING_GROUP, FILTERED_ID = _get_group_pairing_column_and_filtered_index(SIZE)
+PATTERN_PAIRING = _get_pattern_pairing(SIZE)
+
+METADATA_DATAFRAME = pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID, TARGETS_COLUMN: TARGETS, PAIRING_GROUP_COLUMN:
+    PAIRING_GROUP})
+
+for index, pattern in enumerate(PATTERN_PAIRING):
+    METADATA_DATAFRAME[PAIRING_PATTERN_COLUMNS[index]] = pattern
+
 ENCODED_METADATA_DATAFRAME = base64_encode_metadata(METADATA_DATAFRAME)
 METADATA_DATAFRAME_HASH = compute_hash(METADATA_DATAFRAME)
 
@@ -126,7 +151,9 @@ MOCKED_METADATA_CLASS = Mock(name="MockedMetadata")
 MOCKED_METADATA = MOCKED_METADATA_CLASS.return_value
 MOCKED_METADATA.get_metadata.return_value = METADATA_DATAFRAME
 MOCKED_METADATA.get_samples_id.return_value = SAMPLES_ID
+MOCKED_METADATA.get_id_column.return_value = SAMPLES_ID_COLUMN
 MOCKED_METADATA.get_targets.return_value = TARGETS
+MOCKED_METADATA.get_target_column.return_value = TARGETS_COLUMN
 MOCKED_METADATA.get_hash.return_value = METADATA_DATAFRAME_HASH
 
 MOCKED_DATAMATRIX_CLASS = Mock(name="MockedDatamatrix")
@@ -191,3 +218,19 @@ PARAMETER_GRID = {
 }
 
 SUPPORTED_MODEL = LEARN_CONFIG
+
+PAIRING_DICT = {
+    "group": [PAIRING_GROUP_COLUMN],
+    "pattern": [PAIRING_PATTERN_COLUMNS],
+}
+
+COMPUTED_PATTERNS = [[
+    ("pattern-A", "pattern-1", "pattern-Y"),
+    ("pattern-A", "pattern-1", "pattern-N"),
+    ("pattern-A", "pattern-2", "pattern-Y"),
+    ("pattern-A", "pattern-2", "pattern-N"),
+    ("pattern-B", "pattern-1", "pattern-Y"),
+    ("pattern-B", "pattern-1", "pattern-N"),
+    ("pattern-B", "pattern-2", "pattern-Y"),
+    ("pattern-B", "pattern-2", "pattern-N"),
+]]
