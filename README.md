@@ -3,7 +3,7 @@
 ## Description
 *Enter description here*
 
-##The documentation
+## The documentation
 You can find the documentation [here](https://elinaff.github.io/MetaboDashboard/).
 It explains how to use MeDIC but also how it works.
 
