@@ -7,7 +7,7 @@
 You can find the documentation [here](https://elinaff.github.io/MetaboDashboard/).
 It explains how to use MeDIC but also how it works.
 
-##Authors and contributors
+## Authors and contributors
  - [Élina Francovic-Fontaine](https://github.com/ElinaFF)
  - [Vincent Primpied](https://github.com/le-smog)
  - [Vincent Vilain](https://github.com/VincentVilain)
