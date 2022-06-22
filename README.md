@@ -1,6 +1,6 @@
 # MeDIC
 
-##Description
+## Description
 *Enter description here*
 
 ##The documentation
