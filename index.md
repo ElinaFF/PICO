@@ -13,9 +13,9 @@ layout: default
 
 1. [Installation](#1-installation)  
     <ol type="A">
-      <li><a href="#a-python-installation">Python installation</a></li>
-      <li><a href="#b-git-installation">Git installation</a></li>
-      <li><a href="#c-launcher">Launcher</a></li>
+      <li><a href="#a-normal-installation">Normal installation</a></li>
+      <li><a href="#b-clone-repository-and-normal-installation">Clone repository and normal installation</a></li>
+      <li><a href="#c-manual-installation">Manual installation</a></li>
     </ol>
 2. [Utilization](#2-utilization)  
     <ol type="A">
@@ -196,7 +196,6 @@ To allow a better modularity of the experiments, the three major steps of MeDIC 
 Moreover, the data and metadata are only saved in local repository, not in the saving file, which allow the sharing of the file to outside collaborators. 
 To continue an experiments and/or visualize its results, MeDIC offers the possibility to load a saving file in the first tab (Home). 
 However, to prevent any problem between a local data saving and a potential different saving file, a hashing process takes place to compare the file being loaded and the local dumps of data. 
-To get more details on the hashing process see this resource (LIEN).
 
 Welcome into MeDIC!
 
@@ -267,7 +266,7 @@ After setting the target column, we need to set the samples' column. This column
 >
 > *Samples column selection panel*
 
-The main of the experimental designs configuration section is divided in two panel, respectively the *repository* and the *configuration* panel
+The main part of the experimental designs configuration section is divided in two panel, respectively the *repository* and the *configuration* panel
 
 Once the target columns are defined, the possible labels are updated in the *configuration* panel as shown in the following figure.
 
@@ -315,7 +314,7 @@ The following instructions are for the ```D) DEFINE SPLITS``` section.
 
 If you don't feel conformable with these parameters, the minimum you need to know is:
 - the proportion is quite standard, it will suit most of the time
-- 5 splits is quick to run but some samples may never be used to test the algorithms. If you want a complete run, 15 to 25 splits should be enough.
+- 5 splits is quick to run but some samples may never be used to test the algorithms. A more complete run will take 15 to 25 splits.
 
 In the other case, the splits are made by copying the dataset and applying a random separation with a different 
 random seed at each time. This principle is called bootstrap.
@@ -385,7 +384,7 @@ the principle of CV.
 The method consist in separating the dataset in $$n$$ sections. At each iteration, 
 the first or the next section will be used as the test set and the other sections will 
 form the training set. It allows us to train **and** test the model on all the dataset. 
-Furthermore, the mean accuracy over
+Furthermore, the mean accuracy over the folds is a better measurement of the performance of the models.
 
 The number of folds defines the number of time the model(s) will be trained, and the number 
 of division in the dataset.
@@ -415,8 +414,8 @@ In the ```SELECT CV SEARCH TYPE``` panel, you can choose either ```GridSearchCV`
 
 You can set the number of folds in the ```NUMBER OF CROSS VALIDATION FOLDS```.
 
-The number of processes in the ```Number of processes``` is the number of parallel job you want to run. Two is enough 
-to increase the speed of computation. More processes might slow down your PC.
+The number of processes in the ```Number of processes``` field is the number of parallel job you want to run. Two is enough 
+to increase the speed of computation. More processes might slow down to crash your PC.
 
 ### 2. Define learning algorithms
 > [Go back to index](#index)
@@ -454,24 +453,26 @@ You need to complete the import and specify the grid search parameter (for the C
 <details>
 <summary>Add a full custom algorithms (for expert) &cudarrr;</summary>
 
-To add a full custom model, you need to add it to the configuration file located at ```metabodashboard/conf/SupportedModel.py```.  
+To add a full custom model, you need to add it to the configuration file located at <code class="language-plaintext highlighter-rouge">metabodashboard/conf/SupportedModel.py</code>.  
 
-Add a dictionary containing the **NON-INSTANTIATED** class and the param grid. Format is the following (change only the attribute \_xxx\_)
+Add a dictionary containing the <strong>NON-INSTANTIATED</strong> class and the param grid. Format is the following (change only the attribute _xxx_)
 
-```Python
-  "_Printed_name_": {
-        "function": _non-instantiated_class_,
-        "ParamGrid": {
-            "_p1_": _[0.5, 1., 2.]_,
-            "_p2_": _[1, 2, 3, 4, 5]_,
-            ...
-        }
-    },
-```  
+<pre>
+  <code class="language-python">
+    "_Printed_name_": {
+          "function": _non-instantiated_class_,
+          "ParamGrid": {
+              "_p1_": _[0.5, 1., 2.]_,
+              "_p2_": _[1, 2, 3, 4, 5]_,
+              ...
+          }
+      },
+  </code> 
+</pre>
 
-After adding your configuration, **reboot** MeDIC by stopping and restarting the launcher.  
+After adding your configuration, <strong>reboot</strong> MeDIC by stopping and restarting the launcher.  
 
-The algorithm should be in the ```AVAILABLE ALGORITHMS``` section with his printed name.  
+The algorithm should be in the <code class="language-plaintext highlighter-rouge">AVAILABLE ALGORITHMS</code> section with his printed name.  
 
 Note, the custom model are in the save file (.mtxp) and will be restored.  
 
