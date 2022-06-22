@@ -122,14 +122,6 @@ if you don’t have any Conda instance installed on your machine, the launcher w
 ```
   python launcher.py
 ```
-  TIP: Don't forget to move to the folder Metabodashboard, with the command cd, before starting the launcher.
-
-<<<<<<< Updated upstream
-<details>
-<summary> C. Manual installation</summary>
-  
- <p>If you chose to manually install MeDIC, considering you already cloned the git, you have to create a conda environment and install all the packages in the requirements.txt file.</p>
-</details>
 
 ### C. Manual installation
  - Install Miniconda following the [documentation](https://docs.conda.io/en/latest/miniconda.html)
@@ -590,14 +582,18 @@ Once all the splits are set, this function creates all the splits at the same ti
 ```Python
   set_selected_models(selected_models: list)
 ```
+Set the list of models that will be trained.
 
 ```Python
   learn(folds: int)
 ```
+Start the training of all the models on all splits.
+Folds is used for the cross-validation process (explained in [Define learning configuration](#1-define-learning-configurations))
 
 ```Python
   get_all_results()
 ```
+Return all the data about the results, and the best model.
 
 ## C. Full class diagram
 
