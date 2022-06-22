@@ -95,32 +95,71 @@ The launcher file needs Git and Python to be able to do all the installation ste
 
 ### A. Normal installation
 
- - Download launcher.py on our <a href="https://github.com/ElinaFF/MetaboDashboard">github</a> and run it on your computer with the command : <a href="#note1">*</a> 
+ - Download launcher.py on our <a href="https://github.com/ElinaFF/MetaboDashboard">github</a>
+ - Open a terminal (*cmd* in Windows)
+ - Run the launcher on your computer with the command : <a href="#note1">*</a> 
  ```
     python launcher.py
  ```
 
- <h5 id="note1"> * You just need to execute the command ‘python launcher.py’ after opening a terminal in the folder 
-where you downloaded the launcher.py. <br>No need to clone the repository, we will install everything we need. 
+ <h5 id="note1"> * No need to clone the repository, we will install everything we need. 
 If you still want to do so and don’t want the launcher to redownload it during the installation process, make sure to 
 clone the repository in the same folder as the launcher.<br> MeDIC uses conda for his environment, 
-if you don’t have mini Conda installed on your machine, the launcher will install it.
+if you don’t have any Conda instance installed on your machine, the launcher will install one (Miniconda3).
 <br> All the dependencies necessary will be installed in the conda environment.</h5>
 
 ### B. Clone repository and normal installation
- -	Clone the Github repository and run launcher.py with the commands.
+ - Open a terminal (*cmd* in Windows)
+ - Clone the Github repository.
   ```
     git clone https://github.com/ElinaFF/MetaboDashboard
-    python launcher.py
   ```
+ - Move inside the repository
+```
+  cd MetaboDashboard
+```
+ - Run the launcher
+```
+  python launcher.py
+```
   TIP: Don't forget to move to the folder Metabodashboard, with the command cd, before starting the launcher.
 
+<<<<<<< Updated upstream
 <details>
 <summary> C. Manual installation</summary>
   
  <p>If you chose to manually install MeDIC, considering you already cloned the git, you have to create a conda environment and install all the packages in the requirements.txt file.</p>
 </details>
 
+### C. Manual installation
+ - Install Miniconda following the [documentation](https://docs.conda.io/en/latest/miniconda.html)
+ - Open a terminal (**"cmd" in Windows not "Powershell"**)
+ - Create a environnement with Conda:
+```
+  conda create metabodashboard
+```
+ - Enter in the environnement
+```
+  conda activate metabodashboard 
+```
+ NOTE: if the command worked, you should see the name "metabodashboard" written at the beginning of your prompt as the following image.
+
+ ![](imgs/2022-06-22-15-56-49.png)
+
+ - Clone the Github repository and move inside.
+  ```
+    git clone https://github.com/ElinaFF/MetaboDashboard
+    cd MetaboDashboard
+  ```
+ - Install the dependencies:
+```
+  python -m pip install -r requirements.txt
+```
+NOTE: if you have a error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem ([see here](https://learnopenerp.blogspot.com/2021/08/failed-building-wheel-for-parmed-python.html)).
+ - Launch the Web interface
+```
+  python main.py
+```
 ## MeDIC launcher options
 
 Those commands are optionals but may help you to use the launcher in an easier way.  
