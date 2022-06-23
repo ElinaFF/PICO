@@ -1,7 +1,9 @@
 # MeDIC
+Metabolomic Dashboard for Interpretable Classification
 
 ## Description
-*Enter description here*
+The MeDIC is a tool to apply machine learning algorithms to untargeted metabolomics datasets acquired by liquid-chromatography mass spectrometry. The goal is to extract the most important features because they are potential novel biomarkers.
+The interface is made to be easy to use and intuitive even for those with small to nonexistant experience in programming and AI.
 
 ## The documentation
 You can find the documentation [here](https://elinaff.github.io/MetaboDashboard/).
