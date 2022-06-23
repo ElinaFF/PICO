@@ -169,8 +169,9 @@ class Results:
         nbr_train = len(y_train_true)
         nbr_test = len(y_test_true)
         tot = nbr_train + nbr_test
-        nom_stats = ["Number of samples (train:test)"]
-        valeurs_stats = [str(tot) + " (" + str(int(nbr_train / tot * 100)) + ":" + str(int(nbr_test / tot * 100)) + ")"]
+        nom_stats = ["Number of samples", "Train-test repartition"]
+        valeurs_stats = [str(tot)]
+        valeurs_stats.append(str(int(nbr_train / tot * 100)) + " - " + str(int(nbr_test / tot * 100)))
         y = y_train_true + y_test_true
         c = Counter(y)
         for k in c.keys():
@@ -286,6 +287,8 @@ class Results:
         """
         important_features = list(feature_df["features"])[:10]
         df = data.loc[:, important_features]
+        print(df)
+        print(len(self.results["classes"]))
         df["targets"] = self.results["classes"]
         return df
 
