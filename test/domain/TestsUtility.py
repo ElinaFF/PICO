@@ -7,13 +7,8 @@ from unittest.mock import Mock
 
 import numpy as np
 import pandas as pd
-from pyscm import SetCoveringMachineClassifier
-from randomscm.randomscm import RandomScmClassifier
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.svm import LinearSVC
-from sklearn.tree import DecisionTreeClassifier
 
 from ...metabodashboard.conf.SupportedModels import LEARN_CONFIG
 
@@ -93,15 +88,19 @@ SIZE = 100
 COLUMNS = 1000
 
 EXPERIMENT_NAME = "sick_vs_healthy"
-EXPERIMENT_FULL_NAME = "sick (sick, ill) versus healthy (healthy)"
+EXPERIMENT_FULL_NAME = "sick (sick) versus healthy (healthy)"
 
-CLASSES_DESIGN = {"sick": ["sick", "ill"], "healthy": ["healthy"]}
+CLASSES_DESIGN = {"sick": ["sick"], "healthy": ["healthy"]}
 
 NUMBER_OF_SPLITS = 10
 TRAIN_TEST_PROPORTION = 0.75
 
 SAMPLES_ID = _get_samples_id(SIZE)
 TARGETS, CLASSES = _get_targets_and_classes(SIZE, CLASSES_DESIGN)
+SELECTED_TARGETS = ["sick", "healthy"]
+FILTERED_TARGETS = [target for target in TARGETS if target in SELECTED_TARGETS]
+FILTERED_SAMPLES_ID = [id for id, target in zip(SAMPLES_ID, TARGETS) if target in SELECTED_TARGETS]
+FILTERED_TARGETS_AND_IDS = (tuple(FILTERED_TARGETS), tuple(FILTERED_SAMPLES_ID))
 DATA = _get_random_data(SIZE, COLUMNS)
 SCALED_DATA = pd.DataFrame(StandardScaler().fit_transform(DATA), columns=DATA.columns)
 
@@ -127,6 +126,7 @@ MOCKED_METADATA = MOCKED_METADATA_CLASS.return_value
 MOCKED_METADATA.get_metadata.return_value = METADATA_DATAFRAME
 MOCKED_METADATA.get_samples_id.return_value = SAMPLES_ID
 MOCKED_METADATA.get_targets.return_value = TARGETS
+MOCKED_METADATA.get_selected_targets_and_ids.return_value = FILTERED_TARGETS_AND_IDS
 MOCKED_METADATA.get_hash.return_value = METADATA_DATAFRAME_HASH
 
 MOCKED_DATAMATRIX_CLASS = Mock(name="MockedDatamatrix")
