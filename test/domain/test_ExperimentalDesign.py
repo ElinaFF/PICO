@@ -1,12 +1,10 @@
-from unittest.mock import patch, Mock, mock_open
+from unittest.mock import patch, mock_open
 
-import pandas as pd
 import pytest as pytest
-from sklearn.model_selection import train_test_split
 
-from ...metabodashboard.domain import ExperimentalDesign, MetaData, SplitGroup
+from ...metabodashboard.domain import ExperimentalDesign
 
-from .TestsUtility import MOCKED_METADATA, CLASSES_DESIGN, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, \
+from ..TestsUtility import MOCKED_METADATA, CLASSES_DESIGN, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, \
     EXPERIMENT_NAME, EXPERIMENT_FULL_NAME, SPLITS, SELECTED_TARGETS
 
 

@@ -1,6 +1,6 @@
 import pytest as pytest
 
-from .TestsUtility import METADATA_DATAFRAME, SAMPLES_ID_COLUMN, TARGETS_COLUMN, SAMPLES_ID, TARGETS, SELECTED_TARGETS, \
+from ..TestsUtility import METADATA_DATAFRAME, SAMPLES_ID_COLUMN, TARGETS_COLUMN, SAMPLES_ID, TARGETS, SELECTED_TARGETS, \
     FILTERED_TARGETS, FILTERED_SAMPLES_ID
 from ...metabodashboard.domain.MetaData import MetaData
 
