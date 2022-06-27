@@ -254,7 +254,7 @@ def env_dependencies_verification():
     with open(REQUIREMENT_FILE, 'r') as f:
         line = f.readline()
         while line:
-            line = line.strip()  # permet de retirer les retour à la ligne
+            line = line.strip().replace("_", "-")  # remove endline and replace _ by -
             if re.match(regex, line):
                 line = re.findall(regex, line)[0][0]
             if line not in actual_package_installed_list:
