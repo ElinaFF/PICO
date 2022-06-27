@@ -50,7 +50,9 @@ class SplitsTab(MetaTab):
                     "columns.",
                 ),
             ],
-            className="form_field"
+            className="form_field",
+            id="datatable-section",
+            style={"display": "none"}
         )
 
         __metaDataFile = html.Div(
@@ -72,7 +74,9 @@ class SplitsTab(MetaTab):
                     "data file, and one column of target/class/condition.",
                 )
             ],
-            className="form_field"
+            className="form_field",
+            id="metadata-section",
+            style={"display": "none"}
         )
 
         __useRawData = html.Div(
@@ -561,6 +565,16 @@ class SplitsTab(MetaTab):
                                  ])
 
     def _registerCallbacks(self) -> None:
+        @self.app.callback(
+            [Output("datatable-section", "style"),
+             Output("metadata-section", "style")],
+            [Input("in_use_raw", "value")]
+        )
+        def normalization_selection(value):
+            if value is not None:
+                return {"display": "block"}, {"display": "block"}
+            return dash.no_update, dash.no_update
+
         @self.app.callback(
             [Output('info_progenesis_loaded', 'children'),
              Output('upload_datatable_output', 'children'),
