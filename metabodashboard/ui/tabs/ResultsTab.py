@@ -230,6 +230,7 @@ class ResultsTab(MetaTab):
                                                 className="form_select",
                                                 options=[{"label": "None", "value": "None"}],
                                                 value="None",
+                                                style={"width": "35%"}
                                                 ),
                                      dcc.Loading(dcc.Graph(id="features_stripChart"),
                                                  type="dot", color="#13BD00"),
