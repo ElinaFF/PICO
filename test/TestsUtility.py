@@ -157,7 +157,7 @@ CUSTOM_MODELS = {
     "Custom model": MOCKED_CUSTOM_MODEL,
 }
 
-SELECTED_MODELS = ["RandomForestClassifier", "DecisionTreeClassifier"]
+SELECTED_MODELS = ["RandomForest", "DecisionTree"]
 CV_TYPE = "GridSearchCV"
 
 MOCKED_METABOEXPERIMENT_CLASS = Mock(name="MockedMetaboExperiment")
