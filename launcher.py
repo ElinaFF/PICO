@@ -3,7 +3,6 @@ import logging
 import os
 import platform
 import re
-import shutil
 import subprocess
 import sys
 import threading
@@ -267,11 +266,13 @@ def env_dependencies_verification():
 
 def move_files_from_clone_to_project_folder():
     all_content = os.listdir('./temporary_installation_folder/')
+    here_content = os.listdir('./')
 
     for item in all_content:
-        if item == "launcher.py":
-            os.remove('.' + "/launcher.py")
-        shutil.move("./temporary_installation_folder/" + item, ".")
+        for here_item in here_content:
+            if item == here_item:
+                os.remove(f"./{item}")
+        os.rename("./temporary_installation_folder/" + item, "./" + item)
 
 
 def install_from_github_on_os():
