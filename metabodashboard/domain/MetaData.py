@@ -70,12 +70,12 @@ class MetaData:
         return list(set(targets))
 
     def set_id_column(self, id_column: str) -> None:
-        if id_column in self._dataframe:
+        if id_column not in self._dataframe:
             raise ValueError(f"'{id_column}' is not a column of the metadata.")
         self._id_column = id_column
 
     def set_target_column(self, target_column: str) -> None:
-        if target_column in self._dataframe:
+        if target_column not in self._dataframe:
             raise ValueError(f"'{target_column}' is not a column of the metadata.")
         self._target_column = target_column
 
