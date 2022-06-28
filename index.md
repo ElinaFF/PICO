@@ -167,7 +167,7 @@ if you don’t have any Conda instance installed on your machine, the launcher w
 ```
 NOTE: if you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
 ([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d){:target="\_blank"})
-return [here](1-installation) to install, or update, Microsoft Visual C++.
+return [here](#1-installation) to install, or update, Microsoft Visual C++.
  - Launch the Web interface
 ```
   python main.py
