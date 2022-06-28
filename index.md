@@ -51,26 +51,30 @@ The first step, to use MeDIC, is to install Python and install git. You also nee
 Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10
 <details>
   <summary>Python installation &cudarrr;</summary>
-   In order to install Python, you need to go to this <a href="https://www.python.org/downloads/">link</a> and select your operating system.
+   In order to install Python, you need to go to this <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer noopener">link</a>
+   and select your operating system.
    <details>
       <summary>For Windows &cudarrr;</summary>
       <p>You can download the latest version or a previous one if you prefer (Note : MeDIC supports python 3.10, 3.9 and 3.8).  
       You just have to double-click and follow the installation instructions.  
-      You can also follow this <a href="https://phoenixnap.com/kb/how-to-install-python-3-windows">tutorial</a> for further details.</p>
+      You can also follow this <a href="https://phoenixnap.com/kb/how-to-install-python-3-windows" target="_blank" rel="noreferrer noopener">tutorial</a> for further details.</p>
       <p>WARNING : Don't forget the select Add Python 3.X to PATH on the first page ! </p><img src="imgs/addToPath.png" alt="addToPath"> 
-      <p>NOTE : To verify that Python is inb the PATH, you can open a new terminal, type Python and enter. If you get something like this, it's all good. <img src="imgs/cmdOk.png" alt="addToPath">
-            Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning and click repair. Then click on Next. Then you can click on add to path and install. </p> <img src="imgs/addToPathAfterRepair.png" alt="addToPathAfterRepair"> <img src="imgs/img_1" alt="Repair">
+      <p>NOTE : To verify that Python is inb the PATH, you can open a new terminal, type Python and enter. If you get 
+               something like this, it's all good. <img src="imgs/cmdOk.png" alt="addToPath">
+            Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning 
+            and click repair. Then click on Next. Then you can click on add to path and install. 
+            </p> <img src="imgs/addToPathAfterRepair.png" alt="addToPathAfterRepair"> <img src="imgs/img_1" alt="Repair">
    </details>
    <details>
       <summary>For Linux &cudarrr;</summary>
       <p>You can select the latest Python source release for python3 or a stable release for 3.8 to 3.10. COMMAND  
-      You can also follow this <a href="https://www.scaler.com/topics/python/install-python-on-linux/">tutorial</a> for further details</p>
+      You can also follow this <a href="https://www.scaler.com/topics/python/install-python-on-linux/" target="_blank" rel="noreferrer noopener">tutorial</a> for further details</p>
    </details>
 </details>  
 
 <details>
   <summary>Git installation &cudarrr;</summary>
-  In order to install Git, you need to go to this <a href="https://git-scm.com/downloads">link</a> and select your operating system. 
+  In order to install Git, you need to go to this <a href="https://git-scm.com/downloads" target="_blank" rel="noreferrer noopener">link</a> and select your operating system. 
    <details>
       <summary>For Windows &cudarrr;</summary>
       <p>You can then choose the Standalone Installer and take the 64 bits one if your computer is less than 10 or 15 years old.
@@ -84,7 +88,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
                 sudo apt-get install git
             </code>
          Enter your root password and follow the installation instructions. 
-         For more details follows this <a href="https://git-scm.com/download/linux">link</a>.
+         For more details follows this <a href="https://git-scm.com/download/linux" target="_blank" rel="noreferrer noopener">link</a>.
    </details>
 </details>  
 
@@ -96,7 +100,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
    <details>
       <summary>Install new version &cudarrr;</summary>
       <p>In order to install Microsoft Visual C++, you need to go to this 
-      <a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">link</a> and select Visual Studio 2022 Community.</p>
+      <a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/" target="_blank" rel="noreferrer noopener">link</a> and select Visual Studio 2022 Community.</p>
       <p>Select "Desktop development in C++" and go to the "Individual components" tab and scroll down to 
       select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or later and click install (It may take a while depending on your internet download speed).</p>
    </details>
@@ -109,7 +113,7 @@ The launcher file needs Git and Python to be able to do all the installation ste
 
 ### A. Normal installation
 
- - Download launcher.py on our <a href="https://github.com/ElinaFF/MetaboDashboard">github</a>
+ - Download launcher.py on our <a href="https://github.com/ElinaFF/MetaboDashboard" target="_blank" rel="noreferrer noopener">github</a>
  - Open a terminal (*cmd* in Windows)
  - Run the launcher on your computer with the command : <a href="#note1">*</a> 
  ```
@@ -138,7 +142,7 @@ if you don’t have any Conda instance installed on your machine, the launcher w
 ```
 
 ### C. Manual installation
- - Install Miniconda following the [documentation](https://docs.conda.io/en/latest/miniconda.html)
+ - Install Miniconda following the [documentation](https://docs.conda.io/en/latest/miniconda.html){:target="\_blank"}
  - Open a terminal (**"cmd" in Windows not "Powershell"**)
  - Create an environment with Conda:
 ```
@@ -162,8 +166,8 @@ if you don’t have any Conda instance installed on your machine, the launcher w
   python -m pip install -r requirements.txt
 ```
 NOTE: if you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
-([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d))
-return [here](#installation) to install, or update, Microsoft Visual C++.
+([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d){:target="\_blank"})
+return [here](1-installation) to install, or update, Microsoft Visual C++.
  - Launch the Web interface
 ```
   python main.py
@@ -355,7 +359,7 @@ it allows the model(s) to be tested on most of the samples.
 
 If you want to achieve it, the probability that all samples are seen in the test set, i.e. the 
 probability that a sample is never in the test set, follow a 
-<a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank">Markov chain</a>. With an
+<a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank" rel="noreferrer noopener">Markov chain</a>. With an
 example of 5 samples with 80-20 train-test repartition, the chain is as follows:
 - The initial state $$V_1=\begin{pmatrix} 0 & 1 & 0 & 0 & 0 \end{pmatrix}$$
 - $$P(s_{t+1}=j\|s_t=i)=\frac{\begin{pmatrix} m-i \\ j-i \end{pmatrix}\begin{pmatrix} i \\ k-(j-i) \end{pmatrix}}{\begin{pmatrix} m \\ k \end{pmatrix}}$$ with $$s_t$$ a state at a $$t$$ moment, $$m$$ the total number of samples and $$k$$ the number of samples in the test set (test proportion$$\times m$$).
