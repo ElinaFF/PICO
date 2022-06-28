@@ -96,8 +96,9 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
    <details>
       <summary>Install new version &cudarrr;</summary>
       <p>In order to install Microsoft Visual C++, you need to go to this 
-      <a href="https://visualstudio.microsoft.com/fr/downloads/">link</a> and select Visual Studio 2022 Community.</p>
-      <p>Just follow the installation instructions and select Microsoft Visual C++ 14.0 or later</p>
+      <a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">link</a> and select Visual Studio 2022 Community.</p>
+      <p>Select "Desktop development in C++" and go to the "Individual components" tab and scroll down to 
+      select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or later and click install (It may take a while depending on your internet download speed).</p>
    </details>
 </details>  
 
@@ -160,7 +161,9 @@ if you don’t have any Conda instance installed on your machine, the launcher w
 ```
   python -m pip install -r requirements.txt
 ```
-NOTE: if you have a error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem ([see here](https://learnopenerp.blogspot.com/2021/08/failed-building-wheel-for-parmed-python.html)).
+NOTE: if you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
+([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d))
+return [here](#Installation) to install or update Microsoft Visual C++.
  - Launch the Web interface
 ```
   python main.py
