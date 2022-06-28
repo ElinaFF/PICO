@@ -140,11 +140,11 @@ if you don’t have any Conda instance installed on your machine, the launcher w
 ### C. Manual installation
  - Install Miniconda following the [documentation](https://docs.conda.io/en/latest/miniconda.html)
  - Open a terminal (**"cmd" in Windows not "Powershell"**)
- - Create a environnement with Conda:
+ - Create an environment with Conda:
 ```
   conda create metabodashboard
 ```
- - Enter in the environnement
+ - Enter in the environement
 ```
   conda activate metabodashboard 
 ```
@@ -163,7 +163,7 @@ if you don’t have any Conda instance installed on your machine, the launcher w
 ```
 NOTE: if you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
 ([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d))
-return [here](#Installation) to install or update Microsoft Visual C++.
+return [here](#installation) to install, or update, Microsoft Visual C++.
  - Launch the Web interface
 ```
   python main.py
@@ -174,7 +174,8 @@ Those commands are optionals but may help you to use the launcher in an easier w
 They can be combined or use independently.
 
 ### 1. Use an environment you already have
- - The content of MeDICs environment can be installed in another environment, if you don't want to create a new one, with the command : <a href="#note2">**</a> 
+ - The content of MeDICs environment can be installed in another environment, if you don't want to create a new one, 
+with the command : <a href="#note2">**</a> 
   ```
     python launcher.py --environment <environment_name>
     python launcher.py -e <environment_name> 
@@ -195,7 +196,7 @@ They can be combined or use independently.
     python launcher.py -l
   ```
 
-### 4. Update the Matabodashboard to the latest version
+### 4. Update MeDIC to the latest version
   - MeDIC can be updated with the command :  
   ```
     python launcher.py --update
@@ -209,9 +210,11 @@ They can be combined or use independently.
 ## Saving file
 Before explaining the interface, lets see how the experiments are saved and how you can share them. 
 To allow a better modularity of the experiments, the three major steps of MeDIC are saved independently into a file after each step. 
-Moreover, the data and metadata are only saved in local repository, not in the saving file, which allow the sharing of the file to outside collaborators. 
+Moreover, the data and metadata are only saved in local repository, not in the saving file, which allow the sharing of 
+the file to outside collaborators. 
 To continue an experiments and/or visualize its results, MeDIC offers the possibility to load a saving file in the first tab (Home). 
-However, to prevent any problem between a local data saving and a potential different saving file, a hashing process takes place to compare the file being loaded and the local dumps of data. 
+However, to prevent any problem between a local data saving and a potential different saving file, a hashing process 
+takes place to compare the file being loaded and the local dumps of data. 
 
 Welcome into MeDIC!
 
@@ -242,7 +245,7 @@ To upload the data, drag and drop your data file in the ```DATA FILE(S)``` secti
 >
 > *```DATA FILE(S)``` section*
 
-You can also clic on the ```UPLOAD FILE``` button and choose the right file.
+You can also click on the ```UPLOAD FILE``` button and choose the right file.
 
 **You can repeat the operation for the metadata in the ```METADATA FILE``` section.**
 
@@ -253,7 +256,8 @@ You can also clic on the ```UPLOAD FILE``` button and choose the right file.
 
 The supported files are excel, odt or csv.
 
-If the error "<span style="color: red">Rows must have an equal number of columns</span>" occurred, it means that some lines don't have cells for all columns.
+If the error "<span style="color: red">Rows must have an equal number of columns</span>" occurred, it means that 
+some lines don't have cells for all columns.
 
 ## B. Split parameters
 > [Go back to index](#index)
@@ -268,9 +272,11 @@ With the board, you can run multiple experimental design, under certain conditio
 - use the same Machine Learning (ML) algorithms
 - use the same ML parameters
 
-First, you need to select the target column. To clarify, the target column contains the values that the algorithms will try to predict. A typical example is the column that contain the diagnosis.
+First, you need to select the target column. To clarify, the target column contains the values that the algorithms 
+will try to predict. A typical example is the column that contain the diagnosis.
 
-The columns name prompted in the following figure are the column in the metadata file previously uploaded. If there are not the ones expected, please retry uploading the metadata in [this section](index.md#a-set-the-metadata-and-data)
+The columns name prompted in the following figure are the column in the metadata file previously uploaded. If there 
+are not the ones expected, please retry uploading the metadata in [this section](index.md#a-set-the-metadata-and-data)
 
 > ![](imgs/2022-06-07-11-35-52.png)
 >
@@ -282,15 +288,19 @@ After setting the target column, we need to set the samples' column. This column
 >
 > *Samples column selection panel*
 
-The main part of the experimental designs configuration section is divided in two panel, respectively the *repository* and the *configuration* panel
+The main part of the experimental designs configuration section is divided in two panel, respectively the *repository* 
+and the *configuration* panel
 
-Once the target columns are defined, the possible labels are updated in the *configuration* panel as shown in the following figure.
+Once the target columns are defined, the possible labels are updated in the *configuration* panel as shown in the 
+following figure.
 
 > ![](imgs/2022-06-07-11-56-46.png)
 > 
 > *Updated possible labels in the* configuration *panel*
 
-To build a binary design, you need to define the classes, in other words, to choose what you want to be opposed. An example using the previous values could be the identification of the sick person, opposing persons tagged with "Sickness A" and "Sickness B" and persons tagged "Control".
+To build a binary design, you need to define the classes, in other words, to choose what you want to be opposed. 
+An example using the previous values could be the identification of the sick person, opposing persons tagged with 
+"Sickness A" and "Sickness B" and persons tagged "Control".
 
 Add the experimental design by clicking on the ```ADD``` button.
 
@@ -298,7 +308,8 @@ Add the experimental design by clicking on the ```ADD``` button.
 >
 > *Example of a experimental design*
 
-Note that you need to set a name, a label, for each class. Also, you need to set at least one possible target per class, but you don't need to assign all possible targets.
+Note that you need to set a name, a label, for each class. Also, you need to set at least one possible target per 
+class, but you don't need to assign all possible targets.
 
 Once the designs are created, they will appear in the *repository* panel.
 
@@ -315,7 +326,8 @@ The ```RESET``` button will delete all the designs.
 > Not implemented yet
 
 
-```Pos and Neg pairing``` allows to prevent the separation of positive and negative ionization and prevent the ML algorithms to learn the link between positive and negative ionization.
+```Pos and Neg pairing``` allows to prevent the separation of positive and negative ionization and prevent the ML 
+algorithms to learn the link between positive and negative ionization.
 
 You can also use any other pattern for pairing with ```Other pairing```.
 
