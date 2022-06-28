@@ -47,7 +47,7 @@ layout: default
 
 # 1. Installation
 
-The first step, to use MeDIC, is to install Python and install git.
+The first step, to use MeDIC, is to install Python and install git. You also need to make sure that Microsoft Visual C++ is correctly installed if you're using Windows.  
 Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10
 <details>
   <summary>Python installation &cudarrr;</summary>
@@ -85,6 +85,19 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
             </code>
          Enter your root password and follow the installation instructions. 
          For more details follows this <a href="https://git-scm.com/download/linux">link</a>.
+   </details>
+</details>  
+
+<details>
+  <summary>Microsoft Visual C++ requirement &cudarrr;</summary>
+   To make sure MeDIC and all it's dependencies works properly you need Microsoft Visual C++ 14.0 or later.  
+   To check if the correct version of Microsoft Visual C++ is installed or your computer you can open the Control Panel
+   from the start menu, click on "uninstall app" and scroll down to see which version, if any, of Microsoft Visual C++ is installed.
+   <details>
+      <summary>Install new version &cudarrr;</summary>
+      <p>In order to install Microsoft Visual C++, you need to go to this 
+      <a href="https://visualstudio.microsoft.com/fr/downloads/">link</a> and select Visual Studio 2022 Community.</p>
+      <p>Just follow the installation instructions and select Microsoft Visual C++ 14.0 or later</p>
    </details>
 </details>  
 
