@@ -1,6 +1,6 @@
 import dash_bootstrap_components as dbc
 import pandas
-from dash import html, Output, Input, dash, State, dcc, callback_context, ALL
+from dash import html, Output, Input, dash, State, dcc, callback_context
 from dash.dcc import send_file
 
 from .MetaTab import MetaTab
@@ -248,59 +248,14 @@ class SplitsTab(MetaTab):
             html.H4(id="sep_samples_title", children="C) Data Fusion"),
             dbc.Form(children=[
                 dbc.Col([
-                    dbc.FormText("Pairing list."),
-                    dbc.Card(id="setted_pairings_container", children=self._get_wrapped_pairings(),
-                             style={"padding": "1em"}),
-                    dbc.FormText("Select the type of data fusion you want to use."),
-                    dbc.Card([
-                        html.Div([
-                            html.Span([
-                                dbc.Label("Type"),
-                                dbc.Select(options=[
-                                    {"label": "None", "value": "none"},
-                                    {"label": "Group", "value": "group"},
-                                    {"label": "Pattern", "value": "pattern"},
-                                ],
-                                    id="pairing_type",
-                                    value="none",
-                                    className="form_select",
-                                    style={"width": "90%"}),
-                            ], style={"min-width": "25%"}),
-                            html.Span([
-                                dbc.Label("Column(s)"),
-                                html.Div(id="pairing_columns", children=[
-                                    dcc.Dropdown(
-                                        self.metabo_controller.get_metadata_columns(),
-                                        id="pairing_group_column",
-                                        style={"display": "none"}
-                                    ),
-                                    dcc.Dropdown(
-                                        self.metabo_controller.get_metadata_columns(),
-                                        id={'index': "pairing_pattern_column_1", "type": "pattern"},
-                                        style={"display": "none"}
-                                    ),
-                                    dcc.Dropdown(
-                                        self.metabo_controller.get_metadata_columns(),
-                                        id={'index': "pairing_pattern_column_2", "type": "pattern"},
-                                        style={"display": "none"}
-                                    ),
-                                    dcc.Dropdown(
-                                        self.metabo_controller.get_metadata_columns(),
-                                        id={'index': "pairing_pattern_column_3", "type": "pattern"},
-                                        style={"display": "none"}
-                                    )
-                                ]),
-                            ], style={"min-width": "75%"})
-                        ], style={"display": "flex", "flex-direction": "row"}),
-                        html.Div(id="error_pairing_type", style={"color": "red"}),
-                        dbc.Button(
-                            "Set pairing",
-                            id="btn_add_pairing",
-                            color="primary",
-                            className="custom_buttons",
-                            n_clicks=0,
-                            style={"width": "22.5%", "margin": "1em 0 0 0"}),
-                    ], style={"padding": "1em"}),
+                    dbc.FormText("Select the column you want to group."),
+                    dbc.Label("Column(s)"),
+                    html.Div(id="pairing_columns", children=[
+                        dcc.Dropdown(
+                            self.metabo_controller.get_metadata_columns(),
+                            id="pairing_group_column"
+                        )
+                    ])
                 ])
             ])
         ])
@@ -572,6 +527,7 @@ class SplitsTab(MetaTab):
 
         @self.app.callback([Output("in_target_col_name", "options"),
                             Output("in_ID_col_name", "options"),
+                            Output("pairing_group_column", "options"),
                             Output("upload_metadata_output", "children"),
                             Output("upload_metadata_output", "style")],
                            [Input('upload_metadata', 'contents')],
@@ -582,10 +538,10 @@ class SplitsTab(MetaTab):
                 try:
                     self.metabo_controller.set_metadata(list_of_names, data=list_of_contents)
                 except TypeError as err:
-                    return [], [], html.P(str(err)), {"color": "red"}
+                    return [], [], [], html.P(str(err)), {"color": "red"}
                 formatted_columns = Utils.format_list_for_checklist(self.metabo_controller.get_metadata_columns())
                 self.metabo_controller.reset_experimental_designs()
-                return formatted_columns, formatted_columns, html.P(
+                return formatted_columns, formatted_columns, formatted_columns, html.P(
                     f"\"{list_of_names}\" has successfully been uploaded !"), {"color": "green"}
             else:
                 return dash.no_update
@@ -706,116 +662,6 @@ class SplitsTab(MetaTab):
             return "", 0, "", 0, self._get_wrapped_experimental_designs(), {"display": "block", "padding": "1em"}
 
         @self.app.callback(
-            Output("pairing_columns", "children"),
-            [Input("pairing_type", "value")]
-        )
-        def define_pairing_columns(pairing_type):
-            if pairing_type == "group":
-                return [
-                    dcc.Dropdown(
-                        self.metabo_controller.get_metadata_columns(),
-                        id="pairing_group_column",
-                    ),
-                    dcc.Dropdown(
-                        self.metabo_controller.get_metadata_columns(),
-                        id={'index': "pairing_pattern_column_1", "type": "pattern"},
-                        style={"display": "none"}
-                    ),
-                    dcc.Dropdown(
-                        self.metabo_controller.get_metadata_columns(),
-                        id={'index': "pairing_pattern_column_2", "type": "pattern"},
-                        style={"display": "none"}
-                    ),
-                    dcc.Dropdown(
-                        self.metabo_controller.get_metadata_columns(),
-                        id={'index': "pairing_pattern_column_3", "type": "pattern"},
-                        style={"display": "none"}
-                    )
-                ]
-            elif pairing_type == "pattern":
-                return [
-                    dcc.Dropdown(
-                        self.metabo_controller.get_metadata_columns(),
-                        id="pairing_group_column",
-                        style={"display": "none"}
-                    ),
-                    dcc.Dropdown(
-                        self.metabo_controller.get_metadata_columns(),
-                        id={'index': "pairing_pattern_column_1", "type": "pattern"}
-                    ),
-                    dcc.Dropdown(
-                        self.metabo_controller.get_metadata_columns(),
-                        id={'index': "pairing_pattern_column_2", "type": "pattern"}
-                    ),
-                    dcc.Dropdown(
-                        self.metabo_controller.get_metadata_columns(),
-                        id={'index': "pairing_pattern_column_3", "type": "pattern"}
-                    )
-                ]
-            return [
-                dcc.Dropdown(
-                    self.metabo_controller.get_metadata_columns(),
-                    id="pairing_group_column",
-                    style={"display": "none"}
-                ),
-                dcc.Dropdown(
-                    self.metabo_controller.get_metadata_columns(),
-                    id={'index': "pairing_pattern_column_1", "type": "pattern"},
-                    style={"display": "none"}
-                ),
-                dcc.Dropdown(
-                    self.metabo_controller.get_metadata_columns(),
-                    id={'index': "pairing_pattern_column_2", "type": "pattern"},
-                    style={"display": "none"}
-                ),
-                dcc.Dropdown(
-                    self.metabo_controller.get_metadata_columns(),
-                    id={'index': "pairing_pattern_column_3", "type": "pattern"},
-                    style={"display": "none"}
-                )
-            ]
-
-        @self.app.callback(
-            Output("pairing_type", "value"),
-            [Input("upload_metadata", "filename")]
-        )
-        def update_pairing_type(filename):
-            return "none"
-
-        @self.app.callback(
-            [Output("setted_pairings_container", "children"),
-             Output("error_pairing_type", "children")],
-            [Input("btn_add_pairing", "n_clicks"),
-             Input("remove_pairing_button", "n_clicks")],
-            [State("pairing_type", "value"),
-             State("pairing_group_column", "value"),
-             State({'index': ALL, "type": "pattern"}, "value")
-             ]
-        )
-        def add_n_reset_pairings(n_add, n_remove, pairing_type, pairing_group_column, pairing_pattern_columns):
-            triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
-            actual_pairing_columns = self.metabo_controller.get_pairing_columns()
-
-            if triggered_id == "remove_pairing_button":
-                self.metabo_controller.reset_pairing_columns()
-            elif triggered_id == "btn_add_pairing":
-                pairing_pattern_columns = [column for column in pairing_pattern_columns if column is not None]
-
-                if pairing_type == "group":
-                    pairing = pairing_group_column
-                elif pairing_type == "pattern":
-                    pairing = pairing_pattern_columns
-                else:
-                    pairing = None
-
-                try:
-                    self.metabo_controller.add_pairing_columns(pairing, pairing_type)
-                except ValueError as e:
-                    return dash.no_update, str(e)
-
-            return self._get_wrapped_pairings(), ""
-
-        @self.app.callback(
             Output("collapse_preprocessing", "is_open"),
             [Input("collapse_preprocessing_button", "n_clicks")],
             [State("collapse_preprocessing", "is_open")],
@@ -863,30 +709,21 @@ class SplitsTab(MetaTab):
             return casted_value
 
         @self.app.callback(
+            Output("pairing_group_column", "value"),
+            [Input("pairing_group_column", "value")]
+        )
+        def update_pairing_group_column(new_value):
+            if new_value is not None:
+                self.metabo_controller.set_pairing_group_column(new_value)
+            return self.metabo_controller.get_pairing_group_column()
+
+
+        @self.app.callback(
             [Output('output_button_split_file', 'children'),
              Output("download-save-file-split", "data")],
             [Input('split_dataset_button', 'n_clicks')],
-            [State("name_splits_batch", "value"),
-             State("in_use_raw", "value"),
-             State('in_nbr_splits', 'value'),
-             State('in_nbr_processes', 'value'),
-             # State("path_to_data_file", "value"),
-             State('in_peak_threshold_value', 'value'),
-             State('in_percent_samples_in_test', 'value'),
-             State('in_autoOptimize_value', 'value'),
-             # State('in_path_to_metadata', 'value'),
-             State('in_ID_col_name', 'value'),
-             State('in_target_col_name', 'value'),
-             State("in_type_of_data", "value"),
-             State("in_peak_picking", "value"),
-             State("in_alignment", "value"),
-             State("in_normalization", "value")
-             ]
         )
-        def saving_params_of_splits_batch(n, name_of_the_file, use_raw, nbr_splits, nbr_processes,  # path_data_files,
-                                          peakT, percent_in_test, autoOpt, ID_col_name,  # path_to_metadata,
-                                          targets_col_name,
-                                          type_of_processing, peak_pick, align, normalize):
+        def saving_params_of_splits_batch(n):
             """
             Create the file (json) which will contains all info about the split creation / data experiment.
             """
@@ -918,32 +755,6 @@ class SplitsTab(MetaTab):
         button = html.Div(
             dbc.Button("Reset", className="custom_buttons", id="remove_experimental_design_button"),
             style={"textAlign": "right"}
-        )
-        children_container.append(button)
-        return children_container
-
-    def _get_wrapped_pairings(self):
-        pairing_columns = self.metabo_controller.get_pairing_columns()
-
-        if not pairing_columns.get("group") and not pairing_columns.get("pattern"):
-            button = html.Div(
-                dbc.Button("Reset", className="custom_buttons", id="remove_pairing_button"),
-                style={"display": "none"}
-            )
-            return [html.Div([html.P("No pairing setted yet."), button])]
-        children_container = []
-        group_pairing_columns = pairing_columns.get("group")
-        pattern_pairing_columns = pairing_columns.get("pattern")
-        if group_pairing_columns and group_pairing_columns is not None:
-            children_container.append(html.Div(children=["Group pairing columns:"]))
-            for column in group_pairing_columns:
-                children_container.append(html.Div(children=["- " + column]))
-        if pattern_pairing_columns and pattern_pairing_columns is not None:
-            children_container.append(html.Div(children=["Pattern pairing columns:"]))
-            for column in pattern_pairing_columns:
-                children_container.append(html.Div(children=["- " + ", ".join(column)]))
-        button = html.Div(
-            dbc.Button("Reset", className="custom_buttons", id="remove_pairing_button")
         )
         children_container.append(button)
         return children_container
