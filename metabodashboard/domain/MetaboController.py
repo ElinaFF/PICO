@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Generator, Tuple, List, Dict
+from typing import Generator, Tuple, List, Dict, Union
 
 import pandas as pd
 
@@ -165,11 +165,8 @@ class MetaboController:
     def is_progenesis_data(self) -> bool:
         return self._metabo_experiment.is_progenesis_data()
 
-    def get_pairing_columns(self) -> Dict[str, List[str]]:
-        return self._metabo_experiment.get_pairing_columns()
-    
-    def add_pairing_columns(self, pairing_columns: List[str], pairing_type: str):
-        self._metabo_experiment.add_pairing_columns(pairing_columns, pairing_type)
+    def get_pairing_group_column(self) -> str:
+        return self._metabo_experiment.get_pairing_group_column()
 
-    def reset_pairing_columns(self):
-        self._metabo_experiment.reset_pairing_columns()
+    def set_pairing_group_column(self, pairing_group_column: str):
+        self._metabo_experiment.set_pairing_group_column(pairing_group_column)

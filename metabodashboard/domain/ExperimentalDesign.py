@@ -16,9 +16,9 @@ class ExperimentalDesign:
         self.results = {}
 
     def set_split_parameter_and_compute_splits(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData,
-                                               pairing_columns: Dict[str, List[str]]) -> None:
+                                               pairing_column: str) -> None:
         self._split_group = SplitGroup(metadata, train_test_proportion, number_of_splits, self._classes_design,
-                                       pairing_columns)
+                                       pairing_column)
 
     def get_name(self) -> str:
         return self._name
