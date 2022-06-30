@@ -50,7 +50,9 @@ class SplitsTab(MetaTab):
                     "columns.",
                 ),
             ],
-            className="form_field"
+            className="form_field",
+            id="datatable-section",
+            style={"display": "none"}
         )
 
         __metaDataFile = html.Div(
@@ -72,42 +74,30 @@ class SplitsTab(MetaTab):
                     "data file, and one column of target/class/condition.",
                 )
             ],
-            className="form_field"
-        )
-
-        __outputFile = html.Div(
-            [
-                dbc.Label("Output file *",
-                          className="form_labels"),
-                dbc.Input(id="name_splits_batch",
-
-                          placeholder="Enter Name",
-                          className="form_input_text"),
-                dbc.FormText(
-                    "Give a name to the output file, it will have this format : 'DD-MM-YYYY_CUSTOMNAME.metaboexpe'.",
-                ),
-            ],
-            className="form_field"
+            className="form_field",
+            id="metadata-section",
+            style={"display": "none"}
         )
 
         __useRawData = html.Div(
             [
-                dbc.Label("Use raw data",
+                dbc.Label("DATA NORMALIZATION FOR PROGENESIS",
                           className="form_labels"),
                 dbc.FormText(
-                    "If there is normalized and raw data in your file, you can choose to use raw by selecting yes. "
-                    "Default is no and will use normalized data.",
+                    "If there is normalized and raw data in your file, you can choose to use raw by selecting raw. "
+                    "Default is normalised.",
                 ),
                 dbc.RadioItems(
                     id="in_use_raw",
 
                     options=[
-                        {"label": "Yes", "value": True},
-                        {"label": "No", "value": False}
+                        {"label": "Raw", "value": 'raw'},
+                        {"label": "Normalized", "value": 'normalized'},
+                        {"label": "Not Progenesis", "value": "nap"}
                     ],
-                    value=False,
                     labelCheckedStyle={"color": "#13BD00"},
                 ),
+                html.Div(id="error_data_normalization", style={"color": "red"})
 
             ],
             className="form_field"
@@ -116,7 +106,7 @@ class SplitsTab(MetaTab):
         _file = html.Div(className="title_and_form", children=[
             html.H4(id="CreateSplits_paths_title", children="A) Files"),
             dbc.Form(children=[
-                dbc.Col(children=[__useRawData, __dataFile, __metaDataFile, __outputFile
+                dbc.Col(children=[__useRawData, __dataFile, __metaDataFile
                                   ]),
 
             ]),
@@ -245,7 +235,7 @@ class SplitsTab(MetaTab):
                                         ])
 
         _dataFusion = html.Div(className="title_and_form", children=[
-            html.H4(id="sep_samples_title", children="C) Data Fusion"),
+            html.H4(id="sep_samples_title", children="C) Sample pairing"),
             dbc.Form(children=[
                 dbc.Col([
                     dbc.FormText("Select the column you want to group."),
@@ -411,6 +401,7 @@ class SplitsTab(MetaTab):
                 size="5")
         ], className="form_field")
 
+        # TODO: Not displayed
         _otherProcessing = html.Div(className="title_and_form",
                                     children=[
                                         html.H4(id="preprocess_title",
@@ -443,13 +434,14 @@ class SplitsTab(MetaTab):
 
                                             ])
                                         ])
-                                    ])
+                                    ],
+                                    style={"visibility": "hidden"})
 
         _generateFile = html.Div(className="title_and_form",
                                  children=[
                                      html.H4(
                                          id="create_split_title",
-                                         children="F) Generate file"),
+                                         children="E) Generate file"),
                                      dbc.Form(children=[
                                          dbc.Col(children=[
                                              html.Div(
@@ -497,33 +489,55 @@ class SplitsTab(MetaTab):
 
     def _registerCallbacks(self) -> None:
         @self.app.callback(
+            [Output("datatable-section", "style"),
+             Output("metadata-section", "style")],
+            [Input("in_use_raw", "value")]
+        )
+        def normalization_selection(value):
+            if value is not None:
+                return {"display": "block"}, {"display": "block"}
+            return dash.no_update, dash.no_update
+
+        @self.app.callback(
             [Output('info_progenesis_loaded', 'children'),
              Output('upload_datatable_output', 'children'),
-             Output('upload_datatable_output', 'style')],
+             Output('upload_datatable_output', 'style'),
+             Output("error_data_normalization", "children")],
             [Input('upload_datatable', 'contents')],
             [State('upload_datatable', 'filename'),
              State("in_use_raw", "value")
              ]
         )
-        def upload_data(list_of_contents, list_of_names, use_raw):
+        def upload_data(list_of_contents, list_of_names, normalization):
             if list_of_contents is not None:
+                if normalization is None:
+                    return dash.no_update, dash.no_update, dash.no_update, [
+                        html.P("You must select a normalization before adding the data file(s)")]
+                else:
+                    if normalization == 'raw':
+                        use_raw = True
+                    else:
+                        use_raw = False
+
                 try:
                     self.metabo_controller.set_data_matrix_from_path(list_of_names,
                                                                      data=list_of_contents,
                                                                      use_raw=use_raw)
                 except TypeError as err:
-                    return dash.no_update, [html.P(str(err))], {"color": "red"}
+                    return dash.no_update, [html.P(str(err))], {"color": "red"}, ""
                 except pandas.errors.ParserError as err:
-                    return dash.no_update, [html.P("Rows must have an equal number of columns")], {"color": "red"}
+                    return dash.no_update, [html.P("Rows must have an equal number of columns")], {
+                        "color": "red"}, ""
                 self.metabo_controller.reset_experimental_designs()
 
                 if self.metabo_controller.is_progenesis_data():
                     # trigger the update of possible targets
                     return "Info: Selection not needed, handled by Progenesis.", [
-                        html.P(f"\"{list_of_names}\" has successfully been uploaded !")], {"color": "green"}
-                return "", [html.P(f"\"{list_of_names}\" has successfully been uploaded !")], {"color": "green"}
+                        html.P(f"\"{list_of_names}\" has successfully been uploaded !")], {"color": "green"}, ""
+                return "", [html.P(f"\"{list_of_names}\" has successfully been uploaded !")], {
+                    "color": "green"}, ""
             else:
-                return dash.no_update, dash.no_update, dash.no_update
+                return dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
         @self.app.callback([Output("in_target_col_name", "options"),
                             Output("in_ID_col_name", "options"),

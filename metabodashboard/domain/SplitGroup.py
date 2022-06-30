@@ -8,26 +8,20 @@ from ..service import Utils
 
 
 class SplitGroup:
-    def __init__(self, metadata: MetaData, train_test_proportion: float, number_of_splits: int, classes_design: dict,
-                 pairing_column: str):
+    def __init__(self, metadata: MetaData, selected_targets: List[str], train_test_proportion: float,
+                 number_of_splits: int, classes_design: dict, pairing_column: str):
         self._metadata = metadata
         self._number_of_split = number_of_splits
         self._classes_design = classes_design
         self._splits = []
-        self._compute_splits(train_test_proportion, number_of_splits, pairing_column)
+        self._compute_splits(train_test_proportion, number_of_splits, pairing_column, selected_targets)
 
-    def _compute_splits(self, train_test_proportion: float, number_of_splits: int,
-                        pairing_column: str):
-
-        if pairing_column != "":
-            sample_ids, targets = self.filter_sample_with_pairing_group(pairing_column)
-        else:
-            sample_ids, targets = self._metadata.get_samples_id(), self._metadata.get_targets()
-
+    def _compute_splits(self, train_test_proportion: float, number_of_splits: int, pairing_column: str,
+                        selected_targets: List[str]):
+        targets, ids = self._metadata.get_selected_targets_and_ids(selected_targets)
         classes = Utils.load_classes_from_targets(self._classes_design, targets)
-
         for split_index in range(number_of_splits):
-            X_train, X_test, y_train, y_test = train_test_split(sample_ids,
+            X_train, X_test, y_train, y_test = train_test_split(ids,
                                                                 classes,
                                                                 test_size=train_test_proportion,
                                                                 random_state=split_index)
@@ -73,17 +67,3 @@ class SplitGroup:
                                                                                              pairing_column,
                                                                                              target_column)
         return [restored_X_train, restored_X_test, restored_y_train, restored_y_test]
-
-    def compute_pattern(self, pairing_columns: Dict[str, List[str]]) -> List[List[str]]:
-        pairing_patterns = pairing_columns["pattern"]
-        metadata_dataframe = self._metadata.get_metadata()
-        computed_pattern = []
-        for pattern in pairing_patterns:
-            pattern_values = []
-            for column_to_pair in pattern:
-                pattern_values.append(metadata_dataframe[column_to_pair].unique().tolist())
-            computed_pattern.append(list(itertools.product(*pattern_values)))
-        return computed_pattern
-
-    def filter_sample_with_pairing_pattern(self, computed_patterns) -> List[List[str]]:
-        pass

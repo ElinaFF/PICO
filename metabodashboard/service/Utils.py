@@ -2,6 +2,10 @@ import base64
 import hashlib
 import os
 import pickle
+from typing import List, Dict, Iterable
+
+import pandas as pd
+import numpy as np
 import pickle as pkl
 from typing import List, Dict, Tuple
 
@@ -139,10 +143,12 @@ def reverse_dict(dictionnary: dict) -> dict:
     return reversed_dict
 
 
-def load_classes_from_targets(classes_design: dict, targets: List[str]) -> List[str]:
+def load_classes_from_targets(classes_design: dict, targets: Iterable[str]) -> List[str]:
     reverse_classes_design = reverse_dict(classes_design)
     classes = []
     for target in targets:
+        if target not in reverse_classes_design:
+            raise ValueError("Target {} not found in classes_design".format(target))
         classes.append(reverse_classes_design[target])
     return classes
 

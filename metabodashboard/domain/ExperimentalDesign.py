@@ -17,7 +17,7 @@ class ExperimentalDesign:
 
     def set_split_parameter_and_compute_splits(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData,
                                                pairing_column: str) -> None:
-        self._split_group = SplitGroup(metadata, train_test_proportion, number_of_splits, self._classes_design,
+        self._split_group = SplitGroup(metadata, self.get_selected_targets_name(), train_test_proportion, number_of_splits, self._classes_design,
                                        pairing_column)
 
     def get_name(self) -> str:
@@ -65,3 +65,6 @@ class ExperimentalDesign:
             raise RuntimeError("Trying to access Splits before setting splits parameters")
         for split_index in range(self._split_group.get_number_of_splits()):
             yield split_index, self._split_group.load_split_with_index(split_index)
+
+    def get_selected_targets_name(self) -> list:
+        return list(Utils.reverse_dict(self._classes_design).keys())
