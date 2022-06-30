@@ -2,7 +2,7 @@ from unittest.mock import patch, mock_open
 
 import pytest
 
-from .TestsUtility import MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN, SPLITS, \
+from ..TestsUtility import MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN, SPLITS, \
     PAIRING_GROUP_COLUMN, FILTERED_ID, FILTERED_TARGETS, SAMPLES_ID, TARGETS, SELECTED_TARGETS
 from ...metabodashboard.domain import SplitGroup
 
