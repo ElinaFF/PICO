@@ -1,12 +1,12 @@
 import base64
-import pickle
-from typing import List, Dict
-
-import pandas as pd
-import numpy as np
-import pickle as pkl
-import os
 import hashlib
+import os
+import pickle
+import pickle as pkl
+from typing import List, Dict, Tuple
+
+import numpy as np
+import pandas as pd
 
 PACKAGE_ROOT_PATH = os.sep.join(os.path.dirname(__file__).split(os.sep)[:-1])
 DUMP_PATH = os.path.join(PACKAGE_ROOT_PATH, "domain", "dumps")
@@ -64,6 +64,7 @@ def list_filler(liste):
         l.append(current)
     return l
 
+
 def read_Progenesis_compounds_table(fileName, with_raw=True):
     datatable = pd.read_csv(fileName, header=2, index_col=0)
     header = pd.read_csv(fileName, nrows=1, index_col=0)
@@ -78,24 +79,24 @@ def read_Progenesis_compounds_table(fileName, with_raw=True):
         possible_labels = possible_labels[0:int(len(possible_labels) / 2)]
     else:
         sample_names = datatable.iloc[:, start_normalized:].columns
-    
+
     labels = [""] * len(sample_names)
     start_label = possible_labels[0]
     labels_array = labels_array.tolist()
     for next_labels in possible_labels[1:]:
         index_s = labels_array.index(start_label) - start_normalized
         index_e = labels_array.index(next_labels) - start_normalized
-        labels[index_s : index_e] = [start_label] * (index_e - index_s)
+        labels[index_s: index_e] = [start_label] * (index_e - index_s)
         start_label = next_labels
     labels[index_e:] = [start_label] * (len(labels) - index_e)
-    
-    labels_dict = {sample_names[i] : j for i,j in enumerate(labels)}
+
+    labels_dict = {sample_names[i]: j for i, j in enumerate(labels)}
 
     if with_raw:
-        datatable_compoundsInfo = datatable.iloc[:,0:start_normalized]
-        datatable_normalized = datatable.iloc[:,start_normalized:start_raw]
-        datatable_raw = datatable.iloc[:,start_raw:]
-        datatable_raw.columns = [i.rstrip(".1") for i in datatable_raw.columns] #Fix the columns names
+        datatable_compoundsInfo = datatable.iloc[:, 0:start_normalized]
+        datatable_normalized = datatable.iloc[:, start_normalized:start_raw]
+        datatable_raw = datatable.iloc[:, start_raw:]
+        datatable_raw.columns = [i.rstrip(".1") for i in datatable_raw.columns]  # Fix the columns names
 
         datatable_normalized = datatable_normalized.T
         datatable_raw = datatable_raw.T
@@ -104,18 +105,20 @@ def read_Progenesis_compounds_table(fileName, with_raw=True):
         datatable_raw.rename(columns={"Compound": "Sample"})
         return datatable_compoundsInfo, datatable_normalized, datatable_raw, labels, sample_names
     else:
-        datatable_compoundsInfo = datatable.iloc[:,0:start_normalized]
-        datatable_normalized = datatable.iloc[:,start_normalized:]
+        datatable_compoundsInfo = datatable.iloc[:, 0:start_normalized]
+        datatable_normalized = datatable.iloc[:, start_normalized:]
         datatable_normalized = datatable_normalized.T
         datatable_compoundsInfo = datatable_compoundsInfo.T
         datatable_normalized.rename(columns={"Compound": "Sample"})
         return datatable_compoundsInfo, datatable_normalized, labels, sample_names
+
 
 def filter_sample_based_on_labels(data, labels, labels_to_keep):
     labels_filter = np.array([i in labels_to_keep for i in labels])
     d = data.iloc[labels_filter]
     l = np.array(labels)[labels_filter]
     return d, l
+
 
 def get_group_to_class(classes):
     group_to_class = {}
@@ -177,3 +180,10 @@ def are_files_corresponding(data: str, metadata: str, metabo_experiment_dto) -> 
 
 def reset_file(file_path: str):
     open(file_path, "w+b").close()
+
+
+def restore_ids_and_targets_from_pairing_groups(filtered_samples: List[str], dataframe: pd.DataFrame, id_column: str,
+                                                paired_column: str, target_column: str) -> Tuple[List[str], List[str]]:
+    values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][paired_column].tolist()
+    restored_ids = dataframe[dataframe[paired_column].isin(values)][id_column].tolist()
+    return restored_ids, dataframe.loc[dataframe[id_column].isin(restored_ids)][target_column].tolist()
