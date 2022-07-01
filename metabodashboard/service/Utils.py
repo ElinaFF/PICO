@@ -4,8 +4,6 @@ import os
 import pickle
 from typing import List, Dict, Iterable
 
-import pandas as pd
-import numpy as np
 import pickle as pkl
 from typing import List, Dict, Tuple
 
@@ -165,7 +163,7 @@ def load_classes_from_targets(
 
 # TODO: need to support multi-classification
 def get_binary(list_to_convert: List[str], classes: List[str]) -> List[int]:
-    return [1 if class_value == classes[1] else 0 for class_value in list_to_convert]
+    return [classes.index(value) for value in list_to_convert]
 
 
 def compute_hash(data: str) -> str:
@@ -207,12 +205,13 @@ def restore_ids_and_targets_from_pairing_groups(
     id_column: str,
     paired_column: str,
     target_column: str,
+    classes_design: dict,
 ) -> Tuple[List[str], List[str]]:
     values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][
         paired_column
     ].tolist()
     restored_ids = dataframe[dataframe[paired_column].isin(values)][id_column].tolist()
-    return (
-        restored_ids,
-        dataframe.loc[dataframe[id_column].isin(restored_ids)][target_column].tolist(),
-    )
+    restored_targets = dataframe.loc[dataframe[id_column].isin(restored_ids)][
+        target_column
+    ].tolist()
+    return (restored_ids, load_classes_from_targets(classes_design, restored_targets))
