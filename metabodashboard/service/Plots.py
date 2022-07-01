@@ -23,24 +23,35 @@ class Plots:
             title="",
         )
 
-        fig.update_layout({
-            "plot_bgcolor": "rgba(0, 0, 0, 0)",
-            "paper_bgcolor": "rgba(0, 0, 0, 0)",
-        },
-            title="UMAP applied on top "+slider_value+" features selected by "+algo
+        fig.update_layout(
+            {
+                "plot_bgcolor": "rgba(0, 0, 0, 0)",
+                "paper_bgcolor": "rgba(0, 0, 0, 0)",
+            },
+            title="UMAP applied on top "
+            + slider_value
+            + " features selected by "
+            + algo,
         )
         return fig
 
     def show_PCA(self, pca_data, classes, slider_value, algo):
-        fig = px.scatter(pca_data, x=0, y=1,
-                         color=classes,
-                         color_continuous_scale=self.colors,
-                         )
-        fig.update_layout({
-            "plot_bgcolor": "rgba(0, 0, 0, 0)",
-            "paper_bgcolor": "rgba(0, 0, 0, 0)",
-        },
-            title="PCA applied on top "+slider_value+" features selected by "+algo
+        fig = px.scatter(
+            pca_data,
+            x=0,
+            y=1,
+            color=classes,
+            color_continuous_scale=self.colors,
+        )
+        fig.update_layout(
+            {
+                "plot_bgcolor": "rgba(0, 0, 0, 0)",
+                "paper_bgcolor": "rgba(0, 0, 0, 0)",
+            },
+            title="PCA applied on top "
+            + slider_value
+            + " features selected by "
+            + algo,
         )
         return fig
 
@@ -60,10 +71,11 @@ class Plots:
             )
         )
         fig = fig.update_traces(text=text, texttemplate="%{text}", hovertemplate=None)
-        fig.update_layout(title="Confusion matrix of split "+split+" by "+algo,
-                          xaxis_title="Prediciton",
-                          yaxis_title="Truth",
-                          )
+        fig.update_layout(
+            title="Confusion matrix of split " + split + " by " + algo,
+            xaxis_title="Prediciton",
+            yaxis_title="Truth",
+        )
 
         # fig = px.imshow(
         #         cm,
@@ -94,7 +106,13 @@ class Plots:
                 "To show the global accuracies plot, the dataframe needs to have a 'color' column"
             )
 
-        fig = px.line(df, x='splits', y='accuracies', color='color', title="Accuracies on train and test sets for each split of "+algo)
+        fig = px.line(
+            df,
+            x="splits",
+            y="accuracies",
+            color="color",
+            title="Accuracies on train and test sets for each split of " + algo,
+        )
         fig.update_yaxes(range=[0, 1.1])
         fig.update_layout(
             {
@@ -151,14 +169,22 @@ class Plots:
         # TODO : sort data by times_used or importance, and take only top 10-20 to display
 
         fig = go.Figure(
-            data=[go.Table(
-                header=dict(values=list(df.columns), align="center"),
-                cells=dict(values=[df.iloc[:10, :].features, df.iloc[:10, :].times_used,
-                                   df.iloc[:10, :].importance_usage],
-                           align="center"))
-            ])
+            data=[
+                go.Table(
+                    header=dict(values=list(df.columns), align="center"),
+                    cells=dict(
+                        values=[
+                            df.iloc[:10, :].features,
+                            df.iloc[:10, :].times_used,
+                            df.iloc[:10, :].importance_usage,
+                        ],
+                        align="center",
+                    ),
+                )
+            ]
+        )
         fig.update_layout(
-            title="Table of top 10 features sorted by importance for "+algo
+            title="Table of top 10 features sorted by importance for " + algo
         )
         fig.update_layout(title="Table of top 10 features sorted by importance")
         return fig
@@ -176,7 +202,14 @@ class Plots:
         And show the intensity of this metabolite/ this feature in each class (one box per class)
         """
         df = features_data
-        fig = px.strip(df, x='targets', y=feature, title="Abundance of metabolite {} in each sample by class for {}".format(feature, algo))
+        fig = px.strip(
+            df,
+            x="targets",
+            y=feature,
+            title="Abundance of metabolite {} in each sample by class for {}".format(
+                feature, algo
+            ),
+        )
         return fig
 
     def show_heatmap_wrong_samples(self, data_train, data_test, samples_names, algos):

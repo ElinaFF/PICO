@@ -419,10 +419,8 @@ class ResultsTab(MetaTab):
 
         @self.app.callback(
             Output("PCA", "figure"),
-            [Input("load_ML_results_button", "n_clicks"),
-             Input("pca_slider", "value")],
-            [State("ml_dropdown", "value"),
-             State("design_dropdown", "value")]
+            [Input("load_ML_results_button", "n_clicks"), Input("pca_slider", "value")],
+            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
         def show_pca(n_clicks, pca_value, algo, design_name):
             if n_clicks >= 1:
@@ -434,10 +432,11 @@ class ResultsTab(MetaTab):
 
         @self.app.callback(
             Output("umap_overview", "figure"),
-            [Input("load_ML_results_button", "n_clicks"),
-             Input("umap_slider", "value")],
-            [State("ml_dropdown", "value"),
-             State("design_dropdown", "value")]
+            [
+                Input("load_ML_results_button", "n_clicks"),
+                Input("umap_slider", "value"),
+            ],
+            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
         def show_umap(n_clicks, slider_value, algo, design_name):
             if n_clicks >= 1:
@@ -445,7 +444,9 @@ class ResultsTab(MetaTab):
                 classes = self.r[design_name][algo].results["classes"]
                 # print(slider_value)
                 # print(df[0])
-                return self._plots.show_umap(df[slider_value], classes, slider_value, algo)
+                return self._plots.show_umap(
+                    df[slider_value], classes, slider_value, algo
+                )
             else:
                 return dash.no_update
 
@@ -488,7 +489,6 @@ class ResultsTab(MetaTab):
             else:
                 return dash.no_update
 
-
         # @self.app.callback(
         #     Output("conf_matrix", "figure"),
         #     [Input("load_ML_results_button", "n_clicks")],
@@ -516,8 +516,6 @@ class ResultsTab(MetaTab):
         #     else:
         #         return dash.no_update
 
-
-
         @self.app.callback(
             Output("split_conf_matrix", "figure"),
             [Input("update_specific_results_button", "n_clicks")],
@@ -539,7 +537,9 @@ class ResultsTab(MetaTab):
                     for j, col in enumerate(line):
                         text_mat[i].append(str(col))
 
-                return self._plots.show_general_confusion_matrix(cm, labels, text_mat, algo, split)
+                return self._plots.show_general_confusion_matrix(
+                    cm, labels, text_mat, algo, split
+                )
             else:
                 return dash.no_update
 
@@ -564,7 +564,9 @@ class ResultsTab(MetaTab):
         def export_download_features_table(n_click, algo, design_name):
             if n_click >= 1:
                 df = self.r[design_name][algo].results["features_table"]
-                return dcc.send_data_frame(df.to_csv, "featuresImportancesTable"+algo+".csv")
+                return dcc.send_data_frame(
+                    df.to_csv, "featuresImportancesTable" + algo + ".csv"
+                )
             else:
                 return dash.no_update
 
