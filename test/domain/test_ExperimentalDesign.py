@@ -16,15 +16,14 @@ def input_experimental_design():
 
 @patch('builtins.open', new_callable=mock_open())
 def test_givenAnExperimentalDesign_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(open_mock, input_experimental_design):
-    input_experimental_design.set_split_parameter_and_compute_splits(TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA)
+    input_experimental_design.set_split_parameter_and_compute_splits(TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA, "")
     assert input_experimental_design.get_number_of_splits() == NUMBER_OF_SPLITS
 
 
-@patch('pickle.load', side_effect=SPLITS)
-@patch('builtins.open', new_callable=mock_open())
-def test_givenAnExperimentalDesign_whenGetAllSplit_thenTheSplitsAreReproducible(open_mock, pickle_mock, input_experimental_design):
-    input_experimental_design.set_split_parameter_and_compute_splits(TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA)
+def test_givenAnExperimentalDesign_whenGetAllSplit_thenTheSplitsAreReproducible(input_experimental_design):
+    input_experimental_design.set_split_parameter_and_compute_splits(TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA, "")
     for split_index, (real_split_index, actual_split) in enumerate(input_experimental_design.all_splits()):
+        print("\n Split n{}".format(split_index))
         assert split_index == real_split_index
         real_X_train, real_X_test, real_y_train, real_y_test = actual_split
         X_train, X_test, y_train, y_test = SPLITS[split_index]

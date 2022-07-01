@@ -26,7 +26,8 @@ class MetaData:
 
     def read_format_and_store_metadata(self, path, data=None, from_base64=True):
         df = self._load_and_format(path, data=data, from_base64=from_base64)
-        self._hash = compute_hash(data)
+        if data is not None:
+            self._hash = compute_hash(data)
         self._dataframe = df
 
     def get_hash(self) -> str:
@@ -70,13 +71,13 @@ class MetaData:
         return list(set(targets))
 
     def set_id_column(self, id_column: str) -> None:
-        if id_column not in self._dataframe:
-            raise ValueError(f"'{id_column}' is not a column of the metadata.")
+        if id_column not in self.get_columns():
+            raise ValueError(f"'{id_column}' is not a column of the metadata. The columns are: {self.get_columns()}")
         self._id_column = id_column
 
     def set_target_column(self, target_column: str) -> None:
-        if target_column not in self._dataframe:
-            raise ValueError(f"'{target_column}' is not a column of the metadata.")
+        if target_column not in self.get_columns():
+            raise ValueError(f"'{target_column}' is not a column of the metadata. The columns are: {self.get_columns()}")
         self._target_column = target_column
 
     def get_target_column(self) -> str:
@@ -96,6 +97,8 @@ class MetaData:
                      target in selected_targets]))
 
     def get_selected_targets(self, selected_targets: List[str]) -> List[str]:
+        if selected_targets is None or len(selected_targets) == 0:
+            raise ValueError("No target selected")
         return [target for target in self.get_targets() if target in selected_targets]
 
     def get_samples_id(self) -> List[str]:

@@ -1,7 +1,7 @@
 import pytest as pytest
 
 from ..TestsUtility import METADATA_DATAFRAME, SAMPLES_ID_COLUMN, TARGETS_COLUMN, SAMPLES_ID, TARGETS, SELECTED_TARGETS, \
-    FILTERED_TARGETS, FILTERED_SAMPLES_ID
+    FILTERED_TARGETS, FILTERED_SAMPLES_ID, ALL_TARGETS
 from ...metabodashboard.domain.MetaData import MetaData
 
 
@@ -35,6 +35,11 @@ def test_givenNoTargetColumn_whenGetTargets_thenEmptyList(input_meta_data):
 def test_givenTargetColumn_whenGetSelectedTargets_thenTargetsAreCorrect(input_meta_data):
     input_meta_data.set_target_column(TARGETS_COLUMN)
     assert input_meta_data.get_selected_targets(SELECTED_TARGETS) == FILTERED_TARGETS
+
+
+def test_givenAllTargets_whenGetSelectedTargets_thenTargetsAreCorrect(input_meta_data):
+    input_meta_data.set_target_column(TARGETS_COLUMN)
+    assert input_meta_data.get_selected_targets(ALL_TARGETS) == TARGETS
 
 
 def test_givenSelectedTarget_whenGetSelectedTargetsANDIds_thenIdsAndTargetAreCorrect(input_meta_data):

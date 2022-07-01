@@ -24,7 +24,8 @@ class DataMatrix:
     def read_format_and_store_data(self, path: str, data=None, use_raw: bool = False, from_base64: bool = True) -> \
             Optional[pd.DataFrame]:
         data_df, metadata_df = self._load_and_format(path, data=data, is_raw=use_raw, from_base64=from_base64)
-        self._hash = compute_hash(data)
+        if data is not None:
+            self._hash = compute_hash(data)
 
         with open(DUMP_DATA_MATRIX_PATH, "w+b") as data_matrix_file:
             pickle.dump(data_df, data_matrix_file)

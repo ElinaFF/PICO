@@ -1,5 +1,4 @@
-import itertools
-from typing import List, Dict, Tuple
+from typing import List, Tuple
 
 from sklearn.model_selection import train_test_split
 
@@ -18,7 +17,11 @@ class SplitGroup:
 
     def _compute_splits(self, train_test_proportion: float, number_of_splits: int, pairing_column: str,
                         selected_targets: List[str]):
-        targets, ids = self._metadata.get_selected_targets_and_ids(selected_targets)
+        if pairing_column != "":
+            sample_ids, targets = self.filter_sample_with_pairing_group(pairing_column)
+        else:
+            sample_ids, targets = self._metadata.get_samples_id(), self._metadata.get_targets()
+        targets, ids = self.get_selected_targets_and_ids(selected_targets, sample_ids, targets)
         classes = Utils.load_classes_from_targets(self._classes_design, targets)
         for split_index in range(number_of_splits):
             X_train, X_test, y_train, y_test = train_test_split(ids,
@@ -67,3 +70,8 @@ class SplitGroup:
                                                                                              pairing_column,
                                                                                              target_column)
         return [restored_X_train, restored_X_test, restored_y_train, restored_y_test]
+
+    def get_selected_targets_and_ids(self, selected_targets: List[str], samples_id: List[str], targets: List[str]) -> \
+            Tuple[Tuple[str], Tuple[str]]:
+        return tuple(zip(*[(target, id) for target, id in zip(targets, samples_id) if
+                           target in selected_targets]))

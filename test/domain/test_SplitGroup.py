@@ -3,7 +3,7 @@ from unittest.mock import patch, mock_open
 import pytest
 
 from ..TestsUtility import MOCKED_METADATA, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, CLASSES_DESIGN, SPLITS, \
-    PAIRING_GROUP_COLUMN, FILTERED_ID, FILTERED_TARGETS, SAMPLES_ID, TARGETS, SELECTED_TARGETS
+    PAIRING_GROUP_COLUMN, GROUPED_ID, GROUPED_TARGETS, SAMPLES_ID, TARGETS, SELECTED_TARGETS
 from ...metabodashboard.domain import SplitGroup
 
 
@@ -23,12 +23,14 @@ def test_givenASplitGroup_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(input
 
 
 def test_givenASplitGroup_whenFilterSample_thenSamplesAreFiltered(input_splits):
-    assert input_splits.filter_sample_with_pairing_group(PAIRING_GROUP_COLUMN) == (FILTERED_ID, FILTERED_TARGETS)
+    print(GROUPED_ID)
+    print(GROUPED_TARGETS)
+    assert input_splits.filter_sample_with_pairing_group(PAIRING_GROUP_COLUMN) == (GROUPED_ID, GROUPED_TARGETS)
 
 
 def test_givenASplitGroup_whenRestoreFilteredSamples_thenSamplesAreRestored(input_splits):
     restored_X_train, restored_X_test, restored_y_train, restored_y_test = input_splits.restore_filtered_samples_from_pairing_group(
-        FILTERED_ID, FILTERED_TARGETS, PAIRING_GROUP_COLUMN)
+        GROUPED_ID, GROUPED_TARGETS, PAIRING_GROUP_COLUMN)
 
     X = restored_X_train + restored_X_test
     X.sort()
