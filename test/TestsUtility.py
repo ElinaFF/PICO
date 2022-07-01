@@ -111,7 +111,7 @@ SIZE = 100
 COLUMNS = 1000
 
 EXPERIMENT_NAME = "sick_vs_healthy"
-EXPERIMENT_FULL_NAME = "sick (sick) versus healthy (healthy)"
+EXPERIMENT_FULL_NAME = "sick (sick, ill) versus healthy (healthy)"
 
 CLASSES_DESIGN = {"sick": ["sick", "ill"], "healthy": ["healthy"]}
 PARTIAL_CLASSES_DESIGN = {"sick": ["sick"], "healthy": ["healthy"]}

@@ -5,7 +5,7 @@ import pytest as pytest
 from ...metabodashboard.domain import ExperimentalDesign
 
 from ..TestsUtility import MOCKED_METADATA, CLASSES_DESIGN, TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, \
-    EXPERIMENT_NAME, EXPERIMENT_FULL_NAME, SPLITS, SELECTED_TARGETS
+    EXPERIMENT_NAME, EXPERIMENT_FULL_NAME, SPLITS, SELECTED_TARGETS, PARTIAL_CLASSES_DESIGN
 
 
 @pytest.fixture
@@ -14,8 +14,13 @@ def input_experimental_design():
     return experimental_design
 
 
-@patch('builtins.open', new_callable=mock_open())
-def test_givenAnExperimentalDesign_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(open_mock, input_experimental_design):
+@pytest.fixture
+def input_experimental_design_with_partial():
+    experimental_design = ExperimentalDesign(PARTIAL_CLASSES_DESIGN)
+    return experimental_design
+
+
+def test_givenAnExperimentalDesign_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(input_experimental_design):
     input_experimental_design.set_split_parameter_and_compute_splits(TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA, "")
     assert input_experimental_design.get_number_of_splits() == NUMBER_OF_SPLITS
 
@@ -51,6 +56,6 @@ def test_givenAnExperimentalDesignWithNoSelectedModels_whenGetResults_thenRaiseR
         assert "Trying to set models before setting splits parameters" in str(e_info.value)
 
 
-def test_givenAnExperimentalDesign_whenGetSelectedTargetsName_thenTheSelectedTargetsNameAreCorrect(input_experimental_design):
-    assert input_experimental_design.get_selected_targets_name() == SELECTED_TARGETS
+def test_givenAnExperimentalDesign_whenGetSelectedTargetsName_thenTheSelectedTargetsNameAreCorrect(input_experimental_design_with_partial):
+    assert input_experimental_design_with_partial.get_selected_targets_name() == SELECTED_TARGETS
     
