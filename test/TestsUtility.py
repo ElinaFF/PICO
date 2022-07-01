@@ -10,7 +10,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from ...metabodashboard.conf.SupportedModels import LEARN_CONFIG
+from ..metabodashboard.conf.SupportedModels import LEARN_CONFIG
 
 
 def _get_samples_id(size: int) -> List[str]:
@@ -113,14 +113,16 @@ COLUMNS = 1000
 EXPERIMENT_NAME = "sick_vs_healthy"
 EXPERIMENT_FULL_NAME = "sick (sick) versus healthy (healthy)"
 
-CLASSES_DESIGN = {"sick": ["sick"], "healthy": ["healthy"]}
+CLASSES_DESIGN = {"sick": ["sick", "ill"], "healthy": ["healthy"]}
+PARTIAL_CLASSES_DESIGN = {"sick": ["sick"], "healthy": ["healthy"]}
 
 NUMBER_OF_SPLITS = 10
-TRAIN_TEST_PROPORTION = 0.75
+TRAIN_TEST_PROPORTION = 0.25
 
 SAMPLES_ID = _get_samples_id(SIZE)
 TARGETS, CLASSES = _get_targets_and_classes(SIZE, CLASSES_DESIGN)
 SELECTED_TARGETS = ["sick", "healthy"]
+ALL_TARGETS = ["sick", "ill", "healthy"]
 FILTERED_TARGETS = [target for target in TARGETS if target in SELECTED_TARGETS]
 FILTERED_SAMPLES_ID = [id for id, target in zip(SAMPLES_ID, TARGETS) if target in SELECTED_TARGETS]
 FILTERED_TARGETS_AND_IDS = (tuple(FILTERED_TARGETS), tuple(FILTERED_SAMPLES_ID))
@@ -131,8 +133,8 @@ SAMPLES_ID_COLUMN = "samples_id"
 TARGETS_COLUMN = "target"
 PAIRING_GROUP_COLUMN = "pairing_group"
 
-PAIRING_GROUP, FILTERED_ID = _get_group_pairing_column_and_filtered_index(SIZE)
-FILTERED_TARGETS = _get_targets_with_index(FILTERED_ID, TARGETS)
+PAIRING_GROUP, GROUPED_ID = _get_group_pairing_column_and_filtered_index(SIZE)
+GROUPED_TARGETS = _get_targets_with_index(GROUPED_ID, TARGETS)
 
 METADATA_DATAFRAME = pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID, TARGETS_COLUMN: TARGETS, PAIRING_GROUP_COLUMN:
     PAIRING_GROUP})
