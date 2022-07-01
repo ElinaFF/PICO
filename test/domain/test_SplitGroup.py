@@ -45,8 +45,6 @@ def test_givenASplitGroup_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(
 
 
 def test_givenASplitGroup_whenFilterSample_thenSamplesAreFiltered(input_splits):
-    print(GROUPED_ID)
-    print(GROUPED_TARGETS)
     assert input_splits.filter_sample_with_pairing_group(PAIRING_GROUP_COLUMN) == (
         GROUPED_ID,
         GROUPED_TARGETS,
