@@ -54,7 +54,7 @@ class SplitGroup:
                     y_train,
                     y_test,
                 ) = self.restore_filtered_samples_from_pairing_group(
-                    X_train, X_test, pairing_column
+                    X_train, X_test, pairing_column, self._classes_design
                 )
             self._splits.append([X_train, X_test, y_train, y_test])
 
@@ -81,7 +81,11 @@ class SplitGroup:
         return filtered_id, filtered_target
 
     def restore_filtered_samples_from_pairing_group(
-        self, X_train: List[str], X_test: List[str], pairing_column: str
+        self,
+        X_train: List[str],
+        X_test: List[str],
+        pairing_column: str,
+        classes_design: dict,
     ) -> List[List[str]]:
         metadata_dataframe = self._metadata.get_metadata()
         id_column = self._metadata.get_id_column()
@@ -90,13 +94,23 @@ class SplitGroup:
             restored_X_train,
             restored_y_train,
         ) = Utils.restore_ids_and_targets_from_pairing_groups(
-            X_train, metadata_dataframe, id_column, pairing_column, target_column
+            X_train,
+            metadata_dataframe,
+            id_column,
+            pairing_column,
+            target_column,
+            classes_design,
         )
         (
             restored_X_test,
             restored_y_test,
         ) = Utils.restore_ids_and_targets_from_pairing_groups(
-            X_test, metadata_dataframe, id_column, pairing_column, target_column
+            X_test,
+            metadata_dataframe,
+            id_column,
+            pairing_column,
+            target_column,
+            classes_design,
         )
         return [restored_X_train, restored_X_test, restored_y_train, restored_y_test]
 
