@@ -35,7 +35,13 @@ app.layout = html.Div(id="page",
         style={"display": "none"}
         ),
         html.Div(id="title_container", className="row", children=[
-            html.Div(html.H1(id="title", children="MetaboDashboard"), id="title_bg")  #, style={"text-align": "center"}
+            html.Div(children=[
+                html.H1(id="title", children="MeDIC"),
+                html.Div(children=[
+                    html.H6("Metabolomics Dashboard", style={"color":"white"}),
+                    html.H6("for Interpretable Classification", style={"color":"white"}),
+                ], id="acronym")],
+                id="title_bg")
         ]),
         html.Div(id="main-content", children=[
             dbc.Tabs(id="custom_big_tabs",
