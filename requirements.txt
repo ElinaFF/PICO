@@ -1,4 +1,5 @@
 scipy
+numba>=0.55.2
 dash
 dash-bio
 dash-bootstrap-components
