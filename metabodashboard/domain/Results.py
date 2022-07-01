@@ -134,7 +134,7 @@ class Results:
         for nbr in nbr_feat:
             selected_feat = features_df["features"][:nbr]
             selected_x = X.loc[:, selected_feat]
-            print(list(zip(selected_x.index, self.results["classes"])))
+            #print(list(zip(selected_x.index, self.results["classes"])))
             selected_x = selected_x.to_numpy()
             umap_data = umap.UMAP(n_components=2, init='random', random_state=13)
             umaps.append(umap_data.fit_transform(selected_x))
@@ -189,7 +189,7 @@ class Results:
         les résultats de splits)
         """
         features, times_used_all_splits, importance_or_usage_or_ = self._aggregate_features_info()
-        print("--> aggregating done, importances : {}".format(importance_or_usage_or_))
+        #print("--> aggregating done, importances : {}".format(importance_or_usage_or_))
 
         d = {"features": features, "times_used": times_used_all_splits, "importance_usage": importance_or_usage_or_}
         df = pd.DataFrame(data=d)
@@ -287,8 +287,8 @@ class Results:
         """
         important_features = list(feature_df["features"])[:10]
         df = data.loc[:, important_features]
-        print(df)
-        print(len(self.results["classes"]))
+        #print(df)
+        #print(len(self.results["classes"]))
         df["targets"] = self.results["classes"]
         return df
 

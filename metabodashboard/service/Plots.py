@@ -179,3 +179,19 @@ class Plots():
         )
 
         return fig
+
+    def show_heatmap_features_usage(self, df):
+        # fig = go.Figure()
+        #
+        # fig.add_trace(
+        #     go.Heatmap(
+        #         z=data_test,
+        #         x=algos,
+        #         y=samples_names,
+        #         opacity=1,
+        #         colorscale="blues"
+        #     )
+        # )
+
+        fig = px.imshow(df)
+        return fig

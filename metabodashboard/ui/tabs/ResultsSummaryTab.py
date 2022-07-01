@@ -21,6 +21,15 @@ from .MetaTab import MetaTab
 from ...service import Plots
 from ...domain import MetaboController
 
+CONFIG = {
+  'toImageButtonOptions': {
+    'format': 'svg', # one of png, svg, jpeg, webp
+    'height': None,
+    'width': None,
+    'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+  }
+}
+
 
 class ResultsSummaryTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
@@ -47,11 +56,36 @@ class ResultsSummaryTab(MetaTab):
                 id="all_algo_results")
 
         ])
+        _heatmapUsedFeatures = html.Div(className="umap_plot_and_title",
+                                        children=[
+                                            html.Div(className="title_and_help",
+                                                     children=[
+                                                         html.H6("Features Usage"),
+                                                         dbc.Button("[?]",
+                                                                    className="text-muted btn-secondary popover_btn",
+                                                                    id="help_heatmapFeatures"),
+                                                         dbc.Popover(
+                                                             children=[
+                                                                 dbc.PopoverBody(
+                                                                     "Blablabla wout wout")
+                                                             ],
+                                                             id="pop_help_heatmapFeatures",
+                                                             is_open=False,
+                                                             target="help_heatmapFeatures")
+                                                     ]),
+
+                                            dcc.Loading(dcc.Graph(id="heatmapFeatures", config=CONFIG),
+                                                        type="dot", color="#13BD00"),
+                                            # dcc.Slider(min=0, max=3, step=1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"},
+                                            #            id="features_stripChart_dropdown")
+
+                                        ])
+
         _heatmapSamplesAlwaysWrong = html.Div(className="umap_plot_and_title",
                                  children=[
                                      html.Div(className="title_and_help",
                                               children=[
-                                                  html.H6("Errors on samples"),
+                                                  html.H6("Errors on samples in test"),
                                                   dbc.Button("[?]",
                                                              className="text-muted btn-secondary popover_btn",
                                                              id="help_heatmapSamples"),
@@ -65,7 +99,7 @@ class ResultsSummaryTab(MetaTab):
                                                       target="help_heatmapSamples")
                                               ]),
 
-                                     dcc.Loading(dcc.Graph(id="heatmapSamples"),
+                                     dcc.Loading(dcc.Graph(id="heatmapSamples", config=CONFIG),
                                                  type="dot", color="#13BD00"),
                                      # dcc.Slider(min=0, max=3, step=1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"},
                                      #            id="features_stripChart_dropdown")
@@ -73,13 +107,16 @@ class ResultsSummaryTab(MetaTab):
                                  ])
 
 
-        return dbc.Tab(className="global_tab",
-
-                       label="Results aggregated", children=[
+        return dbc.Tab(className="global_tab", label="Results aggregated", children=[
+            _resultsMenuDropdowns,
                 html.Div(className="fig_group", children=[
-                    html.Div(className="column_content",
-                             # WARNING !! : _infoFigure is not with the card, it's in a separate column
-                             children=[_resultsMenuDropdowns, _heatmapSamplesAlwaysWrong])])])
+                    _heatmapUsedFeatures,
+                    _heatmapSamplesAlwaysWrong
+                    ])
+        ])
+                    # html.Div(className="column_content",
+                    #          # WARNING !! : _infoFigure is not with the card, it's in a separate column
+                    #          children=[_heatmapSamplesAlwaysWrong])])])
 
     def _registerCallbacks(self) -> None:
 
@@ -90,13 +127,36 @@ class ResultsSummaryTab(MetaTab):
         )
         def update_results_dropdown_design(active):
             if active == "tab-4":
-                self.r = self.metabo_controller.get_all_results()
-                a = list(self.r.keys())
-                return [{"label": i, "value": i} for i in a], a[0]
+                try:
+                    self.r = self.metabo_controller.get_all_results()
+                    a = list(self.r.keys())
+                    return [{"label": i, "value": i} for i in a], a[0]
+                except: #TODO: wrong practice ???
+                    return dash.no_update
             else:
                 return dash.no_update
 
+        @self.app.callback(
+            Output("heatmapFeatures", "figure"),
+            [Input("load_results_button", "n_clicks")],
+            State("design_dropdown_summary", "value")
+        )
+        def show_heatmap_samples_always_wrong(n_clicks, design):
+            if n_clicks >= 1:
+                algos = list(self.r[design].keys())
+                global_df = pd.DataFrame(data={'features':[]})
+                for a in algos:
+                    df = self.r[design][a].results["features_table"]  #retrieve features table of algo a
+                    used_df = df[df["importance_usage"] > 0]  # select features with more than 0 importance
+                    used_df = used_df[["features", "importance_usage"]]  # reduce dataframe to 2 columns
+                    used_df.rename(columns={"importance_usage": a}, inplace=True)  #rename column to identify algorithm
+                    global_df.join(used_df.set_index("features"), on="features")  #join data with global dataset
 
+                fig = self._plots.show_heatmap_features_usage(global_df)
+
+                return fig
+            else:
+                return dash.no_update
 
         @self.app.callback(
             Output("heatmapSamples", "figure"),
@@ -149,3 +209,5 @@ class ResultsSummaryTab(MetaTab):
                 return fig
             else:
                 return dash.no_update
+
+

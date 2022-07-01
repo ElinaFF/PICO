@@ -378,8 +378,8 @@ class ResultsTab(MetaTab):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["umap_data"]
                 classes = self.r[design_name][algo].results["classes"]
-                print(slider_value)
-                print(df[0])
+                #print(slider_value)
+                #print(df[0])
                 return self._plots.show_umap(df[slider_value], classes)
             else:
                 return dash.no_update
