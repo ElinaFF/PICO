@@ -192,7 +192,7 @@ class InfoTab(MetaTab):
                     metabo_exp_dto = decode_pickle_from_base64(file)
                     self.metabo_controller.partial_restore(metabo_exp_dto, data_name, metadata_name, data=data, metadata=metadata)
                     print("partial restore")
-                    print(self.metabo_controller.get_features())
+                    print(self.metabo_controller.get_metadata_columns())
                     return False, dcc.Location(href="/home", id="someid_doesnt_matter")
                 else:
                     return True, ""

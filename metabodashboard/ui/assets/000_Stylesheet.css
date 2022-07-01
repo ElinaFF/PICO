@@ -380,9 +380,14 @@ th{
     margin-right:3%;
 }
 
+#all_algo_results{
+    display: flex;
+    justify-content: space-around;
+}
 
-
-
+#design_dropdown_summary{
+    min-width: 15em;
+}
 
 
 /************************

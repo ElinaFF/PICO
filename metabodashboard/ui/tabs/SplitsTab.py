@@ -120,7 +120,7 @@ class SplitsTab(MetaTab):
                         "Name of the targets column"),
                     dbc.RadioItems(
                         id="in_target_col_name",
-                        options=Utils.format_list_for_checklist(self.metabo_controller.get_features()),
+                        options=Utils.format_list_for_checklist(self.metabo_controller.get_metadata_columns()),
                         value=self.metabo_controller.get_target_column(),
                         inline=True),
                 ],
@@ -133,7 +133,7 @@ class SplitsTab(MetaTab):
                     dbc.RadioItems(
                         id="in_ID_col_name",
 
-                        options=Utils.format_list_for_checklist(self.metabo_controller.get_features()),
+                        options=Utils.format_list_for_checklist(self.metabo_controller.get_metadata_columns()),
                         value=self.metabo_controller.get_id_column(),
                         inline=True),
                 ],
@@ -234,95 +234,18 @@ class SplitsTab(MetaTab):
                                                 ]),
                                         ])
 
-        __posNegPairing = html.Div(
-            [
-                dbc.Checklist(
-                    id="in_pairing_pos_neg",
-
-                    options=[
-                        {"label": "Pos and Neg pairing",
-                         "value": 0},
-                    ],
-                    labelCheckedStyle={"color": "#13BD00"},
-                )
-            ],
-        )
-
-        __posPattern = html.Div(
-            [
-                dbc.Input(id="distinct_id_pos_samples",
-
-                          className="form_input_text",
-                          placeholder="Pattern for positive samples"),
-            ],
-        )
-
-        __negPattern = html.Div(
-            [
-                dbc.Input(id="distinct_id_neg_samples",
-
-                          className="form_input_text",
-                          placeholder="Pattern for negative samples"),
-            ],
-        )
-
-        __otherPairing = html.Div(
-            [
-                dbc.Checklist(
-                    id="in_pairing_samples",
-
-                    options=[
-                        {"label": "Other pairing", "value": 0},
-                    ],
-                    labelCheckedStyle={"color": "#13BD00"},
-                )
-            ],
-        )
-
-        _type1Pattern = html.Div(
-            [
-                dbc.Input(id="distinct_id_1_samples",
-
-                          className="form_input_text",
-                          placeholder="Pattern for type 1 of samples"),
-            ],
-        )
-
-        _type2Pattern = html.Div(
-            [
-                dbc.Input(id="distinct_id_2_samples",
-
-                          className="form_input_text",
-                          placeholder="Pattern for type 2 of samples"),
-            ],
-        )
-
         _dataFusion = html.Div(className="title_and_form", children=[
             html.H4(id="sep_samples_title", children="C) Sample pairing"),
             dbc.Form(children=[
-                dbc.Col(children=[
-                    dbc.FormText(
-                        "A pattern for a positive file could be '_pos_' if the file name was"
-                        " : sample1_pos_JH35.lcs it means that all positive files would have"
-                        " the pattern in the middle of their name."),
-                    dbc.FormText(
-                        "We consider that the name of a pos file is in all point identical"
-                        " to the name of the neg file corresponding, except for the pos/neg"
-                        " pattern. It is the same consideration for the other potential"
-                        " pairing."
-                    ),
-                    html.Br(),
-                    __posNegPairing,
-                    html.Div(id="div_pair_pn", children=[
-                        __posPattern,
-                        __negPattern
-                    ], style={'display': 'none'}),
-                    __otherPairing,
-                    html.Div(id="div_pair_12", children=[
-                        _type1Pattern,
-                        _type2Pattern
-                    ], style={"display": "none"}),
-
+                dbc.Col([
+                    dbc.FormText("Select the column you want to group."),
+                    dbc.Label("Column(s)"),
+                    html.Div(id="pairing_columns", children=[
+                        dcc.Dropdown(
+                            self.metabo_controller.get_metadata_columns(),
+                            id="pairing_group_column"
+                        )
+                    ])
                 ])
             ])
         ])
@@ -616,24 +539,9 @@ class SplitsTab(MetaTab):
             else:
                 return dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
-        @self.app.callback(
-            [Output("div_pair_pn", "style"),
-             Output("div_pair_12", "style")],
-            [Input("in_pairing_pos_neg", "value"),
-             Input("in_pairing_samples", "value")]
-        )
-        def pairing_show_hide_name_fields(pair_pn, pair_12):
-            if pair_pn == [0] and pair_12 == [0]:
-                return {"display": "block"}, {"display": "block"}
-            elif pair_pn == [0] and pair_12 != [0]:
-                return {"display": "block"}, {"display": "none"}
-            elif pair_pn != [0] and pair_12 == [0]:
-                return {"display": "none"}, {"display": "block"}
-            else:
-                return {"display": "none"}, {"display": "none"}
-
         @self.app.callback([Output("in_target_col_name", "options"),
                             Output("in_ID_col_name", "options"),
+                            Output("pairing_group_column", "options"),
                             Output("upload_metadata_output", "children"),
                             Output("upload_metadata_output", "style")],
                            [Input('upload_metadata', 'contents')],
@@ -644,10 +552,10 @@ class SplitsTab(MetaTab):
                 try:
                     self.metabo_controller.set_metadata(list_of_names, data=list_of_contents)
                 except TypeError as err:
-                    return [], [], html.P(str(err)), {"color": "red"}
-                formatted_columns = Utils.format_list_for_checklist(self.metabo_controller.get_features())
+                    return [], [], [], html.P(str(err)), {"color": "red"}
+                formatted_columns = Utils.format_list_for_checklist(self.metabo_controller.get_metadata_columns())
                 self.metabo_controller.reset_experimental_designs()
-                return formatted_columns, formatted_columns, html.P(
+                return formatted_columns, formatted_columns, formatted_columns, html.P(
                     f"\"{list_of_names}\" has successfully been uploaded !"), {"color": "green"}
             else:
                 return dash.no_update
@@ -815,36 +723,21 @@ class SplitsTab(MetaTab):
             return casted_value
 
         @self.app.callback(
+            Output("pairing_group_column", "value"),
+            [Input("pairing_group_column", "value")]
+        )
+        def update_pairing_group_column(new_value):
+            if new_value is not None:
+                self.metabo_controller.set_pairing_group_column(new_value)
+            return self.metabo_controller.get_pairing_group_column()
+
+
+        @self.app.callback(
             [Output('output_button_split_file', 'children'),
              Output("download-save-file-split", "data")],
             [Input('split_dataset_button', 'n_clicks')],
-            [State("in_use_raw", "value"),
-             State('in_nbr_splits', 'value'),
-             State('in_nbr_processes', 'value'),
-             # State("path_to_data_file", "value"),
-             State('in_peak_threshold_value', 'value'),
-             State('in_percent_samples_in_test', 'value'),
-             State('in_autoOptimize_value', 'value'),
-             # State('in_path_to_metadata', 'value'),
-             State('in_ID_col_name', 'value'),
-             State('in_target_col_name', 'value'),
-             State("in_type_of_data", "value"),
-             State("in_peak_picking", "value"),
-             State("in_alignment", "value"),
-             State("in_normalization", "value"),
-             State("in_pairing_pos_neg", "value"),
-             State("distinct_id_pos_samples", "value"),
-             State("distinct_id_neg_samples", "value"),
-             State("in_pairing_samples", "value"),
-             State("distinct_id_1_samples", "value"),
-             State("distinct_id_2_samples", "value"),
-             ]
         )
-        def saving_params_of_splits_batch(n, use_raw, nbr_splits, nbr_processes,  # path_data_files,
-                                          peakT, percent_in_test, autoOpt, ID_col_name,  # path_to_metadata,
-                                          targets_col_name,
-                                          type_of_processing, peak_pick, align, normalize, pair_pn, pair_id_pos,
-                                          pair_id_neg, pair_12, pair_id_1, pair_id_2):
+        def saving_params_of_splits_batch(n):
             """
             Create the file (json) which will contains all info about the split creation / data experiment.
             """

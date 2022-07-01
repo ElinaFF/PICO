@@ -1,4 +1,4 @@
-from typing import Generator, Tuple, Dict
+from typing import Generator, Tuple, Dict, List
 
 from . import SplitGroup
 from .Results import *
@@ -15,9 +15,10 @@ class ExperimentalDesign:
         self._selected_models_name = None
         self.results = {}
 
-    def set_split_parameter(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData) -> None:
-        self._split_group = SplitGroup(metadata, self.get_selected_targets_name(), train_test_proportion,
-                                       number_of_splits, self._classes_design)
+    def set_split_parameter_and_compute_splits(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData,
+                                               pairing_column: str) -> None:
+        self._split_group = SplitGroup(metadata, self.get_selected_targets_name(), train_test_proportion, number_of_splits, self._classes_design,
+                                       pairing_column)
 
     def get_name(self) -> str:
         return self._name

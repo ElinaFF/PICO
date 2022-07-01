@@ -94,7 +94,7 @@ class DataFormat:
         :param datatable:
         :return:
         """
-        print(header)
+        #print(header)
         if not self.use_raw and "Normalised abundance" in header[0]:  #header.columns.tolist():
             start_data = list(header[0]).index("Normalised abundance")
         elif self.use_raw and "Raw abundance" in header[0]:  #header.columns.tolist():

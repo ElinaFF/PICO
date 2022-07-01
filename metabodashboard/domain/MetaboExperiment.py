@@ -1,4 +1,5 @@
-from typing import Generator, Tuple, List
+import itertools
+from typing import Generator, Tuple, List, Dict
 
 import sklearn
 
@@ -26,6 +27,7 @@ class MetaboExperiment:
 
         self._number_of_splits = 5
         self._train_test_proportion = 0.2
+        self._pairing_group_column = ""
 
         self.experimental_designs = {}
 
@@ -47,7 +49,6 @@ class MetaboExperiment:
     def set_metadata_with_dataframe(self, filename, data=None, from_base64=True):
         self.init_metadata()
         self._metadata.read_format_and_store_metadata(filename, data=data, from_base64=from_base64)
-
 
     def set_data_matrix(self, path_data_matrix: str, data=None, use_raw: bool = False, from_base64: bool = True):
         self.init_data_matrix()
@@ -82,7 +83,17 @@ class MetaboExperiment:
         if self._train_test_proportion is None:
             raise RuntimeError("Train test proportion not set")
         for _, experimental_design in self.experimental_designs.items():
-            experimental_design.set_split_parameter(self._train_test_proportion, self._number_of_splits, self._metadata)
+            experimental_design.set_split_parameter_and_compute_splits(self._train_test_proportion,
+                                                                       self._number_of_splits, self._metadata,
+                                                                       self._pairing_group_column)
+
+    def get_pairing_group_column(self) -> str:
+        return self._pairing_group_column
+
+    def set_pairing_group_column(self, pairing_group_column: str):
+        if pairing_group_column not in self._metadata.get_columns():
+            raise RuntimeError("Column {} is not in the metadata".format(pairing_group_column))
+        self._pairing_group_column = pairing_group_column
 
     def get_experimental_designs(self) -> dict:
         return self.experimental_designs
@@ -109,7 +120,7 @@ class MetaboExperiment:
     def get_selected_models(self) -> list:
         return self._selected_models
 
-    def get_features(self) -> list:
+    def get_metadata_columns(self) -> list:
         if self._metadata is None:
             raise RuntimeError("Metadata is not set.")
         return self._metadata.get_columns()
