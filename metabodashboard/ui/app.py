@@ -38,15 +38,6 @@ app.layout = html.Div(
             className="row",
             children=[
                 html.Div(
-                    html.H1(id="title", children="MetaboDashboard"), id="title_bg"
-                )  # , style={"text-align": "center"}
-            ],
-        ),
-        html.Div(
-            id="title_container",
-            className="row",
-            children=[
-                html.Div(
                     children=[
                         html.H1(id="title", children="MeDIC"),
                         html.Div(
