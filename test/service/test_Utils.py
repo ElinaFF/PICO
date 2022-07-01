@@ -11,3 +11,11 @@ def test_givenUtils_whenGetFilePath_thenReturnFilePath():
         "dumps",
         "save.mtxp",
     )
+
+
+def test_givenBinaryClass_whenGettingBinary_thenBinaryIsReturned():
+    assert Utils.get_binary(["b", "c", "b", "c"], ["b", "c"]) == [0, 1, 0, 1]
+
+
+def test_givenMultiClass_whenGettingBinary_thenBinaryIsReturned():
+    assert Utils.get_binary(["b", "c", "b", "c", "a", "c"], ["a", "b", "c"]) == [1, 2, 1, 2, 0, 2]
