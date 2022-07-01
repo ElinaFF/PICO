@@ -12,8 +12,9 @@ from .Results import *
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
 
+
 class MetaboController:
-    def __init__(self, metaboExp: MetaboExperiment=None):
+    def __init__(self, metaboExp: MetaboExperiment = None):
         if metaboExp is None:
             self._metabo_experiment = MetaboExperiment()
         else:
@@ -21,10 +22,16 @@ class MetaboController:
         self._plots = Plots("blues")
 
     def set_metadata(self, filename: str, data=None, from_base64=True) -> None:
-        self._metabo_experiment.set_metadata_with_dataframe(filename=filename, data=data, from_base64=from_base64)
+        self._metabo_experiment.set_metadata_with_dataframe(
+            filename=filename, data=data, from_base64=from_base64
+        )
 
-    def set_data_matrix_from_path(self, path_data_matrix, data=None, use_raw=False, from_base64=True):
-        return self._metabo_experiment.set_data_matrix(path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64)
+    def set_data_matrix_from_path(
+        self, path_data_matrix, data=None, use_raw=False, from_base64=True
+    ):
+        return self._metabo_experiment.set_data_matrix(
+            path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64
+        )
 
     def get_metadata_columns(self) -> list:
         return self._metabo_experiment.get_metadata_columns()
@@ -53,8 +60,12 @@ class MetaboController:
     def get_samples_id_from_splits(self, nbr_split_list, design):
         samples_list = []
         for s in nbr_split_list:
-            with open(os.path.join(DUMP_PATH, design+"_split_{}.p".format(s)), "rb") as split_file:
-                samples_list.append(pickle.load(split_file)[:2])  # append list of X_train & X_test samples names
+            with open(
+                os.path.join(DUMP_PATH, design + "_split_{}.p".format(s)), "rb"
+            ) as split_file:
+                samples_list.append(
+                    pickle.load(split_file)[:2]
+                )  # append list of X_train & X_test samples names
         return samples_list
 
     def set_target_column(self, target_column: str):
@@ -73,37 +84,59 @@ class MetaboController:
         return self._plots.show_exp_info_all(df)
 
     def produce_exp_info(self, design_name: str, algo: str):
-        return self._metabo_experiment.experimental_designs[design_name].results[algo].results["info_expe"]
+        return (
+            self._metabo_experiment.experimental_designs[design_name]
+            .results[algo]
+            .results["info_expe"]
+        )
 
     def show_accuracy_all(self, df: pd.DataFrame):
         return self._plots.show_accuracy_all(df)
 
     def produce_accuracy_plot_all(self, design_name: str, algo: str):
         # TODO: méthode get_accuracy_plot_all(design_name: str, algo:str)
-        return self._metabo_experiment.experimental_designs[design_name].results[algo].produce_accuracy_plot_all()
+        return (
+            self._metabo_experiment.experimental_designs[design_name]
+            .results[algo]
+            .produce_accuracy_plot_all()
+        )
 
     def show_features_selection(self, df: pd.DataFrame):
         return self._plots.show_features_selection(df)
 
     def produce_features_importance_table(self, design_name: str, algo: str):
-        return self._metabo_experiment.experimental_designs[design_name].results[
-            algo].produce_features_importance_table()
+        return (
+            self._metabo_experiment.experimental_designs[design_name]
+            .results[algo]
+            .produce_features_importance_table()
+        )
 
     def show_umap(self, df: pd.DataFrame):
         return self._plots.show_umap(df)
 
     def produce_umap(self, design_name: str, algo: str):
-        return self._metabo_experiment.experimental_designs[design_name].results[
-            algo].produce_features_importance_table()
+        return (
+            self._metabo_experiment.experimental_designs[design_name]
+            .results[algo]
+            .produce_features_importance_table()
+        )
 
     def get_results(self, design_name: str, algo: str):
-        return self._metabo_experiment.experimental_designs[design_name].results[algo].results
+        return (
+            self._metabo_experiment.experimental_designs[design_name]
+            .results[algo]
+            .results
+        )
 
     def get_all_results(self):
         return self._metabo_experiment.get_all_results()
 
-    def add_custom_model(self, model_name: str, needed_import: str, grid_search_param: dict):
-        self._metabo_experiment.add_custom_model(model_name, needed_import, grid_search_param)
+    def add_custom_model(
+        self, model_name: str, needed_import: str, grid_search_param: dict
+    ):
+        self._metabo_experiment.add_custom_model(
+            model_name, needed_import, grid_search_param
+        )
 
     def get_all_algos_names(self) -> list:
         return self._metabo_experiment.get_all_algos_names()
@@ -126,11 +159,27 @@ class MetaboController:
     def full_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
         self._metabo_experiment.full_restore(saved_metabo_experiment_dto)
 
-    def partial_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO, filename_data: str,
-                        filename_metadata: str, data=None, use_raw_data: bool = False, from_base64_data: bool = True,
-                        metadata=None, from_base64_metadata=True):
-        self._metabo_experiment.partial_restore(saved_metabo_experiment_dto, filename_data, filename_metadata,
-                                                data, use_raw_data, from_base64_data, metadata, from_base64_metadata)
+    def partial_restore(
+        self,
+        saved_metabo_experiment_dto: MetaboExperimentDTO,
+        filename_data: str,
+        filename_metadata: str,
+        data=None,
+        use_raw_data: bool = False,
+        from_base64_data: bool = True,
+        metadata=None,
+        from_base64_metadata=True,
+    ):
+        self._metabo_experiment.partial_restore(
+            saved_metabo_experiment_dto,
+            filename_data,
+            filename_metadata,
+            data,
+            use_raw_data,
+            from_base64_data,
+            metadata,
+            from_base64_metadata,
+        )
 
     def load_results(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
         self._metabo_experiment.load_results(saved_metabo_experiment_dto)

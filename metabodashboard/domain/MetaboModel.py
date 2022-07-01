@@ -12,7 +12,13 @@ class MetaboModel:
         self.model = model
         self.seed = seed
 
-    def train(self, folds: int, X_train: pd.DataFrame, y_train: list, cv_algorithms: sklearn.model_selection) -> sklearn:
+    def train(
+        self,
+        folds: int,
+        X_train: pd.DataFrame,
+        y_train: list,
+        cv_algorithms: sklearn.model_selection,
+    ) -> sklearn:
         if cv_algorithms == RandomizedSearchCV:
             search = cv_algorithms(
                 self.model(random_state=self.seed),
@@ -30,4 +36,4 @@ class MetaboModel:
         return search.best_estimator_
 
 
-#TODO: dump best model ?
+# TODO: dump best model ?

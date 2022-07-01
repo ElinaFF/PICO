@@ -28,9 +28,9 @@ def _get_group_pairing_column_and_filtered_index(size: int):
     selected_index = []
     for index in range(size // 3):
         data += [f"group-{index}", f"group-{index}", f"group-{index}"]
-        selected_index.append(f'patient-{index * 3}')
+        selected_index.append(f"patient-{index * 3}")
     if size % 3 != 0:
-        selected_index.append(f'patient-{size // 3 * 3}')
+        selected_index.append(f"patient-{size // 3 * 3}")
         for index in range(size - size // 3 * 3):
             data += [f"group-{size // 3}"]
     return data, selected_index
@@ -41,20 +41,28 @@ def _get_targets_with_index(selected_index: List[str], targets: List[str]):
 
 
 def _get_pattern_pairing(size: int):
-    column_1 = ["pattern-A" for _ in range(size // 2)] + ["pattern-B" for _ in range(size // 2, size)]
-    column_2 = ["pattern-1" for _ in range(size // 3)] + ["pattern-2" for _ in range(size // 3, size)]
-    column_3 = ["pattern-Y" for _ in range(size // 4)] + ["pattern-N" for _ in range(size // 4, size)]
+    column_1 = ["pattern-A" for _ in range(size // 2)] + [
+        "pattern-B" for _ in range(size // 2, size)
+    ]
+    column_2 = ["pattern-1" for _ in range(size // 3)] + [
+        "pattern-2" for _ in range(size // 3, size)
+    ]
+    column_3 = ["pattern-Y" for _ in range(size // 4)] + [
+        "pattern-N" for _ in range(size // 4, size)
+    ]
     return [column_1, column_2, column_3]
 
 
 def _get_targets_and_classes(size: int, classes_design: dict):
-    target_list = [target
-                   for _, target_list in classes_design.items()
-                   for target in target_list]
+    target_list = [
+        target for _, target_list in classes_design.items() for target in target_list
+    ]
     number_of_target = len(target_list) - 1
-    reversed_classes_design = {target: class_
-                               for class_, target_list in classes_design.items()
-                               for target in target_list}
+    reversed_classes_design = {
+        target: class_
+        for class_, target_list in classes_design.items()
+        for target in target_list
+    }
     targets = []
     classes = []
     for index in range(size):
@@ -66,31 +74,40 @@ def _get_targets_and_classes(size: int, classes_design: dict):
     return targets, classes
 
 
-def _get_splits(number_of_splits: int, train_test_proportion: float, samples_id: list, classes: list) -> List[
-    List[str]]:
+def _get_splits(
+    number_of_splits: int, train_test_proportion: float, samples_id: list, classes: list
+) -> List[List[str]]:
     splits = []
     for split_index in range(number_of_splits):
-        X_train, X_test, y_train, y_test = train_test_split(samples_id, classes, test_size=train_test_proportion,
-                                                            random_state=split_index)
+        X_train, X_test, y_train, y_test = train_test_split(
+            samples_id,
+            classes,
+            test_size=train_test_proportion,
+            random_state=split_index,
+        )
         splits.append([X_train, X_test, y_train, y_test])
     return splits
 
 
 def base64_encode_dataframe(data: pd.DataFrame) -> str:
-    return "data:application/vnd.ms-excel;base64," + base64.b64encode(data.to_csv(index=True).encode("utf-8")).decode(
-        "utf-8")
+    return "data:application/vnd.ms-excel;base64," + base64.b64encode(
+        data.to_csv(index=True).encode("utf-8")
+    ).decode("utf-8")
 
 
 def base64_encode_metadata(data: pd.DataFrame) -> str:
-    return "data:application/vnd.ms-excel;base64," + base64.b64encode(data.to_csv(index=False).encode("utf-8")).decode(
-        "utf-8")
+    return "data:application/vnd.ms-excel;base64," + base64.b64encode(
+        data.to_csv(index=False).encode("utf-8")
+    ).decode("utf-8")
 
 
 def compute_hash(data: pd.DataFrame) -> str:
-    return hashlib.sha256(data.to_csv(index=False).encode('utf-8')).hexdigest()
+    return hashlib.sha256(data.to_csv(index=False).encode("utf-8")).hexdigest()
 
 
-def assert_dataframe_approximately_equal(data1: pd.DataFrame, data2: pd.DataFrame, epsilon: float = 1e-15):
+def assert_dataframe_approximately_equal(
+    data1: pd.DataFrame, data2: pd.DataFrame, epsilon: float = 1e-15
+):
     for col, item in data2.items():
         for index, value in item.items():
             assert isclose(data1.loc[index, col], value, abs_tol=epsilon)
@@ -99,9 +116,20 @@ def assert_dataframe_approximately_equal(data1: pd.DataFrame, data2: pd.DataFram
 def _get_random_results(number_of_split: int):
     results = {str(s): {} for s in range(number_of_split)}
     for split_number in range(number_of_split):
-        for metric in ["train_accuracy", "test_accuracy", "balanced_train_accuracy", "balanced_test_accuracy",
-                       "train_precision", "test_precision", "train_recall", "test_recall", "train_f1", "test_f1",
-                       "train_roc_auc", "test_roc_auc"]:
+        for metric in [
+            "train_accuracy",
+            "test_accuracy",
+            "balanced_train_accuracy",
+            "balanced_test_accuracy",
+            "train_precision",
+            "test_precision",
+            "train_recall",
+            "test_recall",
+            "train_f1",
+            "test_f1",
+            "train_roc_auc",
+            "test_roc_auc",
+        ]:
             results[str(split_number)][metric] = random.random()
 
     return results
@@ -124,7 +152,9 @@ TARGETS, CLASSES = _get_targets_and_classes(SIZE, CLASSES_DESIGN)
 SELECTED_TARGETS = ["sick", "healthy"]
 ALL_TARGETS = ["sick", "ill", "healthy"]
 FILTERED_TARGETS = [target for target in TARGETS if target in SELECTED_TARGETS]
-FILTERED_SAMPLES_ID = [id for id, target in zip(SAMPLES_ID, TARGETS) if target in SELECTED_TARGETS]
+FILTERED_SAMPLES_ID = [
+    id for id, target in zip(SAMPLES_ID, TARGETS) if target in SELECTED_TARGETS
+]
 FILTERED_TARGETS_AND_IDS = (tuple(FILTERED_TARGETS), tuple(FILTERED_SAMPLES_ID))
 DATA = _get_random_data(SIZE, COLUMNS)
 SCALED_DATA = pd.DataFrame(StandardScaler().fit_transform(DATA), columns=DATA.columns)
@@ -136,21 +166,32 @@ PAIRING_GROUP_COLUMN = "pairing_group"
 PAIRING_GROUP, GROUPED_ID = _get_group_pairing_column_and_filtered_index(SIZE)
 GROUPED_TARGETS = _get_targets_with_index(GROUPED_ID, TARGETS)
 
-METADATA_DATAFRAME = pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID, TARGETS_COLUMN: TARGETS, PAIRING_GROUP_COLUMN:
-    PAIRING_GROUP})
+METADATA_DATAFRAME = pd.DataFrame(
+    {
+        SAMPLES_ID_COLUMN: SAMPLES_ID,
+        TARGETS_COLUMN: TARGETS,
+        PAIRING_GROUP_COLUMN: PAIRING_GROUP,
+    }
+)
 
 ENCODED_METADATA_DATAFRAME = base64_encode_metadata(METADATA_DATAFRAME)
 METADATA_DATAFRAME_HASH = compute_hash(METADATA_DATAFRAME)
 
-DATAMATRIX_DATAFRAME = pd.concat([pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID}), DATA], axis=1)
+DATAMATRIX_DATAFRAME = pd.concat(
+    [pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID}), DATA], axis=1
+)
 DATAMATRIX_DATAFRAME.set_index(SAMPLES_ID_COLUMN, inplace=True)
 ENCODED_DATAMATRIX_DATAFRAME = base64_encode_dataframe(DATAMATRIX_DATAFRAME)
 DATAMATRIX_DATAFRAME_HASH = compute_hash(DATAMATRIX_DATAFRAME)
 
 DIFFERENT_DATAMATRIX_DATAFRAMES = pd.concat(
-    [pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID}), _get_random_data(SIZE, COLUMNS)], axis=1)
+    [pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID}), _get_random_data(SIZE, COLUMNS)],
+    axis=1,
+)
 DIFFERENT_DATAMATRIX_DATAFRAMES.set_index(SAMPLES_ID_COLUMN, inplace=True)
-ENCODED_DIFFERENT_DATAMATRIX_DATAFRAMES = base64_encode_dataframe(DIFFERENT_DATAMATRIX_DATAFRAMES)
+ENCODED_DIFFERENT_DATAMATRIX_DATAFRAMES = base64_encode_dataframe(
+    DIFFERENT_DATAMATRIX_DATAFRAMES
+)
 
 MOCKED_METADATA_CLASS = Mock(name="MockedMetadata")
 MOCKED_METADATA = MOCKED_METADATA_CLASS.return_value
@@ -172,7 +213,11 @@ RESULTS = _get_random_results(NUMBER_OF_SPLITS)
 MOCKED_RESULT_CLASS = Mock(name="MockedResult")
 MOCKED_RESULT = MOCKED_RESULT_CLASS.return_value
 
-EXP_RESULTS = {"DecisionTree": MOCKED_RESULT, "RandomForest": MOCKED_RESULT, "LogisticRegression": MOCKED_RESULT}
+EXP_RESULTS = {
+    "DecisionTree": MOCKED_RESULT,
+    "RandomForest": MOCKED_RESULT,
+    "LogisticRegression": MOCKED_RESULT,
+}
 
 MOCKED_EXPERIMENTAL_DESIGN_CLASS = Mock(name="MockedExperimentalDesign")
 MOCKED_EXPERIMENTAL_DESIGN = MOCKED_EXPERIMENTAL_DESIGN_CLASS.return_value
@@ -218,9 +263,6 @@ MOCKED_METABOEXPERIMENT_DTO.selected_cv_type = CV_TYPE
 SPLITS = _get_splits(NUMBER_OF_SPLITS, TRAIN_TEST_PROPORTION, SAMPLES_ID, CLASSES)
 
 FOLDS = 5
-PARAMETER_GRID = {
-    'criterion': ['gini', 'entropy'],
-    "max_depth": [1, 2, 3, 4, 5, 10]
-}
+PARAMETER_GRID = {"criterion": ["gini", "entropy"], "max_depth": [1, 2, 3, 4, 5, 10]}
 
 SUPPORTED_MODEL = LEARN_CONFIG
