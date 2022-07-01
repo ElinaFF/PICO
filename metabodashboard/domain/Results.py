@@ -94,10 +94,11 @@ class Results:
         self.results[split_number]["balanced_test_accuracy"] = balanced_accuracy_score(
             y_test_true, y_test_pred
         )
-        binary_y_train_true = Utils.get_binary(y_train_true, classes)
-        binary_y_train_pred = Utils.get_binary(y_train_pred, classes)
-        binary_y_test_true = Utils.get_binary(y_test_true, classes)
-        binary_y_test_pred = Utils.get_binary(y_test_pred, classes)
+        unique_classes = list(set(classes))
+        binary_y_train_true = Utils.get_binary(y_train_true, unique_classes)
+        binary_y_train_pred = Utils.get_binary(y_train_pred, unique_classes)
+        binary_y_test_true = Utils.get_binary(y_test_true, unique_classes)
+        binary_y_test_pred = Utils.get_binary(y_test_pred, unique_classes)
         self.results[split_number]["train_precision"] = precision_score(
             binary_y_train_true, binary_y_train_pred
         )
