@@ -327,6 +327,38 @@ class ResultsTab(MetaTab):
             return
 
         @self.app.callback(
+            Output("PCA", "figure"),
+            [Input("load_ML_results_button", "n_clicks"),
+             Input("pca_slider", "value")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")]
+        )
+        def show_pca(n_clicks, pca_value, algo, design_name):
+            if n_clicks >= 1:
+                df = self.r[design_name][algo].results["pca_data"]
+                classes = self.r[design_name][algo].results["classes"]
+                return self._plots.show_PCA(df[pca_value], classes, pca_value, algo)
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+            Output("umap_overview", "figure"),
+            [Input("load_ML_results_button", "n_clicks"),
+             Input("umap_slider", "value")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")]
+        )
+        def show_umap(n_clicks, slider_value, algo, design_name):
+            if n_clicks >= 1:
+                df = self.r[design_name][algo].results["umap_data"]
+                classes = self.r[design_name][algo].results["classes"]
+                # print(slider_value)
+                # print(df[0])
+                return self._plots.show_umap(df[slider_value], classes, slider_value, algo)
+            else:
+                return dash.no_update
+
+        @self.app.callback(
             Output("expe_table", "children"),
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"),
@@ -350,7 +382,7 @@ class ResultsTab(MetaTab):
         def generates_accuracyPlot_global(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["accuracies_table"]
-                return self._plots.show_accuracy_all(df)
+                return self._plots.show_accuracy_all(df, algo)
             else:
                 return dash.no_update
 
@@ -367,64 +399,35 @@ class ResultsTab(MetaTab):
             else:
                 return dash.no_update
 
-        @self.app.callback(
-            Output("umap_overview", "figure"),
-            [Input("load_ML_results_button", "n_clicks"),
-             Input("umap_slider", "value")],
-            [State("ml_dropdown", "value"),
-             State("design_dropdown", "value")]
-        )
-        def show_umap(n_clicks, slider_value, algo, design_name):
-            if n_clicks >= 1:
-                df = self.r[design_name][algo].results["umap_data"]
-                classes = self.r[design_name][algo].results["classes"]
-                #print(slider_value)
-                #print(df[0])
-                return self._plots.show_umap(df[slider_value], classes)
-            else:
-                return dash.no_update
 
-        @self.app.callback(
-            Output("conf_matrix", "figure"),
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"),
-             State("design_dropdown", "value")]
-        )
-        def compute_conf_matrix(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                list_cm = []
-                for s in self.r[design_name][algo].splits_number:
-                    cm = self.r[design_name][algo].results[s]["Confusion_matrix"]
-                    list_cm.append(cm[1])
+        # @self.app.callback(
+        #     Output("conf_matrix", "figure"),
+        #     [Input("load_ML_results_button", "n_clicks")],
+        #     [State("ml_dropdown", "value"),
+        #      State("design_dropdown", "value")]
+        # )
+        # def compute_conf_matrix(n_clicks, algo, design_name):
+        #     if n_clicks >= 1:
+        #         list_cm = []
+        #         for s in self.r[design_name][algo].splits_number:
+        #             cm = self.r[design_name][algo].results[s]["Confusion_matrix"]
+        #             list_cm.append(cm[1])
+        #
+        #         mean = np.mean(list_cm, axis=0)
+        #         std = np.std(list_cm, axis=0)
+        #
+        #         text_mat = []
+        #         for i, line in enumerate(mean):
+        #             text_mat.append([])
+        #             for j, col in enumerate(line):
+        #                 text_mat[i].append(str(col) + "(" + str(std[i][j]) + ")")
+        #
+        #         labels = cm[0]
+        #         return self._plots.show_general_confusion_matrix(mean, labels, text_mat)
+        #     else:
+        #         return dash.no_update
 
-                mean = np.mean(list_cm, axis=0)
-                std = np.std(list_cm, axis=0)
 
-                text_mat = []
-                for i, line in enumerate(mean):
-                    text_mat.append([])
-                    for j, col in enumerate(line):
-                        text_mat[i].append(str(col) + "(" + str(std[i][j]) + ")")
-
-                labels = cm[0]
-                return self._plots.show_general_confusion_matrix(mean, labels, text_mat)
-            else:
-                return dash.no_update
-
-        @self.app.callback(
-            Output("PCA", "figure"),
-            [Input("load_ML_results_button", "n_clicks"),
-             Input("pca_slider", "value")],
-            [State("ml_dropdown", "value"),
-             State("design_dropdown", "value")]
-        )
-        def show_pca(n_clicks, pca_value, algo, design_name):
-            if n_clicks >= 1:
-                df = self.r[design_name][algo].results["pca_data"]
-                classes = self.r[design_name][algo].results["classes"]
-                return self._plots.show_PCA(df[pca_value], classes)
-            else:
-                return dash.no_update
 
         @self.app.callback(
             Output("split_conf_matrix", "figure"),
@@ -445,7 +448,7 @@ class ResultsTab(MetaTab):
                     for j, col in enumerate(line):
                         text_mat[i].append(str(col))
 
-                return self._plots.show_general_confusion_matrix(cm, labels, text_mat)
+                return self._plots.show_general_confusion_matrix(cm, labels, text_mat, algo, split)
             else:
                 return dash.no_update
 
@@ -472,7 +475,7 @@ class ResultsTab(MetaTab):
         def export_download_features_table(n_click, algo, design_name):
             if n_click >= 1:
                 df = self.r[design_name][algo].results["features_table"]
-                return dcc.send_data_frame(df.to_csv, "featuresImportancesTable.csv")
+                return dcc.send_data_frame(df.to_csv, "featuresImportancesTable"+algo+".csv")
             else:
                 return dash.no_update
 
@@ -501,7 +504,7 @@ class ResultsTab(MetaTab):
             if feature != "None":
                 df = self.r[design_name][algo].results["features_stripchart"]
                 df = df.loc[:, [feature, "targets"]]
-                return self._plots.show_metabolite_levels(df, feature)
+                return self._plots.show_metabolite_levels(df, feature, algo)
             else:
                 return dash.no_update
 
