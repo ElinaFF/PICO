@@ -13,7 +13,7 @@ class Plots:
     def show_algo_comparison_by_heatmap(self):
         return
 
-    def show_umap(self, umap_data, classes):
+    def show_umap(self, umap_data, classes, slider_value, algo):
         fig = px.scatter(
             umap_data,
             x=0,
@@ -23,33 +23,28 @@ class Plots:
             title="",
         )
 
-        fig.update_layout(
-            {
-                "plot_bgcolor": "rgba(0, 0, 0, 0)",
-                "paper_bgcolor": "rgba(0, 0, 0, 0)",
-            },
-            title="UMAP applied on top X features selected by the algorithm",
+        fig.update_layout({
+            "plot_bgcolor": "rgba(0, 0, 0, 0)",
+            "paper_bgcolor": "rgba(0, 0, 0, 0)",
+        },
+            title="UMAP applied on top "+slider_value+" features selected by "+algo
         )
         return fig
 
-    def show_PCA(self, pca_data, classes):
-        fig = px.scatter(
-            pca_data,
-            x=0,
-            y=1,
-            color=classes,
-            color_continuous_scale=self.colors,
-        )
-        fig.update_layout(
-            {
-                "plot_bgcolor": "rgba(0, 0, 0, 0)",
-                "paper_bgcolor": "rgba(0, 0, 0, 0)",
-            },
-            title="PCA applied on top X features selected by the algorithm",
+    def show_PCA(self, pca_data, classes, slider_value, algo):
+        fig = px.scatter(pca_data, x=0, y=1,
+                         color=classes,
+                         color_continuous_scale=self.colors,
+                         )
+        fig.update_layout({
+            "plot_bgcolor": "rgba(0, 0, 0, 0)",
+            "paper_bgcolor": "rgba(0, 0, 0, 0)",
+        },
+            title="PCA applied on top "+slider_value+" features selected by "+algo
         )
         return fig
 
-    def show_general_confusion_matrix(self, cm, labels, text):
+    def show_general_confusion_matrix(self, cm, labels, text, algo, split):
         # labels = ["0", "1"]
 
         fig = go.Figure(
@@ -65,10 +60,10 @@ class Plots:
             )
         )
         fig = fig.update_traces(text=text, texttemplate="%{text}", hovertemplate=None)
-        fig.update_layout(
-            xaxis_title="Prediciton",
-            yaxis_title="Truth",
-        )
+        fig.update_layout(title="Confusion matrix of split "+split+" by "+algo,
+                          xaxis_title="Prediciton",
+                          yaxis_title="Truth",
+                          )
 
         # fig = px.imshow(
         #         cm,
@@ -81,7 +76,7 @@ class Plots:
         # fig.update_traces(text=text)
         return fig
 
-    def show_accuracy_all(self, df):
+    def show_accuracy_all(self, df, algo):
         """
         plot the accuracy for each split on train and test set
         df : generated from Results.produce_accuracy_plot_all()
@@ -99,13 +94,7 @@ class Plots:
                 "To show the global accuracies plot, the dataframe needs to have a 'color' column"
             )
 
-        fig = px.line(
-            df,
-            x="splits",
-            y="accuracies",
-            color="color",
-            title="Accuracies on train and test sets for each split",
-        )
+        fig = px.line(df, x='splits', y='accuracies', color='color', title="Accuracies on train and test sets for each split of "+algo)
         fig.update_yaxes(range=[0, 1.1])
         fig.update_layout(
             {
@@ -140,7 +129,7 @@ class Plots:
         table_body = [html.Tbody([row1, row2, row3])]
         return table_body
 
-    def show_features_selection(self, df: pd.DataFrame):
+    def show_features_selection(self, df: pd.DataFrame, algo):
         """
         table of features used by all models (all split of an algorithm)
         ranked by most used first
@@ -162,19 +151,14 @@ class Plots:
         # TODO : sort data by times_used or importance, and take only top 10-20 to display
 
         fig = go.Figure(
-            data=[
-                go.Table(
-                    header=dict(values=list(df.columns), align="center"),
-                    cells=dict(
-                        values=[
-                            df.iloc[:10, :].features,
-                            df.iloc[:10, :].times_used,
-                            df.iloc[:10, :].importance_usage,
-                        ],
-                        align="center",
-                    ),
-                )
-            ]
+            data=[go.Table(
+                header=dict(values=list(df.columns), align="center"),
+                cells=dict(values=[df.iloc[:10, :].features, df.iloc[:10, :].times_used,
+                                   df.iloc[:10, :].importance_usage],
+                           align="center"))
+            ])
+        fig.update_layout(
+            title="Table of top 10 features sorted by importance for "+algo
         )
         fig.update_layout(title="Table of top 10 features sorted by importance")
         return fig
@@ -185,19 +169,14 @@ class Plots:
         """
         return
 
-    def show_metabolite_levels(self, features_data, feature):
+    def show_metabolite_levels(self, features_data, feature, algo):
         """
         Plot in stripchart (boxplot with point and no box)
         (with a dropdown to select the metabolite, max of N? metabolite)
         And show the intensity of this metabolite/ this feature in each class (one box per class)
         """
         df = features_data
-        fig = px.strip(
-            df,
-            x="targets",
-            y=feature,
-            title="Abundance of metabolite {} in each sample by class".format(feature),
-        )
+        fig = px.strip(df, x='targets', y=feature, title="Abundance of metabolite {} in each sample by class for {}".format(feature, algo))
         return fig
 
     def show_heatmap_wrong_samples(self, data_train, data_test, samples_names, algos):
@@ -217,4 +196,20 @@ class Plots:
             )
         )
 
+        return fig
+
+    def show_heatmap_features_usage(self, df):
+        # fig = go.Figure()
+        #
+        # fig.add_trace(
+        #     go.Heatmap(
+        #         z=data_test,
+        #         x=algos,
+        #         y=samples_names,
+        #         opacity=1,
+        #         colorscale="blues"
+        #     )
+        # )
+
+        fig = px.imshow(df)
         return fig

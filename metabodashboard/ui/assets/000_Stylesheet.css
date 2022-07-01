@@ -217,6 +217,9 @@ th{
 }
 
 #title_bg{
+    display: flex;
+    flex-direction: row;
+    justify-content:center;
     background-color:#00143e;
     min-width:35em;
     max-width: 40%;
@@ -230,6 +233,11 @@ th{
     justify-content:center;
     align-item:center;
     margin:auto 1em 0 1em;
+}
+
+#acronym{
+    display: flex;
+    flex-direction: column;
 }
 
 
@@ -380,9 +388,14 @@ th{
     margin-right:3%;
 }
 
+#all_algo_results{
+    display: flex;
+    justify-content: space-around;
+}
 
-
-
+#design_dropdown_summary{
+    min-width: 15em;
+}
 
 
 /************************

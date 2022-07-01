@@ -37,8 +37,8 @@ class MetaData:
         if from_base64:
             data_type, data_string = data.split(",")
             data = base64.b64decode(data_string)
-            print("data decoded :{}")
-            print(data[:200])
+            #print("data decoded :{}")
+            #print(data[:200])
         else:
             data = filename
 
