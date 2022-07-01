@@ -19,13 +19,13 @@ def main():
     print('Starting the MetaboDashboard')
     metabo_controller = MetaboController()
 
-    if not metabo_controller.set_metadata(METADATA_PATH, from_base64=False):
-        raise RuntimeError('Metadata file not setted')
     metabo_controller.set_data_matrix_from_path(DATAMATRIX_PATH, use_raw=False, from_base64=False)
+    metabo_controller.set_metadata(METADATA_PATH, from_base64=False)
     print("Metadata and DataMatrix are set_from_path")
 
     metabo_controller.set_id_column('Sample')
     metabo_controller.set_target_column('diet')
+    metabo_controller.set_pairing_group_column("subject")
     metabo_controller.add_experimental_design({"NA": "NA", "MED": ["MED", "MED/w"]})
     print("Experimental design added")
 
@@ -37,8 +37,8 @@ def main():
     print("Learning starts...")
     metabo_controller.learn(2)
     print("finished")
-
-    pickle.dump(metabo_controller.get_all_results(), open("big_results.p", "wb"))
+    #
+    # pickle.dump(metabo_controller.get_all_results(), open("big_results.p", "wb"))
 
     end_time = datetime.now()
     print('Duration: {}'.format(end_time - start_time))
