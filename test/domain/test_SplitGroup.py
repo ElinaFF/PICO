@@ -14,6 +14,7 @@ from ..TestsUtility import (
     SAMPLES_ID,
     TARGETS,
     SELECTED_TARGETS,
+    ALL_TARGETS,
 )
 from ...metabodashboard.domain import SplitGroup
 
@@ -22,7 +23,7 @@ from ...metabodashboard.domain import SplitGroup
 def input_splits():
     return SplitGroup(
         MOCKED_METADATA,
-        SELECTED_TARGETS,
+        ALL_TARGETS,
         TRAIN_TEST_PROPORTION,
         NUMBER_OF_SPLITS,
         CLASSES_DESIGN,
