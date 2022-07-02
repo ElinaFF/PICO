@@ -41,6 +41,7 @@ def main():
     metabo_controller.learn(2)
     print("finished")
     #
+    print(metabo_controller.get_all_results())
     # pickle.dump(metabo_controller.get_all_results(), open("big_results.p", "wb"))
 
     end_time = datetime.now()
