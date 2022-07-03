@@ -259,31 +259,34 @@ class InfoTab(MetaTab):
         )
         def toggle_modal(close, load_anyway, partial_restore, full_restore, filename_loaded, contents_loaded, new_data, new_metadata,
                          new_data_name, new_metadata_name):
-
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
-
-            print("close:{}, load_anyway:{}, partial_restore:{}, full_restore:{}, \
-            data_name:{}, metadata_name:{}, filename_loaded:{}".format(close, load_anyway, partial_restore, full_restore,
-                         new_data_name, new_metadata_name, filename_loaded))
 
             if triggered_id == "close":
                 return False, dash.no_update
             else:
-                if contents_loaded is not None:
-                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
-
                 if triggered_id == "load_expe":
+                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
                     if self.metabo_controller.is_save_safe(metabo_exp_dto):
                         self.metabo_controller.full_restore(metabo_exp_dto)
-                        return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+                        return False, "" #dcc.Location(href="/home", id="someid_doesnt_matter")
                     else:
                         return True, dash.no_update
 
                 elif triggered_id == "loadAnyway":
+                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
+                    print("self.metabo_controller before loading results")
+                    attrs = vars(self.metabo_controller._metabo_experiment)
+                    print(', '.join("%s: %s" % item for item in attrs.items()))
+                    print("---------")
                     self.metabo_controller.load_results(metabo_exp_dto)
-                    return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+                    print("self.metabo_controller after loading results")
+                    attrs = vars(self.metabo_controller._metabo_experiment)
+                    print(', '.join("%s: %s" % item for item in attrs.items()))
+                    print("---------")
+                    return False, "" #dcc.Location(href="/home", id="someid_doesnt_matter")
 
                 elif triggered_id == "partialRestore":
+                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
                     if new_data and new_metadata:
                         self.metabo_controller.partial_restore(
                             metabo_exp_dto,
@@ -294,14 +297,15 @@ class InfoTab(MetaTab):
                         )
                         print("partial restore")
                         print(self.metabo_controller.get_metadata_columns())
-                        return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+                        return False, "" #dcc.Location(href="/home", id="someid_doesnt_matter")
                     else:
                         return True, ""
 
                 elif triggered_id == "fullRestore":
+                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
                     if Utils.are_files_corresponding(new_data, new_metadata, metabo_exp_dto):
                         self.metabo_controller.full_restore(metabo_exp_dto)
-                        return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+                        return False, "" #dcc.Location(href="/home", id="someid_doesnt_matter")
                     else:
                         return True, ""
 
