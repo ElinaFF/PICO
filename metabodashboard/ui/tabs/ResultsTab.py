@@ -379,9 +379,12 @@ class ResultsTab(MetaTab):
         )
         def update_results_dropdown_design(active):
             if active == "tab-3":
-                self.r = self.metabo_controller.get_all_results()
-                a = list(self.r.keys())
-                return [{"label": i, "value": i} for i in a], a[0]
+                try:
+                    self.r = self.metabo_controller.get_all_results()
+                    a = list(self.r.keys())
+                    return [{"label": i, "value": i} for i in a], a[0]
+                except:
+                    return dash.no_update
             else:
                 return dash.no_update
 
@@ -416,6 +419,19 @@ class ResultsTab(MetaTab):
         def input_triggers_spinner(value):
             time.sleep(1)
             return
+
+        # @self.app.callback(
+        #     Output("2features", "figure"),
+        #     [Input("load_ML_results_button", "n_clicks"), Input("pca_slider", "value")],
+        #     [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+        # )
+        # def show_pca(n_clicks, features, algo, design_name):
+        #     if n_clicks >= 1:
+        #         df = self.r[design_name][algo].results["features_table"]
+        #         classes = self.r[design_name][algo].results["classes"]
+        #         return self._plots.show_two_most_important_feature(df[pca_value], classes, pca_value, algo)
+        #     else:
+        #         return dash.no_update
 
         @self.app.callback(
             Output("PCA", "figure"),

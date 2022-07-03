@@ -13,6 +13,29 @@ class Plots:
     def show_algo_comparison_by_heatmap(self):
         return
 
+    # def show_two_most_important_feature(self, data, classes, algo):
+    #     f1name = data.iloc[0, 0]
+    #     f2name = data.iloc[1, 0]
+    #     fig = px.scatter(
+    #         data,
+    #         x=f1name,
+    #         y=f2name,
+    #         color=classes,
+    #         color_continuous_scale=self.colors,
+    #         title="",
+    #     )
+    #
+    #     fig.update_layout(
+    #         {
+    #             "plot_bgcolor": "rgba(0, 0, 0, 0)",
+    #             "paper_bgcolor": "rgba(0, 0, 0, 0)",
+    #         },
+    #         title="Top 2"
+    #         + " features selected by "
+    #         + algo,
+    #     )
+    #     return fig
+
     def show_umap(self, umap_data, classes, slider_value, algo):
         fig = px.scatter(
             umap_data,
@@ -29,7 +52,7 @@ class Plots:
                 "paper_bgcolor": "rgba(0, 0, 0, 0)",
             },
             title="UMAP applied on top "
-            + slider_value
+            + str(slider_value)
             + " features selected by "
             + algo,
         )
@@ -49,7 +72,7 @@ class Plots:
                 "paper_bgcolor": "rgba(0, 0, 0, 0)",
             },
             title="PCA applied on top "
-            + slider_value
+            + str(slider_value)
             + " features selected by "
             + algo,
         )
@@ -72,7 +95,7 @@ class Plots:
         )
         fig = fig.update_traces(text=text, texttemplate="%{text}", hovertemplate=None)
         fig.update_layout(
-            title="Confusion matrix of split " + split + " by " + algo,
+            title="Confusion matrix of split " + str(split) + " by " + algo,
             xaxis_title="Prediciton",
             yaxis_title="Truth",
         )
@@ -204,9 +227,9 @@ class Plots:
         df = features_data
         fig = px.strip(
             df,
-            x="targets",
-            y=feature,
-            title="Abundance of metabolite {} in each sample by class for {}".format(
+            x="Classes",
+            y="Abundance",
+            title="Metabolite {} in each sample by class for {}".format(
                 feature, algo
             ),
         )

@@ -196,7 +196,7 @@ class Results:
         )
 
     def _produce_UMAP(self, X: pd.DataFrame, features_df: pd.DataFrame):
-        nbr_feat = [10, 40, 100]
+        nbr_feat = [5, 10, 40, 100]
         umaps = []
         for nbr in nbr_feat:
             selected_feat = features_df["features"][:nbr]
@@ -212,7 +212,7 @@ class Results:
         return umaps
 
     def _produce_PCA(self, X: pd.DataFrame, features_df: pd.DataFrame):
-        nbr_feat = [10, 40, 100]
+        nbr_feat = [5, 10, 40, 100]
         pcas = []
 
         for nbr in nbr_feat:

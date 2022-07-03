@@ -167,26 +167,16 @@ class ResultsSummaryTab(MetaTab):
             [Input("load_results_button", "n_clicks")],
             State("design_dropdown_summary", "value"),
         )
-        def show_heatmap_samples_always_wrong(n_clicks, design):
+        def show_heatmap_features_usage(n_clicks, design):
             if n_clicks >= 1:
                 algos = list(self.r[design].keys())
                 global_df = pd.DataFrame(data={"features": []})
                 for a in algos:
-                    df = self.r[design][a].results[
-                        "features_table"
-                    ]  # retrieve features table of algo a
-                    used_df = df[
-                        df["importance_usage"] > 0
-                    ]  # select features with more than 0 importance
-                    used_df = used_df[
-                        ["features", "importance_usage"]
-                    ]  # reduce dataframe to 2 columns
-                    used_df.rename(
-                        columns={"importance_usage": a}, inplace=True
-                    )  # rename column to identify algorithm
-                    global_df.join(
-                        used_df.set_index("features"), on="features"
-                    )  # join data with global dataset
+                    df = self.r[design][a].results["features_table"]  # retrieve features table of algo a
+                    used_df = df[df["importance_usage"] > 0]  # select features with more than 0 importance
+                    used_df = used_df[["features", "importance_usage"]]  # reduce dataframe to 2 columns
+                    used_df.rename(columns={"importance_usage": a}, inplace=True)  # rename column to identify algorithm
+                    global_df.join(used_df.set_index("features"), on="features")  # join data with global dataset
 
                 fig = self._plots.show_heatmap_features_usage(global_df)
 
