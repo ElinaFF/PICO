@@ -36,7 +36,8 @@ class Plots:
     #     )
     #     return fig
 
-    def show_umap(self, umap_data, classes, slider_value, algo):
+    def show_umap(self, umap_data, classes, algo, slider_value):
+        val = [5, 10, 40, 100, "all"]
         fig = px.scatter(
             umap_data,
             x=0,
@@ -52,13 +53,14 @@ class Plots:
                 "paper_bgcolor": "rgba(0, 0, 0, 0)",
             },
             title="UMAP applied on top "
-            + str(slider_value)
+            + str(val[slider_value])
             + " features selected by "
             + algo,
         )
         return fig
 
     def show_PCA(self, pca_data, classes, slider_value, algo):
+        val = [5, 10, 40, 100, "all"]
         fig = px.scatter(
             pca_data,
             x=0,
@@ -72,7 +74,7 @@ class Plots:
                 "paper_bgcolor": "rgba(0, 0, 0, 0)",
             },
             title="PCA applied on top "
-            + str(slider_value)
+            + str(val[slider_value])
             + " features selected by "
             + algo,
         )
@@ -227,9 +229,9 @@ class Plots:
         df = features_data
         fig = px.strip(
             df,
-            x="Classes",
-            y="Abundance",
-            title="Metabolite {} in each sample by class for {}".format(
+            x="targets",
+            y=feature,
+            title="Abundance of {} in each sample by class for {}".format(
                 feature, algo
             ),
         )
@@ -237,35 +239,25 @@ class Plots:
 
     def show_heatmap_wrong_samples(self, data_train, data_test, samples_names, algos):
         fig = go.Figure()
-        # fig.add_trace(
-        #     go.Heatmap(
-        #         z=data_train,
-        #         x=algos,
-        #         y=samples_names,
-        #         opacity=1,
-        #         colorscale="Blues"
-        #     )
-        # )
         fig.add_trace(
             go.Heatmap(
                 z=data_test, x=algos, y=samples_names, opacity=1, colorscale="Reds"
             )
         )
+        fig.update_layout(
+            title="Number of wrong prediction per sample in test sets for all splits"
+        )
 
         return fig
 
     def show_heatmap_features_usage(self, df):
-        # fig = go.Figure()
-        #
-        # fig.add_trace(
-        #     go.Heatmap(
-        #         z=data_test,
-        #         x=algos,
-        #         y=samples_names,
-        #         opacity=1,
-        #         colorscale="blues"
-        #     )
-        # )
-
-        fig = px.imshow(df)
+        fig = go.Figure()
+        fig.add_trace(
+            go.Heatmap(
+                z=df.values, x=df.columns, y=df.index, opacity=1, colorscale="blues"
+            )
+        )
+        fig.update_layout(
+            title="Mean importance of features (>0.01) for all splits"
+        )
         return fig

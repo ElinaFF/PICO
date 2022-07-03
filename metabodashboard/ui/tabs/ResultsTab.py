@@ -124,7 +124,7 @@ class ResultsTab(MetaTab):
                     max=3,
                     step=1,
                     value=0,
-                    marks={0: "10", 1: "40", 2: "100", 3: "All"},
+                    marks={0: "5", 1: "10", 2: "40", 3: "100", 4: "All"},
                     id="pca_slider",
                 ),
             ],
@@ -156,7 +156,7 @@ class ResultsTab(MetaTab):
                     max=3,
                     step=1,
                     value=0,
-                    marks={0: "10", 1: "40", 2: "100", 3: "All"},
+                    marks={0: "5", 1: "10", 2: "40", 3: "100", 4: "All"},
                     id="umap_slider",
                 ),
             ],
@@ -452,7 +452,8 @@ class ResultsTab(MetaTab):
                 Input("load_ML_results_button", "n_clicks"),
                 Input("umap_slider", "value"),
             ],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value")],
         )
         def show_umap(n_clicks, slider_value, algo, design_name):
             if n_clicks >= 1:
@@ -461,7 +462,7 @@ class ResultsTab(MetaTab):
                 # print(slider_value)
                 # print(df[0])
                 return self._plots.show_umap(
-                    df[slider_value], classes, slider_value, algo
+                    df[slider_value], classes, algo, slider_value
                 )
             else:
                 return dash.no_update
