@@ -16,6 +16,15 @@ PATH_TO_BIGRESULTS = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..", "..", "big_results.p")
 )
 
+CONFIG = {
+    "toImageButtonOptions": {
+        "format": "svg",  # one of png, svg, jpeg, webp
+        "height": None,
+        "width": None,
+        "scale": 1,  # Multiply title/legend/axis/canvas sizes by this factor
+    }
+}
+
 
 class ResultsTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
@@ -118,7 +127,7 @@ class ResultsTab(MetaTab):
                     ],
                 ),
                 # Should we put the title on the plot?
-                dcc.Loading(dcc.Graph(id="PCA"), type="dot", color="#13BD00"),
+                dcc.Loading(dcc.Graph(id="PCA", config=CONFIG), type="dot", color="#13BD00"),
                 dcc.Slider(
                     min=0,
                     max=3,
@@ -150,7 +159,7 @@ class ResultsTab(MetaTab):
                         ),
                     ],
                 ),
-                dcc.Loading(dcc.Graph(id="umap_overview"), type="dot", color="#13BD00"),
+                dcc.Loading(dcc.Graph(id="umap_overview", config=CONFIG), type="dot", color="#13BD00"),
                 dcc.Slider(
                     min=0,
                     max=3,
@@ -197,7 +206,7 @@ class ResultsTab(MetaTab):
                     ],
                 ),
                 dcc.Loading(
-                    dcc.Graph(id="accuracy_overview"), type="dot", color="#13BD00"
+                    dcc.Graph(id="accuracy_overview", config=CONFIG), type="dot", color="#13BD00"
                 ),
             ],
         )
@@ -206,7 +215,7 @@ class ResultsTab(MetaTab):
             className="w-25",
             children=[
                 html.H6("Global confusion matrix"),
-                dcc.Loading(dcc.Graph(id="conf_matrix"), type="dot", color="#13BD00"),
+                dcc.Loading(dcc.Graph(id="conf_matrix", config=CONFIG), type="dot", color="#13BD00"),
             ],
         )
         ___specificFilters = html.Div(
@@ -237,7 +246,7 @@ class ResultsTab(MetaTab):
                     children=[
                         html.H6("Confusion matrix"),
                         dcc.Loading(
-                            dcc.Graph(id="split_conf_matrix"),
+                            dcc.Graph(id="split_conf_matrix", config=CONFIG),
                             type="dot",
                             color="#13BD00",
                         ),
@@ -324,7 +333,7 @@ class ResultsTab(MetaTab):
                     style={"width": "35%"},
                 ),
                 dcc.Loading(
-                    dcc.Graph(id="features_stripChart"), type="dot", color="#13BD00"
+                    dcc.Graph(id="features_stripChart", config=CONFIG), type="dot", color="#13BD00"
                 ),
             ],
         )
