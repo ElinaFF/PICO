@@ -22,8 +22,16 @@ class DataMatrix:
         Utils.reset_file(DUMP_DATA_MATRIX_PATH)
 
     def read_format_and_store_data(
-        self, path: str, data=None, use_raw: bool = False, from_base64: bool = True, remove_features=True) -> Optional[pd.DataFrame]:
-        data_df, metadata_df = self._load_and_format(path, data=data, is_raw=use_raw, from_base64=from_base64)
+        self,
+        path: str,
+        data=None,
+        use_raw: bool = False,
+        from_base64: bool = True,
+        remove_features=True,
+    ) -> Optional[pd.DataFrame]:
+        data_df, metadata_df = self._load_and_format(
+            path, data=data, is_raw=use_raw, from_base64=from_base64
+        )
 
         if remove_features:
             features_to_drop = []
