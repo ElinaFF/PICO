@@ -150,7 +150,9 @@ class SplitsTab(MetaTab):
 
         __removeRTlessThan1min = html.Div(
             [
-                dbc.Label("Remove features with RT lower than 1 min", className="form_labels"),
+                dbc.Label(
+                    "Remove features with RT lower than 1 min", className="form_labels"
+                ),
                 dbc.FormText(
                     "We highly recommend to keep this as true, choose false at your own risks (see in documentation).",
                 ),
@@ -174,7 +176,14 @@ class SplitsTab(MetaTab):
                 html.H4(id="CreateSplits_paths_title", children="A) Files"),
                 dbc.Form(
                     children=[
-                        dbc.Col(children=[__removeRTlessThan1min, __useRawData, __dataFile, __metaDataFile]),
+                        dbc.Col(
+                            children=[
+                                __removeRTlessThan1min,
+                                __useRawData,
+                                __dataFile,
+                                __metaDataFile,
+                            ]
+                        ),
                     ]
                 ),
             ],
@@ -585,11 +594,15 @@ class SplitsTab(MetaTab):
                 Output("error_data_normalization", "children"),
             ],
             [Input("upload_datatable", "contents")],
-            [State("upload_datatable", "filename"),
-             State("in_use_raw", "value"),
-             State("in_remove_rt", "value")],
+            [
+                State("upload_datatable", "filename"),
+                State("in_use_raw", "value"),
+                State("in_remove_rt", "value"),
+            ],
         )
-        def upload_data(list_of_contents, list_of_names, normalization, remove_features: bool):
+        def upload_data(
+            list_of_contents, list_of_names, normalization, remove_features: bool
+        ):
             if list_of_contents is not None:
                 if normalization == "raw":
                     use_raw = True
@@ -598,7 +611,10 @@ class SplitsTab(MetaTab):
 
                 try:
                     self.metabo_controller.set_data_matrix_from_path(
-                        list_of_names, data=list_of_contents, use_raw=use_raw, remove_features=remove_features
+                        list_of_names,
+                        data=list_of_contents,
+                        use_raw=use_raw,
+                        remove_features=remove_features,
                     )
                 except TypeError as err:
                     return dash.no_update, [html.P(str(err))], {"color": "red"}, ""
@@ -664,14 +680,15 @@ class SplitsTab(MetaTab):
         @self.app.callback(
             Output("warning_select_false", "children"),
             [Input("in_remove_rt", "value")],
-
         )
         def remove_features_from_datamatrix(value):
             if value:
                 return ""
             else:
-                return "Warning : features detected before 1 minute in the experiment are extremely likely to be " \
-                       "noise and to be biologically irrelevant."
+                return (
+                    "Warning : features detected before 1 minute in the experiment are extremely likely to be "
+                    "noise and to be biologically irrelevant."
+                )
 
         @self.app.callback(
             Output("define_classes_desgn_exp", "children"),
