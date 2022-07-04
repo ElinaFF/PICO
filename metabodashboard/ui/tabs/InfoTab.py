@@ -199,6 +199,7 @@ class InfoTab(MetaTab):
                             id="partialRestore",
                             className="custom_buttons",
                             n_clicks=0,
+                            disabled=True,
                         ),
                         # require files
                         dbc.Button(
@@ -206,6 +207,7 @@ class InfoTab(MetaTab):
                             id="fullRestore",
                             className="custom_buttons",
                             n_clicks=0,
+                            disabled=True,
                         ),
                     ],
                 ),
@@ -246,19 +248,33 @@ class InfoTab(MetaTab):
     def _registerCallbacks(self) -> None:
         @self.app.callback(
             [Output("warning-not-match", "is_open"), Output("hidden_div", "children")],
-            [Input("close", "n_clicks"),
-             Input("loadAnyway", "n_clicks"),
-             Input("partialRestore", "n_clicks"),
-             Input("fullRestore", "n_clicks"),
-             Input("load_expe", "filename")],
-            [State("load_expe", "contents"),
-             State("upload_datatable_modal", "contents"),
-             State("upload_metadata_modal", "contents"),
-             State("upload_datatable_modal", "filename"),
-             State("upload_metadata_modal", "filename")]
+            [
+                Input("close", "n_clicks"),
+                Input("loadAnyway", "n_clicks"),
+                Input("partialRestore", "n_clicks"),
+                Input("fullRestore", "n_clicks"),
+                Input("load_expe", "filename"),
+            ],
+            [
+                State("load_expe", "contents"),
+                State("upload_datatable_modal", "contents"),
+                State("upload_metadata_modal", "contents"),
+                State("upload_datatable_modal", "filename"),
+                State("upload_metadata_modal", "filename"),
+            ],
         )
-        def toggle_modal(close, load_anyway, partial_restore, full_restore, filename_loaded, contents_loaded, new_data, new_metadata,
-                         new_data_name, new_metadata_name):
+        def toggle_modal(
+            close,
+            load_anyway,
+            partial_restore,
+            full_restore,
+            filename_loaded,
+            contents_loaded,
+            new_data,
+            new_metadata,
+            new_data_name,
+            new_metadata_name,
+        ):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
             if triggered_id == "close":
@@ -268,7 +284,10 @@ class InfoTab(MetaTab):
                     metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
                     if self.metabo_controller.is_save_safe(metabo_exp_dto):
                         self.metabo_controller.full_restore(metabo_exp_dto)
-                        return False, "" #dcc.Location(href="/home", id="someid_doesnt_matter")
+                        return (
+                            False,
+                            "",
+                        )  # dcc.Location(href="/home", id="someid_doesnt_matter")
                     else:
                         return True, dash.no_update
 
@@ -276,14 +295,17 @@ class InfoTab(MetaTab):
                     metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
                     print("self.metabo_controller before loading results")
                     attrs = vars(self.metabo_controller._metabo_experiment)
-                    print(', '.join("%s: %s" % item for item in attrs.items()))
+                    print(", ".join("%s: %s" % item for item in attrs.items()))
                     print("---------")
                     self.metabo_controller.load_results(metabo_exp_dto)
                     print("self.metabo_controller after loading results")
                     attrs = vars(self.metabo_controller._metabo_experiment)
-                    print(', '.join("%s: %s" % item for item in attrs.items()))
+                    print(", ".join("%s: %s" % item for item in attrs.items()))
                     print("---------")
-                    return False, "" #dcc.Location(href="/home", id="someid_doesnt_matter")
+                    return (
+                        False,
+                        "",
+                    )  # dcc.Location(href="/home", id="someid_doesnt_matter")
 
                 elif triggered_id == "partialRestore":
                     metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
@@ -297,21 +319,27 @@ class InfoTab(MetaTab):
                         )
                         print("partial restore")
                         print(self.metabo_controller.get_metadata_columns())
-                        return False, "" #dcc.Location(href="/home", id="someid_doesnt_matter")
+                        return (
+                            False,
+                            "",
+                        )  # dcc.Location(href="/home", id="someid_doesnt_matter")
                     else:
                         return True, ""
 
                 elif triggered_id == "fullRestore":
                     metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
-                    if Utils.are_files_corresponding(new_data, new_metadata, metabo_exp_dto):
+                    if Utils.are_files_corresponding(
+                        new_data, new_metadata, metabo_exp_dto
+                    ):
                         self.metabo_controller.full_restore(metabo_exp_dto)
-                        return False, "" #dcc.Location(href="/home", id="someid_doesnt_matter")
+                        return (
+                            False,
+                            "",
+                        )  # dcc.Location(href="/home", id="someid_doesnt_matter")
                     else:
                         return True, ""
 
                 return False, dash.no_update
-
-
 
         # @self.app.callback(
         #     [Output("warning-not-match", "is_open"), Output("hidden_div", "children")],
