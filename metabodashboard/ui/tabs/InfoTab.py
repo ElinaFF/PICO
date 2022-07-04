@@ -199,6 +199,7 @@ class InfoTab(MetaTab):
                             id="partialRestore",
                             className="custom_buttons",
                             n_clicks=0,
+                            disabled=True,
                         ),
                         # require files
                         dbc.Button(
@@ -206,6 +207,7 @@ class InfoTab(MetaTab):
                             id="fullRestore",
                             className="custom_buttons",
                             n_clicks=0,
+                            disabled=True,
                         ),
                     ],
                 ),
@@ -251,60 +253,152 @@ class InfoTab(MetaTab):
                 Input("loadAnyway", "n_clicks"),
                 Input("partialRestore", "n_clicks"),
                 Input("fullRestore", "n_clicks"),
-                Input("load_expe", "contents"),
-                Input("upload_datatable_modal", "contents"),
-                Input("upload_metadata_modal", "contents"),
-                Input("upload_datatable_modal", "filename"),
-                Input("upload_metadata_modal", "filename"),
+                Input("load_expe", "filename"),
             ],
-            [State("warning-not-match", "is_open"), State("load_expe", "filename")],
+            [
+                State("load_expe", "contents"),
+                State("upload_datatable_modal", "contents"),
+                State("upload_metadata_modal", "contents"),
+                State("upload_datatable_modal", "filename"),
+                State("upload_metadata_modal", "filename"),
+            ],
         )
         def toggle_modal(
             close,
             load_anyway,
             partial_restore,
             full_restore,
-            file,
-            data,
-            metadata,
-            data_name,
-            metadata_name,
-            is_open,
-            filename,
+            filename_loaded,
+            contents_loaded,
+            new_data,
+            new_metadata,
+            new_data_name,
+            new_metadata_name,
         ):
-            if full_restore:
-                metabo_exp_dto = decode_pickle_from_base64(file)
-                if Utils.are_files_corresponding(data, metadata, metabo_exp_dto):
-                    self.metabo_controller.full_restore(metabo_exp_dto)
-                    return False, dcc.Location(href="/home", id="someid_doesnt_matter")
-                else:
-                    return True, ""
-            if partial_restore:
-                if data and metadata:
-                    metabo_exp_dto = decode_pickle_from_base64(file)
-                    self.metabo_controller.partial_restore(
-                        metabo_exp_dto,
-                        data_name,
-                        metadata_name,
-                        data=data,
-                        metadata=metadata,
-                    )
-                    print("partial restore")
-                    print(self.metabo_controller.get_metadata_columns())
-                    return False, dcc.Location(href="/home", id="someid_doesnt_matter")
-                else:
-                    return True, ""
-            if load_anyway:
-                metabo_exp_dto = decode_pickle_from_base64(file)
-                self.metabo_controller.load_results(metabo_exp_dto)
-                return False, dcc.Location(href="/home", id="someid_doesnt_matter")
-            if close:
+            triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
+
+            if triggered_id == "close":
                 return False, dash.no_update
-            if filename is not None:
-                metabo_exp_dto = decode_pickle_from_base64(file)
-                if self.metabo_controller.is_save_safe(metabo_exp_dto):
-                    self.metabo_controller.full_restore(metabo_exp_dto)
-                    return False, dcc.Location(href="/home", id="someid_doesnt_matter")
-                else:
-                    return True, dash.no_update
-            return is_open, dash.no_update
+            else:
+                if triggered_id == "load_expe":
+                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
+                    if self.metabo_controller.is_save_safe(metabo_exp_dto):
+                        self.metabo_controller.full_restore(metabo_exp_dto)
+                        return (
+                            False,
+                            "",
+                        )  # dcc.Location(href="/home", id="someid_doesnt_matter")
+                    else:
+                        return True, dash.no_update
+
+                elif triggered_id == "loadAnyway":
+                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
+                    print("self.metabo_controller before loading results")
+                    attrs = vars(self.metabo_controller._metabo_experiment)
+                    print(", ".join("%s: %s" % item for item in attrs.items()))
+                    print("---------")
+                    self.metabo_controller.load_results(metabo_exp_dto)
+                    print("self.metabo_controller after loading results")
+                    attrs = vars(self.metabo_controller._metabo_experiment)
+                    print(", ".join("%s: %s" % item for item in attrs.items()))
+                    print("---------")
+                    return (
+                        False,
+                        "",
+                    )  # dcc.Location(href="/home", id="someid_doesnt_matter")
+
+                elif triggered_id == "partialRestore":
+                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
+                    if new_data and new_metadata:
+                        self.metabo_controller.partial_restore(
+                            metabo_exp_dto,
+                            new_data_name,
+                            new_metadata_name,
+                            data=new_data,
+                            metadata=new_metadata,
+                        )
+                        print("partial restore")
+                        print(self.metabo_controller.get_metadata_columns())
+                        return (
+                            False,
+                            "",
+                        )  # dcc.Location(href="/home", id="someid_doesnt_matter")
+                    else:
+                        return True, ""
+
+                elif triggered_id == "fullRestore":
+                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
+                    if Utils.are_files_corresponding(
+                        new_data, new_metadata, metabo_exp_dto
+                    ):
+                        self.metabo_controller.full_restore(metabo_exp_dto)
+                        return (
+                            False,
+                            "",
+                        )  # dcc.Location(href="/home", id="someid_doesnt_matter")
+                    else:
+                        return True, ""
+
+                return False, dash.no_update
+
+        # @self.app.callback(
+        #     [Output("warning-not-match", "is_open"), Output("hidden_div", "children")],
+        #     [Input("close", "n_clicks"),
+        #      Input("loadAnyway", "n_clicks"),
+        #      Input("partialRestore", "n_clicks"),
+        #      Input("fullRestore", "n_clicks"),
+        #      Input("load_expe", "contents"),
+        #      Input("upload_datatable_modal", "contents"),
+        #      Input("upload_metadata_modal", "contents"),
+        #      Input("upload_datatable_modal", "filename"),
+        #      Input("upload_metadata_modal", "filename")],
+        #     [State("warning-not-match", "is_open"), State("load_expe", "filename")],
+        # )
+        # def toggle_modal(close, load_anyway, partial_restore, full_restore, file, data, metadata,
+        #                  data_name, metadata_name, is_open, filename):
+        #
+        #
+        #
+        #     print("close:{}, load_anyway:{}, partial_restore:{}, full_restore:{}, \
+        #             data_name:{}, metadata_name:{}, is_open:{}, filename:{}".format(close, load_anyway, partial_restore,
+        #                                                                             full_restore,
+        #                                                                             data_name, metadata_name, is_open,
+        #                                                                             filename))
+        #
+        #     if filename is not None:
+        #         if self.metabo_controller.is_save_safe(metabo_exp_dto):
+        #             self.metabo_controller.full_restore(metabo_exp_dto)
+        #             return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+        #         else:
+        #             return True, dash.no_update
+        #
+        #     if close >= 1:
+        #         return False, dash.no_update
+        #
+        #     metabo_exp_dto = decode_pickle_from_base64(file)
+        #
+        #     if full_restore >= 1:
+        #         if Utils.are_files_corresponding(data, metadata, metabo_exp_dto):
+        #             self.metabo_controller.full_restore(metabo_exp_dto)
+        #             return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+        #         else:
+        #             return True, ""
+        #     elif partial_restore >= 1:
+        #         if data and metadata:
+        #             self.metabo_controller.partial_restore(
+        #                 metabo_exp_dto,
+        #                 data_name,
+        #                 metadata_name,
+        #                 data=data,
+        #                 metadata=metadata,
+        #             )
+        #             print("partial restore")
+        #             print(self.metabo_controller.get_metadata_columns())
+        #             return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+        #         else:
+        #             return True, ""
+        #     elif load_anyway >= 1:
+        #         self.metabo_controller.load_results(metabo_exp_dto)
+        #         return False, dcc.Location(href="/home", id="someid_doesnt_matter")
+        #
+        #     return is_open, dash.no_update

@@ -167,27 +167,39 @@ class ResultsSummaryTab(MetaTab):
             [Input("load_results_button", "n_clicks")],
             State("design_dropdown_summary", "value"),
         )
-        def show_heatmap_samples_always_wrong(n_clicks, design):
+        def show_heatmap_features_usage(n_clicks, design):
             if n_clicks >= 1:
                 algos = list(self.r[design].keys())
-                global_df = pd.DataFrame(data={"features": []})
+                global_df = None
                 for a in algos:
-                    df = self.r[design][a].results[
-                        "features_table"
-                    ]  # retrieve features table of algo a
-                    used_df = df[
-                        df["importance_usage"] > 0
-                    ]  # select features with more than 0 importance
-                    used_df = used_df[
-                        ["features", "importance_usage"]
-                    ]  # reduce dataframe to 2 columns
-                    used_df.rename(
-                        columns={"importance_usage": a}, inplace=True
-                    )  # rename column to identify algorithm
-                    global_df.join(
-                        used_df.set_index("features"), on="features"
-                    )  # join data with global dataset
+                    if global_df is None:
+                        print("glob df is none")
+                        global_df = self.r[design][a].results["features_table"]
+                        global_df = global_df.loc[
+                            :, ("features", "importance_usage")
+                        ]  # reduce dataframe to 2 columns
+                        global_df = global_df[global_df["importance_usage"] > 0.01]
+                        global_df.rename(
+                            columns={"importance_usage": a}, inplace=True
+                        )  # rename column to identify algorithm
+                    else:
+                        print("glob df not none, algo :", a)
+                        df = self.r[design][a].results[
+                            "features_table"
+                        ]  # retrieve features table of algo a
+                        df = df.loc[
+                            :, ("features", "importance_usage")
+                        ]  # reduce dataframe to 2 columns
+                        df = df[df["importance_usage"] > 0.01]
+                        df.rename(
+                            columns={"importance_usage": a}, inplace=True
+                        )  # rename column to identify algorithm
+                        global_df = global_df.merge(
+                            df, how="outer", on="features"
+                        )  # join data with global dataset
 
+                global_df = global_df.set_index("features")
+                global_df = global_df.fillna(0)
                 fig = self._plots.show_heatmap_features_usage(global_df)
 
                 return fig

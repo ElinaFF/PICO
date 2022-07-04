@@ -570,22 +570,10 @@ class SplitsTab(MetaTab):
         )
         def upload_data(list_of_contents, list_of_names, normalization):
             if list_of_contents is not None:
-                if normalization is None:
-                    return (
-                        dash.no_update,
-                        dash.no_update,
-                        dash.no_update,
-                        [
-                            html.P(
-                                "You must select a normalization before adding the data file(s)"
-                            )
-                        ],
-                    )
+                if normalization == "raw":
+                    use_raw = True
                 else:
-                    if normalization == "raw":
-                        use_raw = True
-                    else:
-                        use_raw = False
+                    use_raw = False
 
                 try:
                     self.metabo_controller.set_data_matrix_from_path(

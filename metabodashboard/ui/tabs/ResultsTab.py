@@ -16,6 +16,15 @@ PATH_TO_BIGRESULTS = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..", "..", "big_results.p")
 )
 
+CONFIG = {
+    "toImageButtonOptions": {
+        "format": "svg",  # one of png, svg, jpeg, webp
+        "height": None,
+        "width": None,
+        "scale": 1,  # Multiply title/legend/axis/canvas sizes by this factor
+    }
+}
+
 
 class ResultsTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
@@ -118,13 +127,15 @@ class ResultsTab(MetaTab):
                     ],
                 ),
                 # Should we put the title on the plot?
-                dcc.Loading(dcc.Graph(id="PCA"), type="dot", color="#13BD00"),
+                dcc.Loading(
+                    dcc.Graph(id="PCA", config=CONFIG), type="dot", color="#13BD00"
+                ),
                 dcc.Slider(
                     min=0,
                     max=3,
                     step=1,
                     value=0,
-                    marks={0: "10", 1: "40", 2: "100", 3: "All"},
+                    marks={0: "5", 1: "10", 2: "40", 3: "100", 4: "All"},
                     id="pca_slider",
                 ),
             ],
@@ -150,13 +161,17 @@ class ResultsTab(MetaTab):
                         ),
                     ],
                 ),
-                dcc.Loading(dcc.Graph(id="umap_overview"), type="dot", color="#13BD00"),
+                dcc.Loading(
+                    dcc.Graph(id="umap_overview", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
+                ),
                 dcc.Slider(
                     min=0,
                     max=3,
                     step=1,
                     value=0,
-                    marks={0: "10", 1: "40", 2: "100", 3: "All"},
+                    marks={0: "5", 1: "10", 2: "40", 3: "100", 4: "All"},
                     id="umap_slider",
                 ),
             ],
@@ -197,7 +212,9 @@ class ResultsTab(MetaTab):
                     ],
                 ),
                 dcc.Loading(
-                    dcc.Graph(id="accuracy_overview"), type="dot", color="#13BD00"
+                    dcc.Graph(id="accuracy_overview", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
                 ),
             ],
         )
@@ -206,7 +223,11 @@ class ResultsTab(MetaTab):
             className="w-25",
             children=[
                 html.H6("Global confusion matrix"),
-                dcc.Loading(dcc.Graph(id="conf_matrix"), type="dot", color="#13BD00"),
+                dcc.Loading(
+                    dcc.Graph(id="conf_matrix", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
+                ),
             ],
         )
         ___specificFilters = html.Div(
@@ -237,7 +258,7 @@ class ResultsTab(MetaTab):
                     children=[
                         html.H6("Confusion matrix"),
                         dcc.Loading(
-                            dcc.Graph(id="split_conf_matrix"),
+                            dcc.Graph(id="split_conf_matrix", config=CONFIG),
                             type="dot",
                             color="#13BD00",
                         ),
@@ -324,7 +345,9 @@ class ResultsTab(MetaTab):
                     style={"width": "35%"},
                 ),
                 dcc.Loading(
-                    dcc.Graph(id="features_stripChart"), type="dot", color="#13BD00"
+                    dcc.Graph(id="features_stripChart", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
                 ),
             ],
         )
@@ -379,9 +402,12 @@ class ResultsTab(MetaTab):
         )
         def update_results_dropdown_design(active):
             if active == "tab-3":
-                self.r = self.metabo_controller.get_all_results()
-                a = list(self.r.keys())
-                return [{"label": i, "value": i} for i in a], a[0]
+                try:
+                    self.r = self.metabo_controller.get_all_results()
+                    a = list(self.r.keys())
+                    return [{"label": i, "value": i} for i in a], a[0]
+                except:
+                    return dash.no_update
             else:
                 return dash.no_update
 
@@ -417,6 +443,19 @@ class ResultsTab(MetaTab):
             time.sleep(1)
             return
 
+        # @self.app.callback(
+        #     Output("2features", "figure"),
+        #     [Input("load_ML_results_button", "n_clicks"), Input("pca_slider", "value")],
+        #     [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+        # )
+        # def show_pca(n_clicks, features, algo, design_name):
+        #     if n_clicks >= 1:
+        #         df = self.r[design_name][algo].results["features_table"]
+        #         classes = self.r[design_name][algo].results["classes"]
+        #         return self._plots.show_two_most_important_feature(df[pca_value], classes, pca_value, algo)
+        #     else:
+        #         return dash.no_update
+
         @self.app.callback(
             Output("PCA", "figure"),
             [Input("load_ML_results_button", "n_clicks"), Input("pca_slider", "value")],
@@ -445,7 +484,7 @@ class ResultsTab(MetaTab):
                 # print(slider_value)
                 # print(df[0])
                 return self._plots.show_umap(
-                    df[slider_value], classes, slider_value, algo
+                    df[slider_value], classes, algo, slider_value
                 )
             else:
                 return dash.no_update

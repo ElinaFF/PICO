@@ -13,7 +13,31 @@ class Plots:
     def show_algo_comparison_by_heatmap(self):
         return
 
-    def show_umap(self, umap_data, classes, slider_value, algo):
+    # def show_two_most_important_feature(self, data, classes, algo):
+    #     f1name = data.iloc[0, 0]
+    #     f2name = data.iloc[1, 0]
+    #     fig = px.scatter(
+    #         data,
+    #         x=f1name,
+    #         y=f2name,
+    #         color=classes,
+    #         color_continuous_scale=self.colors,
+    #         title="",
+    #     )
+    #
+    #     fig.update_layout(
+    #         {
+    #             "plot_bgcolor": "rgba(0, 0, 0, 0)",
+    #             "paper_bgcolor": "rgba(0, 0, 0, 0)",
+    #         },
+    #         title="Top 2"
+    #         + " features selected by "
+    #         + algo,
+    #     )
+    #     return fig
+
+    def show_umap(self, umap_data, classes, algo, slider_value):
+        val = [5, 10, 40, 100, "all"]
         fig = px.scatter(
             umap_data,
             x=0,
@@ -29,13 +53,14 @@ class Plots:
                 "paper_bgcolor": "rgba(0, 0, 0, 0)",
             },
             title="UMAP applied on top "
-            + slider_value
+            + str(val[slider_value])
             + " features selected by "
             + algo,
         )
         return fig
 
     def show_PCA(self, pca_data, classes, slider_value, algo):
+        val = [5, 10, 40, 100, "all"]
         fig = px.scatter(
             pca_data,
             x=0,
@@ -49,7 +74,7 @@ class Plots:
                 "paper_bgcolor": "rgba(0, 0, 0, 0)",
             },
             title="PCA applied on top "
-            + slider_value
+            + str(val[slider_value])
             + " features selected by "
             + algo,
         )
@@ -72,7 +97,7 @@ class Plots:
         )
         fig = fig.update_traces(text=text, texttemplate="%{text}", hovertemplate=None)
         fig.update_layout(
-            title="Confusion matrix of split " + split + " by " + algo,
+            title="Confusion matrix of split " + str(split) + " by " + algo,
             xaxis_title="Prediciton",
             yaxis_title="Truth",
         )
@@ -206,7 +231,7 @@ class Plots:
             df,
             x="targets",
             y=feature,
-            title="Abundance of metabolite {} in each sample by class for {}".format(
+            title="Abundance of {} in each sample by class for {}".format(
                 feature, algo
             ),
         )
@@ -214,35 +239,23 @@ class Plots:
 
     def show_heatmap_wrong_samples(self, data_train, data_test, samples_names, algos):
         fig = go.Figure()
-        # fig.add_trace(
-        #     go.Heatmap(
-        #         z=data_train,
-        #         x=algos,
-        #         y=samples_names,
-        #         opacity=1,
-        #         colorscale="Blues"
-        #     )
-        # )
         fig.add_trace(
             go.Heatmap(
                 z=data_test, x=algos, y=samples_names, opacity=1, colorscale="Reds"
             )
         )
+        fig.update_layout(
+            title="Number of wrong prediction per sample in test sets for all splits"
+        )
 
         return fig
 
     def show_heatmap_features_usage(self, df):
-        # fig = go.Figure()
-        #
-        # fig.add_trace(
-        #     go.Heatmap(
-        #         z=data_test,
-        #         x=algos,
-        #         y=samples_names,
-        #         opacity=1,
-        #         colorscale="blues"
-        #     )
-        # )
-
-        fig = px.imshow(df)
+        fig = go.Figure()
+        fig.add_trace(
+            go.Heatmap(
+                z=df.values, x=df.columns, y=df.index, opacity=1, colorscale="blues"
+            )
+        )
+        fig.update_layout(title="Mean importance of features (>0.01) for all splits")
         return fig
