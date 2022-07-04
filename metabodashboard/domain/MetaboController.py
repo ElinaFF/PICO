@@ -27,10 +27,19 @@ class MetaboController:
         )
 
     def set_data_matrix_from_path(
-        self, path_data_matrix, data=None, use_raw=False, from_base64=True
+        self,
+        path_data_matrix,
+        data=None,
+        use_raw=False,
+        from_base64=True,
+        remove_features=True,
     ):
         return self._metabo_experiment.set_data_matrix(
-            path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64
+            path_data_matrix,
+            data=data,
+            use_raw=use_raw,
+            from_base64=from_base64,
+            remove_features=remove_features,
         )
 
     def get_metadata_columns(self) -> list:

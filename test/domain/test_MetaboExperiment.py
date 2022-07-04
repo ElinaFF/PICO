@@ -88,6 +88,7 @@ def test_givenMetaboExperiment_whenPartialRestore_thenMetaboExperimentIsUpdated(
         "data_matrix.csv",
         data=ENCODED_DATAMATRIX_DATAFRAME,
         metadata=ENCODED_METADATA_DATAFRAME,
+        remove_features=False,
     )
     dumped_data_matrix_dataframe = dump_patch.call_args_list[0][0][0]
     assert_dataframe_approximately_equal(
