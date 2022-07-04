@@ -259,3 +259,24 @@ class Plots:
         )
         fig.update_layout(title="Mean importance of features (>0.01) for all splits")
         return fig
+
+    def show_2d(self, data, classes, algo):
+        return px.scatter(
+            data,
+            x=data.columns[0],
+            y=data.columns[1],
+            color=classes,
+            color_continuous_scale=self.colors,
+            title="",
+        )
+
+    def show_3d(self, data, classes, algo):
+        return px.scatter_3d(
+            data,
+            x=data.columns[0],
+            y=data.columns[1],
+            z=data.columns[2],
+            color=classes,
+            color_continuous_scale=self.colors,
+            title="",
+        )
