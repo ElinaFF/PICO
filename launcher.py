@@ -254,21 +254,33 @@ def create_MeDIC_env():
     subprocess.check_call(f"{CONDA_PATH} create -n MeDIC -y python=3.8", shell=True,
                           stdout=subprocess.DEVNULL)
 
-# Install the dependencies in the conda environment
+# Install the dependency in the conda environment or update them
+def install_dependency(dependency: str, upgrade: bool):
+    logging.info(f"Installing {dependency}")
+    subprocess.check_call(
+        in_env_python_command(f"pip install {dependency} {'--upgrade' if upgrade else ''}"),
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL)
+    logging.info(f"{dependency} installed")
+
+# Install the dependencies in the conda environment or update them
 def install_dependencies(upgrade: bool = False):
+    thread_list = []
     logging.info(f"Installation of the dependencies in {conda_env_name} conda environment")
     with open(REQUIREMENT_FILE, 'r') as f:
         lines = f.readlines()
     for dependency in tqdm(lines, desc="Installing dependencies "):
         try:
-            subprocess.check_call(
-                in_env_python_command(f"pip install {dependency} {'--upgrade' if upgrade else ''}"),
-                shell=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL)
+            dependency_thread = threading.Thread(target=install_dependency, args=(dependency, upgrade))
+            dependency_thread.start()
+            thread_list.append(dependency_thread)
         except subprocess.CalledProcessError as err:
             logging.error(err)
             raise ImportError(dependency)
+    for thread in thread_list:
+        thread.join()
+    logging.info("All dependencies have been installed")
 
 # Check if the system is 64-bit
 def is_os_64bit():
