@@ -257,7 +257,5 @@ class Plots:
                 z=df.values, x=df.columns, y=df.index, opacity=1, colorscale="blues"
             )
         )
-        fig.update_layout(
-            title="Mean importance of features (>0.01) for all splits"
-        )
+        fig.update_layout(title="Mean importance of features (>0.01) for all splits")
         return fig

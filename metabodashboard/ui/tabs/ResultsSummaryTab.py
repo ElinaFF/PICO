@@ -175,16 +175,28 @@ class ResultsSummaryTab(MetaTab):
                     if global_df is None:
                         print("glob df is none")
                         global_df = self.r[design][a].results["features_table"]
-                        global_df = global_df.loc[:, ("features", "importance_usage")]  # reduce dataframe to 2 columns
+                        global_df = global_df.loc[
+                            :, ("features", "importance_usage")
+                        ]  # reduce dataframe to 2 columns
                         global_df = global_df[global_df["importance_usage"] > 0.01]
-                        global_df.rename(columns={"importance_usage": a}, inplace=True)  # rename column to identify algorithm
+                        global_df.rename(
+                            columns={"importance_usage": a}, inplace=True
+                        )  # rename column to identify algorithm
                     else:
                         print("glob df not none, algo :", a)
-                        df = self.r[design][a].results["features_table"]  # retrieve features table of algo a
-                        df = df.loc[:, ("features", "importance_usage")]  # reduce dataframe to 2 columns
+                        df = self.r[design][a].results[
+                            "features_table"
+                        ]  # retrieve features table of algo a
+                        df = df.loc[
+                            :, ("features", "importance_usage")
+                        ]  # reduce dataframe to 2 columns
                         df = df[df["importance_usage"] > 0.01]
-                        df.rename(columns={"importance_usage": a}, inplace=True)  # rename column to identify algorithm
-                        global_df = global_df.merge(df, how="outer", on="features")  # join data with global dataset
+                        df.rename(
+                            columns={"importance_usage": a}, inplace=True
+                        )  # rename column to identify algorithm
+                        global_df = global_df.merge(
+                            df, how="outer", on="features"
+                        )  # join data with global dataset
 
                 global_df = global_df.set_index("features")
                 global_df = global_df.fillna(0)

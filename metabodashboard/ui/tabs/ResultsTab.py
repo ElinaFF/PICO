@@ -127,7 +127,9 @@ class ResultsTab(MetaTab):
                     ],
                 ),
                 # Should we put the title on the plot?
-                dcc.Loading(dcc.Graph(id="PCA", config=CONFIG), type="dot", color="#13BD00"),
+                dcc.Loading(
+                    dcc.Graph(id="PCA", config=CONFIG), type="dot", color="#13BD00"
+                ),
                 dcc.Slider(
                     min=0,
                     max=3,
@@ -159,7 +161,11 @@ class ResultsTab(MetaTab):
                         ),
                     ],
                 ),
-                dcc.Loading(dcc.Graph(id="umap_overview", config=CONFIG), type="dot", color="#13BD00"),
+                dcc.Loading(
+                    dcc.Graph(id="umap_overview", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
+                ),
                 dcc.Slider(
                     min=0,
                     max=3,
@@ -206,7 +212,9 @@ class ResultsTab(MetaTab):
                     ],
                 ),
                 dcc.Loading(
-                    dcc.Graph(id="accuracy_overview", config=CONFIG), type="dot", color="#13BD00"
+                    dcc.Graph(id="accuracy_overview", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
                 ),
             ],
         )
@@ -215,7 +223,11 @@ class ResultsTab(MetaTab):
             className="w-25",
             children=[
                 html.H6("Global confusion matrix"),
-                dcc.Loading(dcc.Graph(id="conf_matrix", config=CONFIG), type="dot", color="#13BD00"),
+                dcc.Loading(
+                    dcc.Graph(id="conf_matrix", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
+                ),
             ],
         )
         ___specificFilters = html.Div(
@@ -333,7 +345,9 @@ class ResultsTab(MetaTab):
                     style={"width": "35%"},
                 ),
                 dcc.Loading(
-                    dcc.Graph(id="features_stripChart", config=CONFIG), type="dot", color="#13BD00"
+                    dcc.Graph(id="features_stripChart", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
                 ),
             ],
         )
@@ -461,8 +475,7 @@ class ResultsTab(MetaTab):
                 Input("load_ML_results_button", "n_clicks"),
                 Input("umap_slider", "value"),
             ],
-            [State("ml_dropdown", "value"),
-             State("design_dropdown", "value")],
+            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
         def show_umap(n_clicks, slider_value, algo, design_name):
             if n_clicks >= 1:
