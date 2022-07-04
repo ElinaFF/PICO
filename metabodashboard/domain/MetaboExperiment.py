@@ -58,10 +58,11 @@ class MetaboExperiment:
         data=None,
         use_raw: bool = False,
         from_base64: bool = True,
+        remove_features:bool = True
     ):
         self.init_data_matrix()
         metadata_df = self._data_matrix.read_format_and_store_data(
-            path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64
+            path_data_matrix, data=data, use_raw=use_raw, from_base64=from_base64, remove_features=remove_features
         )
         if metadata_df is not None:
             self._metadata = MetaData(metadata_df)
