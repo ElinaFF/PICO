@@ -177,11 +177,68 @@ class ResultsTab(MetaTab):
             ],
         )
 
+        ___2dPlot = html.Div(
+            className="umap_plot_and_title",
+            children=[
+                html.Div(
+                    className="title_and_help",
+                    children=[
+                        html.H6("2D"),
+                        dbc.Button(
+                            "[?]",
+                            className="text-muted btn-secondary popover_btn",
+                            id="help_2dPlot",
+                        ),
+                        dbc.Popover(
+                            children=[dbc.PopoverBody("Blablabla wout wout")],
+                            id="pop_help_2dPlot",
+                            is_open=False,
+                            target="help_2dPlot",
+                        ),
+                    ],
+                ),
+                dcc.Loading(
+                    dcc.Graph(id="2d_overview", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
+                ),
+            ],
+        )
+
+        ___3dPlot = html.Div(
+            className="umap_plot_and_title",
+            children=[
+                html.Div(
+                    className="title_and_help",
+                    children=[
+                        html.H6("3D"),
+                        dbc.Button(
+                            "[?]",
+                            className="text-muted btn-secondary popover_btn",
+                            id="help_3dPlot",
+                        ),
+                        dbc.Popover(
+                            children=[dbc.PopoverBody("Blablabla wout wout")],
+                            id="pop_help_3dPlot",
+                            is_open=False,
+                            target="help_3dPlot",
+                        ),
+                    ],
+                ),
+                dcc.Loading(
+                    dcc.Graph(id="3d_overview", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
+                ),
+            ],
+        )
+
         __dataResultTab = dbc.Tab(
             className="sub_tab",
             label="Data",
             children=[
                 html.Div(className="fig_group", children=[___pcaPlot, ___umap]),
+                html.Div(className="fig_group", children=[___2dPlot, ___3dPlot]),
             ],
         )
 
@@ -490,6 +547,34 @@ class ResultsTab(MetaTab):
                 return dash.no_update
 
         @self.app.callback(
+            Output("2d_overview", "figure"),
+            [Input("load_ML_results_button", "n_clicks")],
+            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+        )
+        def show_2d(n_clicks, algo, design_name):
+            if n_clicks >= 1:
+                df = (
+                    self.r[design_name][algo].results["features_2d_and_3d"].iloc[:, :-1]
+                )
+                classes = self.r[design_name][algo].results["classes"]
+                return self._plots.show_2d(df, classes, algo)
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+            Output("3d_overview", "figure"),
+            [Input("load_ML_results_button", "n_clicks")],
+            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+        )
+        def show_3d(n_clicks, algo, design_name):
+            if n_clicks >= 1:
+                df = self.r[design_name][algo].results["features_2d_and_3d"]
+                classes = self.r[design_name][algo].results["classes"]
+                return self._plots.show_3d(df, classes, algo)
+            else:
+                return dash.no_update
+
+        @self.app.callback(
             Output("expe_table", "children"),
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
@@ -626,7 +711,7 @@ class ResultsTab(MetaTab):
                 return dash.no_update
 
         @self.app.callback(
-            Output("features_stripChart", "figure"),
+            Output("F", "figure"),
             [Input("features_dropdown", "value")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )

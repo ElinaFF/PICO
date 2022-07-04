@@ -10,7 +10,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from ..metabodashboard.conf.SupportedModels import LEARN_CONFIG
+if __name__ != "__main__":
+    from ..metabodashboard.conf.SupportedModels import LEARN_CONFIG
 
 
 def _get_samples_id(size: int) -> List[str]:
@@ -135,8 +136,8 @@ def _get_random_results(number_of_split: int):
     return results
 
 
-SIZE = 100
-COLUMNS = 1000
+ROW_NUMBER = 100
+COLUMNS_NUMBER = 1000
 
 EXPERIMENT_NAME = "sick_vs_healthy"
 EXPERIMENT_FULL_NAME = "sick (sick, ill) versus healthy (healthy)"
@@ -147,8 +148,8 @@ PARTIAL_CLASSES_DESIGN = {"sick": ["sick"], "healthy": ["healthy"]}
 NUMBER_OF_SPLITS = 10
 TRAIN_TEST_PROPORTION = 0.25
 
-SAMPLES_ID = _get_samples_id(SIZE)
-TARGETS, CLASSES = _get_targets_and_classes(SIZE, CLASSES_DESIGN)
+SAMPLES_ID = _get_samples_id(ROW_NUMBER)
+TARGETS, CLASSES = _get_targets_and_classes(ROW_NUMBER, CLASSES_DESIGN)
 SELECTED_TARGETS = ["sick", "healthy"]
 ALL_TARGETS = ["sick", "ill", "healthy"]
 FILTERED_TARGETS = [target for target in TARGETS if target in SELECTED_TARGETS]
@@ -156,14 +157,14 @@ FILTERED_SAMPLES_ID = [
     id for id, target in zip(SAMPLES_ID, TARGETS) if target in SELECTED_TARGETS
 ]
 FILTERED_TARGETS_AND_IDS = (tuple(FILTERED_TARGETS), tuple(FILTERED_SAMPLES_ID))
-DATA = _get_random_data(SIZE, COLUMNS)
+DATA = _get_random_data(ROW_NUMBER, COLUMNS_NUMBER)
 SCALED_DATA = pd.DataFrame(StandardScaler().fit_transform(DATA), columns=DATA.columns)
 
 SAMPLES_ID_COLUMN = "samples_id"
 TARGETS_COLUMN = "target"
 PAIRING_GROUP_COLUMN = "pairing_group"
 
-PAIRING_GROUP, GROUPED_ID = _get_group_pairing_column_and_filtered_index(SIZE)
+PAIRING_GROUP, GROUPED_ID = _get_group_pairing_column_and_filtered_index(ROW_NUMBER)
 GROUPED_TARGETS = _get_targets_with_index(GROUPED_ID, TARGETS)
 
 METADATA_DATAFRAME = pd.DataFrame(
@@ -185,7 +186,10 @@ ENCODED_DATAMATRIX_DATAFRAME = base64_encode_dataframe(DATAMATRIX_DATAFRAME)
 DATAMATRIX_DATAFRAME_HASH = compute_hash(DATAMATRIX_DATAFRAME)
 
 DIFFERENT_DATAMATRIX_DATAFRAMES = pd.concat(
-    [pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID}), _get_random_data(SIZE, COLUMNS)],
+    [
+        pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID}),
+        _get_random_data(ROW_NUMBER, COLUMNS_NUMBER),
+    ],
     axis=1,
 )
 DIFFERENT_DATAMATRIX_DATAFRAMES.set_index(SAMPLES_ID_COLUMN, inplace=True)
@@ -265,4 +269,15 @@ SPLITS = _get_splits(NUMBER_OF_SPLITS, TRAIN_TEST_PROPORTION, SAMPLES_ID, CLASSE
 FOLDS = 5
 PARAMETER_GRID = {"criterion": ["gini", "entropy"], "max_depth": [1, 2, 3, 4, 5, 10]}
 
-SUPPORTED_MODEL = LEARN_CONFIG
+if __name__ != "__main__":
+    SUPPORTED_MODEL = LEARN_CONFIG
+
+FEATURE_IMPORTANCE_TABLE = pd.DataFrame(
+    {
+        "features": DATA.columns,
+        "times_used": [
+            random.randint(0, NUMBER_OF_SPLITS) for _ in range(COLUMNS_NUMBER)
+        ],
+        "importance_usage": [random.random() for _ in range(COLUMNS_NUMBER)],
+    }
+).sort_values(by=["importance_usage"], ascending=False)

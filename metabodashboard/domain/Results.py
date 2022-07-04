@@ -164,6 +164,9 @@ class Results:
             ] = self.features_strip_chart_abundance_each_class(
                 self.results["features_table"], scaled_data
             )
+            self.results["features_2d_and_3d"] = self.produce_features_2d_and_3d(
+                self.results["features_table"], scaled_data
+            )
 
     def set_feature_names(self, x: pd.DataFrame):
         """
@@ -462,6 +465,10 @@ class Results:
                 test_samples[n] += 1
 
         return train_samples, test_samples
+
+    def produce_features_2d_and_3d(self, features_table: pd.DataFrame, scaled_data):
+        selected_features = features_table[:3]["features"]
+        return scaled_data.loc[:, selected_features]
 
 
 class ResultsDT(Results):
