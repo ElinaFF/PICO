@@ -186,7 +186,10 @@ ENCODED_DATAMATRIX_DATAFRAME = base64_encode_dataframe(DATAMATRIX_DATAFRAME)
 DATAMATRIX_DATAFRAME_HASH = compute_hash(DATAMATRIX_DATAFRAME)
 
 DIFFERENT_DATAMATRIX_DATAFRAMES = pd.concat(
-    [pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID}), _get_random_data(ROW_NUMBER, COLUMNS_NUMBER)],
+    [
+        pd.DataFrame({SAMPLES_ID_COLUMN: SAMPLES_ID}),
+        _get_random_data(ROW_NUMBER, COLUMNS_NUMBER),
+    ],
     axis=1,
 )
 DIFFERENT_DATAMATRIX_DATAFRAMES.set_index(SAMPLES_ID_COLUMN, inplace=True)
@@ -272,8 +275,9 @@ if __name__ != "__main__":
 FEATURE_IMPORTANCE_TABLE = pd.DataFrame(
     {
         "features": DATA.columns,
-        "times_used": [random.randint(0, NUMBER_OF_SPLITS) for _ in range(COLUMNS_NUMBER)],
+        "times_used": [
+            random.randint(0, NUMBER_OF_SPLITS) for _ in range(COLUMNS_NUMBER)
+        ],
         "importance_usage": [random.random() for _ in range(COLUMNS_NUMBER)],
     }
 ).sort_values(by=["importance_usage"], ascending=False)
-
