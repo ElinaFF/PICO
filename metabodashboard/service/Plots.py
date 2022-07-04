@@ -169,7 +169,8 @@ class Plots:
         row1 = html.Tr([html.Td(df.iloc[0, 0]), html.Td(df.iloc[0, 1])])
         row2 = html.Tr([html.Td(df.iloc[1, 0]), html.Td(df.iloc[1, 1])])
         row3 = html.Tr([html.Td(df.iloc[2, 0]), html.Td(df.iloc[2, 1])])
-        table_body = [html.Tbody([row1, row2, row3])]
+        row4 = html.Tr([html.Td(df.iloc[3, 0]), html.Td(df.iloc[3, 1])])
+        table_body = [html.Tbody([row1, row2, row3, row4])]
         return table_body
 
     def show_features_selection(self, df: pd.DataFrame, algo):
