@@ -20,7 +20,7 @@ def input_controller():
 def test_givenIBDMDBDataset_whenLearning_thenNoThrow(input_controller):
     input_controller.set_metadata("metadata.csv", data=ENCODED_METADATA_DATAFRAME)
     input_controller.set_data_matrix_from_path(
-        "data.csv", data=ENCODED_DATAMATRIX_DATAFRAME
+        "data.csv", data=ENCODED_DATAMATRIX_DATAFRAME, remove_features=False
     )
 
     input_controller.set_id_column(SAMPLES_ID_COLUMN)

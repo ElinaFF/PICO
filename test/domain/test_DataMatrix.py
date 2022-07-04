@@ -34,7 +34,7 @@ def test_givenBase64Data_whenReadFormat_thenDataIsLoaded(
     open_mock, pickle_dump, input_data_matrix
 ):
     input_data_matrix.read_format_and_store_data(
-        "test.csv", data=ENCODED_DATAMATRIX_DATAFRAME
+        "test.csv", data=ENCODED_DATAMATRIX_DATAFRAME, remove_features=False
     )
     assert_dataframe_approximately_equal(
         pickle_dump.call_args[0][0], DATAMATRIX_DATAFRAME
