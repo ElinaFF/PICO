@@ -1,12 +1,13 @@
+import os
+from abc import abstractmethod
+from collections import Counter
 from typing import List
 
 import numpy as np
 import pandas as pd
-from abc import abstractmethod
-import os
-import pickle
-
 import sklearn
+import umap
+from sklearn.decomposition import PCA
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -17,11 +18,6 @@ from sklearn.metrics import (
     balanced_accuracy_score,
 )
 
-from collections import Counter
-import umap
-from sklearn.decomposition import PCA
-
-from . import MetaData
 from ..service import Utils
 
 ROOT_PATH = os.path.dirname(__file__)
@@ -204,10 +200,19 @@ class Results:
         for nbr in nbr_feat:
             selected_feat = features_df["features"][:nbr]
             selected_x = X.loc[:, selected_feat]
-            # print(list(zip(selected_x.index, self.results["classes"])))
             selected_x = selected_x.to_numpy()
             umap_data = umap.UMAP(n_components=2, init="random", random_state=13)
             umaps.append(umap_data.fit_transform(selected_x))
+
+        # Do the umap for all used metrics
+        selected_feat = features_df.loc[features_df["times_used"] > 0]["features"]
+        if selected_feat.shape[0] < 3:
+            selected_feat = features_df["features"][:3]
+        selected_x = X.loc[:, selected_feat]
+        selected_x = selected_x.to_numpy()
+        umap_data = umap.UMAP(n_components=2, init="random", random_state=13)
+        umaps.append(umap_data.fit_transform(selected_x))
+
         # Redo the umap but on all the data
         selected_x = X.to_numpy()
         umap_data = umap.UMAP(n_components=2, init="random", random_state=13)
@@ -225,7 +230,17 @@ class Results:
 
             pca = PCA(n_components=2)
             pcas.append(pca.fit_transform(x))
-        # Redo the umap but on all the data
+
+        # Do the PCA for all used metrics
+        selected_feat = features_df.loc[features_df["times_used"] > 0]["features"]
+        if selected_feat.shape[0] < 3:
+            selected_feat = features_df["features"][:3]
+
+        x = X.loc[:, selected_feat]
+        pca = PCA(n_components=2)
+        pcas.append(pca.fit_transform(x))
+
+        # Redo the PCA but on all the data
         x = X.to_numpy()
         pca = PCA(n_components=2)
         pcas.append(pca.fit_transform(x))
