@@ -37,7 +37,7 @@ class Plots:
     #     return fig
 
     def show_umap(self, umap_data, classes, algo, slider_value):
-        val = [5, 10, 40, 100, "all"]
+        val = [5, 10, 40, 100, "used", "all"]
         fig = px.scatter(
             umap_data,
             x=0,
@@ -60,7 +60,7 @@ class Plots:
         return fig
 
     def show_PCA(self, pca_data, classes, slider_value, algo):
-        val = [5, 10, 40, 100, "all"]
+        val = [5, 10, 40, 100, "used", "all"]
         fig = px.scatter(
             pca_data,
             x=0,
