@@ -129,6 +129,18 @@ class MLTab(MetaTab):
                     className="custom_buttons",
                     n_clicks=0,
                 ),
+                dcc.Loading(
+                    id="learn_loading",
+                    children=[
+                        html.Div(
+                            id="learn_loading_output",
+                            style={"color": "green"},
+                        )
+                    ],
+                    style={"width": "100%"},
+                    type="dot",
+                    color="#13BD00",
+                ),
                 html.Div(id="output_button_ml", children="", style={"display": "none"}),
             ],
         )
