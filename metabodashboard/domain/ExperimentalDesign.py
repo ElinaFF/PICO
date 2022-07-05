@@ -1,6 +1,6 @@
 from typing import Generator, Tuple, Dict, List
 
-from . import SplitGroup
+from . import SplitGroup, MetaData
 from .Results import *
 
 
