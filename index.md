@@ -110,62 +110,131 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
    </details>
 </details>
 
-<div class="accordion" id="accordion_python_installation">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="heading_python_installation">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation" aria-expanded="true"
-         aria-controls="collapse_python_installation">
-        Python installation
-      </button>
-    </h2>
-    <div id="collapse_python_installation" class="accordion-collapse collapse show" aria-labelledby="heading_python_installation" data-bs-parent="#accordion_python_installation" style="">
-      <div class="accordion-body">
-         <p>In order to install Python, you need to go to this <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer noopener">link</a>
-         and select your operating system.</p>
-         <div class="accordion-item">
-             <h2 class="accordion-header" id="heading_python_installation_for_windows">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_windows" aria-expanded="true" aria-controls="collapse_python_installation_for_windows">
-                 For Windows
-               </button>
-             </h2>
-             <div id="collapse_python_installation_for_windows" class="accordion-collapse collapse show" aria-labelledby="heading_python_installation_for_windows" data-bs-parent="#accordionExample" style="">
-               <div class="accordion-body">
-                            <p>You can download the latest version or a previous one if you prefer (Note : MeDIC supports python 3.10, 3.9 and 3.8).  
-      You just have to double-click and follow the installation instructions.  
-      You can also follow this <a href="https://phoenixnap.com/kb/how-to-install-python-3-windows" target="_blank" rel="noreferrer noopener">tutorial</a> for further details.</p>
-      <p>WARNING : Don't forget the select Add Python 3.X to PATH on the first page ! </p><img src="imgs/addToPath.png" alt="addToPath"> 
-      <p>NOTE : To verify that Python is inb the PATH, you can open a new terminal, type Python and enter. If you get 
-               something like this, it's all good. <img src="imgs/cmdOk.png" alt="addToPath">
-            Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning 
-            and click repair. Then click on Next. Then you can click on add to path and install. 
-            </p> <img src="imgs/addToPathAfterRepair.png" alt="addToPathAfterRepair"> <img src="imgs/img_1" alt="Repair">
-               </div>
-             </div>
-           </div>
-            <div class="accordion-item">
-             <h2 class="accordion-header" id="heading_python_installation_for_linux">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_linux" aria-expanded="true" aria-controls="collapse_python_installation_for_linux">
-                 For Linux
-               </button>
-             </h2>
-             <div id="collapse_python_installation_for_linux" class="accordion-collapse collapse show" aria-labelledby="heading_python_installation_for_linux" data-bs-parent="#accordionExample" style="">
-               <div class="accordion-body">
-                  <p>You can select the latest Python source release for python3 or a stable release for 3.8 to 3.10. COMMAND  
-                  You can also follow this <a href="https://www.scaler.com/topics/python/install-python-on-linux/" target="_blank" rel="noreferrer noopener">tutorial</a> for                  further details</p>
-               </div>
-             </div>
-           </div>
-      </div>
-    </div>
-  </div>
+[comment]: <> (<div class="accordion-item">)
+
+[comment]: <> (    <h2 class="accordion-header" id="heading_python_installation">)
+
+[comment]: <> (      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">)
+
+[comment]: <> (        Python installation)
+
+[comment]: <> (      </button>)
+
+[comment]: <> (    </h2>)
+
+[comment]: <> (    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="heading_python_installation" data-bs-parent="#accordionExample" style="">)
+
+[comment]: <> (      <div class="accordion-body">)
+
+[comment]: <> (      </div>)
+
+[comment]: <> (    </div>)
+
+[comment]: <> (  </div>)
+
+[comment]: <> (<div class="accordion" id="accordion_python_installation">)
+
+[comment]: <> (  <div class="accordion-item">)
+
+[comment]: <> (    <h2 class="accordion-header" id="heading_python_installation">)
+
+[comment]: <> (      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation" aria-expanded="false")
+
+[comment]: <> (         aria-controls="collapse_python_installation">)
+
+[comment]: <> (        Python installation)
+
+[comment]: <> (      </button>)
+
+[comment]: <> (    </h2>)
+
+[comment]: <> (    <div id="collapse_python_installation" class="accordion-collapse collapse show" aria-labelledby="heading_python_installation" data-bs-parent="#accordion_python_installation" style="">)
+
+[comment]: <> (      <div class="accordion-body">)
+
+[comment]: <> (         <p>In order to install Python, you need to go to this <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer noopener">link</a>)
+
+[comment]: <> (         and select your operating system.</p>)
+
+[comment]: <> (         <div class="accordion-item">)
+
+[comment]: <> (             <h2 class="accordion-header" id="heading_python_installation_for_windows">)
+
+[comment]: <> (               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_windows" aria-expanded="false" aria-controls="collapse_python_installation_for_windows">)
+
+[comment]: <> (                 For Windows)
+
+[comment]: <> (               </button>)
+
+[comment]: <> (             </h2>)
+
+[comment]: <> (             <div id="collapse_python_installation_for_windows" class="accordion-collapse collapse show" aria-labelledby="heading_python_installation_for_windows" data-bs-parent="#accordionExample" style="">)
+
+[comment]: <> (               <div class="accordion-body">)
+
+[comment]: <> (                            <p>You can download the latest version or a previous one if you prefer &#40;Note : MeDIC supports python 3.10, 3.9 and 3.8&#41;.  )
+
+[comment]: <> (      You just have to double-click and follow the installation instructions.  )
+
+[comment]: <> (      You can also follow this <a href="https://phoenixnap.com/kb/how-to-install-python-3-windows" target="_blank" rel="noreferrer noopener">tutorial</a> for further details.</p>)
+
+[comment]: <> (      <p>WARNING : Don't forget the select Add Python 3.X to PATH on the first page ! </p><img src="imgs/addToPath.png" alt="addToPath"> )
+
+[comment]: <> (      <p>NOTE : To verify that Python is inb the PATH, you can open a new terminal, type Python and enter. If you get )
+
+[comment]: <> (               something like this, it's all good. <img src="imgs/cmdOk.png" alt="addToPath">)
+
+[comment]: <> (            Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning )
+
+[comment]: <> (            and click repair. Then click on Next. Then you can click on add to path and install. )
+
+[comment]: <> (            </p> <img src="imgs/addToPathAfterRepair.png" alt="addToPathAfterRepair"> <img src="imgs/img_1" alt="Repair">)
+
+[comment]: <> (               </div>)
+
+[comment]: <> (             </div>)
+
+[comment]: <> (           </div>)
+
+[comment]: <> (            <div class="accordion-item">)
+
+[comment]: <> (             <h2 class="accordion-header" id="heading_python_installation_for_linux">)
+
+[comment]: <> (               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_linux" aria-expanded="false" aria-controls="collapse_python_installation_for_linux">)
+
+[comment]: <> (                 For Linux)
+
+[comment]: <> (               </button>)
+
+[comment]: <> (             </h2>)
+
+[comment]: <> (             <div id="collapse_python_installation_for_linux" class="accordion-collapse collapse show" aria-labelledby="heading_python_installation_for_linux" data-bs-parent="#accordionExample" style="">)
+
+[comment]: <> (               <div class="accordion-body">)
+
+[comment]: <> (                  <p>You can select the latest Python source release for python3 or a stable release for 3.8 to 3.10. COMMAND  )
+
+[comment]: <> (                  You can also follow this <a href="https://www.scaler.com/topics/python/install-python-on-linux/" target="_blank" rel="noreferrer noopener">tutorial</a> for                  further details</p>)
+
+[comment]: <> (               </div>)
+
+[comment]: <> (             </div>)
+
+[comment]: <> (           </div>)
+
+[comment]: <> (      </div>)
+
+[comment]: <> (    </div>)
+
+[comment]: <> (  </div>)
 
 
 
 [comment]: <> (  <div class="accordion-item">)
 
-[comment]: <> (    <h2 class="accordion-header" id="headingTwo">)
+[comment]: <> (    <h2 class="accordion-header" id="heading_git_installation">)
 
-[comment]: <> (      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">)
+[comment]: <> (      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation" aria-expanded="false" aria-controls="collapse_git_installation">)
 
 [comment]: <> (        Git installation)
 
@@ -173,7 +242,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
 
 [comment]: <> (    </h2>)
 
-[comment]: <> (    <div id="collapse_git_installation" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">)
+[comment]: <> (    <div id="collapse_git_installation" class="accordion-collapse collapse" aria-labelledby="heading_git_installation" data-bs-parent="#accordionExample">)
 
 [comment]: <> (      <div class="accordion-body">)
 
