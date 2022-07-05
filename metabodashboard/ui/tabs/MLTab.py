@@ -117,19 +117,10 @@ class MLTab(MetaTab):
         )
 
         __validationButton = html.Div(
+            id="Learning_button_box",
             className="button_box",
             children=[
-                html.Div(
-                    "Before clicking on the Learn button, make shure all field with an * are correctly filled."
-                ),
-                dbc.Button(
-                    "Learn",
-                    color="primary",
-                    id="start_learning_button",
-                    className="custom_buttons",
-                    n_clicks=0,
-                ),
-                dcc.Loading(
+                 dcc.Loading(
                     id="learn_loading",
                     children=[
                         html.Div(
@@ -140,6 +131,13 @@ class MLTab(MetaTab):
                     style={"width": "100%"},
                     type="dot",
                     color="#13BD00",
+                ),
+                dbc.Button(
+                    "Learn",
+                    color="primary",
+                    id="start_learning_button",
+                    className="custom_buttons",
+                    n_clicks=0,
                 ),
                 html.Div(id="output_button_ml", children="", style={"display": "none"}),
             ],
@@ -227,6 +225,7 @@ class MLTab(MetaTab):
             [
                 Output("output_button_ml", "children"),
                 Output("download-save-file-ml", "data"),
+                Output("learn_loading_output", "children")
             ],
             [Input("start_learning_button", "n_clicks")],
             [
@@ -243,7 +242,7 @@ class MLTab(MetaTab):
 
                 Utils.dump_metabo_expe(self.metabo_controller.generate_save())
 
-                return "Done!", dcc.send_file(Utils.get_metabo_experiment_path())
+                return "Done!", dcc.send_file(Utils.get_metabo_experiment_path()), ""
             else:
                 return dash.no_update
 

@@ -236,6 +236,12 @@ class Plots:
                 feature, algo
             ),
         )
+        fig.update_layout(
+            {
+                "plot_bgcolor": "rgba(0, 0, 0, 0)",
+                "paper_bgcolor": "rgba(0, 0, 0, 0)",
+            }
+        )
         return fig
 
     def show_heatmap_wrong_samples(self, data_train, data_test, samples_names, algos):

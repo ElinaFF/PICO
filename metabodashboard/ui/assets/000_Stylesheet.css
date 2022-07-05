@@ -187,6 +187,16 @@ th{
     margin-left: auto;
 }
 
+#Learning_button_box{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+#learn_loading_output{
+    margin-right:4.5em;
+}
+
 
 /*************
 *    Toast   *
