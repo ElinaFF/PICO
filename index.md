@@ -111,6 +111,83 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
    </details>
 </details>  
 
+
+
+
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Python installation
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">
+      <div class="accordion-body">
+          <p>You can download the latest version or a previous one if you prefer (Note : MeDIC supports python 3.10, 3.9 and 3.8).  
+      You just have to double-click and follow the installation instructions.  
+      You can also follow this <a href="https://phoenixnap.com/kb/how-to-install-python-3-windows" target="_blank" rel="noreferrer noopener">tutorial</a> for further details.</p>
+      <p>WARNING : Don't forget the select Add Python 3.X to PATH on the first page ! </p><img src="imgs/addToPath.png" alt="addToPath"> 
+      <p>NOTE : To verify that Python is inb the PATH, you can open a new terminal, type Python and enter. If you get 
+               something like this, it's all good. <img src="imgs/cmdOk.png" alt="addToPath">
+            Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning 
+            and click repair. Then click on Next. Then you can click on add to path and install. 
+            </p> <img src="imgs/addToPathAfterRepair.png" alt="addToPathAfterRepair"> <img src="imgs/img_1" alt="Repair">
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingTwo">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        Git installation
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Accordion Item #1
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">
+      <div class="accordion-body">
+         test intern 1
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingTwo">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        Accordion Item #2
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+         test intern 2
+      </div>
+    </div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingThree">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+        Microsoft Visual C++ requirement
+      </button>
+    </h2>
+    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        test2
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 A launcher has been made for MeDIC to facilitate the installation process. 
 This launcher can be used for the installation and to start MeDIC.
 
