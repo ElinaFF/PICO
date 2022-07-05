@@ -1,12 +1,11 @@
 import os
 import pickle
-from typing import Generator, Tuple, List, Dict, Union
+from typing import Generator, Tuple
 
 import pandas as pd
 
 from . import MetaboExperiment
 from .MetaboExperimentDTO import MetaboExperimentDTO
-from ..service import Plots
 from .Results import *
 
 ROOT_PATH = os.path.dirname(__file__)
@@ -19,7 +18,6 @@ class MetaboController:
             self._metabo_experiment = MetaboExperiment()
         else:
             self._metabo_experiment = metaboExp
-        self._plots = Plots("blues")
 
     def set_metadata(self, filename: str, data=None, from_base64=True) -> None:
         self._metabo_experiment.set_metadata_with_dataframe(
@@ -88,47 +86,6 @@ class MetaboController:
 
     def learn(self, folds: int):
         self._metabo_experiment.learn(folds)
-
-    def show_exp_info_all(self, df: pd.DataFrame):
-        return self._plots.show_exp_info_all(df)
-
-    def produce_exp_info(self, design_name: str, algo: str):
-        return (
-            self._metabo_experiment.experimental_designs[design_name]
-            .results[algo]
-            .results["info_expe"]
-        )
-
-    def show_accuracy_all(self, df: pd.DataFrame):
-        return self._plots.show_accuracy_all(df)
-
-    def produce_accuracy_plot_all(self, design_name: str, algo: str):
-        # TODO: méthode get_accuracy_plot_all(design_name: str, algo:str)
-        return (
-            self._metabo_experiment.experimental_designs[design_name]
-            .results[algo]
-            .produce_accuracy_plot_all()
-        )
-
-    def show_features_selection(self, df: pd.DataFrame):
-        return self._plots.show_features_selection(df)
-
-    def produce_features_importance_table(self, design_name: str, algo: str):
-        return (
-            self._metabo_experiment.experimental_designs[design_name]
-            .results[algo]
-            .produce_features_importance_table()
-        )
-
-    def show_umap(self, df: pd.DataFrame):
-        return self._plots.show_umap(df)
-
-    def produce_umap(self, design_name: str, algo: str):
-        return (
-            self._metabo_experiment.experimental_designs[design_name]
-            .results[algo]
-            .produce_features_importance_table()
-        )
 
     def get_results(self, design_name: str, algo: str):
         return (
