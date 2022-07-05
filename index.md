@@ -112,12 +112,16 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
 </details>  
 
 
-
+<script>
+   function install_python_dropdown(){
+      console.log("ok ça fonctionne cette merde")
+   }
+</script>
 
 <div class="accordion" id="accordionExample">
   <div class="accordion-item">
     <h2 class="accordion-header" id="headingOne">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" id="python_installation_button" onclick="install_python_dropdown()">
         Python installation
       </button>
     </h2>
