@@ -123,12 +123,12 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
          <p>In order to install Python, you need to go to this <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer noopener">link</a>
          and select your operating system.</p>
          <div class="accordion-item">
-             <h2 class="accordion-header" id="headingOne">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+             <h2 class="accordion-header" id="heading_python_installation_for_windows">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_windows" aria-expanded="true" aria-controls="collapse_python_installation_for_windows">
                  For Windows
                </button>
              </h2>
-             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">
+             <div id="collapse_python_installation_for_windows" class="accordion-collapse collapse show" aria-labelledby="heading_python_installation_for_windows" data-bs-parent="#accordionExample" style="">
                <div class="accordion-body">
                             <p>You can download the latest version or a previous one if you prefer (Note : MeDIC supports python 3.10, 3.9 and 3.8).  
       You just have to double-click and follow the installation instructions.  
@@ -143,12 +143,12 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
              </div>
            </div>
             <div class="accordion-item">
-             <h2 class="accordion-header" id="headingOne">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+             <h2 class="accordion-header" id="heading_python_installation_for_linux">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_linux" aria-expanded="true" aria-controls="collapse_python_installation_for_linux">
                  For Linux
                </button>
              </h2>
-             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">
+             <div id="collapse_python_installation_for_linux" class="accordion-collapse collapse show" aria-labelledby="heading_python_installation_for_linux" data-bs-parent="#accordionExample" style="">
                <div class="accordion-body">
                   <p>You can select the latest Python source release for python3 or a stable release for 3.8 to 3.10. COMMAND  
                   You can also follow this <a href="https://www.scaler.com/topics/python/install-python-on-linux/" target="_blank" rel="noreferrer noopener">tutorial</a> for                  further details</p>
@@ -161,56 +161,105 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
 
 
 
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingTwo">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-        Git installation
-      </button>
-    </h2>
-    <div id="collapse_git_installation" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-         <div class="accordion" id="accordionExample">
-           <div class="accordion-item">
-             <h2 class="accordion-header" id="headingOne">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                 Accordion Item #1
-               </button>
-             </h2>
-             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">
-               <div class="accordion-body">
-                  test intern 1
-               </div>
-             </div>
-           </div>
-           <div class="accordion-item">
-             <h2 class="accordion-header" id="headingTwo">
-               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                 Accordion Item #2
-               </button>
-             </h2>
-             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-               <div class="accordion-body">
-                  test intern 2
-               </div>
-             </div>
-           </div>
-         </div>
-      </div>
-    </div>
-  </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingThree">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-        Microsoft Visual C++ requirement
-      </button>
-    </h2>
-    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-        test2
-      </div>
-    </div>
-  </div>
-</div>
+[comment]: <> (  <div class="accordion-item">)
+
+[comment]: <> (    <h2 class="accordion-header" id="headingTwo">)
+
+[comment]: <> (      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">)
+
+[comment]: <> (        Git installation)
+
+[comment]: <> (      </button>)
+
+[comment]: <> (    </h2>)
+
+[comment]: <> (    <div id="collapse_git_installation" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">)
+
+[comment]: <> (      <div class="accordion-body">)
+
+[comment]: <> (         <div class="accordion" id="accordionExample">)
+
+[comment]: <> (           <div class="accordion-item">)
+
+[comment]: <> (             <h2 class="accordion-header" id="headingOne">)
+
+[comment]: <> (               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">)
+
+[comment]: <> (                 Accordion Item #1)
+
+[comment]: <> (               </button>)
+
+[comment]: <> (             </h2>)
+
+[comment]: <> (             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">)
+
+[comment]: <> (               <div class="accordion-body">)
+
+[comment]: <> (                  test intern 1)
+
+[comment]: <> (               </div>)
+
+[comment]: <> (             </div>)
+
+[comment]: <> (           </div>)
+
+[comment]: <> (           <div class="accordion-item">)
+
+[comment]: <> (             <h2 class="accordion-header" id="headingTwo">)
+
+[comment]: <> (               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">)
+
+[comment]: <> (                 Accordion Item #2)
+
+[comment]: <> (               </button>)
+
+[comment]: <> (             </h2>)
+
+[comment]: <> (             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">)
+
+[comment]: <> (               <div class="accordion-body">)
+
+[comment]: <> (                  test intern 2)
+
+[comment]: <> (               </div>)
+
+[comment]: <> (             </div>)
+
+[comment]: <> (           </div>)
+
+[comment]: <> (         </div>)
+
+[comment]: <> (      </div>)
+
+[comment]: <> (    </div>)
+
+[comment]: <> (  </div>)
+
+[comment]: <> (  <div class="accordion-item">)
+
+[comment]: <> (    <h2 class="accordion-header" id="headingThree">)
+
+[comment]: <> (      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">)
+
+[comment]: <> (        Microsoft Visual C++ requirement)
+
+[comment]: <> (      </button>)
+
+[comment]: <> (    </h2>)
+
+[comment]: <> (    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">)
+
+[comment]: <> (      <div class="accordion-body">)
+
+[comment]: <> (        test2)
+
+[comment]: <> (      </div>)
+
+[comment]: <> (    </div>)
+
+[comment]: <> (  </div>)
+
+[comment]: <> (</div>)
 
 A launcher has been made for MeDIC to facilitate the installation process. 
 This launcher can be used for the installation and to start MeDIC.
