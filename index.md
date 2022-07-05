@@ -2,7 +2,7 @@
 layout: default
 output: 
   html_document:
-     css: font-awesome-4.4.0/css/font-awesome.css
+     css: bootstrap.min.css
      self_contained: no
 ---
 
