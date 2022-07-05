@@ -2,7 +2,7 @@
 layout: default
 ---
 
-<link rel="stylesheet" type="text/css" href="bootstrap.min.css" media=”screen” />
+<link rel="stylesheet" type="text/css" href="bootstrap.min.css" media=”screen”></link>
 
 # Index
 
