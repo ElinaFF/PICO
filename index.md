@@ -2,9 +2,9 @@
 layout: default
 ---
 
-<link rel="stylesheet" type="text/css" href="bootstrap.min.css" media=”screen”></link>
-
 # Index
+
+<link rel="stylesheet" type="text/css" href="bootstrap.min.css"></link>
 
 <style>
   summary{text-decoration: underline}
