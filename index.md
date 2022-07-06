@@ -115,7 +115,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
 <div class="accordion" id="accordion_python_installation">
   <div class="accordion-item">
     <h2 class="accordion-header" id="heading_python_installation">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation" aria-expanded="false"
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation" aria-expanded="true"
          aria-controls="collapse_python_installation">
         Python installation
       </button>
@@ -126,7 +126,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
          and select your operating system.</p>
          <div class="accordion-item">
              <h2 class="accordion-header" id="heading_python_installation_for_windows">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_windows" aria-expanded="false" aria-controls="collapse_python_installation_for_windows">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_windows" aria-expanded="true" aria-controls="collapse_python_installation_for_windows">
                  For Windows
                </button>
              </h2>
@@ -146,7 +146,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
            </div>
             <div class="accordion-item">
              <h2 class="accordion-header" id="heading_python_installation_for_linux">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_linux" aria-expanded="false" aria-controls="collapse_python_installation_for_linux">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_linux" aria-expanded="true" aria-controls="collapse_python_installation_for_linux">
                  For Linux
                </button>
              </h2>
@@ -162,7 +162,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
   </div>
    <div class="accordion-item">
     <h2 class="accordion-header" id="heading_git_installation">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation" aria-expanded="false"
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation" aria-expanded="true"
          aria-controls="collapse_git_installation">
         Git installation
       </button>
@@ -173,7 +173,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
          and select your operating system.</p>
          <div class="accordion-item">
              <h2 class="accordion-header" id="heading_git_installation_for_windows">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation_for_windows" aria-expanded="false" aria-controls="collapse_git_installation_for_windows">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation_for_windows" aria-expanded="true" aria-controls="collapse_git_installation_for_windows">
                  For Windows
                </button>
              </h2>
@@ -187,7 +187,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
            </div>
             <div class="accordion-item">
              <h2 class="accordion-header" id="heading_git_installation_for_linux">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation_for_linux" aria-expanded="false" aria-controls="collapse_git_installation_for_linux">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation_for_linux" aria-expanded="true" aria-controls="collapse_git_installation_for_linux">
                  For Linux
                </button>
              </h2>
@@ -207,7 +207,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
   </div>
    <div class="accordion-item">
     <h2 class="accordion-header" id="heading_c++_installation">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_c++_installation" aria-expanded="false"
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_c++_installation" aria-expanded="true"
          aria-controls="collapse_c++_installation">
         Microsoft Visual C++ requirement
       </button>
@@ -219,7 +219,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
          from the start menu, click on "uninstall app" and scroll down to see which version, if any, of Microsoft Visual C++ is installed.
          <div class="accordion-item">
              <h2 class="accordion-header" id="heading_c++_installation_for_windows">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_c++_installation_for_windows" aria-expanded="false" aria-controls="collapse_c++_installation_for_windows">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_c++_installation_for_windows" aria-expanded="true" aria-controls="collapse_c++_installation_for_windows">
                  Install new version
                </button>
              </h2>
