@@ -169,7 +169,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
     </h2>
     <div id="collapse_git_installation" class="accordion-collapse collapse show" aria-labelledby="heading_git_installation" data-bs-parent="#accordion_python_installation" style="">
       <div class="accordion-body">
-         <p>In order to install Python, you need to go to this <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer noopener">link</a>
+         In order to install Git, you need to go to this <a href="https://git-scm.com/downloads" target="_blank" rel="noreferrer noopener">link</a> and select your operating system. 
          and select your operating system.</p>
          <div class="accordion-item">
              <h2 class="accordion-header" id="heading_git_installation_for_windows">
@@ -199,6 +199,36 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
                   </code>
                   Enter your root password and follow the installation instructions. 
                   For more details follows this <a href="https://git-scm.com/download/linux" target="_blank" rel="noreferrer noopener">link</a>.
+               </div>
+             </div>
+           </div>
+      </div>
+    </div>
+  </div>
+   <div class="accordion-item">
+    <h2 class="accordion-header" id="heading_c++">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_c++" aria-expanded="true"
+         aria-controls="collapse_c++">
+        Python installation
+      </button>
+    </h2>
+    <div id="collapse_c++" class="accordion-collapse collapse show" aria-labelledby="heading_c++" data-bs-parent="#accordion_python_installation" style="">
+      <div class="accordion-body">
+         To make sure MeDIC and all it's dependencies works properly you need Microsoft Visual C++ 14.0 or later.  
+         To check if the correct version of Microsoft Visual C++ is installed or your computer you can open the Control Panel
+         from the start menu, click on "uninstall app" and scroll down to see which version, if any, of Microsoft Visual C++ is installed.
+         <div class="accordion-item">
+             <h2 class="accordion-header" id="heading_c++_new_version">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_c++_new_installation" aria-expanded="true" aria-controls="collapse_c++_new_installation">
+                 Install new version
+               </button>
+             </h2>
+             <div id="collapse_c++_new_installation" class="accordion-collapse collapse show" aria-labelledby="heading_c++_new_version" data-bs-parent="#accordionExample" style="">
+               <div class="accordion-body">
+                  <p>In order to install Microsoft Visual C++, you need to go to this 
+                  <a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/" target="_blank" rel="noreferrer noopener">link</a> and select Visual Studio 2022 Community.</p>
+                  <p>Select "Desktop development in C++" and go to the "Individual components" tab and scroll down to 
+                  select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or later and click install (It may take a while depending on your internet download speed).</p>
                </div>
              </div>
            </div>
