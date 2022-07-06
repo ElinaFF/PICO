@@ -172,14 +172,14 @@ This launcher can be used for the installation and to start MeDIC.
 
 The launcher file needs Git and Python to be able to do all the installation steps for you.
 
-### A. Normal installation
+<h3 id="a-normal-installation">A. Normal installation</h3>
 
  - Download launcher.py on our <a href="https://github.com/ElinaFF/MetaboDashboard" target="_blank" rel="noreferrer noopener">github</a>
  - Open a terminal (*cmd* in Windows)
  - Run the launcher on your computer with the command : <a href="#note1">*</a> 
- ```
+<code>
     python launcher.py
- ```
+</code>
 
  <h5 id="note1"> * No need to clone the repository, we will install everything we need. 
 If you still want to do so and don’t want the launcher to redownload it during the installation process, make sure to 
@@ -187,384 +187,295 @@ clone the repository in the same folder as the launcher.<br> MeDIC uses conda fo
 if you don’t have any Conda instance installed on your machine, the launcher will install one (Miniconda3).
 <br> All the dependencies necessary will be installed in the conda environment.</h5>
 
-### B. Clone repository and normal installation
- - Open a terminal (*cmd* in Windows)
- - Clone the Github repository.
-  ```
-    git clone https://github.com/ElinaFF/MetaboDashboard
-  ```
- - Move inside the repository
-```
+<h3 id="b-clone-repository-and-normal-installation">B. Clone repository and normal installation</h3>
+<ul>
+<li>Open a terminal (<em>cmd</em> in Windows)</li>
+<li>Clone the Github repository.<pre><code> git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/ElinaFF/MetaboDashboard
+</code></pre></li>
+<li>Move inside the repository<pre><code><span class="hljs-built_in">cd</span> MetaboDashboard
+</code></pre></li>
+<li>Run the launcher<pre><code><span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span>
+</code></pre></li>
+</ul>
+<h3 id="c-manual-installation">C. Manual installation</h3>
+<ul>
+<li>Install Miniconda following the <a href="https://docs.conda.io/en/latest/miniconda.html">documentation</a>{:target=&quot;_blank&quot;}</li>
+<li>Open a terminal (<strong>&quot;cmd&quot; in Windows not &quot;Powershell&quot;</strong>)</li>
+<li>Create an environment with Conda:<pre><code><span class="hljs-attribute">conda create medic</span>
+</code></pre></li>
+<li>Enter in the environement<pre><code>conda <span class="hljs-built_in">activate</span> medic
+</code></pre>NOTE: if the command worked, you should see the name &quot;medic&quot; written at the beginning of your prompt as the following image.</li>
+</ul>
+
+<p> <img src="imgs/2022-06-22-15-56-49.png" alt=""></p>
+
+<ul>
+<li>Clone the Github repository and move inside.<pre><code>  git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/ElinaFF/MetaboDashboard
   cd MetaboDashboard
-```
- - Run the launcher
-```
-  python launcher.py
-```
+</code></pre><ul>
+<li>Install the dependencies:<pre><code>python -m pip <span class="hljs-keyword">install</span> -r requirements.txt
+</code></pre>NOTE: if you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
+(<a href="https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d">see here</a>{:target=&quot;_blank&quot;})
+return <a href="#1-installation">here</a> to install, or update, Microsoft Visual C++.</li>
+<li>Launch the Web interface<pre><code><span class="hljs-keyword">python</span> main.<span class="hljs-keyword">py</span>
+</code></pre></li>
+</ul>
+</li>
+</ul>
+<h3 id="d-installation-on-wsl-windows-subsystem-for-linux-">D. Installation on WSL (Windows Subsystem for Linux)</h3>
+<p>During the normal installation, you may have a problem with the Path variable. We haven&#39;t found a solution yet. 
+You may need to go through the <a href="#C-manual-installation">Manual installation</a>.</p>
+<h2 id="medic-launcher-options">MeDIC launcher options</h2>
+<p>Those commands are optionals but may help you to use the launcher in an easier way.<br>They can be combined or use independently.</p>
+<h3 id="1-use-an-environment-you-already-have">1. Use an environment you already have</h3>
+<ul>
+<li>The content of MeDICs environment can be installed in another environment, if you don&#39;t want to create a new one, 
+with the command : <a href="#note2">**</a> <pre><code> <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> --environment <span class="hljs-symbol">&lt;environment_name&gt;</span>
+ <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">e</span> <span class="hljs-symbol">&lt;environment_name&gt;</span>
+</code></pre><h5 id="note2"> ** It is recommended not to create MeDIC environment into another environment as it may cause problems.</h5>
 
-### C. Manual installation
- - Install Miniconda following the [documentation](https://docs.conda.io/en/latest/miniconda.html){:target="\_blank"}
- - Open a terminal (**"cmd" in Windows not "Powershell"**)
- - Create an environment with Conda:
-```
-  conda create medic
-```
- - Enter in the environement
-```
-  conda activate medic 
-```
- NOTE: if the command worked, you should see the name "medic" written at the beginning of your prompt as the following image.
-
- ![](imgs/2022-06-22-15-56-49.png)
-
- - Clone the Github repository and move inside.
-  ```
-    git clone https://github.com/ElinaFF/MetaboDashboard
-    cd MetaboDashboard
-  ```
- - Install the dependencies:
-```
-  python -m pip install -r requirements.txt
-```
-NOTE: if you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
-([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d){:target="\_blank"})
-return [here](#1-installation) to install, or update, Microsoft Visual C++.
- - Launch the Web interface
-```
-  python main.py
-```
-
-### D. Installation on WSL (Windows Subsystem for Linux)
-During the normal installation, you may have a problem with the Path variable. We haven't found a solution yet. 
-You may need to go through the [Manual installation](#C-manual-installation).
-
-## MeDIC launcher options
-
-Those commands are optionals but may help you to use the launcher in an easier way.  
-They can be combined or use independently.
-
-### 1. Use an environment you already have
- - The content of MeDICs environment can be installed in another environment, if you don't want to create a new one, 
-with the command : <a href="#note2">**</a> 
-  ```
-    python launcher.py --environment <environment_name>
-    python launcher.py -e <environment_name> 
-  ```
-  <h5 id="note2"> ** It is recommended not to create MeDIC environment into another environment as it may cause problems.</h5>
-
-### 2. Fast launch for everyday use
- - MeDIC can be launched faster without any verifications of the environment with the command :
-  ```
-    python launcher.py --no-check
-    python launcher.py -c
-  ```
-
-### 3. Installing MeDIC for later use
-  - MeDIC can be installed without launching it at the end with the command :
-  ```
-    python launcher.py --no-launch
-    python launcher.py -l
-  ```
-
-### 4. Update MeDIC to the latest version
-  - MeDIC can be updated with the command :  
-  ```
-    python launcher.py --update
-    python launcher.py -u
-  ```
-  Note: This will verify the environment and download packages if necessary, it also won't start MeDIC.
+</li>
+</ul>
+<h3 id="2-fast-launch-for-everyday-use">2. Fast launch for everyday use</h3>
+<ul>
+<li>MeDIC can be launched faster without any verifications of the environment with the command :<pre><code> <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> --<span class="hljs-keyword">no</span>-check
+ <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">c</span>
+</code></pre></li>
+</ul>
+<h3 id="3-installing-medic-for-later-use">3. Installing MeDIC for later use</h3>
+<ul>
+<li>MeDIC can be installed without launching it at the end with the command :<pre><code><span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> --<span class="hljs-keyword">no</span>-launch
+<span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">l</span>
+</code></pre></li>
+</ul>
+<h3 id="4-update-medic-to-the-latest-version">4. Update MeDIC to the latest version</h3>
+<ul>
+<li>MeDIC can be updated with the command :  <pre><code><span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> --<span class="hljs-keyword">update</span>
+<span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">u</span>
+</code></pre>Note: This will verify the environment and download packages if necessary, it also won&#39;t start MeDIC.</li>
+</ul>
   </div>
   <div class="tab-pane fade" id="Home">
-## Saving file
-Before explaining the interface, lets see how the experiments are saved and how you can share them. 
+<h2 id="saving-file">Saving file</h2>
+<p>Before explaining the interface, lets see how the experiments are saved and how you can share them. 
 To allow a better modularity of the experiments, the three major steps of MeDIC are saved independently into a file after each step. 
 Moreover, the data and metadata are only saved in local repository, not in the saving file, which allow the sharing of 
 the file to outside collaborators. 
 To continue an experiments and/or visualize its results, MeDIC offers the possibility to load a saving file in the first tab (Home). 
 However, to prevent any problem between a local data saving and a potential different saving file, a hashing process 
-takes place to compare the file being loaded and the local dumps of data. 
+takes place to compare the file being loaded and the local dumps of data. </p>
+<p>Welcome into MeDIC!</p>
+<p>The following sections will resume how to run an experiment and explore each parameter you can set.</p>
+<blockquote>
+<p>The image in Home tab give a great insight of how the pipeline works.</p>
+<p><img src="imgs/update_figure_steps_MeDIC_4.svg" alt=""></p>
+</blockquote>
+<p><em>Pipeline explanation schema in Home tab</em></p>
+<h2 id="a-set-the-metadata-and-data">A. Set the metadata and data</h2>
+<p>Go to the Splits tab.</p>
+<blockquote>
+<p><img src="imgs/2022-06-06-17-55-12.png" alt=""></p>
+</blockquote>
+<p><em>Tab list with the Splits tab opened</em></p>
+<p>The following instructions are for the <code>A) FILES</code> section.</p>
+<p>If you use Progenesis abundance file, you can choose to use the raw data (instead of the normalized).</p>
+<p>To upload the data, drag and drop your data file in the <code>DATA FILE(S)</code> section.</p>
+<blockquote>
+<p><img src="imgs/2022-06-06-17-58-03.png" alt=""></p>
+<p><em><code>DATA FILE(S)</code> section</em></p>
+</blockquote>
+<p>You can also click on the <code>UPLOAD FILE</code> button and choose the right file.</p>
+<p><strong>You can repeat the operation for the metadata in the <code>METADATA FILE</code> section.</strong></p>
+<blockquote>
+<p><img src="imgs/2022-06-07-11-16-23.png" alt=""></p>
+<p><em><code>MEATADATA FILE</code> section</em></p>
+</blockquote>
+<p>The supported files are excel, odt or csv.</p>
+<p>If the error &quot;<span style="color: red">Rows must have an equal number of columns</span>&quot; occurred, it means that 
+some lines don&#39;t have cells for all columns.</p>
 
-Welcome into MeDIC!
-
-The following sections will resume how to run an experiment and explore each parameter you can set.
-
->The image in Home tab give a great insight of how the pipeline works.
->
-> ![](imgs/update_figure_steps_MeDIC_4.svg)
-
-*Pipeline explanation schema in Home tab*
-
-## A. Set the metadata and data
-
-
-Go to the Splits tab.
-
-> ![](imgs/2022-06-06-17-55-12.png)
-
-*Tab list with the Splits tab opened*
-
-The following instructions are for the ```A) FILES``` section.
-
-If you use Progenesis abundance file, you can choose to use the raw data (instead of the normalized).
-
-To upload the data, drag and drop your data file in the ```DATA FILE(S)``` section.
-
-> ![](imgs/2022-06-06-17-58-03.png)
->
-> *```DATA FILE(S)``` section*
-
-You can also click on the ```UPLOAD FILE``` button and choose the right file.
-
-**You can repeat the operation for the metadata in the ```METADATA FILE``` section.**
-
-> ![](imgs/2022-06-07-11-16-23.png)
->
-> *```MEATADATA FILE``` section*
-
-
-The supported files are excel, odt or csv.
-
-If the error "<span style="color: red">Rows must have an equal number of columns</span>" occurred, it means that 
-some lines don't have cells for all columns.
   </div>
   <div class="tab-pane fade" id="Splits">
-### 1. Define Experimental designs
-
-
-The following instructions are for the ```B) DEFINE EXPERIMENTAL DESIGNS``` section.
-
-With the board, you can run multiple experimental design, under certain conditions. These conditions are:
-- use the same split parameters
-- use the same Machine Learning (ML) algorithms
-- use the same ML parameters
-
-First, you need to select the target column. To clarify, the target column contains the values that the algorithms 
-will try to predict. A typical example is the column that contain the diagnosis.
-
-The columns name prompted in the following figure are the column in the metadata file previously uploaded. If there 
-are not the ones expected, please retry uploading the metadata in [this section](index.md#a-set-the-metadata-and-data)
-
-> ![](imgs/2022-06-07-11-35-52.png)
->
-> *Targets column selection panel*
-
-After setting the target column, we need to set the samples' column. This column has to contain **unique IDs** for each sample.
-
-> ![](imgs/2022-06-07-11-44-48.png)
->
-> *Samples column selection panel*
-
-The main part of the experimental designs configuration section is divided in two panel, respectively the *repository* 
-and the *configuration* panel
-
-Once the target columns are defined, the possible labels are updated in the *configuration* panel as shown in the 
-following figure.
-
-> ![](imgs/2022-06-07-11-56-46.png)
-> 
-> *Updated possible labels in the* configuration *panel*
-
-To build a binary design, you need to define the classes, in other words, to choose what you want to be opposed. 
+<h3 id="1-define-experimental-designs">1. Define Experimental designs</h3>
+<p>The following instructions are for the <code>B) DEFINE EXPERIMENTAL DESIGNS</code> section.</p>
+<p>With the board, you can run multiple experimental design, under certain conditions. These conditions are:</p>
+<ul>
+<li>use the same split parameters</li>
+<li>use the same Machine Learning (ML) algorithms</li>
+<li>use the same ML parameters</li>
+</ul>
+<p>First, you need to select the target column. To clarify, the target column contains the values that the algorithms 
+will try to predict. A typical example is the column that contain the diagnosis.</p>
+<p>The columns name prompted in the following figure are the column in the metadata file previously uploaded. If there 
+are not the ones expected, please retry uploading the metadata in <a href="index.md#a-set-the-metadata-and-data">this section</a></p>
+<blockquote>
+<p><img src="imgs/2022-06-07-11-35-52.png" alt=""></p>
+<p><em>Targets column selection panel</em></p>
+</blockquote>
+<p>After setting the target column, we need to set the samples&#39; column. This column has to contain <strong>unique IDs</strong> for each sample.</p>
+<blockquote>
+<p><img src="imgs/2022-06-07-11-44-48.png" alt=""></p>
+<p><em>Samples column selection panel</em></p>
+</blockquote>
+<p>The main part of the experimental designs configuration section is divided in two panel, respectively the <em>repository</em> 
+and the <em>configuration</em> panel</p>
+<p>Once the target columns are defined, the possible labels are updated in the <em>configuration</em> panel as shown in the 
+following figure.</p>
+<blockquote>
+<p><img src="imgs/2022-06-07-11-56-46.png" alt=""></p>
+<p><em>Updated possible labels in the</em> configuration <em>panel</em></p>
+</blockquote>
+<p>To build a binary design, you need to define the classes, in other words, to choose what you want to be opposed. 
 An example using the previous values could be the identification of the sick person, opposing persons tagged with 
-"Sickness A" and "Sickness B" and persons tagged "Control".
-
-Add the experimental design by clicking on the ```ADD``` button.
-
-> ![](imgs/2022-06-07-11-57-26.png)
->
-> *Example of a experimental design*
-
-Note that you need to set a name, a label, for each class. Also, you need to set at least one possible target per 
-class, but you don't need to assign all possible targets.
-
-Once the designs are created, they will appear in the *repository* panel.
-
-> ![](imgs/2022-06-07-11-56-28.png)
->
-> Repository *panel with two experimental design*
-
-The ```RESET``` button will delete all the designs.
-
-### 2. Data fusion
-
-
-> **Warning**
-> Not implemented yet
-
-
-```Pos and Neg pairing``` allows to prevent the separation of positive and negative ionization and prevent the ML 
-algorithms to learn the link between positive and negative ionization.
-
-You can also use any other pattern for pairing with ```Other pairing```.
-
-### 3. Define split
-
-
-The following instructions are for the ```D) DEFINE SPLITS``` section.
-
-> ![](imgs/2022-06-07-13-59-10.png)
->
-> *```DEFINE SPLITS``` splits section*
-
-If you don't feel conformable with these parameters, the minimum you need to know is:
-- the proportion is quite standard, it will suit most of the time
-- 5 splits is quick to run but some samples may never be used to test the algorithms. A more complete run will take 15 to 25 splits.
-
-In the other case, the splits are made by copying the dataset and applying a random separation with a different 
-random seed at each time. This principle is called bootstrap.
-
-Most of the time, medical data are fat data ,i.e. contains many features (characteristic) for few samples, 
-which can lead to many large when the training set is changed.
-
-Moreover, as the cross validation (explained in further details in section [2.C.1](#1-define-learning-configurations)), 
-it allows the model(s) to be tested on most of the samples.
-
-If you want to achieve it, the probability that all samples are seen in the test set, i.e. the 
+&quot;Sickness A&quot; and &quot;Sickness B&quot; and persons tagged &quot;Control&quot;.</p>
+<p>Add the experimental design by clicking on the <code>ADD</code> button.</p>
+<blockquote>
+<p><img src="imgs/2022-06-07-11-57-26.png" alt=""></p>
+<p><em>Example of a experimental design</em></p>
+</blockquote>
+<p>Note that you need to set a name, a label, for each class. Also, you need to set at least one possible target per 
+class, but you don&#39;t need to assign all possible targets.</p>
+<p>Once the designs are created, they will appear in the <em>repository</em> panel.</p>
+<blockquote>
+<p><img src="imgs/2022-06-07-11-56-28.png" alt=""></p>
+<p>Repository <em>panel with two experimental design</em></p>
+</blockquote>
+<p>The <code>RESET</code> button will delete all the designs.</p>
+<h3 id="2-data-fusion">2. Data fusion</h3>
+<blockquote>
+<p><strong>Warning</strong>
+Not implemented yet</p>
+</blockquote>
+<p><code>Pos and Neg pairing</code> allows to prevent the separation of positive and negative ionization and prevent the ML 
+algorithms to learn the link between positive and negative ionization.</p>
+<p>You can also use any other pattern for pairing with <code>Other pairing</code>.</p>
+<h3 id="3-define-split">3. Define split</h3>
+<p>The following instructions are for the <code>D) DEFINE SPLITS</code> section.</p>
+<blockquote>
+<p><img src="imgs/2022-06-07-13-59-10.png" alt=""></p>
+<p><em><code>DEFINE SPLITS</code> splits section</em></p>
+</blockquote>
+<p>If you don&#39;t feel conformable with these parameters, the minimum you need to know is:</p>
+<ul>
+<li>the proportion is quite standard, it will suit most of the time</li>
+<li>5 splits is quick to run but some samples may never be used to test the algorithms. A more complete run will take 15 to 25 splits.</li>
+</ul>
+<p>In the other case, the splits are made by copying the dataset and applying a random separation with a different 
+random seed at each time. This principle is called bootstrap.</p>
+<p>Most of the time, medical data are fat data ,i.e. contains many features (characteristic) for few samples, 
+which can lead to many large when the training set is changed.</p>
+<p>Moreover, as the cross validation (explained in further details in section <a href="#1-define-learning-configurations">2.C.1</a>), 
+it allows the model(s) to be tested on most of the samples.</p>
+<p>If you want to achieve it, the probability that all samples are seen in the test set, i.e. the 
 probability that a sample is never in the test set, follow a 
 <a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank" rel="noreferrer noopener">Markov chain</a>. With an
-example of 5 samples with 80-20 train-test repartition, the chain is as follows:
-- The initial state $$V_1=\begin{pmatrix} 0 & 1 & 0 & 0 & 0 \end{pmatrix}$$
-- $$P(s_{t+1}=j\|s_t=i)=\frac{\begin{pmatrix} m-i \\ j-i \end{pmatrix}\begin{pmatrix} i \\ k-(j-i) \end{pmatrix}}{\begin{pmatrix} m \\ k \end{pmatrix}}$$ with $$s_t$$ a state at a $$t$$ moment, $$m$$ the total number of samples and $$k$$ the number of samples in the test set (test proportion$$\times m$$).
-- $$M$$ the $$5\times 5$$ matrix of $$P(s_{t+1}=j\|s_t=i)$$
-- $$V_n=V_1\times M^{n-1}$$ with $$n$$ the number of splits- $$P(X \gt 1) = 1-V_n[5]$$ where $$X$$ is a random variable
-- that model the number of samples that are never in the test set
-
-The figure hereunder shows $$P(X \gt 1)$$ (values) as a function of the number 
-of splits $$n$$ (1:nbr_limit) with $$m=250$$ samples and a test proportion of $$0.2$$ ($$k=50$$)
-
-
-> ![](imgs/2022-06-07-14-02-37.png)
->
-> *$$P(X \gt 1)$$ (valeurs) as a function of the number of splits $$n$$ (1:nbr_limit) 
-> with $$m=250$$ samples and a test proportion of  $$0.2$$ ($$k=50$$)*
-
-### 4. Other preprocessing
-
-
-> **Warning**
-> Not implemented yet
-
-This section is for LDTD support.
-
-You can show all the processing parameter by clicking on the ```OPEN``` button.
-
-
-### 5. Generate file
-
-
-These finals instructions are for the ```F) GENERATE FILE``` section.
-
-Once all the parameters, the samples id and target columns, and **at least one** experimental design are set, you can
-run the splits' computation by clicking on the ```CREATE``` button.
-
-> ![](imgs/2022-06-07-16-02-36.png)
->
-> *```GENERATE FILE``` section*
+example of 5 samples with 80-20 train-test repartition, the chain is as follows:</p>
+<ul>
+<li>The initial state $$V_1=\begin{pmatrix} 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \end{pmatrix}$$</li>
+<li>$$P(s_{t+1}=j|s_t=i)=\frac{\begin{pmatrix} m-i \ j-i \end{pmatrix}\begin{pmatrix} i \ k-(j-i) \end{pmatrix}}{\begin{pmatrix} m \ k \end{pmatrix}}$$ with $$s_t$$ a state at a $$t$$ moment, $$m$$ the total number of samples and $$k$$ the number of samples in the test set (test proportion$$\times m$$).</li>
+<li>$$M$$ the $$5\times 5$$ matrix of $$P(s_{t+1}=j|s_t=i)$$</li>
+<li>$$V_n=V_1\times M^{n-1}$$ with $$n$$ the number of splits- $$P(X \gt 1) = 1-V_n[5]$$ where $$X$$ is a random variable</li>
+<li>that model the number of samples that are never in the test set</li>
+</ul>
+<p>The figure hereunder shows $$P(X \gt 1)$$ (values) as a function of the number 
+of splits $$n$$ (1:nbr_limit) with $$m=250$$ samples and a test proportion of $$0.2$$ ($$k=50$$)</p>
+<blockquote>
+<p><img src="imgs/2022-06-07-14-02-37.png" alt=""></p>
+<p><em>$$P(X \gt 1)$$ (valeurs) as a function of the number of splits $$n$$ (1:nbr_limit) 
+with $$m=250$$ samples and a test proportion of  $$0.2$$ ($$k=50$$)</em></p>
+</blockquote>
+<h3 id="4-other-preprocessing">4. Other preprocessing</h3>
+<blockquote>
+<p><strong>Warning</strong>
+Not implemented yet</p>
+</blockquote>
+<p>This section is for LDTD support.</p>
+<p>You can show all the processing parameter by clicking on the <code>OPEN</code> button.</p>
+<h3 id="5-generate-file">5. Generate file</h3>
+<p>These finals instructions are for the <code>F) GENERATE FILE</code> section.</p>
+<p>Once all the parameters, the samples id and target columns, and <strong>at least one</strong> experimental design are set, you can
+run the splits&#39; computation by clicking on the <code>CREATE</code> button.</p>
+<blockquote>
+<p><img src="imgs/2022-06-07-16-02-36.png" alt=""></p>
+<p><em><code>GENERATE FILE</code> section</em></p>
+</blockquote>
   </div>
   <div class="tab-pane fade" id="Machine Learning">
-The following instructions are for the ```DEFINE LEARNING CONFIGS``` section.
-
-If you're not comfortable with these parameters, you can safely keep the default 
-values and jump to the [next section](#2-define-learning-algorithms).
-
-First, before choosing a Cross Validation (CV) search type, you need to understand 
-the principle of CV.
-
-The method consist in separating the dataset in $$n$$ sections. At each iteration, 
+<p>The following instructions are for the <code>DEFINE LEARNING CONFIGS</code> section.</p>
+<p>If you&#39;re not comfortable with these parameters, you can safely keep the default 
+values and jump to the <a href="#2-define-learning-algorithms">next section</a>.</p>
+<p>First, before choosing a Cross Validation (CV) search type, you need to understand 
+the principle of CV.</p>
+<p>The method consist in separating the dataset in $$n$$ sections. At each iteration, 
 the first or the next section will be used as the test set and the other sections will 
-form the training set. It allows us to train **and** test the model on all the dataset. 
-Furthermore, the mean accuracy over the folds is a better measurement of the performance of the models.
-
-The number of folds defines the number of time the model(s) will be trained, and the number 
-of division in the dataset.
-
-We use CV in order to make sure the model doesn't overfit, 
+form the training set. It allows us to train <strong>and</strong> test the model on all the dataset. 
+Furthermore, the mean accuracy over the folds is a better measurement of the performance of the models.</p>
+<p>The number of folds defines the number of time the model(s) will be trained, and the number 
+of division in the dataset.</p>
+<p>We use CV in order to make sure the model doesn&#39;t overfit, 
 we keep a sample of the dataset to test it at the end. If the algorithm is overfitting,
 it will make a lot of errors when presented a new set of data. This also allows us to 
-make sure the algorithm is tested on all samples.
-
-For more details, see this [explanation](https://learn.g2.com/cross-validation).
-
-The ability of a search algorithm is to train a set of models with a set of parameters, 
+make sure the algorithm is tested on all samples.</p>
+<p>For more details, see this <a href="https://learn.g2.com/cross-validation">explanation</a>.</p>
+<p>The ability of a search algorithm is to train a set of models with a set of parameters, 
 and compute a metric tested combination. This metric is most of the time the accuracy 
-(the number of correct predictions over the total number of predictions (the number of samples)).
-
-After the computation, the algorithm is able to find the model combined with the parameters 
-that perform best, in the tested combinations.
-
-The ```GridSearchCV``` is a search algorithm using CV that test every possible 
+(the number of correct predictions over the total number of predictions (the number of samples)).</p>
+<p>After the computation, the algorithm is able to find the model combined with the parameters 
+that perform best, in the tested combinations.</p>
+<p>The <code>GridSearchCV</code> is a search algorithm using CV that test every possible 
 combination of parameters, like in a grid. This method is effective but may take a long time 
-to run and may test useless combination.
-
-The ```RandomizedSearchCV``` comes as a counterpoint and take random combinations of parameters. This method allow 
-more values to be tested and runs faster but isn't as rigorous as the ```GridSearchCV```.  
-
-In the ```SELECT CV SEARCH TYPE``` panel, you can choose either ```GridSearchCV``` or ```RandomizedSearchCV```.
-
-You can set the number of folds in the ```NUMBER OF CROSS VALIDATION FOLDS```.
-
-The number of processes in the ```Number of processes``` field is the number of parallel job you want to run. Two is enough 
-to increase the speed of computation. More processes might slow down to crash your PC.
-
-### 2. Define learning algorithms
-
-
-The following instructions are for the ```DEFINE LEARNING ALGORITHMS``` section.
-
-The ```AVAILABLE ALGORITHMS``` are:
-- Decision Tree
-- Random Forest
-- SCM
-- Random SCM
-
-The first classifier implement a regular ***decision tree***. To make a prediction, the data is the input of the root node.
+to run and may test useless combination.</p>
+<p>The <code>RandomizedSearchCV</code> comes as a counterpoint and take random combinations of parameters. This method allow 
+more values to be tested and runs faster but isn&#39;t as rigorous as the <code>GridSearchCV</code>.  </p>
+<p>In the <code>SELECT CV SEARCH TYPE</code> panel, you can choose either <code>GridSearchCV</code> or <code>RandomizedSearchCV</code>.</p>
+<p>You can set the number of folds in the <code>NUMBER OF CROSS VALIDATION FOLDS</code>.</p>
+<p>The number of processes in the <code>Number of processes</code> field is the number of parallel job you want to run. Two is enough 
+to increase the speed of computation. More processes might slow down to crash your PC.</p>
+<h3 id="2-define-learning-algorithms">2. Define learning algorithms</h3>
+<p>The following instructions are for the <code>DEFINE LEARNING ALGORITHMS</code> section.</p>
+<p>The <code>AVAILABLE ALGORITHMS</code> are:</p>
+<ul>
+<li>Decision Tree</li>
+<li>Random Forest</li>
+<li>SCM</li>
+<li>Random SCM</li>
+</ul>
+<p>The first classifier implement a regular <strong><em>decision tree</em></strong>. To make a prediction, the data is the input of the root node.
 The root node, as the others, has a threshold for one feature : for example $$\text{cholesterol} \geq 2$$.
 If the value validate the threshold, it goes to the right node, otherwise it goes to the left, until it reach a leaf.
-The leaf assigns a class to the sample.
-
-The second classifier, the ***random forest***, is a decision tree (DT) ensemble that classify independently the sample. 
-Each DT vote the class of the sample. The class that has the most vote is assign to the sample.
-
-The ***Set Covering Machine (SCM)*** is a combination of rules. For example, if the cholesterol is greater than 2 g/l OR insulin is 
-greater than 140 mg/dL AND insulin is less than 199 mg/dL.
-
-The last classifier is the ***Random SCM***. As the random forest is a voting decision tree ensemble, the random SCM is a voting SCM ensemble.
-
-You have to tick **at least one** algorithms. 
-
-But because of their differences, some may perform better than others on different datasets. 
-It is advised to take at least one SCM-type and one DecisionTree-type algorithms.
-
-If you want to add [scikit-learn algorithms](https://scikit-learn.org/stable/index.html) that isn't in the available algorithms, you can in the ```ADD SKLEARN ALGORITHMS```.
-
-You need to complete the import and specify the grid search parameter (for the CV search algorithm). 
-
+The leaf assigns a class to the sample.</p>
+<p>The second classifier, the <strong><em>random forest</em></strong>, is a decision tree (DT) ensemble that classify independently the sample. 
+Each DT vote the class of the sample. The class that has the most vote is assign to the sample.</p>
+<p>The <strong><em>Set Covering Machine (SCM)</em></strong> is a combination of rules. For example, if the cholesterol is greater than 2 g/l OR insulin is 
+greater than 140 mg/dL AND insulin is less than 199 mg/dL.</p>
+<p>The last classifier is the <strong><em>Random SCM</em></strong>. As the random forest is a voting decision tree ensemble, the random SCM is a voting SCM ensemble.</p>
+<p>You have to tick <strong>at least one</strong> algorithms. </p>
+<p>But because of their differences, some may perform better than others on different datasets. 
+It is advised to take at least one SCM-type and one DecisionTree-type algorithms.</p>
+<p>If you want to add <a href="https://scikit-learn.org/stable/index.html">scikit-learn algorithms</a> that isn&#39;t in the available algorithms, you can in the <code>ADD SKLEARN ALGORITHMS</code>.</p>
+<p>You need to complete the import and specify the grid search parameter (for the CV search algorithm). </p>
 <details>
 <summary>Add a full custom algorithms (for expert) &cudarrr;</summary>
 
-To add a full custom model, you need to add it to the configuration file located at <code class="language-plaintext highlighter-rouge">metabodashboard/conf/SupportedModel.py</code>.  
-
-Add a dictionary containing the <strong>NON-INSTANTIATED</strong> class and the param grid. Format is the following (change only the attribute _xxx_)
+To add a full custom model, you need to add it to the configuration file located at <code class="language-plaintext highlighter-rouge">metabodashboard/conf/SupportedModel.py</code>.<br>
+Add a dictionary containing the <strong>NON-INSTANTIATED</strong> class and the param grid. Format is the following (change only the attribute <em>xxx</em>)
 
 <pre>
   <code class="language-python">
-    "_Printed_name_": {
-          "function": _non-instantiated_class_,
-          "ParamGrid": {
-              "_p1_": _[0.5, 1., 2.]_,
-              "_p2_": _[1, 2, 3, 4, 5]_,
+    &quot;_Printed<em>name</em>&quot;: {
+          &quot;function&quot;: _non-instantiated<em>class</em>,
+          &quot;ParamGrid&quot;: {
+              &quot;<em>p1</em>&quot;: <em>[0.5, 1., 2.]</em>,
+              &quot;<em>p2</em>&quot;: <em>[1, 2, 3, 4, 5]</em>,
               ...
           }
       },
   </code> 
 </pre>
 
-After adding your configuration, <strong>reboot</strong> MeDIC by stopping and restarting the launcher.  
-
-The algorithm should be in the <code class="language-plaintext highlighter-rouge">AVAILABLE ALGORITHMS</code> section with his printed name.  
-
-Note, the custom model are in the save file (.mtxp) and will be restored.  
-
+After adding your configuration, <strong>reboot</strong> MeDIC by stopping and restarting the launcher.<br>
+The algorithm should be in the <code class="language-plaintext highlighter-rouge">AVAILABLE ALGORITHMS</code> section with his printed name.<br>
+Note, the custom model are in the save file (.mtxp) and will be restored.<br>
 </details>
   </div>
   <div class="tab-pane fade" id="Results">
