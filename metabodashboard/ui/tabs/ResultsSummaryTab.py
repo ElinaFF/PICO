@@ -78,13 +78,13 @@ class ResultsSummaryTab(MetaTab):
                         dbc.Button(
                             "[?]",
                             className="text-muted btn-secondary popover_btn",
-                            id="help_heatmapFeatures",
+                            id="help_nonrandomHeatmapFeatures",
                         ),
                         dbc.Popover(
                             children=[dbc.PopoverBody("Blablabla wout wout")],
-                            id="pop_help_heatmapFeatures",
+                            id="pop_help_nonrandomHeatmapFeatures",
                             is_open=False,
-                            target="help_heatmapFeatures",
+                            target="help_nonrandomHeatmapFeatures",
                         ),
                     ],
                 ),
@@ -105,13 +105,13 @@ class ResultsSummaryTab(MetaTab):
                         dbc.Button(
                             "[?]",
                             className="text-muted btn-secondary popover_btn",
-                            id="help_heatmapFeatures",
+                            id="help_randomheatmapFeatures",
                         ),
                         dbc.Popover(
                             children=[dbc.PopoverBody("Blablabla wout wout")],
-                            id="pop_help_heatmapFeatures",
+                            id="pop_help_randomheatmapFeatures",
                             is_open=False,
-                            target="help_heatmapFeatures",
+                            target="help_randomheatmapFeatures",
                         ),
                     ],
                 ),
@@ -226,10 +226,10 @@ class ResultsSummaryTab(MetaTab):
                 global_df = global_df.fillna(0)
 
                 random_df = global_df.loc[:, ("RandomForest", "RandomSCM")]
-                random_df = random_df[random_df["RandomForest"] > 0.0001 or random_df["RandomSCM"] > 0.0001]
+                random_df = random_df[(random_df["RandomForest"] > 0.0001) | (random_df["RandomSCM"] > 0.0001)]
 
                 non_random_df = global_df.loc[:, ("DecisionTree", "SCM")]
-                non_random_df = non_random_df[non_random_df["DecisionTree"] > 0.01 or non_random_df["SCM"] > 0.01]
+                non_random_df = non_random_df[(non_random_df["DecisionTree"] > 0.01) | (non_random_df["SCM"] > 0.01)]
 
                 random_fig = self._plots.show_heatmap_features_usage(random_df)
                 non_random_fig = self._plots.show_heatmap_features_usage(non_random_df)
