@@ -2,8 +2,6 @@
 layout: default
 ---
 
-# Index
-
 <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 
@@ -22,22 +20,22 @@ layout: default
     <a class="nav-link active" data-bs-toggle="tab" href="#Installation">Installation</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" data-bs-toggle="tab" href="#Home">Home</a>
+    <a class="nav-link active" data-bs-toggle="tab" href="#Home">Home</a>
   </li>
  <li class="nav-item">
-    <a class="nav-link" data-bs-toggle="tab" href="#Splits">Splits</a>
+    <a class="nav-link active" data-bs-toggle="tab" href="#Splits">Splits</a>
   </li>
 <li class="nav-item">
-    <a class="nav-link" data-bs-toggle="tab" href="#MachineLearning">Machine Learning</a>
+    <a class="nav-link active" data-bs-toggle="tab" href="#MachineLearning">Machine Learning</a>
   </li>
 <li class="nav-item">
-    <a class="nav-link" data-bs-toggle="tab" href="#Results">Results</a>
+    <a class="nav-link active" data-bs-toggle="tab" href="#Results">Results</a>
   </li>
 <li class="nav-item">
-    <a class="nav-link" data-bs-toggle="tab" href="#ResultsSummary">Results Summary</a>
+    <a class="nav-link active" data-bs-toggle="tab" href="#ResultsSummary">Results Summary</a>
   </li>
 <li class="nav-item">
-    <a class="nav-link" data-bs-toggle="tab" href="#Implementation">Implementation</a>
+    <a class="nav-link active" data-bs-toggle="tab" href="#Implementation">Implementation</a>
   </li>
 </ul>
 <div id="myTabContent" class="tab-content">
