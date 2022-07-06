@@ -68,7 +68,34 @@ class ResultsSummaryTab(MetaTab):
                 )
             ],
         )
-        _heatmapUsedFeatures = html.Div(
+        _nonRandomHeatmapUsedFeatures = html.Div(
+            className="umap_plot_and_title",
+            children=[
+                html.Div(
+                    className="title_and_help",
+                    children=[
+                        html.H6("Features Usage"),
+                        dbc.Button(
+                            "[?]",
+                            className="text-muted btn-secondary popover_btn",
+                            id="help_heatmapFeatures",
+                        ),
+                        dbc.Popover(
+                            children=[dbc.PopoverBody("Blablabla wout wout")],
+                            id="pop_help_heatmapFeatures",
+                            is_open=False,
+                            target="help_heatmapFeatures",
+                        ),
+                    ],
+                ),
+                dcc.Loading(
+                    dcc.Graph(id="nonRandomHeatmapFeatures", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
+                ),
+            ],
+        )
+        _randomHeatmapUsedFeatures = html.Div(
             className="umap_plot_and_title",
             children=[
                 html.Div(
@@ -93,13 +120,6 @@ class ResultsSummaryTab(MetaTab):
                     type="dot",
                     color="#13BD00",
                 ),
-                dcc.Loading(
-                    dcc.Graph(id="nonRandomHeatmapFeatures", config=CONFIG),
-                    type="dot",
-                    color="#13BD00",
-                ),
-                # dcc.Slider(min=0, max=3, step=1, value=0, marks={0: "10", 1: "40", 2: "100", 3: "All"},
-                #            id="features_stripChart_dropdown")
             ],
         )
 
@@ -140,7 +160,7 @@ class ResultsSummaryTab(MetaTab):
                 _resultsMenuDropdowns,
                 html.Div(
                     className="fig_group",
-                    children=[_heatmapUsedFeatures],
+                    children=[_nonRandomHeatmapUsedFeatures, _randomHeatmapUsedFeatures],
                 ),
                 html.Div(
                     className="fig_group",
@@ -186,7 +206,6 @@ class ResultsSummaryTab(MetaTab):
                         print("glob df is none")
                         global_df = self.r[design][a].results["features_table"]
                         global_df = global_df.loc[:, ("features", "importance_usage")]  # reduce dataframe to 2 columns
-                        global_df = global_df[global_df["importance_usage"] > 0.01]
                         global_df.rename(columns={"importance_usage": a}, inplace=True)  # rename column to identify algorithm
                     else:
                         print("glob df not none, algo :", a)
@@ -196,7 +215,6 @@ class ResultsSummaryTab(MetaTab):
                         df = df.loc[
                             :, ("features", "importance_usage")
                         ]  # reduce dataframe to 2 columns
-                        df = df[df["importance_usage"] > 0.01]
                         df.rename(
                             columns={"importance_usage": a}, inplace=True
                         )  # rename column to identify algorithm
@@ -208,7 +226,10 @@ class ResultsSummaryTab(MetaTab):
                 global_df = global_df.fillna(0)
 
                 random_df = global_df.loc[:, ("RandomForest", "RandomSCM")]
+                random_df = random_df[random_df["RandomForest"] > 0.0001 or random_df["RandomSCM"] > 0.0001]
+
                 non_random_df = global_df.loc[:, ("DecisionTree", "SCM")]
+                non_random_df = non_random_df[non_random_df["DecisionTree"] > 0.01 or non_random_df["SCM"] > 0.01]
 
                 random_fig = self._plots.show_heatmap_features_usage(random_df)
                 non_random_fig = self._plots.show_heatmap_features_usage(non_random_df)
