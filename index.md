@@ -20,7 +20,7 @@ layout: default
     <a class="nav-link active" data-bs-toggle="tab" href="#Installation">Installation</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link active" data-bs-toggle="tab" href="#Home">Home</a>
+    <a class="nav-link" data-bs-toggle="tab" href="#Home">Home</a>
   </li>
  <li class="nav-item">
     <a class="nav-link" data-bs-toggle="tab" href="#Splits">Splits</a>
@@ -38,6 +38,9 @@ layout: default
     <a class="nav-link" data-bs-toggle="tab" href="#Implementation">Implementation</a>
   </li>
 </ul>
+The first step, to use MeDIC, is to install Python and install Git. You also need to make sure that Microsoft Visual C++ is correctly installed if you're using Windows.  
+Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10
+
 <div id="myTabContent" class="tab-content">
   <div class="tab-pane fade active show" id="Installation">
       <div class="accordion" id="accordion_python_installation">
@@ -167,19 +170,20 @@ layout: default
 
 
 
-A launcher has been made for MeDIC to facilitate the installation process. 
-This launcher can be used for the installation and to start MeDIC.
+A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the
+installation and to start MeDIC.
 
 The launcher file needs Git and Python to be able to do all the installation steps for you.
 
 <h3 id="a-normal-installation">A. Normal installation</h3>
 
- - Download launcher.py on our <a href="https://github.com/ElinaFF/MetaboDashboard" target="_blank" rel="noreferrer noopener">github</a>
- - Open a terminal (*cmd* in Windows)
- - Run the launcher on your computer with the command : <a href="#note1">*</a> 
-<code>
-    python launcher.py
-</code>
+- Download launcher.py on
+  our <a href="https://github.com/ElinaFF/MetaboDashboard" target="_blank" rel="noreferrer noopener">github</a>
+- Open a terminal (*cmd* in Windows)
+- Run the launcher on your computer with the command : <a href="#note1">*</a>
+  <code>
+  python launcher.py
+  </code>
 
  <h5 id="note1"> * No need to clone the repository, we will install everything we need. 
 If you still want to do so and don’t want the launcher to redownload it during the installation process, make sure to 
@@ -457,8 +461,10 @@ It is advised to take at least one SCM-type and one DecisionTree-type algorithms
 <details>
 <summary>Add a full custom algorithms (for expert) &cudarrr;</summary>
 
-To add a full custom model, you need to add it to the configuration file located at <code class="language-plaintext highlighter-rouge">metabodashboard/conf/SupportedModel.py</code>.<br>
-Add a dictionary containing the <strong>NON-INSTANTIATED</strong> class and the param grid. Format is the following (change only the attribute <em>xxx</em>)
+To add a full custom model, you need to add it to the configuration file located
+at <code class="language-plaintext highlighter-rouge">metabodashboard/conf/SupportedModel.py</code>.<br>
+Add a dictionary containing the <strong>NON-INSTANTIATED</strong> class and the param grid. Format is the following (
+change only the attribute <em>xxx</em>)
 
 <pre>
   <code class="language-python">
@@ -474,7 +480,8 @@ Add a dictionary containing the <strong>NON-INSTANTIATED</strong> class and the 
 </pre>
 
 After adding your configuration, <strong>reboot</strong> MeDIC by stopping and restarting the launcher.<br>
-The algorithm should be in the <code class="language-plaintext highlighter-rouge">AVAILABLE ALGORITHMS</code> section with his printed name.<br>
+The algorithm should be in the <code class="language-plaintext highlighter-rouge">AVAILABLE ALGORITHMS</code> section
+with his printed name.<br>
 Note, the custom model are in the save file (.mtxp) and will be restored.<br>
 </details>
   </div>
