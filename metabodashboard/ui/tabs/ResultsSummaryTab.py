@@ -89,7 +89,12 @@ class ResultsSummaryTab(MetaTab):
                     ],
                 ),
                 dcc.Loading(
-                    dcc.Graph(id="heatmapFeatures", config=CONFIG),
+                    dcc.Graph(id="randomHeatmapFeatures", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
+                ),
+                dcc.Loading(
+                    dcc.Graph(id="nonRandomHeatmapFeatures", config=CONFIG),
                     type="dot",
                     color="#13BD00",
                 ),
@@ -135,7 +140,11 @@ class ResultsSummaryTab(MetaTab):
                 _resultsMenuDropdowns,
                 html.Div(
                     className="fig_group",
-                    children=[_heatmapUsedFeatures, _heatmapSamplesAlwaysWrong],
+                    children=[_heatmapUsedFeatures],
+                ),
+                html.Div(
+                    className="fig_group",
+                    children=[_heatmapSamplesAlwaysWrong]
                 ),
             ],
         )
@@ -163,7 +172,8 @@ class ResultsSummaryTab(MetaTab):
                 return dash.no_update
 
         @self.app.callback(
-            Output("heatmapFeatures", "figure"),
+            [Output("randomHeatmapFeatures", "figure"),
+             Output("nonRandomHeatmapFeatures", "figure")],
             [Input("load_results_button", "n_clicks")],
             State("design_dropdown_summary", "value"),
         )
@@ -175,13 +185,9 @@ class ResultsSummaryTab(MetaTab):
                     if global_df is None:
                         print("glob df is none")
                         global_df = self.r[design][a].results["features_table"]
-                        global_df = global_df.loc[
-                            :, ("features", "importance_usage")
-                        ]  # reduce dataframe to 2 columns
+                        global_df = global_df.loc[:, ("features", "importance_usage")]  # reduce dataframe to 2 columns
                         global_df = global_df[global_df["importance_usage"] > 0.01]
-                        global_df.rename(
-                            columns={"importance_usage": a}, inplace=True
-                        )  # rename column to identify algorithm
+                        global_df.rename(columns={"importance_usage": a}, inplace=True)  # rename column to identify algorithm
                     else:
                         print("glob df not none, algo :", a)
                         df = self.r[design][a].results[
@@ -200,9 +206,14 @@ class ResultsSummaryTab(MetaTab):
 
                 global_df = global_df.set_index("features")
                 global_df = global_df.fillna(0)
-                fig = self._plots.show_heatmap_features_usage(global_df)
 
-                return fig
+                random_df = global_df.loc[:, ("RandomForest", "RandomSCM")]
+                non_random_df = global_df.loc[:, ("DecisionTree", "SCM")]
+
+                random_fig = self._plots.show_heatmap_features_usage(random_df)
+                non_random_fig = self._plots.show_heatmap_features_usage(non_random_df)
+
+                return random_fig, non_random_fig
             else:
                 return dash.no_update
 
