@@ -277,303 +277,6 @@ with the command : <a href="#note2">**</a>
   Note: This will verify the environment and download packages if necessary, it also won't start MeDIC.
   </div>
   <div class="tab-pane fade" id="Home">
-
-  </div>
-  <div class="tab-pane fade" id="Splits">
-
-  </div>
-  <div class="tab-pane fade" id="Machine Learning">
-
-  </div>
-  <div class="tab-pane fade" id="Results">
-
-  </div>
-  <div class="tab-pane fade" id="Results Summary">
-
-  </div>
-  <div class="tab-pane fade" id="Implementation">
-
-  </div>
-</div>
-
-
-
-1. [Installation](#1-installation)  
-    <ol type="A">
-      <li><a href="#a-normal-installation">Normal installation</a></li>
-      <li><a href="#b-clone-repository-and-normal-installation">Clone repository and normal installation</a></li>
-      <li><a href="#c-manual-installation">Manual installation</a></li>
-    </ol>
-2. [Utilization](#2-utilization)  
-    <ol type="A">
-      <li><a href="#a-set-the-metadata-and-data">Set the metadata and data</a></li>
-      <li><a href="#b-split-parameters">Split parameters</a></li>
-      <ol>
-        <li><a href="#1-define-experimental-designs">Define Experimental designs</a></li>
-        <li><a href="#2-data-fusion">Data fusion</a></li>
-        <li><a href="#3-define-split">Define split</a></li>
-        <li><a href="#4-other-preprocessing">Other preprocessing</a></li>
-        <li><a href="#5-generate-file">Generate file</a></li>
-      </ol>
-      <li><a href="#c-machine-learning-parameters">Machine Learning parameters</a></li>
-      <ol>
-        <li><a href="#1-define-learning-configurations">Define learning configurations</a></li>
-        <li><a href="#2-define-learning-algorithms">Define learning algorithms</a></li>
-      </ol>
-      <li><a href="#d-look-at-the-results-for-each-algorithms">Look at the results for each algorithms</a></li>
-      <li><a href="#e-compare-algorithms-results">Compare algorithms results</a></li>
-      <li><a href="#f-restore-previous-experiment">Restore previous experiment</a></li>
-    </ol>
-3. [Implementation](#3-implementation)  
-    <ol type="A">
-      <li><a href="#a-architecture">Architecture</a></li>
-      <li><a href="#b-controller-interface">Controller interface</a></li>
-      <li><a href="#c-full-class-diagram">Full class diagram</a></li>
-    </ol>
-  
-
-# 1. Installation
-
-The first step, to use MeDIC, is to install Python and install Git. You also need to make sure that Microsoft Visual C++ is correctly installed if you're using Windows.  
-Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10
-
-<div class="accordion" id="accordion_python_installation">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="heading_python_installation">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation" aria-expanded="true"
-         aria-controls="collapse_python_installation">
-        Python installation
-      </button>
-    </h2>
-    <div id="collapse_python_installation" class="accordion-collapse collapse" aria-labelledby="heading_python_installation" data-bs-parent="#accordion_python_installation" style="">
-      <div class="accordion-body">
-         <p>In order to install Python, you need to go to this <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer noopener">link</a>
-         and select your operating system.</p>
-         <div class="accordion-item">
-             <h2 class="accordion-header" id="heading_python_installation_for_windows">
-               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_windows" aria-expanded="true" aria-controls="collapse_python_installation_for_windows">
-                 For Windows
-               </button>
-             </h2>
-             <div id="collapse_python_installation_for_windows" class="accordion-collapse collapse" aria-labelledby="heading_python_installation_for_windows" data-bs-parent="#accordionExample" style="">
-               <div class="accordion-body">
-                            <p>You can download the latest version or a previous one if you prefer (Note : MeDIC supports python 3.10, 3.9 and 3.8).  
-      You just have to double-click and follow the installation instructions.  
-      You can also follow this <a href="https://phoenixnap.com/kb/how-to-install-python-3-windows" target="_blank" rel="noreferrer noopener">tutorial</a> for further details.</p>
-      <p>WARNING : Don't forget the select Add Python 3.X to PATH on the first page ! </p><img src="imgs/addToPath.png" alt="addToPath"> 
-      <p>NOTE : To verify that Python is inb the PATH, you can open a new terminal, type Python and enter. If you get 
-               something like this, it's all good. <img src="imgs/cmdOk.png" alt="addToPath">
-            Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning 
-            and click repair. Then click on Next. Then you can click on add to path and install. 
-            </p> <img src="imgs/addToPathAfterRepair.png" alt="addToPathAfterRepair"> <img src="imgs/img_1" alt="Repair">
-               </div>
-             </div>
-           </div>
-            <div class="accordion-item">
-             <h2 class="accordion-header" id="heading_python_installation_for_linux">
-               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_linux" aria-expanded="true" aria-controls="collapse_python_installation_for_linux">
-                 For Linux
-               </button>
-             </h2>
-             <div id="collapse_python_installation_for_linux" class="accordion-collapse collapse" aria-labelledby="heading_python_installation_for_linux" data-bs-parent="#accordionExample" style="">
-               <div class="accordion-body">
-                  <p>You can select the latest Python source release for python3 or a stable release for 3.8 to 3.10. COMMAND  
-                  You can also follow this <a href="https://www.scaler.com/topics/python/install-python-on-linux/" target="_blank" rel="noreferrer noopener">tutorial</a> for                  further details</p>
-               </div>
-             </div>
-           </div>
-      </div>
-    </div>
-  </div>
-   <div class="accordion-item">
-    <h2 class="accordion-header" id="heading_git_installation">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation" aria-expanded="true"
-         aria-controls="collapse_git_installation">
-        Git installation
-      </button>
-    </h2>
-    <div id="collapse_git_installation" class="accordion-collapse collapse" aria-labelledby="heading_git_installation" data-bs-parent="#accordion_python_installation" style="">
-      <div class="accordion-body">
-         In order to install Git, you need to go to this <a href="https://git-scm.com/downloads" target="_blank" rel="noreferrer noopener">link</a> and select your operating system. 
-         and select your operating system.</p>
-         <div class="accordion-item">
-             <h2 class="accordion-header" id="heading_git_installation_for_windows">
-               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation_for_windows" aria-expanded="true" aria-controls="collapse_git_installation_for_windows">
-                 For Windows
-               </button>
-             </h2>
-             <div id="collapse_git_installation_for_windows" class="accordion-collapse collapse" aria-labelledby="heading_git_installation_for_windows" data-bs-parent="#accordionExample" style="">
-               <div class="accordion-body">
-                   <p>You can then choose the Standalone Installer and take the 64 bits one if your computer is less than 10 or 15 years old.
-                     After downloading the .exe file, double-click on it and follow the installation instructions.</p>
-                     <p>Note : You'll have a lot of choices, leave them as default if you are not familiar with their implications.</p>
-               </div>
-             </div>
-           </div>
-            <div class="accordion-item">
-             <h2 class="accordion-header" id="heading_git_installation_for_linux">
-               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation_for_linux" aria-expanded="true" aria-controls="collapse_git_installation_for_linux">
-                 For Linux
-               </button>
-             </h2>
-             <div id="collapse_git_installation_for_linux" class="accordion-collapse collapse" aria-labelledby="heading_git_installation_for_linux" data-bs-parent="#accordionExample" style="">
-               <div class="accordion-body">
-                  Open a terminal and run the command :
-                  <code>
-                      sudo apt-get install git
-                  </code>
-                  Enter your root password and follow the installation instructions. 
-                  For more details follows this <a href="https://git-scm.com/download/linux" target="_blank" rel="noreferrer noopener">link</a>.
-               </div>
-             </div>
-           </div>
-      </div>
-    </div>
-  </div>
-   <div class="accordion-item">
-    <h2 class="accordion-header" id="heading_c++_installation">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_c++_installation" aria-expanded="true"
-         aria-controls="collapse_c++_installation">
-        Microsoft Visual C++ requirement
-      </button>
-    </h2>
-    <div id="collapse_c++_installation" class="accordion-collapse collapse" aria-labelledby="heading_c++_installation" data-bs-parent="#accordion_c++_installation" style="">
-      <div class="accordion-body">
-         To make sure MeDIC and all it's dependencies works properly you need Microsoft Visual C++ 14.0 or later.  
-         To check if the correct version of Microsoft Visual C++ is installed or your computer you can open the Control Panel
-         from the start menu, click on "uninstall app" and scroll down to see which version, if any, of Microsoft Visual C++ is installed.
-         <div class="accordion-item">
-             <h2 class="accordion-header" id="heading_c++_installation_for_windows">
-               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_c++_installation_for_windows" aria-expanded="true" aria-controls="collapse_c++_installation_for_windows">
-                 Install new version
-               </button>
-             </h2>
-             <div id="collapse_c++_installation_for_windows" class="accordion-collapse collapse" aria-labelledby="heading_c++_installation_for_windows" data-bs-parent="#accordionExample" style="">
-               <div class="accordion-body">
-                  <p>In order to install Microsoft Visual C++, you need to go to this 
-                  <a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/" target="_blank" rel="noreferrer noopener">link</a> and select Visual Studio 2022 Community.</p>
-                  <p>Select "Desktop development in C++" and go to the "Individual components" tab and scroll down to 
-                  select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or later and click install (It may take a while depending on your internet download speed).</p>
-               </div>
-             </div>
-           </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-A launcher has been made for MeDIC to facilitate the installation process. 
-This launcher can be used for the installation and to start MeDIC.
-
-The launcher file needs Git and Python to be able to do all the installation steps for you.
-
-### A. Normal installation
-
- - Download launcher.py on our <a href="https://github.com/ElinaFF/MetaboDashboard" target="_blank" rel="noreferrer noopener">github</a>
- - Open a terminal (*cmd* in Windows)
- - Run the launcher on your computer with the command : <a href="#note1">*</a> 
- ```
-    python launcher.py
- ```
-
- <h5 id="note1"> * No need to clone the repository, we will install everything we need. 
-If you still want to do so and don’t want the launcher to redownload it during the installation process, make sure to 
-clone the repository in the same folder as the launcher.<br> MeDIC uses conda for his environment, 
-if you don’t have any Conda instance installed on your machine, the launcher will install one (Miniconda3).
-<br> All the dependencies necessary will be installed in the conda environment.</h5>
-
-### B. Clone repository and normal installation
- - Open a terminal (*cmd* in Windows)
- - Clone the Github repository.
-  ```
-    git clone https://github.com/ElinaFF/MetaboDashboard
-  ```
- - Move inside the repository
-```
-  cd MetaboDashboard
-```
- - Run the launcher
-```
-  python launcher.py
-```
-
-### C. Manual installation
- - Install Miniconda following the [documentation](https://docs.conda.io/en/latest/miniconda.html){:target="\_blank"}
- - Open a terminal (**"cmd" in Windows not "Powershell"**)
- - Create an environment with Conda:
-```
-  conda create medic
-```
- - Enter in the environement
-```
-  conda activate medic 
-```
- NOTE: if the command worked, you should see the name "medic" written at the beginning of your prompt as the following image.
-
- ![](imgs/2022-06-22-15-56-49.png)
-
- - Clone the Github repository and move inside.
-  ```
-    git clone https://github.com/ElinaFF/MetaboDashboard
-    cd MetaboDashboard
-  ```
- - Install the dependencies:
-```
-  python -m pip install -r requirements.txt
-```
-NOTE: if you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
-([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d){:target="\_blank"})
-return [here](#1-installation) to install, or update, Microsoft Visual C++.
- - Launch the Web interface
-```
-  python main.py
-```
-
-### D. Installation on WSL (Windows Subsystem for Linux)
-During the normal installation, you may have a problem with the Path variable. We haven't found a solution yet. 
-You may need to go through the [Manual installation](#C-manual-installation).
-
-## MeDIC launcher options
-
-Those commands are optionals but may help you to use the launcher in an easier way.  
-They can be combined or use independently.
-
-### 1. Use an environment you already have
- - The content of MeDICs environment can be installed in another environment, if you don't want to create a new one, 
-with the command : <a href="#note2">**</a> 
-  ```
-    python launcher.py --environment <environment_name>
-    python launcher.py -e <environment_name> 
-  ```
-  <h5 id="note2"> ** It is recommended not to create MeDIC environment into another environment as it may cause problems.</h5>
-
-### 2. Fast launch for everyday use
- - MeDIC can be launched faster without any verifications of the environment with the command :
-  ```
-    python launcher.py --no-check
-    python launcher.py -c
-  ```
-
-### 3. Installing MeDIC for later use
-  - MeDIC can be installed without launching it at the end with the command :
-  ```
-    python launcher.py --no-launch
-    python launcher.py -l
-  ```
-
-### 4. Update MeDIC to the latest version
-  - MeDIC can be updated with the command :  
-  ```
-    python launcher.py --update
-    python launcher.py -u
-  ```
-  Note: This will verify the environment and download packages if necessary, it also won't start MeDIC.
-
-# 2. Utilization
-> [Go back to index](#index)
-
 ## Saving file
 Before explaining the interface, lets see how the experiments are saved and how you can share them. 
 To allow a better modularity of the experiments, the three major steps of MeDIC are saved independently into a file after each step. 
@@ -594,7 +297,7 @@ The following sections will resume how to run an experiment and explore each par
 *Pipeline explanation schema in Home tab*
 
 ## A. Set the metadata and data
-> [Go back to index](#index)
+
 
 Go to the Splits tab.
 
@@ -625,12 +328,10 @@ The supported files are excel, odt or csv.
 
 If the error "<span style="color: red">Rows must have an equal number of columns</span>" occurred, it means that 
 some lines don't have cells for all columns.
-
-## B. Split parameters
-> [Go back to index](#index)
-
+  </div>
+  <div class="tab-pane fade" id="Splits">
 ### 1. Define Experimental designs
-> [Go back to index](#index)
+
 
 The following instructions are for the ```B) DEFINE EXPERIMENTAL DESIGNS``` section.
 
@@ -687,7 +388,7 @@ Once the designs are created, they will appear in the *repository* panel.
 The ```RESET``` button will delete all the designs.
 
 ### 2. Data fusion
-> [Go back to index](#index)
+
 
 > **Warning**
 > Not implemented yet
@@ -699,7 +400,7 @@ algorithms to learn the link between positive and negative ionization.
 You can also use any other pattern for pairing with ```Other pairing```.
 
 ### 3. Define split
-> [Go back to index](#index)
+
 
 The following instructions are for the ```D) DEFINE SPLITS``` section.
 
@@ -740,7 +441,7 @@ of splits $$n$$ (1:nbr_limit) with $$m=250$$ samples and a test proportion of $$
 > with $$m=250$$ samples and a test proportion of  $$0.2$$ ($$k=50$$)*
 
 ### 4. Other preprocessing
-> [Go back to index](#index)
+
 
 > **Warning**
 > Not implemented yet
@@ -751,7 +452,7 @@ You can show all the processing parameter by clicking on the ```OPEN``` button.
 
 
 ### 5. Generate file
-> [Go back to index](#index)
+
 
 These finals instructions are for the ```F) GENERATE FILE``` section.
 
@@ -761,13 +462,8 @@ run the splits' computation by clicking on the ```CREATE``` button.
 > ![](imgs/2022-06-07-16-02-36.png)
 >
 > *```GENERATE FILE``` section*
-
-## C. Machine Learning parameters
-> [Go back to index](#index)
-
-### 1. Define learning configurations
-> [Go back to index](#index)
-
+  </div>
+  <div class="tab-pane fade" id="Machine Learning">
 The following instructions are for the ```DEFINE LEARNING CONFIGS``` section.
 
 If you're not comfortable with these parameters, you can safely keep the default 
@@ -813,7 +509,7 @@ The number of processes in the ```Number of processes``` field is the number of 
 to increase the speed of computation. More processes might slow down to crash your PC.
 
 ### 2. Define learning algorithms
-> [Go back to index](#index)
+
 
 The following instructions are for the ```DEFINE LEARNING ALGORITHMS``` section.
 
@@ -872,21 +568,14 @@ The algorithm should be in the <code class="language-plaintext highlighter-rouge
 Note, the custom model are in the save file (.mtxp) and will be restored.  
 
 </details>
+  </div>
+  <div class="tab-pane fade" id="Results">
 
-## D. Look at the results for each algorithm
-> [Go back to index](#index)
+  </div>
+  <div class="tab-pane fade" id="Results Summary">
 
-## E. Compare algorithms results
-> [Go back to index](#index)
-
-## F. Restore previous experiment
-> [Go back to index](#index)
-
-# 3. Implementation
-> [Go back to index](#index)
-
-## A. Architecture
-> [Go back to index](#index)
+  </div>
+  <div class="tab-pane fade" id="Implementation">
 
 MeDIC software is organized in three main package.
  - The Domain package :  
@@ -918,7 +607,7 @@ This diagram shows all the classes that compose the UI package of MeDIC and the 
 > Simplified class diagram of the UI package
 
 ## B. Controller interface
-> [Go back to index](#index)
+
 
 This section can be use as a high-level documentation of the MetaboController class that serves of controller in MeDIC.
 
@@ -993,10 +682,10 @@ Return all the data about the results, and the best model.
 
 ## C. Full class diagram
 
-> [Go back to index](#index)
+
 
 ![](imgs/2022-06-08-16-51-32.png)
 
 
-
-
+  </div>
+</div>
