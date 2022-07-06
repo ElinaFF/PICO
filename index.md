@@ -110,10 +110,12 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
    </details>
 </details>
 
+
+
 <div class="accordion" id="accordion_python_installation">
   <div class="accordion-item">
     <h2 class="accordion-header" id="heading_python_installation">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation" aria-expanded="false"
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation" aria-expanded="true"
          aria-controls="collapse_python_installation">
         Python installation
       </button>
@@ -124,7 +126,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
          and select your operating system.</p>
          <div class="accordion-item">
              <h2 class="accordion-header" id="heading_python_installation_for_windows">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_windows" aria-expanded="false" aria-controls="collapse_python_installation_for_windows">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_windows" aria-expanded="true" aria-controls="collapse_python_installation_for_windows">
                  For Windows
                </button>
              </h2>
@@ -144,7 +146,7 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
            </div>
             <div class="accordion-item">
              <h2 class="accordion-header" id="heading_python_installation_for_linux">
-               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_linux" aria-expanded="false" aria-controls="collapse_python_installation_for_linux">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_python_installation_for_linux" aria-expanded="true" aria-controls="collapse_python_installation_for_linux">
                  For Linux
                </button>
              </h2>
@@ -158,7 +160,54 @@ Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and
       </div>
     </div>
   </div>
+   <div class="accordion-item">
+    <h2 class="accordion-header" id="heading_git_installation">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation" aria-expanded="true"
+         aria-controls="collapse_git_installation">
+        Git installation
+      </button>
+    </h2>
+    <div id="collapse_git_installation" class="accordion-collapse collapse show" aria-labelledby="heading_git_installation" data-bs-parent="#accordion_python_installation" style="">
+      <div class="accordion-body">
+         <p>In order to install Python, you need to go to this <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer noopener">link</a>
+         and select your operating system.</p>
+         <div class="accordion-item">
+             <h2 class="accordion-header" id="heading_git_installation_for_windows">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation_for_windows" aria-expanded="true" aria-controls="collapse_git_installation_for_windows">
+                 For Windows
+               </button>
+             </h2>
+             <div id="collapse_git_installation_for_windows" class="accordion-collapse collapse show" aria-labelledby="heading_git_installation_for_windows" data-bs-parent="#accordionExample" style="">
+               <div class="accordion-body">
+                   <p>You can then choose the Standalone Installer and take the 64 bits one if your computer is less than 10 or 15 years old.
+                     After downloading the .exe file, double-click on it and follow the installation instructions.</p>
+                     <p>Note : You'll have a lot of choices, leave them as default if you are not familiar with their implications.</p>
+               </div>
+             </div>
+           </div>
+            <div class="accordion-item">
+             <h2 class="accordion-header" id="heading_git_installation_for_linux">
+               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_git_installation_for_linux" aria-expanded="true" aria-controls="collapse_git_installation_for_linux">
+                 For Linux
+               </button>
+             </h2>
+             <div id="collapse_git_installation_for_linux" class="accordion-collapse collapse show" aria-labelledby="heading_git_installation_for_linux" data-bs-parent="#accordionExample" style="">
+               <div class="accordion-body">
+                  Open a terminal and run the command :
+                  <code>
+                      sudo apt-get install git
+                  </code>
+                  Enter your root password and follow the installation instructions. 
+                  For more details follows this <a href="https://git-scm.com/download/linux" target="_blank" rel="noreferrer noopener">link</a>.
+               </div>
+             </div>
+           </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+
 
 A launcher has been made for MeDIC to facilitate the installation process. 
 This launcher can be used for the installation and to start MeDIC.
