@@ -226,7 +226,7 @@ class ResultsSummaryTab(MetaTab):
                 global_df = global_df.fillna(0)
 
                 random_df = global_df.loc[:, ("RandomForest", "RandomSCM")]
-                random_df = random_df[(random_df["RandomForest"] > 0.0001) | (random_df["RandomSCM"] > 0.0001)]
+                random_df = random_df[(random_df["RandomForest"] > 0.0001) | (random_df["RandomSCM"] > 0.001)]
 
                 non_random_df = global_df.loc[:, ("DecisionTree", "SCM")]
                 non_random_df = non_random_df[(non_random_df["DecisionTree"] > 0.01) | (non_random_df["SCM"] > 0.01)]
