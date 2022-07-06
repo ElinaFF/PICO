@@ -23,19 +23,19 @@ layout: default
     <a class="nav-link active" data-bs-toggle="tab" href="#Home">Home</a>
   </li>
  <li class="nav-item">
-    <a class="nav-link active" data-bs-toggle="tab" href="#Splits">Splits</a>
+    <a class="nav-link" data-bs-toggle="tab" href="#Splits">Splits</a>
   </li>
 <li class="nav-item">
-    <a class="nav-link active" data-bs-toggle="tab" href="#MachineLearning">Machine Learning</a>
+    <a class="nav-link" data-bs-toggle="tab" href="#MachineLearning">Machine Learning</a>
   </li>
 <li class="nav-item">
-    <a class="nav-link active" data-bs-toggle="tab" href="#Results">Results</a>
+    <a class="nav-link" data-bs-toggle="tab" href="#Results">Results</a>
   </li>
 <li class="nav-item">
-    <a class="nav-link active" data-bs-toggle="tab" href="#ResultsSummary">Results Summary</a>
+    <a class="nav-link" data-bs-toggle="tab" href="#ResultsSummary">Results Summary</a>
   </li>
 <li class="nav-item">
-    <a class="nav-link active" data-bs-toggle="tab" href="#Implementation">Implementation</a>
+    <a class="nav-link" data-bs-toggle="tab" href="#Implementation">Implementation</a>
   </li>
 </ul>
 <div id="myTabContent" class="tab-content">
@@ -199,7 +199,7 @@ if you don’t have any Conda instance installed on your machine, the launcher w
 </ul>
 <h3 id="c-manual-installation">C. Manual installation</h3>
 <ul>
-<li>Install Miniconda following the <a href="https://docs.conda.io/en/latest/miniconda.html">documentation</a>{:target=&quot;_blank&quot;}</li>
+<li>Install Miniconda following the <a href="https://docs.conda.io/en/latest/miniconda.html">documentation</a></li>
 <li>Open a terminal (<strong>&quot;cmd&quot; in Windows not &quot;Powershell&quot;</strong>)</li>
 <li>Create an environment with Conda:<pre><code><span class="hljs-attribute">conda create medic</span>
 </code></pre></li>
@@ -215,7 +215,7 @@ if you don’t have any Conda instance installed on your machine, the launcher w
 </code></pre><ul>
 <li>Install the dependencies:<pre><code>python -m pip <span class="hljs-keyword">install</span> -r requirements.txt
 </code></pre>NOTE: if you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
-(<a href="https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d">see here</a>{:target=&quot;_blank&quot;})
+(<a href="https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d">see here</a>)
 return <a href="#1-installation">here</a> to install, or update, Microsoft Visual C++.</li>
 <li>Launch the Web interface<pre><code><span class="hljs-keyword">python</span> main.<span class="hljs-keyword">py</span>
 </code></pre></li>
@@ -485,116 +485,72 @@ Note, the custom model are in the save file (.mtxp) and will be restored.<br>
 
   </div>
   <div class="tab-pane fade" id="Implementation">
-
-MeDIC software is organized in three main package.
- - The Domain package :  
- It contains all the logic that compose MeDIC.  
- This package can access freely the Service package.  
- All the communication with the UI package must pass by the controller. This allows us to modify the Domain if necessary without having to modify the UI too.
- - The User Interface (UI) package :  
- It contains all the classes that are used to display the web interface of MeDIC.  
- It manages only the interface and connects to the Domain by the controller only.
- - The Service package :  
- It can be accessed by both other packages and contains methods that are frequently used in different classes.
-
-Here is a diagram that represents the communications between all three packages. 
-
-> ![](imgs/2022-06-07-15-17-45.png)
->
-> Package diagram
-
-This diagram shows all the classes that compose the Domain package of MeDIC and the interaction between them.
-
-> ![](imgs/2022-06-07-16-37-38.png)
->
-> Simplified class diagram of the Domain package
-
-This diagram shows all the classes that compose the UI package of MeDIC and the interaction between them.
-
-> ![](imgs/2022-06-07-16-37-55.png)
->
-> Simplified class diagram of the UI package
-
-## B. Controller interface
-
-
-This section can be use as a high-level documentation of the MetaboController class that serves of controller in MeDIC.
-
-This class can be used to integrate MeDIC in a Python script.
-
-The explanation of the concepts and the pipelines are in the ["2. Utilization"](#2-utilization) section. Don't hesitate to go back to this section while reading this one.
-
-```Python
-  set_metadata(filename: str, data=None, from_base64=True)
-```
-This function sets the metadata using the path specified in parameter.
-The from_base64 parameter must be set to false if your file isn't encoded (csv, xlsx, ...).
-
-
-```Python
-  set_data_matrix_from_path(path_data_matrix, data=None, use_raw=False, from_base64=True)
-```
-This function sets the data matrix the same way as the metadata.
-
-
-```Python
-  set_id_column(id_column: str)
-```
-This function sets the name of the column containing the **unique** IDs.
-
-```Python
-  set_target_column(target_column: str)
-```
-This function sets the name of the column containing the targets.
-
-```Python
-  add_experimental_design(classes_design: dict)
-```
-This function adds an experimental design. The input dictionary must follow the format : 
-```Python
-  {
-    "class1": ["target1", "target2"],
-    "class2": ["target3"]
+<p>MeDIC software is organized in three main package.</p>
+<ul>
+<li>The Domain package :<br>It contains all the logic that compose MeDIC.<br>This package can access freely the Service package.<br>All the communication with the UI package must pass by the controller. This allows us to modify the Domain if necessary without having to modify the UI too.</li>
+<li>The User Interface (UI) package :<br>It contains all the classes that are used to display the web interface of MeDIC.<br>It manages only the interface and connects to the Domain by the controller only.</li>
+<li>The Service package :<br>It can be accessed by both other packages and contains methods that are frequently used in different classes.</li>
+</ul>
+<p>Here is a diagram that represents the communications between all three packages. </p>
+<blockquote>
+<p><img src="imgs/2022-06-07-15-17-45.png" alt=""></p>
+<p>Package diagram</p>
+</blockquote>
+<p>This diagram shows all the classes that compose the Domain package of MeDIC and the interaction between them.</p>
+<blockquote>
+<p><img src="imgs/2022-06-07-16-37-38.png" alt=""></p>
+<p>Simplified class diagram of the Domain package</p>
+</blockquote>
+<p>This diagram shows all the classes that compose the UI package of MeDIC and the interaction between them.</p>
+<blockquote>
+<p><img src="imgs/2022-06-07-16-37-55.png" alt=""></p>
+<p>Simplified class diagram of the UI package</p>
+</blockquote>
+<h2 id="b-controller-interface">B. Controller interface</h2>
+<p>This section can be use as a high-level documentation of the MetaboController class that serves of controller in MeDIC.</p>
+<p>This class can be used to integrate MeDIC in a Python script.</p>
+<p>The explanation of the concepts and the pipelines are in the <a href="#2-utilization">&quot;2. Utilization&quot;</a> section. Don&#39;t hesitate to go back to this section while reading this one.</p>
+<pre><code class="lang-Python">  set_metadata(filename: str, <span class="hljs-built_in">data</span>=<span class="hljs-literal">None</span>, from_base64=<span class="hljs-literal">True</span>)
+</code></pre>
+<p>This function sets the metadata using the path specified in parameter.
+The from_base64 parameter must be set to false if your file isn&#39;t encoded (csv, xlsx, ...).</p>
+<pre><code class="lang-Python">  set_dat<span class="hljs-built_in">a_matrix</span>_from_path(path_dat<span class="hljs-built_in">a_matrix</span>, data=None, use_raw=<span class="hljs-literal">False</span>, from_base64=<span class="hljs-literal">True</span>)
+</code></pre>
+<p>This function sets the data matrix the same way as the metadata.</p>
+<pre><code class="lang-Python">  <span class="hljs-selector-tag">set_id_column</span>(<span class="hljs-attribute">id_column</span>: str)
+</code></pre>
+<p>This function sets the name of the column containing the <strong>unique</strong> IDs.</p>
+<pre><code class="lang-Python">  <span class="hljs-selector-tag">set_target_column</span>(<span class="hljs-attribute">target_column</span>: str)
+</code></pre>
+<p>This function sets the name of the column containing the targets.</p>
+<pre><code class="lang-Python">  <span class="hljs-selector-tag">add_experimental_design</span>(<span class="hljs-attribute">classes_design</span>: dict)
+</code></pre>
+<p>This function adds an experimental design. The input dictionary must follow the format : </p>
+<pre><code class="lang-Python">  {
+    <span class="hljs-attr">"class1"</span>: [<span class="hljs-string">"target1"</span>, <span class="hljs-string">"target2"</span>],
+    <span class="hljs-attr">"class2"</span>: [<span class="hljs-string">"target3"</span>]
   }
-```
-
-```Python
-  set_train_test_proportion(train_test_proportion: float)
-```
-This function sets the proportion of the data that will be used as tests after the training.
-
-```Python
-  set_number_of_splits(number_of_splits: int)
-```
-This function sets the number of splits as explain in ["Define split"](#3-define-split)
-
-```Python
-  create_splits()
-```
-Once all the splits are set, this function creates all the splits at the same time.
-
-```Python
-  set_selected_models(selected_models: list)
-```
-Set the list of models that will be trained.
-
-```Python
-  learn(folds: int)
-```
-Start the training of all the models on all splits.
-Folds is used for the cross-validation process (explained in [Define learning configuration](#1-define-learning-configurations))
-
-```Python
-  get_all_results()
-```
-Return all the data about the results, and the best model.
-
-## C. Full class diagram
-
-
-
-![](imgs/2022-06-08-16-51-32.png)
-
-
+</code></pre>
+<pre><code class="lang-Python">  set_train_test_proportion(<span class="hljs-string">train_test_proportion:</span> <span class="hljs-keyword">float</span>)
+</code></pre>
+<p>This function sets the proportion of the data that will be used as tests after the training.</p>
+<pre><code class="lang-Python">  set<span class="hljs-number">_n</span>umber<span class="hljs-number">_</span><span class="hljs-keyword">of</span><span class="hljs-number">_</span>splits(number<span class="hljs-number">_</span><span class="hljs-keyword">of</span><span class="hljs-number">_</span>splits: int)
+</code></pre>
+<p>This function sets the number of splits as explain in <a href="#3-define-split">&quot;Define split&quot;</a></p>
+<pre><code class="lang-Python">  create_splits<span class="hljs-comment">()</span>
+</code></pre>
+<p>Once all the splits are set, this function creates all the splits at the same time.</p>
+<pre><code class="lang-Python">  <span class="hljs-selector-tag">set_selected_models</span>(<span class="hljs-attribute">selected_models</span>: list)
+</code></pre>
+<p>Set the list of models that will be trained.</p>
+<pre><code class="lang-Python">  learn(<span class="hljs-keyword">fold</span><span class="hljs-variable">s:</span> <span class="hljs-keyword">int</span>)
+</code></pre>
+<p>Start the training of all the models on all splits.
+Folds is used for the cross-validation process (explained in <a href="#1-define-learning-configurations">Define learning configuration</a>)</p>
+<pre><code class="lang-Python">  get_all_results<span class="hljs-comment">()</span>
+</code></pre>
+<p>Return all the data about the results, and the best model.</p>
+<h2 id="c-full-class-diagram">C. Full class diagram</h2>
+<p><img src="imgs/2022-06-08-16-51-32.png" alt=""></p>
   </div>
 </div>
