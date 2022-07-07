@@ -8,27 +8,16 @@ from ...service import decode_pickle_from_base64, Utils
 
 class InfoTab(MetaTab):
     def getLayout(self) -> dbc.Tab:
-        _loadExpe = dbc.Card(
+        _docLink = dbc.Card(
             className="cards_info",
             children=[
-                dbc.CardHeader("Load MetaboExperiment"),
+                dbc.CardHeader("Documentation link"),
                 dbc.CardBody(
                     [
-                        html.P(
-                            "You can load the file of a previous experiment and resume your analysis."
-                        ),
-                        dcc.Upload(
-                            id="load_expe",
-                            style={"width": "fit-content"},
-                            children=[
-                                dbc.Button(
-                                    "Select File",
-                                    id="load_expe_button",
-                                    className="custom_buttons",
-                                    color="primary",
-                                )
-                            ],
-                        ),
+                        "You can find the official documentation at this ",
+                        html.A(href="https://elinaff.github.io/MetaboDashboard/",
+                               target='_blank', rel="noreferrer noopener", children='link'),
+                        "."
                     ]
                 ),
             ],
@@ -115,17 +104,39 @@ class InfoTab(MetaTab):
         #     ),
         # ])
 
-        _infoFigure = html.Div(
-            className="column_content",
+        _loadExpe = dbc.Card(
+            className="cards_info",
+            style={"margin-left": "2em"},
             children=[
-                dbc.Card(
-                    className="card_body_fig",
-                    children=[
-                        # dbc.Card("Amazing figure here", className="card_body_fig", body=True),
-                        dbc.CardImg(
-                            src="/assets/update_figure_steps_MeDIC_4.svg", bottom=True
-                        )
-                    ],
+                dbc.CardHeader("Load MetaboExperiment"),
+                dbc.CardBody(
+                    [
+                        html.P(
+                            "You can load the file of a previous experiment and resume your analysis."
+                        ),
+                        dcc.Upload(
+                            id="load_expe",
+                            style={"width": "fit-content"},
+                            children=[
+                                dbc.Button(
+                                    "Select File",
+                                    id="load_expe_button",
+                                    className="custom_buttons",
+                                    color="primary",
+                                )
+                            ],
+                        ),
+                    ]
+                ),
+            ],
+        )
+
+        _infoFigure = dbc.Card(
+            className="card_body_fig",
+            children=[
+                # dbc.Card("Amazing figure here", className="card_body_fig", body=True),
+                dbc.CardImg(
+                    src="/assets/update_figure_steps_MeDIC_4.svg", bottom=True
                 )
             ],
         )
@@ -232,14 +243,20 @@ class InfoTab(MetaTab):
                             className="column_content",
                             # WARNING !! : _infoFigure is not with the card, it's in a separate column
                             children=[
-                                _loadExpe,
+                                _docLink,
                                 _splitsInfo,
                                 _MLInfo,
                                 _resultInfo,
                                 _hidden_div,
                             ],
                         ),
-                        _infoFigure,
+                        html.Div(
+                            className="column_content",
+                            children=[
+                                _loadExpe,
+                                _infoFigure,
+                            ],
+                        ),
                     ],
                 ),
             ],
