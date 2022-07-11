@@ -508,14 +508,12 @@ example of 5 samples with 80-20 train-test repartition, the chain is as follows:
 <ul>
 <li>The initial state $$V_1=\begin{pmatrix} 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \end{pmatrix}$$</li>
 <li>$$P(s_{t+1}=j|s_t=i)=\frac{\begin{pmatrix} m-i \ j-i \end{pmatrix}\begin{pmatrix} i \ k-(j-i)
-    \end{pmatrix}}{\begin{pmatrix} m \ k \end{pmatrix}}$$ with $s_t$ a state at a $t$ moment, $m$ the
+    \end{pmatrix}}{\begin{pmatrix} m \ k \end{pmatrix}}$$ with $$s_t$$ a state at a $$t$$ moment, $$m$$ the
     total number of samples and $$k$$ the number of samples in the test set (test proportion$$\times m$$).
 </li>
-<li>$$M$$ the $$5\times 5$$ matrix of $$P(s_{t+1}=j|s_t=i)$$</li>
-<li>$$V_n=V_1\times M^{n-1}$$ with $$n$$ the number of splits- $$P(X \gt 1) = 1-V_n[5]$$ where $$X$$ is a
-    random variable
-</li>
-<li>that model the number of samples that are never in the test set</li>
+<li>**M** the 5 by 5 matrix defined by: $$a_{i,j}=P(s_{t+1}=j|s_t=i)$$</li>
+<li>$$V_n=V_1\times M^{n-1}$$ with **n** the number of splits.</li>
+<li>$$P(X \gt 1) = 1-V_n[5]$$ where **X** is a random variable that model the number of samples that are never in the test set</li>
 </ul>
 <p>The figure hereunder shows $$P(X \gt 1)$$ (values) as a function of the number
 of splits $$n$$ (1:nbr_limit) with $$m=250$$ samples and a test proportion of $$0.2$$ ($$k=50$$)</p>
@@ -541,7 +539,7 @@ run the splits&#39; computation by clicking on the <code>CREATE</code> button.</
 <p><em><code>GENERATE FILE</code> section</em></p>
 </blockquote>
 </div>
-<div class="tab-pane fade" id="Machine Learning">
+<div class="tab-pane fade" id="MachineLearning">
 <p>The following instructions are for the <code>DEFINE LEARNING CONFIGS</code> section.</p>
 <p>If you&#39;re not comfortable with these parameters, you can safely keep the default
 values and jump to the <a href="#2-define-learning-algorithms">next section</a>.</p>
