@@ -142,7 +142,6 @@
                         In order to install Git, you need to go to this <a href="https://git-scm.com/downloads"
                                                                            target="_blank" rel="noreferrer noopener">link</a>
                         and select your operating system.
-                        and select your operating system.</p>
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading_git_installation_for_windows">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -509,7 +508,7 @@ example of 5 samples with 80-20 train-test repartition, the chain is as follows:
 <ul>
 <li>The initial state $$V_1=\begin{pmatrix} 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \end{pmatrix}$$</li>
 <li>$$P(s_{t+1}=j|s_t=i)=\frac{\begin{pmatrix} m-i \ j-i \end{pmatrix}\begin{pmatrix} i \ k-(j-i)
-    \end{pmatrix}}{\begin{pmatrix} m \ k \end{pmatrix}}$$ with $$s_t$$ a state at a $$t$$ moment, $$m$$ the
+    \end{pmatrix}}{\begin{pmatrix} m \ k \end{pmatrix}}$$ with $s_t$ a state at a $t$ moment, $m$ the
     total number of samples and $$k$$ the number of samples in the test set (test proportion$$\times m$$).
 </li>
 <li>$$M$$ the $$5\times 5$$ matrix of $$P(s_{t+1}=j|s_t=i)$$</li>
