@@ -605,7 +605,7 @@ in the available algorithms, you can in the <code>ADD SKLEARN ALGORITHMS</code>.
         Add a full custom algorithms (for expert)
       </button>
     </h2>
-    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
       <div class="accordion-body">
 To add a full custom model, you need to add it to the configuration file located
 at <code class="language-plaintext highlighter-rouge">metabodashboard/conf/SupportedModel.py</code>.<br>
@@ -639,7 +639,7 @@ change only the attribute <em>xxx</em>)
 <div class="tab-pane fade" id="Results">
     PCA(relation linéaires) umap(relation non lihnéaire)
     graphique accuracy (graphic pour chaque split), tableau de résultat (descr metrics comment les intèrbpéter)
-    matrice de confusion (ce que ça veut dire) feature importance (tableau utilisation) strip chart
+    matrice de confusion (ce que ça veut dire) feature importance (tableau utilisation) strip chart<br>
 
   All graphs can be saved and will be saved by default in SVG format. This can be changed in the ResultAgregatedTab.py 
   file at the beginning of the file. 
