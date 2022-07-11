@@ -103,7 +103,7 @@
                                         and click repair. Then click on Next. Then you can click on add to path and
                                         install.
                                     </p> <img src="imgs/addToPathAfterRepair.png" alt="addToPathAfterRepair"> <img
-                                        src="imgs/img_1" alt="Repair">
+                                        src="imgs/img_1.png" alt="Repair">
                                 </div>
                             </div>
                         </div>
@@ -539,7 +539,7 @@ run the splits&#39; computation by clicking on the <code>CREATE</code> button.</
 values and jump to the <a href="#2-define-learning-algorithms">next section</a>.</p>
 <p>First, before choosing a Cross Validation (CV) search type, you need to understand
 the principle of CV.</p>
-<p>The method consist in separating the dataset in **n** sections. At each iteration,
+<p>The method consist in separating the dataset in n sections. At each iteration,
 the first or the next section will be used as the test set and the other sections will
 form the training set. It allows us to train <strong>and</strong> test the model on all the dataset.
 Furthermore, the mean accuracy over the folds is a better measurement of the performance of the models.</p>
@@ -694,7 +694,7 @@ change only the attribute <em>xxx</em>)
       </div>
   </div>
 </div>
-<div class="tab-pane fade" id="Results Summary">
+<div class="tab-pane fade" id="ResultsSummary">
 
 </div>
 <div class="tab-pane fade" id="Implementation">
