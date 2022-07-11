@@ -189,15 +189,15 @@
                 </div>
             </div>
             <div class="accordion-item">
-                <h2 class="accordion-header" id="heading_c++_installation">
+                <h2 class="accordion-header" id="heading_cpp_installation">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapse_c++_installation" aria-expanded="true"
-                            aria-controls="collapse_c++_installation">
+                            data-bs-target="#collapse_cpp_installation" aria-expanded="true"
+                            aria-controls="collapse_cpp_installation">
                         Microsoft Visual C++ requirement
                     </button>
                 </h2>
-                <div id="collapse_c++_installation" class="accordion-collapse collapse"
-                     aria-labelledby="heading_c++_installation" data-bs-parent="#accordion_c++_installation" style="">
+                <div id="collapse_cpp_installation" class="accordion-collapse collapse"
+                     aria-labelledby="heading_cpp_installation" data-bs-parent="#accordion_cpp_installation" style="">
                     <div class="accordion-body">
                         To make sure MeDIC and all it's dependencies works properly you need Microsoft Visual C++ 14.0
                         or later.
@@ -206,15 +206,15 @@
                         from the start menu, click on "uninstall app" and scroll down to see which version, if any, of
                         Microsoft Visual C++ is installed.
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading_c++_installation_for_windows">
+                            <h2 class="accordion-header" id="heading_cpp_installation_for_windows">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapse_c++_installation_for_windows" aria-expanded="true"
-                                        aria-controls="collapse_c++_installation_for_windows">
+                                        data-bs-target="#collapse_cpp_installation_for_windows" aria-expanded="true"
+                                        aria-controls="collapse_cpp_installation_for_windows">
                                     Install new version
                                 </button>
                             </h2>
-                            <div id="collapse_c++_installation_for_windows" class="accordion-collapse collapse"
-                                 aria-labelledby="heading_c++_installation_for_windows"
+                            <div id="collapse_cpp_installation_for_windows" class="accordion-collapse collapse"
+                                 aria-labelledby="heading_cpp_installation_for_windows"
                                  data-bs-parent="#accordionExample" style="">
                                 <div class="accordion-body">
                                     <p>In order to install Microsoft Visual C++, you need to go to this
