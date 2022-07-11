@@ -8,7 +8,7 @@
 <!-- CSS only -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tangerine&display=swap" rel="stylesheet"> 
+<link href="https://fonts.googleapis.com/css2?family=Playball&display=swap" rel="stylesheet"> 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
       integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
       crossorigin="anonymous">
@@ -512,8 +512,8 @@ example of 5 samples with 80-20 train-test repartition, the chain is as follows:
 <ul>
 <li>The initial state $$V_1=\begin{pmatrix} 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \end{pmatrix}$$</li>
 <li>$$P(s_{t+1}=j|s_t=i)=\frac{\begin{pmatrix} m-i \ j-i \end{pmatrix}\begin{pmatrix} i \ k-(j-i)
-    \end{pmatrix}}{\begin{pmatrix} m \ k \end{pmatrix}}$$ with <a style="font-family: 'Tangerine', cursive">s_t</a> a state at a <a style="font-family: 'Tangerine', cursive">t</a>> moment, <a style="font-family: 'Tangerine', cursive">m</a> the
-    total number of samples and <a style="font-family: 'Tangerine', cursive">k</a> the number of samples in the test set (test proportion ×<a style="font-family: 'Tangerine', cursive">m</a>).
+    \end{pmatrix}}{\begin{pmatrix} m \ k \end{pmatrix}}$$ with <a style="font-family: 'Playball', cursive">s_t</a> a state at a <a style="font-family: 'Playball', cursive">t</a>> moment, <a style="font-family: 'Playball', cursive">m</a> the
+    total number of samples and <a style="font-family: 'Playball', cursive">k</a> the number of samples in the test set (test proportion ×<a style="font-family: 'Playball', cursive">m</a>).
 </li>
 <li><strong>M</strong> 5 by 5 matrix defined by: $$a_{i,j}=P(s_{t+1}=j|s_t=i)$$</li>
 <li>$$V_n=V_1\times M^{n-1}$$ with **n** the number of splits.</li>
