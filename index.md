@@ -545,7 +545,7 @@ run the splits&#39; computation by clicking on the <code>CREATE</code> button.</
 values and jump to the <a href="#2-define-learning-algorithms">next section</a>.</p>
 <p>First, before choosing a Cross Validation (CV) search type, you need to understand
 the principle of CV.</p>
-<p>The method consist in separating the dataset in $$n$$ sections. At each iteration,
+<p>The method consist in separating the dataset in **n** sections. At each iteration,
 the first or the next section will be used as the test set and the other sections will
 form the training set. It allows us to train <strong>and</strong> test the model on all the dataset.
 Furthermore, the mean accuracy over the folds is a better measurement of the performance of the models.</p>
@@ -555,7 +555,8 @@ of division in the dataset.</p>
 we keep a sample of the dataset to test it at the end. If the algorithm is overfitting,
 it will make a lot of errors when presented a new set of data. This also allows us to
 make sure the algorithm is tested on all samples.</p>
-<p>For more details, see this <a href="https://learn.g2.com/cross-validation">explanation</a>.</p>
+<p>For more details, see this <a href="https://learn.g2.com/cross-validation" target="_blank"
+                                rel="noreferrer noopener">explanation</a>.</p>
 <p>The ability of a search algorithm is to train a set of models with a set of parameters,
 and compute a metric tested combination. This metric is most of the time the accuracy
 (the number of correct predictions over the total number of predictions (the number of samples)).</p>
@@ -602,9 +603,16 @@ It is advised to take at least one SCM-type and one DecisionTree-type algorithms
 <p>If you want to add <a href="https://scikit-learn.org/stable/index.html">scikit-learn algorithms</a> that isn&#39;t
 in the available algorithms, you can in the <code>ADD SKLEARN ALGORITHMS</code>.</p>
 <p>You need to complete the import and specify the grid search parameter (for the CV search algorithm). </p>
-<details>
-<summary>Add a full custom algorithms (for expert) &cudarrr;</summary>
 
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Add a full custom algorithms (for expert)
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
 To add a full custom model, you need to add it to the configuration file located
 at <code class="language-plaintext highlighter-rouge">metabodashboard/conf/SupportedModel.py</code>.<br>
 Add a dictionary containing the <strong>NON-INSTANTIATED</strong> class and the param grid. Format is the following (
@@ -628,7 +636,11 @@ change only the attribute <em>xxx</em>)
   ALGORITHMS</code> section
   with his printed name.<br>
   Note, the custom model are in the save file (.mtxp) and will be restored.<br>
-</details>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>
 <div class="tab-pane fade" id="Results">
     PCA(relation linéaires) umap(relation non lihnéaire)
