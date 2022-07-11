@@ -50,9 +50,10 @@
 
 <div id="mainTab" class="tab-content">
     <div class="tab-pane fade active show" id="Installation">
+        <br><h3 id="Prerequisites">Prerequisites</h3>
         The first step, to use MeDIC, is to install Python and install Git. You also need to make sure that Microsoft
         Visual C++ is correctly installed if you're using Windows.
-        Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10
+        Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10<br>
         <div class="accordion" id="accordion_python_installation">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading_python_installation">
@@ -141,7 +142,7 @@
                     <div class="accordion-body">
                         In order to install Git, you need to go to this <a href="https://git-scm.com/downloads"
                                                                            target="_blank" rel="noreferrer noopener">link</a>
-                        and select your operating system.
+                        and select your operating system.<br>
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading_git_installation_for_windows">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -234,7 +235,7 @@
             </div>
         </div>
 
-
+<br>
 A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the
 installation and to start MeDIC.
 
@@ -243,19 +244,19 @@ The launcher file needs Git and Python to be able to do all the installation ste
 <h3 id="a-normal-installation">A. Normal installation</h3>
 
 - Download launcher.py on
-  our <a href="https://github.com/ElinaFF/MetaboDashboard" target="_blank" rel="noreferrer noopener">github</a>
-- Open a terminal (*cmd* in Windows)
-- Run the launcher on your computer with the command : <a href="#note1">*</a>
+  our <a href="https://github.com/ElinaFF/MetaboDashboard" target="_blank" rel="noreferrer noopener">github</a><br>
+- Open a terminal (*cmd* in Windows)<br>
+- Run the launcher on your computer with the command : <a href="#note1">*</a><br>
   <code>
   python launcher.py
-  </code>
+  </code><br>
 
-<h5 id="note1"> * No need to clone the repository, we will install everything we need.
+<div id="note1"> * No need to clone the repository, we will install everything we need.
     If you still want to do so and don’t want the launcher to redownload it during the installation process,
     make sure to
     clone the repository in the same folder as the launcher.<br> MeDIC uses conda for his environment,
     if you don’t have any Conda instance installed on your machine, the launcher will install one (Miniconda3).
-    <br> All the dependencies necessary will be installed in the conda environment.</h5>
+    <br> All the dependencies necessary will be installed in the conda environment.</div>
 
 <h3 id="b-clone-repository-and-normal-installation">B. Clone repository and normal installation</h3>
 <ul>
@@ -304,7 +305,7 @@ The launcher file needs Git and Python to be able to do all the installation ste
                         NOTE: if you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
                         (<a href="https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d">see
                             here</a>)
-                        return <a href="#1-installation">here</a> to install, or update, Microsoft Visual C++.
+                        return <a href="#heading_cpp_installation">here</a> to install, or update, Microsoft Visual C++.
                     </li>
                     <li>Launch the Web interface
                         <pre><code><span class="hljs-keyword">python</span> main.<span class="hljs-keyword">py</span>
@@ -317,7 +318,7 @@ The launcher file needs Git and Python to be able to do all the installation ste
             Linux)</h3>
         <p>During the normal installation, you may have a problem with the Path variable. We haven&#39;t found a
             solution yet.
-            You may need to go through the <a href="#C-manual-installation">Manual installation</a>.</p>
+            You may need to go through the <a href="#c-manual-installation">Manual installation</a>.</p>
         <h2 id="medic-launcher-options">MeDIC launcher options</h2>
         <p>Those commands are optionals but may help you to use the launcher in an easier way.<br>They can be combined
             or use independently.</p>
@@ -328,11 +329,11 @@ The launcher file needs Git and Python to be able to do all the installation ste
                 with the command : <a href="#note2">**</a>
                 <pre><code> <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> --environment <span
                         class="hljs-symbol">&lt;environment_name&gt;</span>
- <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> -<span
+ <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">p retry uploading the metadata iny</span> -<span
                             class="hljs-keyword">e</span> <span class="hljs-symbol">&lt;environment_name&gt;</span>
 </code></pre>
-                <h5 id="note2"> ** It is recommended not to create MeDIC environment into another environment as it may
-                    cause problems.</h5>
+                <div id="note2"> ** It is recommended not to create MeDIC environment into another environment as it may
+                    cause problems.</div>
 
     </li>
 
@@ -429,8 +430,8 @@ algorithms
 will try to predict. A typical example is the column that contain the diagnosis.</p>
 <p>The columns name prompted in the following figure are the column in the metadata file previously uploaded. If
 there
-are not the ones expected, please retry uploading the metadata in <a
-        href="index.md#a-set-the-metadata-and-data">this section</a></p>
+are not the ones expected, please retry uploading the metadata in the section A. Set the metadata and data in the <a
+        href="#Home">Home tab</a></p>
 <blockquote>
 <p><img src="imgs/2022-06-07-11-35-52.png" alt=""></p>
 <p><em>Targets column selection panel</em></p>
@@ -497,8 +498,8 @@ different
 random seed at each time. This principle is called bootstrap.</p>
 <p>Most of the time, medical data are fat data ,i.e. contains many features (characteristic) for few samples,
 which can lead to many large when the training set is changed.</p>
-<p>Moreover, as the cross validation (explained in further details in section <a
-    href="#1-define-learning-configurations">2.C.1</a>),
+<p>Moreover, as the cross validation (explained in further details in section 1. Define learning configurations in the <a
+    href="#MachineLearning">Machine Learning tab</a>),
 it allows the model(s) to be tested on most of the samples.</p>
 <p>If you want to achieve it, the probability that all samples are seen in the test set, i.e. the
 probability that a sample is never in the test set, follow a
@@ -540,6 +541,7 @@ run the splits&#39; computation by clicking on the <code>CREATE</code> button.</
 </blockquote>
 </div>
 <div class="tab-pane fade" id="MachineLearning">
+<h3 id="1-define-learning-configurations">1. Define learning configurations</h3>
 <p>The following instructions are for the <code>DEFINE LEARNING CONFIGS</code> section.</p>
 <p>If you&#39;re not comfortable with these parameters, you can safely keep the default
 values and jump to the <a href="#2-define-learning-algorithms">next section</a>.</p>
@@ -647,7 +649,8 @@ change only the attribute <em>xxx</em>)
     graphique accuracy (graphic pour chaque split), tableau de résultat (descr metrics comment les intèrbpéter)
     matrice de confusion (ce que ça veut dire) feature importance (tableau utilisation) strip chart
 
-
+  All graphs can be saved and will be saved by default in SVG format. This can be changed in the ResultAgregatedTab.py 
+  file at the beginning of the file. 
 
   <ul class="nav nav-tabs">
       <li class="nav-item">
@@ -736,8 +739,8 @@ change only the attribute <em>xxx</em>)
     <p>This section can be use as a high-level documentation of the MetaboController class that serves of controller
         in MeDIC.</p>
     <p>This class can be used to integrate MeDIC in a Python script.</p>
-    <p>The explanation of the concepts and the pipelines are in the <a href="#2-utilization">&quot;2. Utilization&quot;</a>
-        section. Don&#39;t hesitate to go back to this section while reading this one.</p>
+    <p>The explanation of the concepts and the pipelines are in the <a href="#Home">Home tab</a>. 
+Don&#39;t hesitate to go back to this section while reading this one.</p>
     <pre><code class="lang-Python">  set_metadata(filename: str, <span class="hljs-built_in">data</span>=<span
             class="hljs-literal">None</span>, from_base64=<span class="hljs-literal">True</span>)
 </code></pre>
@@ -770,7 +773,7 @@ hljs-attribute">classes_design</span>: dict)
 hljs-number">_</span><span class="hljs-keyword">of</span><span class="hljs-number">_</span>splits(number<span class="
 hljs-number">_</span><span class="hljs-keyword">of</span><span class="hljs-number">_</span>splits: int)
 </code></pre>
-<p>This function sets the number of splits as explain in <a href="#3-define-split">&quot;Define split&quot;</a>
+<p>This function sets the number of splits as explain in the section 3. Define split in the <a href="#Splits">Split tab</a>
 </p>
 <pre><code class="lang-Python">  create_splits<span class="hljs-comment">()</span>
 </code></pre>
