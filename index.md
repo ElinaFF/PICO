@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -740,12 +739,10 @@ hljs-built_in">a_matrix</span>, data=None, use_raw=<span class="hljs-literal">Fa
 hljs-literal">True</span>)
 </code></pre>
 <p>This function sets the data matrix the same way as the metadata.</p>
-<pre><code class="lang-Python">  <span class="hljs-selector-tag">set_id_column</span>(<span class="hljs-attribute">
-  id_column</span>: str)
+<pre><code class="lang-Python">  <span class="hljs-selector-tag">set_id_column</span>(<span class="hljs-attribute">id_column</span>: str)
 </code></pre>
 <p>This function sets the name of the column containing the <strong>unique</strong> IDs.</p>
-<pre><code class="lang-Python">  <span class="hljs-selector-tag">set_target_column</span>(<span class="hljs-attribute">
-  target_column</span>: str)
+<pre><code class="lang-Python">  <span class="hljs-selector-tag">set_target_column</span>(<span class="hljs-attribute">target_column</span>: str)
 </code></pre>
 <p>This function sets the name of the column containing the targets.</p>
 <pre><code class="lang-Python">  <span class="hljs-selector-tag">add_experimental_design</span>(<span class="
@@ -757,8 +754,7 @@ hljs-attribute">classes_design</span>: dict)
 <span class="hljs-attr">  "class2"</span>: [<span class="hljs-string">"target3"</span>]
 }
 </code></pre>
-<pre><code class="lang-Python">  set_train_test_proportion(<span class="hljs-string">
-  train_test_proportion:</span> <span class="hljs-keyword">float</span>)
+<pre><code class="lang-Python">  set_train_test_proportion(<span class="hljs-string">train_test_proportion:</span> <span class="hljs-keyword">float</span>)
 </code></pre>
 <p>This function sets the proportion of the data that will be used as tests after the training.</p>
 <pre><code class="lang-Python">  set<span class="hljs-number">_n</span>umber<span class="
