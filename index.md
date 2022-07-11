@@ -732,7 +732,6 @@ change only the attribute <em>xxx</em>)
         section. Don&#39;t hesitate to go back to this section while reading this one.</p>
     <pre><code class="lang-Python">  set_metadata(filename: str, <span class="hljs-built_in">data</span>=<span
             class="hljs-literal">None</span>, from_base64=<span class="hljs-literal">True</span>)
-
 </code></pre>
 <p>This function sets the metadata using the path specified in parameter. The from_base64 parameter must be set to false
 if your file isn&#39;t encoded (csv, xlsx, ...).</p>
@@ -742,25 +741,24 @@ hljs-literal">True</span>)
 </code></pre>
 <p>This function sets the data matrix the same way as the metadata.</p>
 <pre><code class="lang-Python">  <span class="hljs-selector-tag">set_id_column</span>(<span class="hljs-attribute">
-id_column</span>: str)
+  id_column</span>: str)
 </code></pre>
 <p>This function sets the name of the column containing the <strong>unique</strong> IDs.</p>
 <pre><code class="lang-Python">  <span class="hljs-selector-tag">set_target_column</span>(<span class="hljs-attribute">
-target_column</span>: str)
+  target_column</span>: str)
 </code></pre>
 <p>This function sets the name of the column containing the targets.</p>
 <pre><code class="lang-Python">  <span class="hljs-selector-tag">add_experimental_design</span>(<span class="
 hljs-attribute">classes_design</span>: dict)
 </code></pre>
 <p>This function adds an experimental design. The input dictionary must follow the format : </p>
-<pre><code class="lang-Python">  {
-<span class="hljs-attr">"
-class1"</span>: [<span class="hljs-string">"target1"</span>, <span class="hljs-string">"target2"</span>],
-<span class="hljs-attr">"class2"</span>: [<span class="hljs-string">"target3"</span>]
+<pre><code class="lang-Python">{
+  "class1": ["target1", "target2"],
+<span class="hljs-attr">  "class2"</span>: [<span class="hljs-string">"target3"</span>]
 }
 </code></pre>
 <pre><code class="lang-Python">  set_train_test_proportion(<span class="hljs-string">
-train_test_proportion:</span> <span class="hljs-keyword">float</span>)
+  train_test_proportion:</span> <span class="hljs-keyword">float</span>)
 </code></pre>
 <p>This function sets the proportion of the data that will be used as tests after the training.</p>
 <pre><code class="lang-Python">  set<span class="hljs-number">_n</span>umber<span class="
@@ -776,9 +774,7 @@ hljs-number">_</span><span class="hljs-keyword">of</span><span class="hljs-numbe
 hljs-attribute">selected_models</span>: list)
 </code></pre>
 <p>Set the list of models that will be trained.</p>
-<pre><code class="lang-Python">  learn(<span class="hljs-keyword">fold</span><span class="hljs-variable">
-s:</span> <span class="hljs-keyword">int</span>)
-</code></pre>
+<pre><code class="lang-Python">  learn(folds: int)</code></pre>
 <p>Start the training of all the models on all splits. Folds is used for the cross-validation process (explained
 in <a href="#1-define-learning-configurations">Define learning configuration</a>)</p>
 <pre><code class="lang-Python">  get_all_results<span class="hljs-comment">()</span>
