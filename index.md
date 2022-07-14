@@ -35,7 +35,7 @@
     .nav.nav-tabs{
         justify-content: flex-end;
     }
-    aheading{
+    .aheading{
         font-size: 1.1em;
         font-weight: bold;
     }
@@ -81,7 +81,7 @@
 <div id="mainTab" class="tab-content">
 <!------------ Installation tab ------------>
 <!------------------------------------------------------------------------------------------------------>
-    <small class="tab-pane fade active show" id="Installation">
+    <div class="tab-pane fade active show" id="Installation">
         <br><h2 id="Prerequisites">Prerequisites</h2>
         The first step, to use MeDIC, is to install Python and Git. You also need to make sure that Microsoft
         Visual C++ is correctly installed if you're using Windows.
@@ -402,7 +402,7 @@ cause problems.</small>
                 This will retrieve updates from the github repository, verify the environment and download 
                 packages if necessary, but it won&#39;t start MeDIC.</div>
     </div>
-</small>
+
 <!------------ Home tab ------------>
 <!------------------------------------------------------------------------------------------------------>
 <div class="tab-pane fade" id="Home">
