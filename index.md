@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link href="stylesheet.css" rel="stylesheet">
+    <link href="stylesheet.css" rel="stylesheet" title="main">
 
 </head>
 <body>
