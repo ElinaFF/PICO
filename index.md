@@ -36,11 +36,13 @@
     }
     .alert-info{
         --bs-alert-bg: #d6eaf6 !important;
+        --bs-alert-border-color: #bbe1f2 !important;
         --bs-alert-border-radius:0em !important;
     }
     .alert-warning{
         --bs-alert-bg: #faf0db !important;
         --bs-alert-border-radius:0em !important;
+        --bs-alert-border-color: #f9dcb2 !important;
     }
 
 </style>
@@ -73,7 +75,7 @@
 <div id="mainTab" class="tab-content">
 <!------------ Installation tab ------------>
 <!------------------------------------------------------------------------------------------------------>
-    <div class="tab-pane fade active show" id="Installation">
+    <small class="tab-pane fade active show" id="Installation">
         <br><h2 id="Prerequisites">Prerequisites</h2>
         The first step, to use MeDIC, is to install Python and Git. You also need to make sure that Microsoft
         Visual C++ is correctly installed if you're using Windows.
@@ -261,6 +263,7 @@
 <br>
 
 <div class="alert alert-dismissible alert-info">
+<h4 class="alert-heading">Info</h4>
   A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the
   installation and to start MeDIC.<br>
   The launcher file needs Git and Python to be able to do all the installation steps for you.
@@ -318,6 +321,7 @@
                 <pre><code>conda <span class="hljs-built_in">activate</span> medic
 </code></pre>
                 <div class="alert alert-dismissible alert-info">
+                <h4 class="alert-heading">Info</h4>
                 If the command worked, you should see the name &quot;medic&quot; written at the beginning of your
                 prompt</div>
             </li>
@@ -332,7 +336,9 @@
                     <li>Install the dependencies:
                         <pre><code>python -m pip <span class="hljs-keyword">install</span> -r requirements.txt
 </code></pre>
-                        <div class="alert alert-dismissible alert-warning">If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
+                        <div class="alert alert-dismissible alert-warning">
+                        <h4 class="alert-heading">Warning</h4>
+                        If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
                         (<a href="https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d">see
                             here</a>)
                         return <a href="#heading_cpp_installation">here</a> to install, or update, Microsoft Visual C++.</div>
@@ -353,52 +359,42 @@
         <p>Those commands are optionals but allow more flexibility.<br>They can be combined
             or used independently.</p>
 <h4 id="1-use-an-environment-you-already-have">1. Existing environment</h4>
-        <ul>
-            <li>The packages of MeDIC environment can be installed elsewhere, if you don&#39;t want to
-                create a new one,
-                with the command : <a href="#note2">**</a>
-                <pre><code> <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> --environment <span
-                        class="hljs-symbol">&lt;environment_name&gt;</span>
- <span class="hljs-keyword">python</span> launcher.py -e<span class="hljs-symbol">&lt;environment_name&gt;</span>
+MeDIC can be installed or launch from an existing environment <a href="#note2">**</a> with :
+<pre><code> <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> --environment <span
+    class="hljs-symbol">&lt;environment_name&gt;</span>
+ <span class="hljs-keyword">python</span> launcher.py -e <span class="hljs-symbol">&lt;environment_name&gt;</span>
 </code></pre>
-                <div id="note2"> ** It is recommended not to create MeDIC environment into another environment as it may
-                    cause problems.</div>
+<small id="note2" class="form-text text-muted"> ** It is recommended not to create MeDIC environment into another environment as it may
+                    cause problems.</small>
 
-    </li>
+    
 
-</ul>
+
 <h4 id="2-fast-launch-for-everyday-use">2. Fast launch for everyday use</h4>
-<ul>
-    <li>MeDIC can be launched faster without any verifications of the environment with the command :
+    MeDIC can be launched faster without any verifications of the environment with :
         <pre><code> <span class="hljs-keyword">python</span> launcher.<span
                 class="hljs-keyword">py</span> --<span class="hljs-keyword">no</span>-check
  <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> -<span
                             class="hljs-keyword">c</span>
 </code></pre>
-            </li>
-        </ul>
-        <h4 id="3-installing-medic-for-later-use">3. Installing MeDIC for later use</h4>
-        <ul>
-            <li>MeDIC can be installed without launching it at the end with the command :
+<h4 id="3-installing-medic-for-later-use">3. Installing MeDIC for later use</h4>
+            MeDIC can be installed without launching it at the end with :
                 <pre><code><span class="hljs-keyword">python</span> launcher.<span
                         class="hljs-keyword">py</span> --<span class="hljs-keyword">no</span>-launch
 <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> -<span
                             class="hljs-keyword">l</span>
 </code></pre>
-            </li>
-        </ul>
-        <h4 id="4-update-medic-to-the-latest-version">4. Update MeDIC to the latest version</h4>
-        <ul>
-            <li>MeDIC can be updated with the command :
+<h4 id="4-update-medic-to-the-latest-version">4. Update MeDIC to the latest version</h4>
+        MeDIC can be updated with the command :
                 <pre><code><span class="hljs-keyword">python</span> launcher.<span
                         class="hljs-keyword">py</span> --<span class="hljs-keyword">update</span>
 <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> -<span
                             class="hljs-keyword">u</span>
 </code></pre>
-                Note: This will verify the environment and download packages if necessary, it also won&#39;t start
-                MeDIC.
-            </li>
-        </ul>
+                <div class="alert alert-dismissible alert-info">
+                <h4 class="alert-heading">Info</h4>
+                This will retrieve updates from the github repository, verify the environment and download 
+                packages if necessary, but it won&#39;t start MeDIC.</div>
     </div>
 <!------------ Home tab ------------>
 <!------------------------------------------------------------------------------------------------------>
