@@ -34,6 +34,12 @@
     .nav.nav-tabs{
         justify-content: flex-end;
     }
+    .alert-heading{
+        color:#055160;
+        font-size: 1em;
+        font-weight: bold;
+    }
+
     .alert-info{
         --bs-alert-bg: #d6eaf6 !important;
         --bs-alert-border-color: #bbe1f2 !important;
@@ -396,6 +402,7 @@ MeDIC can be installed or launch from an existing environment <a href="#note2">*
                 This will retrieve updates from the github repository, verify the environment and download 
                 packages if necessary, but it won&#39;t start MeDIC.</div>
     </div>
+</small>
 <!------------ Home tab ------------>
 <!------------------------------------------------------------------------------------------------------>
     <div class="tab-pane fade" id="Home">
