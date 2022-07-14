@@ -38,6 +38,15 @@
     .alert{
         --bs-nav-tabs-border-radius:0rem;
     }
+    .alert-info{
+        --bs-alert-bg: #d6eaf6;
+        --bs-alert-border-radius:0em;
+    }
+    .alert-warning{
+        --bs-alert-bg: #faf0db;
+        --bs-alert-border-radius:0em;
+    }
+
 </style>
 
 
