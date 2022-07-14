@@ -2,6 +2,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="stylesheet.css" rel="stylesheet">
+
 </head>
 <body>
 
@@ -44,7 +46,7 @@
         <a class="nav-link" data-bs-toggle="tab" href="#Results">Results</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="tab" href="#ResultsSummary">Results Summary</a>
+        <a class="nav-link" data-bs-toggle="tab" href="#ResultsAggregated">Results Aggregated</a>
     </li>
     <li class="nav-item">
         <a class="nav-link" data-bs-toggle="tab" href="#Implementation">Implementation</a>
@@ -52,11 +54,13 @@
 </ul>
 
 <div id="mainTab" class="tab-content">
+<!------------ Installation tab ------------>
+<!------------------------------------------------------------------------------------------------------>
     <div class="tab-pane fade active show" id="Installation">
-        <br><h3 id="Prerequisites">Prerequisites</h3>
-        The first step, to use MeDIC, is to install Python and install Git. You also need to make sure that Microsoft
+        <br><h2 id="Prerequisites">Prerequisites</h2>
+        The first step, to use MeDIC, is to install Python and Git. You also need to make sure that Microsoft
         Visual C++ is correctly installed if you're using Windows.
-        Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10<br>
+        Note that we only support Windows and Linux for now and only Python 3.8, 3.9 and 3.10<br><br>
         <div class="accordion" id="accordion_python_installation">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading_python_installation">
@@ -120,7 +124,7 @@
                                  data-bs-parent="#accordionExample" style="">
                                 <div class="accordion-body">
                                     <p>You can select the latest Python source release for python3 or a stable release
-                                        for 3.8 to 3.10. COMMAND
+                                        for 3.8 to 3.10.
                                         You can also follow this <a
                                                 href="https://www.scaler.com/topics/python/install-python-on-linux/"
                                                 target="_blank" rel="noreferrer noopener">tutorial</a> for further
@@ -158,12 +162,11 @@
                                  aria-labelledby="heading_git_installation_for_windows"
                                  data-bs-parent="#accordionExample" style="">
                                 <div class="accordion-body">
-                                    <p>You can then choose the Standalone Installer and take the 64 bits one if your
-                                        computer is less than 10 or 15 years old.
+                                    <p>You can then choose the Standalone Installer (most computers now use the 64 bits).
                                         After downloading the .exe file, double-click on it and follow the installation
                                         instructions.</p>
                                     <p>Note : You'll have a lot of choices, leave them as default if you are not
-                                        familiar with their implications.</p>
+                                        familiar.</p>
                                 </div>
                             </div>
                         </div>
@@ -239,29 +242,35 @@
         </div>
 
 <br>
-A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the
-installation and to start MeDIC.
 
-The launcher file needs Git and Python to be able to do all the installation steps for you.
+<div class="alert alert-dismissible alert-info">
+  A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the
+  installation and to start MeDIC.<br>
+  The launcher file needs Git and Python to be able to do all the installation steps for you.
+</div>
 
-<h3 id="a-normal-installation">A. Normal installation</h3>
-
-- Download launcher.py on
-  our <a href="https://github.com/ElinaFF/MetaboDashboard" target="_blank" rel="noreferrer noopener">github</a><br>
-- Open a terminal (*cmd* in Windows)<br>
-- Run the launcher on your computer with the command : <a href="#note1">*</a><br>
-  <code>
-  python launcher.py
-  </code><br>
-
-<div id="note1"> * No need to clone the repository, we will install everything we need.
+<h2 id></h2>
+<h4 id="a-normal-installation">A. Normal installation</h4>
+<ul>
+<li>Download launcher.py on
+  our <a href="https://github.com/ElinaFF/MetaboDashboard" target="_blank" rel="noreferrer noopener">github</a>
+</li>
+<li>Open a terminal (*cmd* in Windows)</li>
+<li>Run the launcher on your computer with the command : <a href="#note1">*</a><code>python launcher.py</code>
+</li>
+</ul>
+<br>
+<small id="note1" class="form-text text-muted">
+    * No need to clone the repository, we will install everything we need.
     If you still want to do so and don’t want the launcher to redownload it during the installation process,
     make sure to
     clone the repository in the same folder as the launcher.<br> MeDIC uses conda for his environment,
     if you don’t have any Conda instance installed on your machine, the launcher will install one (Miniconda3).
-    <br> All the dependencies necessary will be installed in the conda environment.</div>
+    <br> All the dependencies necessary will be installed in the conda environment.
+</small>
 
-<h3 id="b-clone-repository-and-normal-installation">B. Clone repository and normal installation</h3>
+
+<h4 id="b-clone-repository-and-normal-installation">B. Clone repository and normal installation</h4>
 <ul>
     <li>Open a terminal (<em>cmd</em> in Windows)</li>
     <li>Clone the Github repository.
@@ -277,7 +286,9 @@ The launcher file needs Git and Python to be able to do all the installation ste
 </code></pre>
             </li>
         </ul>
-        <h3 id="c-manual-installation">C. Manual installation</h3>
+
+
+<h4 id="c-manual-installation">C. Manual installation</h4>
         <ul>
             <li>Install Miniconda following the <a
                     href="https://docs.conda.io/en/latest/miniconda.html">documentation</a></li>
@@ -289,26 +300,25 @@ The launcher file needs Git and Python to be able to do all the installation ste
             <li>Enter in the environment
                 <pre><code>conda <span class="hljs-built_in">activate</span> medic
 </code></pre>
-                NOTE: if the command worked, you should see the name &quot;medic&quot; written at the beginning of your
-                prompt as the following image.
+                <div class="alert alert-dismissible alert-info">
+                If the command worked, you should see the name &quot;medic&quot; written at the beginning of your
+                prompt</div>
             </li>
         </ul>
 
-<p><img src="imgs/2022-06-22-15-56-49.png" alt=""></p>
-
 <ul>
     <li>Clone the Github repository and move inside.
-        <pre><code>  git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/ElinaFF/MetaboDashboard
-  cd MetaboDashboard
+        <pre><code>  git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/ElinaFF/MeDIC
+  cd MeDIC
 </code></pre>
                 <ul>
                     <li>Install the dependencies:
                         <pre><code>python -m pip <span class="hljs-keyword">install</span> -r requirements.txt
 </code></pre>
-                        NOTE: if you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
+                        <div class="alert alert-dismissible alert-warning">If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
                         (<a href="https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d">see
                             here</a>)
-                        return <a href="#heading_cpp_installation">here</a> to install, or update, Microsoft Visual C++.
+                        return <a href="#heading_cpp_installation">here</a> to install, or update, Microsoft Visual C++.</div>
                     </li>
                     <li>Launch the Web interface
                         <pre><code><span class="hljs-keyword">python</span> main.<span class="hljs-keyword">py</span>
@@ -317,23 +327,22 @@ The launcher file needs Git and Python to be able to do all the installation ste
                 </ul>
             </li>
         </ul>
-        <h3 id="d-installation-on-wsl-windows-subsystem-for-linux-">D. Installation on WSL (Windows Subsystem for
-            Linux)</h3>
+<h4 id="d-installation-on-wsl-windows-subsystem-for-linux-">D. Installation on WSL (Windows Subsystem for
+            Linux)</h4>
         <p>During the normal installation, you may have a problem with the Path variable. We haven&#39;t found a
             solution yet.
             You may need to go through the <a href="#c-manual-installation">Manual installation</a>.</p>
-        <h2 id="medic-launcher-options">MeDIC launcher options</h2>
-        <p>Those commands are optionals but may help you to use the launcher in an easier way.<br>They can be combined
-            or use independently.</p>
-        <h3 id="1-use-an-environment-you-already-have">1. Use an environment you already have</h3>
+<h2 id="medic-launcher-options">MeDIC launcher options</h2>
+        <p>Those commands are optionals but allow more flexibility.<br>They can be combined
+            or used independently.</p>
+<h4 id="1-use-an-environment-you-already-have">1. Existing environment</h4>
         <ul>
-            <li>The content of MeDICs environment can be installed in another environment, if you don&#39;t want to
+            <li>The packages of MeDIC environment can be installed elsewhere, if you don&#39;t want to
                 create a new one,
                 with the command : <a href="#note2">**</a>
                 <pre><code> <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">py</span> --environment <span
                         class="hljs-symbol">&lt;environment_name&gt;</span>
- <span class="hljs-keyword">python</span> launcher.<span class="hljs-keyword">p retry uploading the metadata iny</span> -<span
-                            class="hljs-keyword">e</span> <span class="hljs-symbol">&lt;environment_name&gt;</span>
+ <span class="hljs-keyword">python</span> launcher.py -e<span class="hljs-symbol">&lt;environment_name&gt;</span>
 </code></pre>
                 <div id="note2"> ** It is recommended not to create MeDIC environment into another environment as it may
                     cause problems.</div>
@@ -341,7 +350,7 @@ The launcher file needs Git and Python to be able to do all the installation ste
     </li>
 
 </ul>
-<h3 id="2-fast-launch-for-everyday-use">2. Fast launch for everyday use</h3>
+<h4 id="2-fast-launch-for-everyday-use">2. Fast launch for everyday use</h4>
 <ul>
     <li>MeDIC can be launched faster without any verifications of the environment with the command :
         <pre><code> <span class="hljs-keyword">python</span> launcher.<span
@@ -351,7 +360,7 @@ The launcher file needs Git and Python to be able to do all the installation ste
 </code></pre>
             </li>
         </ul>
-        <h3 id="3-installing-medic-for-later-use">3. Installing MeDIC for later use</h3>
+        <h4 id="3-installing-medic-for-later-use">3. Installing MeDIC for later use</h4>
         <ul>
             <li>MeDIC can be installed without launching it at the end with the command :
                 <pre><code><span class="hljs-keyword">python</span> launcher.<span
@@ -361,7 +370,7 @@ The launcher file needs Git and Python to be able to do all the installation ste
 </code></pre>
             </li>
         </ul>
-        <h3 id="4-update-medic-to-the-latest-version">4. Update MeDIC to the latest version</h3>
+        <h4 id="4-update-medic-to-the-latest-version">4. Update MeDIC to the latest version</h4>
         <ul>
             <li>MeDIC can be updated with the command :
                 <pre><code><span class="hljs-keyword">python</span> launcher.<span
@@ -374,6 +383,8 @@ The launcher file needs Git and Python to be able to do all the installation ste
             </li>
         </ul>
     </div>
+<!------------ Home tab ------------>
+<!------------------------------------------------------------------------------------------------------>
     <div class="tab-pane fade" id="Home">
         <h2 id="saving-file">Saving file</h2>
         <p>Before explaining the interface, lets see how the experiments are saved and how you can share them.
@@ -694,7 +705,7 @@ change only the attribute <em>xxx</em>)
       </div>
   </div>
 </div>
-<div class="tab-pane fade" id="ResultsSummary">
+<div class="tab-pane fade" id="ResultsAggregated">
 
 </div>
 <div class="tab-pane fade" id="Implementation">
