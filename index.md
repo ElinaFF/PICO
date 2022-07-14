@@ -2,7 +2,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link href="stylesheet.css" rel="stylesheet" title="main">
+    <link href="stylesheet.css" rel="stylesheet" title="main" type="text/css">
+    <link rel="icon" type="image/x-icon" href="/imgs/logo1.svg">
 
 </head>
 <body>
@@ -371,7 +372,7 @@ MeDIC can be installed or launch from an existing environment <a href="#note2">*
  <span class="hljs-keyword">python</span> launcher.py -e <span class="hljs-symbol">&lt;environment_name&gt;</span>
 </code></pre>
 <small id="note2" class="form-text text-muted"> ** It is recommended not to create MeDIC environment into another environment as it may
-                    cause problems.</small>
+cause problems.</small>
 
     
 
@@ -405,7 +406,7 @@ MeDIC can be installed or launch from an existing environment <a href="#note2">*
 </small>
 <!------------ Home tab ------------>
 <!------------------------------------------------------------------------------------------------------>
-    <div class="tab-pane fade" id="Home">
+<div class="tab-pane fade" id="Home">
         <h2 id="saving-file">Saving file</h2>
         <p>Before explaining the interface, lets see how the experiments are saved and how you can share them.
             To allow a better modularity of the experiments, the three major steps of MeDIC are saved independently into
