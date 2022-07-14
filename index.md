@@ -36,8 +36,8 @@
         justify-content: flex-end;
     }
     .aheading{
-        font-size: 1.1em;
-        font-weight: bold;
+        font-size: 1em;
+        font-weight: 600;
     }
 
     .alert-info{
