@@ -20,7 +20,7 @@
         --bs-nav-tabs-border-radius:0;
     }
     
-    .ul.nav.nav-tabs{
+    .nav.nav-tabs{
         justify-content: flex-end;
     }
 
@@ -31,6 +31,10 @@
     details p {
         background-color: rgba(199, 199, 199, 0.3);
     }
+    .alert{
+        --bs-alert-border-radius: 0rem;
+    }
+
 </style>
 
 
