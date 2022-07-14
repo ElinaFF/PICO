@@ -35,9 +35,8 @@
     .nav.nav-tabs{
         justify-content: flex-end;
     }
-    .alert-heading{
-        color:#055160;
-        font-size: 1em;
+    aheading{
+        font-size: 1.1em;
         font-weight: bold;
     }
 
@@ -270,7 +269,7 @@
 <br>
 
 <div class="alert alert-dismissible alert-info">
-<h4 class="alert-heading">Info</h4>
+<p class="aheading">Info</p>
   A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the
   installation and to start MeDIC.<br>
   The launcher file needs Git and Python to be able to do all the installation steps for you.
@@ -328,7 +327,7 @@
                 <pre><code>conda <span class="hljs-built_in">activate</span> medic
 </code></pre>
                 <div class="alert alert-dismissible alert-info">
-                <h4 class="alert-heading">Info</h4>
+                <p class="aheading">Info</p>
                 If the command worked, you should see the name &quot;medic&quot; written at the beginning of your
                 prompt</div>
             </li>
@@ -344,7 +343,7 @@
                         <pre><code>python -m pip <span class="hljs-keyword">install</span> -r requirements.txt
 </code></pre>
                         <div class="alert alert-dismissible alert-warning">
-                        <h4 class="alert-heading">Warning</h4>
+                        <p class="aheading">Warning</p>
                         If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem
                         (<a href="https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d">see
                             here</a>)
@@ -399,7 +398,7 @@ cause problems.</small>
                             class="hljs-keyword">u</span>
 </code></pre>
                 <div class="alert alert-dismissible alert-info">
-                <h4 class="alert-heading">Info</h4>
+                <p class="aheading">Info</p>
                 This will retrieve updates from the github repository, verify the environment and download 
                 packages if necessary, but it won&#39;t start MeDIC.</div>
     </div>
