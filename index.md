@@ -26,11 +26,6 @@
     details p {
         background-color: rgba(199, 199, 199, 0.3);
     }
-    @media screen and (min-width: 64em) {
-        main {
-            max-width: 70em;
-        }
-    }
     
     .nav-tabs{
         --bs-nav-tabs-border-radius:0rem;
