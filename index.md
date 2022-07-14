@@ -34,17 +34,13 @@
     .nav.nav-tabs{
         justify-content: flex-end;
     }
-
-    .alert{
-        --bs-nav-tabs-border-radius:0rem;
-    }
     .alert-info{
-        --bs-alert-bg: #d6eaf6;
-        --bs-alert-border-radius:0em;
+        --bs-alert-bg: #d6eaf6 !important;
+        --bs-alert-border-radius:0em !important;
     }
     .alert-warning{
-        --bs-alert-bg: #faf0db;
-        --bs-alert-border-radius:0em;
+        --bs-alert-bg: #faf0db !important;
+        --bs-alert-border-radius:0em !important;
     }
 
 </style>
