@@ -8,7 +8,7 @@ from ..TestsUtility import (
     TRAIN_TEST_PROPORTION,
     EXPERIMENT_DESIGNS,
     CUSTOM_MODELS,
-    SELECTED_MODELS,
+    SELECTED_MODELS_NAME,
     CV_TYPE,
 )
 from ...metabodashboard.domain.MetaboExperimentDTO import MetaboExperimentDTO
@@ -58,7 +58,7 @@ def test_givenMetaboXpDTO_whenGetCustomModels_thenReturnMockedCustomModels(
 def test_givenMetaboXpDTO_whenGetSelectedModel_thenReturnMockedSelectedModel(
     metabo_experiment_dto,
 ):
-    assert metabo_experiment_dto.selected_models == SELECTED_MODELS
+    assert metabo_experiment_dto.selected_models == SELECTED_MODELS_NAME
 
 
 def test_givenMetaboXpDTO_whenGetCvType_thenReturnMockedCvType(metabo_experiment_dto):

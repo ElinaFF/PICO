@@ -19,6 +19,10 @@ from ..TestsUtility import (
     DATAMATRIX_DATAFRAME,
     assert_dataframe_approximately_equal,
     EXP_RESULTS,
+    SELECTED_MODELS_NAME,
+    SAMPLES_ID_COLUMN,
+    TARGETS_COLUMN,
+    ALL_RESULTS,
 )
 from ...metabodashboard.domain import MetaboExperiment
 
@@ -26,6 +30,27 @@ from ...metabodashboard.domain import MetaboExperiment
 @pytest.fixture
 def input_metabo_experiment():
     metabo_experiment = MetaboExperiment()
+    return metabo_experiment
+
+
+@pytest.fixture
+def input_set_metabo_experiment():
+    metabo_experiment = MetaboExperiment()
+    metabo_experiment.set_metadata_with_dataframe(
+        "metadata.csv", data=ENCODED_METADATA_DATAFRAME
+    )
+    metabo_experiment.set_data_matrix_remove_rt(False)
+    metabo_experiment.set_raw_use_for_data(False)
+    metabo_experiment.set_data_matrix("data.csv", data=ENCODED_DATAMATRIX_DATAFRAME)
+
+    metabo_experiment.set_id_column(SAMPLES_ID_COLUMN)
+    metabo_experiment.set_target_column(TARGETS_COLUMN)
+    metabo_experiment.add_experimental_design(CLASSES_DESIGN)
+
+    metabo_experiment.set_train_test_proportion(0.2)
+    metabo_experiment.set_number_of_splits(2)
+    metabo_experiment.create_splits()
+    metabo_experiment.set_selected_models(SELECTED_MODELS_NAME)
     return metabo_experiment
 
 
@@ -88,7 +113,6 @@ def test_givenMetaboExperiment_whenPartialRestore_thenMetaboExperimentIsUpdated(
         "data_matrix.csv",
         data=ENCODED_DATAMATRIX_DATAFRAME,
         metadata=ENCODED_METADATA_DATAFRAME,
-        remove_features=False,
     )
     dumped_data_matrix_dataframe = dump_patch.call_args_list[0][0][0]
     assert_dataframe_approximately_equal(
@@ -125,3 +149,23 @@ def test_givenMetaboExperiment_whenLoadResults_thenResultsAreLoaded(
         == EXP_RESULTS
     )
     assert input_metabo_experiment.get_selected_cv_type() == CV_TYPE
+
+
+def test_givenAllParameter_whenGettingUpdatedResults_thenTheResultsAreCorrect(
+    input_set_metabo_experiment,
+):
+    input_set_metabo_experiment.get_experimental_designs()[EXPERIMENT_NAME].set_is_done(
+        True
+    )
+
+    actual_results = input_set_metabo_experiment.get_all_updated_results()
+
+    assert actual_results.keys() == ALL_RESULTS.keys()
+    for key in actual_results.keys():
+        assert actual_results[key].keys() == ALL_RESULTS[key].keys()
+
+
+def test_givenUndoneExperiments_whenGettingUpdatedResults_thenNoResultsAreLoaded(
+    input_set_metabo_experiment,
+):
+    assert input_set_metabo_experiment.get_all_updated_results() == {}
