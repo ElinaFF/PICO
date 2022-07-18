@@ -1,5 +1,7 @@
 import importlib
 import os
+from typing import List
+
 import sklearn
 
 from .MetaboModel import MetaboModel
@@ -28,8 +30,15 @@ class ModelFactory:
         return model
 
     def create_custom_model(
-        self, model_name: str, needed_imports: str, grid_search_param: dict
+        self,
+        model_name: str,
+        needed_imports: str,
+        params: List[str],
+        values_to_explore: List[List[str]],
     ) -> MetaboModel:
         imports_list = needed_imports.split(".")
         model = self._get_model_from_import(imports_list, model_name)
+        grid_search_param = {}
+        for index, param in enumerate(params):
+            grid_search_param[param] = values_to_explore[index]
         return MetaboModel(model, grid_search_param)

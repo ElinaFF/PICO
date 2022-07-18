@@ -215,3 +215,19 @@ def restore_ids_and_targets_from_pairing_groups(
         target_column
     ].tolist()
     return (restored_ids, load_classes_from_targets(classes_design, restored_targets))
+
+
+def convert_str_to_list_of_lists(str_to_convert: str) -> List[List[str]]:
+    list_level_1 = str_to_convert.split(",")
+    list_level_2 = []
+    for val in list_level_1:
+        list_level_2.append(list(val))
+    return list_level_2
+
+
+def is_data_the_same(data: str, metabo_experiment_dto) -> bool:
+    return metabo_experiment_dto.data_matrix.get_hash() == compute_hash(data)
+
+
+def is_metadata_the_same(metadata: str, metabo_experiment_dto) -> bool:
+    return metabo_experiment_dto.metadata.get_hash() == compute_hash(metadata)

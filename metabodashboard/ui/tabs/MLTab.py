@@ -25,8 +25,13 @@ class MLTab(MetaTab):
             [
                 dbc.Label("Number of Cross Validation folds", className="form_labels"),
                 dbc.Input(
-                    id="in_nbr_CV_folds", value="5", type="number", min=1, size="5"
+                    id="in_nbr_CV_folds",
+                    value=self.metabo_controller.get_cv_folds(),
+                    type="number",
+                    min=2,
+                    size="5",
                 ),
+                html.Div(id="output_cv_folds_ml", style={"color": "red"}),
             ],
             className="form_field",
         )
@@ -37,6 +42,7 @@ class MLTab(MetaTab):
                 dbc.Input(
                     id="in_nbr_processes", value="2", type="number", min=1, size="5"
                 ),
+                html.Div(id="output_cv_nbr_processes_ml", style={"color": "red"}),
             ],
             className="form_field",
         )
@@ -66,6 +72,7 @@ class MLTab(MetaTab):
                     id="in_algo_ML",
                     # inline=True
                 ),
+                html.Div(id="output_checklist_ml", children="", style={"color": "red"}),
             ],
             className="form_field",
         )
@@ -165,6 +172,45 @@ class MLTab(MetaTab):
 
     def _registerCallbacks(self) -> None:
         @self.app.callback(
+            Output("in_nbr_CV_folds", "value"), [Input("custom_big_tabs", "active_tab")]
+        )
+        def update_nbr_CV_folds(active_tab):
+            if active_tab == "tab-2":
+                return self.metabo_controller.get_cv_folds()
+            return dash.no_update
+
+        @self.app.callback(
+            Output("output_cv_folds_ml", "children"),
+            [Input("in_nbr_CV_folds", "value")],
+        )
+        def set_nbr_CV_folds(value):
+            if value is None:
+                return "The number of folds must be an integer greater than 2"
+
+            self.metabo_controller.set_cv_folds(int(value))
+            return ""
+
+        @self.app.callback(
+            Output("in_nbr_processes", "value"),
+            [Input("custom_big_tabs", "active_tab")],
+        )
+        def update_nbr_processes(active_tab):
+            if active_tab == "tab-2":
+                return self.metabo_controller.get_number_of_processes_for_cv()
+            return dash.no_update
+
+        @self.app.callback(
+            Output("output_cv_nbr_processes_ml", "children"),
+            [Input("in_nbr_processes", "value")],
+        )
+        def set_nbr_CV_folds(value):
+            if value is None:
+                return "The number of processes must be an integer greater than 1"
+
+            self.metabo_controller.set_number_of_processes_for_cv(int(value))
+            return ""
+
+        @self.app.callback(
             [
                 Output("in_algo_ML", "options"),
                 Output("in_algo_ML", "value"),
@@ -172,10 +218,12 @@ class MLTab(MetaTab):
                 Output("name_new_algo", "value"),
                 Output("name_param", "value"),
                 Output("values_param", "value"),
+                Output("output_checklist_ml", "children"),
             ],
             [
                 Input("add_n_refresh_sklearn_algo_button", "n_clicks"),
                 Input("in_algo_ML", "value"),
+                Input("custom_big_tabs", "active_tab"),
             ],
             [
                 State("import_new_algo", "value"),
@@ -185,26 +233,47 @@ class MLTab(MetaTab):
             ],
         )
         def add_refresh_available_sklearn_algorithms(
-            n, value, import_new, name_new, name_param, values_param
+            n, value, active_tab, import_new, new_algo_name, name_param, values_param
         ):
-            if n >= 1:
-                new_algo_name = name_new
-                new_algo_params = {
-                    "function": name_new,
-                    "ParamGrid": {name_param: values_param},
-                    "importing": import_new,
-                }
+            triggered_by = callback_context.triggered[0]["prop_id"].split(".")[0]
+            if triggered_by == "custom_big_tabs":
+                print("Triggered by tab")
+                if active_tab == "tab-2":
+                    self.metabo_controller.update_experimental_designs_with_selected_models()
+
+            if triggered_by == "add_n_refresh_sklearn_algo_button":
+                print("Triggered by button")
 
                 self.metabo_controller.add_custom_model(
-                    new_algo_name, import_new, new_algo_params
+                    new_algo_name,
+                    import_new,
+                    name_param.split(","),
+                    Utils.convert_str_to_list_of_lists(values_param),
                 )
-            if callback_context.triggered[0]["prop_id"] == "in_algo_ML.value":
-                self.metabo_controller.set_selected_models(value)
+            if triggered_by == "in_algo_ML":
+                print("Triggered by dropdown")
+                try:
+                    self.metabo_controller.set_selected_models(value)
+                except ValueError as ve:
+                    print("Error: ", ve)
+                    return (
+                        Utils.format_list_for_checklist(
+                            self.metabo_controller.get_all_algos_names()
+                        ),
+                        [],
+                        "",
+                        "",
+                        "",
+                        "",
+                        str(ve),
+                    )
+
             return (
                 Utils.format_list_for_checklist(
                     self.metabo_controller.get_all_algos_names()
                 ),
                 self.metabo_controller.get_selected_models(),
+                "",
                 "",
                 "",
                 "",
@@ -217,17 +286,12 @@ class MLTab(MetaTab):
                 Output("download-save-file-ml", "data"),
             ],
             [Input("start_learning_button", "n_clicks")],
-            [
-                State("in_algo_ML", "value"),
-                State("in_nbr_CV_folds", "value"),
-                State("in_nbr_processes", "value"),
-            ],
         )
-        def start_machine_learning(n, selected_models, cv_folds, nbr_process):
+        def start_machine_learning(n):
             if n >= 1:
                 print("in")
                 print(self.metabo_controller.get_selected_models())
-                self.metabo_controller.learn(int(cv_folds))
+                self.metabo_controller.learn()
 
                 Utils.dump_metabo_expe(self.metabo_controller.generate_save())
 

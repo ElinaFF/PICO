@@ -3,7 +3,6 @@ import time
 
 import dash_bootstrap_components as dbc
 import dash_interactive_graphviz as dg
-import numpy as np
 from dash import html, dcc, Output, Input, State, dash, Dash
 from matplotlib import pyplot as plt
 from sklearn import tree
@@ -459,14 +458,16 @@ class ResultsTab(MetaTab):
         )
         def update_results_dropdown_design(active):
             if active == "tab-3":
-                try:
-                    self.r = self.metabo_controller.get_all_results()
-                    a = list(self.r.keys())
-                    return [{"label": i, "value": i} for i in a], a[0]
-                except:
-                    return dash.no_update
+                self.r = self.metabo_controller.get_all_results()
+                experiment_designs = list(self.r.keys())
+                if len(experiment_designs) == 0:
+                    return dash.no_update, dash.no_update
+                return (
+                    Utils.format_list_for_checklist(experiment_designs),
+                    experiment_designs[0],
+                )
             else:
-                return dash.no_update
+                return dash.no_update, dash.no_update
 
         @self.app.callback(
             [Output("ml_dropdown", "options"), Output("ml_dropdown", "value")],

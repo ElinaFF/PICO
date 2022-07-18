@@ -28,16 +28,12 @@ class MetaboController:
         self,
         path_data_matrix,
         data=None,
-        use_raw=False,
         from_base64=True,
-        remove_features=True,
     ):
         return self._metabo_experiment.set_data_matrix(
             path_data_matrix,
             data=data,
-            use_raw=use_raw,
             from_base64=from_base64,
-            remove_features=remove_features,
         )
 
     def get_metadata_columns(self) -> list:
@@ -84,8 +80,8 @@ class MetaboController:
     def set_selected_models(self, selected_models: list):
         self._metabo_experiment.set_selected_models(selected_models)
 
-    def learn(self, folds: int):
-        self._metabo_experiment.learn(folds)
+    def learn(self):
+        self._metabo_experiment.learn()
 
     def get_results(self, design_name: str, algo: str):
         return (
@@ -95,13 +91,17 @@ class MetaboController:
         )
 
     def get_all_results(self):
-        return self._metabo_experiment.get_all_results()
+        return self._metabo_experiment.get_all_updated_results()
 
     def add_custom_model(
-        self, model_name: str, needed_import: str, grid_search_param: dict
+        self,
+        model_name: str,
+        needed_imports: str,
+        params: List[str],
+        values_to_explore: List[List[str]],
     ):
         self._metabo_experiment.add_custom_model(
-            model_name, needed_import, grid_search_param
+            model_name, needed_imports, params, values_to_explore
         )
 
     def get_all_algos_names(self) -> list:
@@ -131,7 +131,6 @@ class MetaboController:
         filename_data: str,
         filename_metadata: str,
         data=None,
-        use_raw_data: bool = False,
         from_base64_data: bool = True,
         metadata=None,
         from_base64_metadata=True,
@@ -141,7 +140,6 @@ class MetaboController:
             filename_data,
             filename_metadata,
             data,
-            use_raw_data,
             from_base64_data,
             metadata,
             from_base64_metadata,
@@ -174,9 +172,6 @@ class MetaboController:
     def get_selected_models(self) -> List[str]:
         return self._metabo_experiment.get_selected_models()
 
-    def are_files_corresponding(self, data_file: str, metadata_file: str) -> bool:
-        return self._metabo_experiment.are_files_corresponding(data_file, metadata_file)
-
     def is_progenesis_data(self) -> bool:
         return self._metabo_experiment.is_progenesis_data()
 
@@ -185,3 +180,36 @@ class MetaboController:
 
     def set_pairing_group_column(self, pairing_group_column: str):
         self._metabo_experiment.set_pairing_group_column(pairing_group_column)
+
+    def is_data_raw(self) -> bool:
+        return self._metabo_experiment.is_data_raw()
+
+    def set_raw_use_for_data(self, use_raw_data: bool):
+        self._metabo_experiment.set_raw_use_for_data(use_raw_data)
+
+    def get_data_matrix_remove_rt(self) -> bool:
+        return self._metabo_experiment.get_data_matrix_remove_rt()
+
+    def set_data_matrix_remove_rt(self, remove_rt: bool):
+        self._metabo_experiment.set_data_matrix_remove_rt(remove_rt)
+
+    def get_cv_folds(self) -> int:
+        return self._metabo_experiment.get_cv_folds()
+
+    def set_cv_folds(self, cv_folds: int):
+        self._metabo_experiment.set_cv_folds(cv_folds)
+
+    def get_number_of_processes_for_cv(self) -> int:
+        return self._metabo_experiment.get_number_of_processes_for_cv()
+
+    def set_number_of_processes_for_cv(self, number_of_processes: int):
+        self._metabo_experiment.set_number_of_processes_for_cv(number_of_processes)
+
+    def update_experimental_designs_with_selected_models(self):
+        self._metabo_experiment.update_experimental_designs_with_selected_models()
+
+    def is_the_data_matrix_corresponding(self, data: str) -> bool:
+        return self._metabo_experiment.is_the_data_matrix_corresponding(data)
+
+    def is_the_metadata_corresponding(self, metadata: str) -> bool:
+        return self._metabo_experiment.is_the_metadata_corresponding(metadata)
