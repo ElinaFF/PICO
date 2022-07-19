@@ -1,4 +1,5 @@
 scipy
+numba>=0.55.2
 dash
 dash-bio
 dash-bootstrap-components
@@ -6,10 +7,14 @@ dash-core-components==2.0.0
 dash-html-components==2.0.0
 dash-renderer
 dash-table==5.0.0
-numpy==1.21.4
+numpy==1.22.4
 pandas
 plotly
 scikit-learn
 umap-learn
 openpyxl
+pytest
 matplotlib
+pyscm-ml@git+https://github.com/aldro61/pyscm.git#egg=pyscm-ml
+randomscm@git+https://github.com/thibgo/randomscm.git#egg=randomscm
+dash_interactive_graphviz

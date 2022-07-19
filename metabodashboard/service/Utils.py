@@ -1,21 +1,28 @@
-from typing import List
+import base64
+import hashlib
+import os
+import pickle
+from typing import List, Dict, Iterable
 
-import pandas as pd
-import numpy as np
 import pickle as pkl
-import random, os
-from ..conf.LearnConfig import *
-from .ExperimentDesign import *
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
+from typing import List, Dict, Tuple
+
+import numpy as np
+import pandas as pd
 
 PACKAGE_ROOT_PATH = os.sep.join(os.path.dirname(__file__).split(os.sep)[:-1])
 DUMP_PATH = os.path.join(PACKAGE_ROOT_PATH, "domain", "dumps")
-DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "metaboExpe.p")
+DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "save.mtxp")
+
 
 def dump_metabo_expe(obj):
     with open(DUMP_EXPE_PATH, "w+b") as expe_file:
         pkl.dump(obj, expe_file)
+
+
+def get_metabo_experiment_path() -> str:
+    return DUMP_EXPE_PATH
+
 
 def load_metabo_expe(path):
     if os.path.isfile(DUMP_EXPE_PATH):
@@ -23,6 +30,7 @@ def load_metabo_expe(path):
             return pkl.load(expe_file)
     else:
         return None
+
 
 def retrieve_data_from_sample_name(names_list, dataframe):
     """
@@ -58,125 +66,68 @@ def list_filler(liste):
         l.append(current)
     return l
 
+
 def read_Progenesis_compounds_table(fileName, with_raw=True):
     datatable = pd.read_csv(fileName, header=2, index_col=0)
     header = pd.read_csv(fileName, nrows=1, index_col=0)
     start_normalized = header.columns.tolist().index("Normalised abundance")
 
     labels_array = np.array(header.iloc[0].tolist())
-    possible_labels = labels_array[labels_array != 'nan']
+    possible_labels = labels_array[labels_array != "nan"]
 
     if with_raw:
         start_raw = header.columns.tolist().index("Raw abundance")
         sample_names = datatable.iloc[:, start_normalized:start_raw].columns
-        possible_labels = possible_labels[0:int(len(possible_labels) / 2)]
+        possible_labels = possible_labels[0 : int(len(possible_labels) / 2)]
     else:
         sample_names = datatable.iloc[:, start_normalized:].columns
-    
+
     labels = [""] * len(sample_names)
     start_label = possible_labels[0]
     labels_array = labels_array.tolist()
     for next_labels in possible_labels[1:]:
         index_s = labels_array.index(start_label) - start_normalized
         index_e = labels_array.index(next_labels) - start_normalized
-        labels[index_s : index_e] = [start_label] * (index_e - index_s)
+        labels[index_s:index_e] = [start_label] * (index_e - index_s)
         start_label = next_labels
     labels[index_e:] = [start_label] * (len(labels) - index_e)
-    
-    labels_dict = {sample_names[i] : j for i,j in enumerate(labels)}
+
+    labels_dict = {sample_names[i]: j for i, j in enumerate(labels)}
 
     if with_raw:
-        datatable_compoundsInfo = datatable.iloc[:,0:start_normalized]
-        datatable_normalized = datatable.iloc[:,start_normalized:start_raw]
-        datatable_raw = datatable.iloc[:,start_raw:]
-        datatable_raw.columns = [i.rstrip(".1") for i in datatable_raw.columns] #Fix the columns names
+        datatable_compoundsInfo = datatable.iloc[:, 0:start_normalized]
+        datatable_normalized = datatable.iloc[:, start_normalized:start_raw]
+        datatable_raw = datatable.iloc[:, start_raw:]
+        datatable_raw.columns = [
+            i.rstrip(".1") for i in datatable_raw.columns
+        ]  # Fix the columns names
 
         datatable_normalized = datatable_normalized.T
         datatable_raw = datatable_raw.T
         datatable_compoundsInfo = datatable_compoundsInfo.T
         datatable_normalized.rename(columns={"Compound": "Sample"})
         datatable_raw.rename(columns={"Compound": "Sample"})
-        return datatable_compoundsInfo, datatable_normalized, datatable_raw, labels, sample_names
+        return (
+            datatable_compoundsInfo,
+            datatable_normalized,
+            datatable_raw,
+            labels,
+            sample_names,
+        )
     else:
-        datatable_compoundsInfo = datatable.iloc[:,0:start_normalized]
-        datatable_normalized = datatable.iloc[:,start_normalized:]
+        datatable_compoundsInfo = datatable.iloc[:, 0:start_normalized]
+        datatable_normalized = datatable.iloc[:, start_normalized:]
         datatable_normalized = datatable_normalized.T
         datatable_compoundsInfo = datatable_compoundsInfo.T
         datatable_normalized.rename(columns={"Compound": "Sample"})
         return datatable_compoundsInfo, datatable_normalized, labels, sample_names
+
 
 def filter_sample_based_on_labels(data, labels, labels_to_keep):
     labels_filter = np.array([i in labels_to_keep for i in labels])
     d = data.iloc[labels_filter]
     l = np.array(labels)[labels_filter]
     return d, l
-
-def generate_splits(df, labels):
-    for design_name in EXPERIMENT_DESIGNS:
-        label = np.array(labels)
-        classes = list(EXPERIMENT_DESIGNS[design_name]["classes"].keys())
-        group_to_class = get_group_to_class(EXPERIMENT_DESIGNS[design_name]["classes"])
-        groups_to_keep = [item for sublist in EXPERIMENT_DESIGNS[design_name]["classes"].values() for item in sublist]
-        design_df, labels_design = filter_sample_based_on_labels(df, labels, groups_to_keep)
-        #study_unique_patients_id = set(design_df["subject"])
-        for split_number in range(LEARN_CONFIG["Nsplit"]):
-            #test_subjects_id = random.sample(study_unique_patients_id, 
-            #    int(EXPERIMENT_DESIGNS[design_name]["TestSize"]*len(study_unique_patients_id)))
-            #train_subjects_id = [i for i in study_unique_patients_id if i not in test_subjects_id]
-
-            # Create train-test mask and create x_train, y_train, x_test, y_test
-            #train_mask = np.array([i in train_subjects_id for i in design_df["subject"]])
-            #test_mask = np.array([i in test_subjects_id for i in design_df["subject"]])
-            #train_df = design_df[train_mask]
-            #train_targets = [group_to_class[i] for i in labels_design[train_mask]]
-            #test_df = design_df[test_mask]
-            #test_targets = [group_to_class[i] for i in labels_design[test_mask]]
-            train_df, test_df, train_targets, test_targets = train_test_split(design_df, \
-                labels_design, test_size=EXPERIMENT_DESIGNS[design_name]["TestSize"])
-            # Write split to files
-            with open(os.path.join("Splits", "{}_{}".format(design_name, split_number)), "wb") as fo:
-                pkl.dump(train_df, fo)
-                pkl.dump(train_targets, fo)
-                pkl.dump(test_df, fo)
-                pkl.dump(test_targets, fo)
-                #pkl.dump(train_subjects_id, fo)
-                #pkl.dump(test_subjects_id, fo)
-
-def run_learning_job(job_config):
-    # (filename, algo_config_name, algo_function, grid)
-    filename = job_config[0]
-    grp1, vs, grp2, split_number = os.path.split(filename)[1].split("_")
-    design_name = grp1 +"_"+ vs +"_"+ grp2
-    algo_config_name = job_config[1]
-    learning_function = job_config[2]
-    param_grid = job_config[3]
-    print("Processing {} using design {}".format(filename, design_name))
-
-    # Load file
-    with open(filename, "rb") as fi:
-        train_df = pkl.load(fi, encoding='latin1')
-        train_targets = pkl.load(fi, encoding='latin1')
-        test_df = pkl.load(fi, encoding='latin1')
-        test_targets = pkl.load(fi, encoding='latin1')
-    #train_df = train_df.drop(["subject"], axis=1) # We don't want to learn something using the Subject column.
-    #test_df = test_df.drop(["subject"], axis=1)
-    # Run grid search.
-    gc = GridSearchCV(learning_function(), param_grid, cv=LEARN_CONFIG["CV_folds"])
-    gc.fit(train_df, train_targets)
-    # Predict on train.
-    train_predict = gc.predict(train_df)
-
-    # Predict on test.
-    test_predict = gc.predict(test_df)
-
-    # Save to file.
-    with open(os.path.join("Results", 
-        "{}_{}_{}.pkl".format(design_name, split_number, algo_config_name)), "wb") as fo:
-        pkl.dump(gc, fo)
-        pkl.dump(train_predict, fo)
-        pkl.dump(test_predict, fo)
-        pkl.dump(train_targets, fo)
-        pkl.dump(test_targets, fo)
 
 
 def get_group_to_class(classes):
@@ -198,14 +149,69 @@ def reverse_dict(dictionnary: dict) -> dict:
     return reversed_dict
 
 
-def load_classes_from_targets(classes_design: dict, targets: List[str]) -> List[str]:
+def load_classes_from_targets(
+    classes_design: dict, targets: Iterable[str]
+) -> List[str]:
     reverse_classes_design = reverse_dict(classes_design)
     classes = []
     for target in targets:
+        if target not in reverse_classes_design:
+            raise ValueError("Target {} not found in classes_design".format(target))
         classes.append(reverse_classes_design[target])
     return classes
 
 
 # TODO: need to support multi-classification
 def get_binary(list_to_convert: List[str], classes: List[str]) -> List[int]:
-    return [1 if class_value == classes[1] else 0 for class_value in list_to_convert]
+    return [classes.index(value) for value in list_to_convert]
+
+
+def compute_hash(data: str) -> str:
+    return hashlib.sha256(data.encode("utf-8")).hexdigest()
+
+
+def is_save_safe(saved_metabo_experiment_dto) -> bool:
+    return (
+        saved_metabo_experiment_dto.metadata.is_data_the_same()
+        and saved_metabo_experiment_dto.data_matrix.is_data_the_same()
+    )
+
+
+def format_list_for_checklist(list_to_format: List[str]) -> List[Dict[str, str]]:
+    return [{"label": value, "value": value} for value in list_to_format]
+
+
+def check_if_column_exist(datatable: pd.DataFrame, column_name: str) -> bool:
+    return column_name in datatable.columns
+
+
+def decode_pickle_from_base64(encoded_object: str):
+    return pickle.loads(base64.b64decode(encoded_object.split(",")[1]))
+
+
+def are_files_corresponding(data: str, metadata: str, metabo_experiment_dto) -> bool:
+    return metabo_experiment_dto.metadata.get_hash() == compute_hash(
+        metadata
+    ) and metabo_experiment_dto.data_matrix.get_hash() == compute_hash(data)
+
+
+def reset_file(file_path: str):
+    open(file_path, "w+b").close()
+
+
+def restore_ids_and_targets_from_pairing_groups(
+    filtered_samples: List[str],
+    dataframe: pd.DataFrame,
+    id_column: str,
+    paired_column: str,
+    target_column: str,
+    classes_design: dict,
+) -> Tuple[List[str], List[str]]:
+    values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][
+        paired_column
+    ].tolist()
+    restored_ids = dataframe[dataframe[paired_column].isin(values)][id_column].tolist()
+    restored_targets = dataframe.loc[dataframe[id_column].isin(restored_ids)][
+        target_column
+    ].tolist()
+    return (restored_ids, load_classes_from_targets(classes_design, restored_targets))

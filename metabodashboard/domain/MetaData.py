@@ -1,10 +1,11 @@
-import os.path
-import pickle
-from typing import List
 import base64
 import io
+import os.path
+from typing import List, Tuple, Union
 
 import pandas as pd
+
+from ..service import compute_hash
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "metadata"))
@@ -16,88 +17,110 @@ DUMP_TARGETS_PATH = os.path.join(DUMP_PATH, "targets.p")
 
 class MetaData:
     def __init__(self, metadata_dataframe: pd.DataFrame = None):
-
-        if metadata_dataframe is not None:
-            self.save_metadata(metadata_dataframe)
+        self._dataframe = metadata_dataframe
 
         self._id_column = None
         self._target_column = None
 
+        self._hash = None
+
     def read_format_and_store_metadata(self, path, data=None, from_base64=True):
         df = self._load_and_format(path, data=data, from_base64=from_base64)
-        self.save_metadata(df)
+        if data is not None:
+            self._hash = compute_hash(data)
+        self._dataframe = df
+
+    def get_hash(self) -> str:
+        return self._hash
 
     def _load_and_format(self, filename, data=None, from_base64=True) -> pd.DataFrame:
         if from_base64:
-            data_type, data_string = data.split(',')
+            data_type, data_string = data.split(",")
             data = base64.b64decode(data_string)
-            print("data decoded :{}")
-            print(data[:200])
+            # print("data decoded :{}")
+            # print(data[:200])
         else:
             data = filename
 
-        if 'csv' in filename:
+        if "csv" in filename:
             # Assume that the user uploaded a CSV file
             if from_base64:
-                data = io.StringIO(data.decode('utf-8'))
-            df = pd.read_csv(data, sep=";", na_filter=False)
-        elif 'xls' in filename:
+                data = io.StringIO(data.decode("utf-8"))
+            df = pd.read_csv(data, sep=None, na_filter=False, engine="python")
+        elif "xls" in filename:
             if from_base64:
                 data = io.BytesIO(data)
             # Assume that the user uploaded an excel file
             df = pd.read_excel(data)
         else:
-            raise RuntimeError
+            raise TypeError(
+                "The input file is not of the right type, must be excel, odt or csv."
+            )
         return df
 
-    def save_metadata(self, df_meta_data: pd.DataFrame):
-        with open(DUMP_METADATA_PATH, "w+b") as metadata_file:
-            pickle.dump(df_meta_data, metadata_file)
+    def get_metadata(self) -> pd.DataFrame:
+        if self._dataframe is None:
+            raise RuntimeError("Try to access the metadata before setting it.")
+        return self._dataframe
 
-        with open(DUMP_METADATA_COLUMNS_PATH, "w+b") as metadata_file:
-            pickle.dump(list(df_meta_data.columns), metadata_file)
+    def get_columns(self) -> List[str]:
+        if self._dataframe is None:
+            return []
+        return self._dataframe.columns.tolist()
 
-    def load_metadata(self) -> pd.DataFrame:
-        with open(DUMP_METADATA_PATH, "rb") as metadata_file:
-            return pickle.load(metadata_file)
-
-    def load_columns(self) -> List[str]:
-        with open(DUMP_METADATA_COLUMNS_PATH, "rb") as metadata_file:
-            return pickle.load(metadata_file)
-
-    def get_formatted_columns(self) -> List[dict]:
-        columns_with_none = self.load_columns()
-        return [{'label': column, 'value': column} for column in columns_with_none]
-
-    def get_formatted_unique_targets(self) -> List[dict]:
-        targets = self.load_metadata()[self._target_column]
-        print("MetaData -> get_formatted_unique_targets : print self._target_column = {}".format(self._target_column))
-        possible_targets = list(set(targets))
-        return [{'label': target, 'value': target} for target in possible_targets]
+    def get_unique_targets(self) -> List[str]:
+        targets = self.get_targets()
+        return list(set(targets))
 
     def set_id_column(self, id_column: str) -> None:
-        df_metadata = self.load_metadata()
-        with open(DUMP_SAMPLES_ID_PATH, "w+b") as metadata_file:
-            pickle.dump(df_metadata[id_column].tolist(), metadata_file)
-
+        if id_column not in self.get_columns():
+            raise ValueError(
+                f"'{id_column}' is not a column of the metadata. The columns are: {self.get_columns()}"
+            )
         self._id_column = id_column
 
     def set_target_column(self, target_column: str) -> None:
+        if target_column not in self.get_columns():
+            raise ValueError(
+                f"'{target_column}' is not a column of the metadata. The columns are: {self.get_columns()}"
+            )
         self._target_column = target_column
-        df_metadata = self.load_metadata()
-        with open(DUMP_TARGETS_PATH, "w+b") as target_file:
-            pickle.dump(df_metadata[target_column].tolist(), target_file)
 
-    def load_targets(self) -> List[str]:
+    def get_target_column(self) -> str:
+        return self._target_column
+
+    def get_id_column(self) -> str:
+        return self._id_column
+
+    def get_targets(self) -> List[str]:
         if self._target_column is None:
-            raise RuntimeError("Try to access the targets before setting the column.")
-        with open(DUMP_TARGETS_PATH, "rb") as target_file:
-            return pickle.load(target_file)
+            print("WARNING: accessing targets before setting the column")
+            return []
+        return self._dataframe[self._target_column].tolist()
 
-    def load_samples_id(self) -> List[str]:
+    def get_selected_targets_and_ids(
+        self, selected_targets: List[str]
+    ) -> Tuple[Tuple[str], Tuple[str]]:
+        return tuple(
+            zip(
+                *[
+                    (target, id)
+                    for target, id in zip(self.get_targets(), self.get_samples_id())
+                    if target in selected_targets
+                ]
+            )
+        )
+
+    def get_selected_targets(self, selected_targets: List[str]) -> List[str]:
+        if selected_targets is None or len(selected_targets) == 0:
+            raise ValueError("No target selected")
+        return [target for target in self.get_targets() if target in selected_targets]
+
+    def get_samples_id(self) -> List[str]:
         if self._id_column is None:
-            raise RuntimeError("Try to access the samples id column before setting one")
-        with open(DUMP_SAMPLES_ID_PATH, "rb") as metadata_file:
-            return pickle.load(metadata_file)
+            print("WARNING: accessing samples id before setting the column")
+            return []
+        return self._dataframe[self._id_column].tolist()
+
 
 # TODO: join sampleId and target in same pickle file
