@@ -110,10 +110,6 @@ def in_env_python_command(command: str, is_module: bool = True):
     return conda_command(f"python {'-m' if is_module else ''} {command}")
 
 
-def out_python_command(command: str, is_module: bool = True):  # TODO WTF ? not used
-    return f"{sys.executable} {'-m' if is_module else ''} {command}"
-
-
 class Loader:
     def __init__(
         self,
