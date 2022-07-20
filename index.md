@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link href="stylesheet.css" rel="stylesheet" title="main" type="text/css">
-    <link rel="icon" type="image/x-icon" href="imgs/logo2.svg">
+    <link rel="icon" type="image/x-icon" href="imgs/favicon.ico">
 
 </head>
 <body>
