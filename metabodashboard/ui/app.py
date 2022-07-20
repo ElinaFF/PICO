@@ -14,6 +14,7 @@ app = dash.Dash(
     external_stylesheets=[dbc.themes.LUX],
     meta_tags=[{"name": "viewport", "content": "width=device-width"}],
 )
+app.title = "MeDIC"
 server = app.server
 # app.scripts.config.serve_locally = False
 app.css.config.serve_locally = False
