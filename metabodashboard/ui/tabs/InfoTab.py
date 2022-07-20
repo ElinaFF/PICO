@@ -15,9 +15,13 @@ class InfoTab(MetaTab):
                 dbc.CardBody(
                     [
                         "You can find the official documentation at this ",
-                        html.A(href="https://elinaff.github.io/MetaboDashboard/",
-                               target='_blank', rel="noreferrer noopener", children='link'),
-                        "."
+                        html.A(
+                            href="https://elinaff.github.io/MetaboDashboard/",
+                            target="_blank",
+                            rel="noreferrer noopener",
+                            children="link",
+                        ),
+                        ".",
                     ]
                 ),
             ],
@@ -135,9 +139,7 @@ class InfoTab(MetaTab):
             className="card_body_fig",
             children=[
                 # dbc.Card("Amazing figure here", className="card_body_fig", body=True),
-                dbc.CardImg(
-                    src="/assets/update_figure_steps_MeDIC_4.svg", bottom=True
-                )
+                dbc.CardImg(src="/assets/update_figure_steps_MeDIC_4.svg", bottom=True)
             ],
         )
         # TODO : add the filename
