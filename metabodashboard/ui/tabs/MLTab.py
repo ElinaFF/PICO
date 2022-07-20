@@ -120,7 +120,7 @@ class MLTab(MetaTab):
             id="Learning_button_box",
             className="button_box",
             children=[
-                 dcc.Loading(
+                dcc.Loading(
                     id="learn_loading",
                     children=[
                         html.Div(
@@ -225,7 +225,7 @@ class MLTab(MetaTab):
             [
                 Output("output_button_ml", "children"),
                 Output("download-save-file-ml", "data"),
-                Output("learn_loading_output", "children")
+                Output("learn_loading_output", "children"),
             ],
             [Input("start_learning_button", "n_clicks")],
             [
