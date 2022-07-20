@@ -1,5 +1,5 @@
 title: MeDIC
-logo: favicon.ico
+logo: logo.png
 description: Metabolomic Dashboard for Interpretable Classification
 remote_theme: pages-themes/cayman@v0.2.0
 plugins:
