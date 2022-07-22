@@ -401,8 +401,12 @@ class InfoTab(MetaTab):
 
                 elif triggered_id == "fullRestore":
                     metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
-                    if new_data is not None and new_metadata is not None and Utils.are_files_corresponding_to_dto(
-                        new_data, new_metadata, metabo_exp_dto
+                    if (
+                        new_data is not None
+                        and new_metadata is not None
+                        and Utils.are_files_corresponding_to_dto(
+                            new_data, new_metadata, metabo_exp_dto
+                        )
                     ):
                         self.metabo_controller.full_restore(metabo_exp_dto)
                         return (
@@ -411,6 +415,10 @@ class InfoTab(MetaTab):
                             "",
                         )
                     else:
-                        return True, "", "You need to restore original data matrix and metadata to do a full restore"
+                        return (
+                            True,
+                            "",
+                            "You need to restore original data matrix and metadata to do a full restore",
+                        )
 
                 return False, dash.no_update, dash.no_update
