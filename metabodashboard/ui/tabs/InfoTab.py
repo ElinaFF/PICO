@@ -171,13 +171,14 @@ class InfoTab(MetaTab):
                                 ),
                                 dcc.Loading(
                                     id="upload_datatable_modal_loading",
-                                    type="circle",
+                                    type="dot",
+                                    color="#13BD00",
                                     children=[
                                         html.Div(id="upload_datatable_modal_output"),
                                     ],
                                 ),
                             ],
-                            style={"display": "flex"},
+                            style={"display": "flex", "align-items": "center"},
                         ),
                         html.Div(
                             children=[
@@ -194,13 +195,14 @@ class InfoTab(MetaTab):
                                 ),
                                 dcc.Loading(
                                     id="upload_metadata_modal_loading",
-                                    type="circle",
+                                    type="dot",
+                                    color="#13BD00",
                                     children=[
                                         html.Div(id="upload_metadata_modal_output"),
                                     ],
                                 ),
                             ],
-                            style={"display": "flex"},
+                            style={"display": "flex", "align-items": "center"},
                         ),
                         html.Div(
                             id="upload_datatable_modal_error_output",
@@ -304,7 +306,7 @@ class InfoTab(MetaTab):
         def set_metadata_in_modal(contents, dto_contents):
             if contents is not None:
                 metabo_experiment_dto = decode_pickle_from_base64(dto_contents)
-                if Utils.is_data_the_same(contents, metabo_experiment_dto):
+                if Utils.is_metadata_the_same(contents, metabo_experiment_dto):
                     return "Metadata uploaded successfully", {"color": "green"}
                 else:
                     return "Metadata uploaded but not corresponding to the local one", {
@@ -399,7 +401,7 @@ class InfoTab(MetaTab):
 
                 elif triggered_id == "fullRestore":
                     metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
-                    if Utils.are_files_corresponding(
+                    if new_data is not None and new_metadata is not None and Utils.are_files_corresponding_to_dto(
                         new_data, new_metadata, metabo_exp_dto
                     ):
                         self.metabo_controller.full_restore(metabo_exp_dto)
@@ -409,6 +411,6 @@ class InfoTab(MetaTab):
                             "",
                         )
                     else:
-                        return True, "", dash.no_update
+                        return True, "", "You need to restore original data matrix and metadata to do a full restore"
 
                 return False, dash.no_update, dash.no_update
