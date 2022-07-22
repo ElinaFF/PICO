@@ -344,7 +344,9 @@ class MetaboExperiment:
         from_base64_metadata=True,
     ):
         self._data_matrix.set_raw_use(saved_metabo_experiment_dto.data_matrix.is_raw())
-        self._data_matrix.set_remove_rt(saved_metabo_experiment_dto.data_matrix.get_remove_rt())
+        self._data_matrix.set_remove_rt(
+            saved_metabo_experiment_dto.data_matrix.get_remove_rt()
+        )
         self.set_data_matrix(
             filename_data,
             data=data,
