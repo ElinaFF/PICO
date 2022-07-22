@@ -189,10 +189,12 @@ def decode_pickle_from_base64(encoded_object: str):
     return pickle.loads(base64.b64decode(encoded_object.split(",")[1]))
 
 
-def are_files_corresponding(data: str, metadata: str, metabo_experiment_dto) -> bool:
-    return metabo_experiment_dto.metadata.get_hash() == compute_hash(
-        metadata
-    ) and metabo_experiment_dto.data_matrix.get_hash() == compute_hash(data)
+def are_files_corresponding_to_dto(
+    data: str, metadata: str, metabo_experiment_dto
+) -> bool:
+    return is_data_the_same(data, metabo_experiment_dto) and is_metadata_the_same(
+        metadata, metabo_experiment_dto
+    )
 
 
 def reset_file(file_path: str):
