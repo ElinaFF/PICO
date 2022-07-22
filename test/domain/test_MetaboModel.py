@@ -2,7 +2,7 @@ import pytest
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.tree import DecisionTreeClassifier
 
-from ..TestsUtility import FOLDS, DATA, CLASSES, PARAMETER_GRID
+from ..TestsUtility import FOLDS, DATA, CLASSES, PARAMETER_GRID, NUMBER_OF_PROCESSES
 from ...metabodashboard.domain.MetaboModel import MetaboModel
 
 
@@ -12,7 +12,7 @@ def input_metabomodel():
 
 
 def test_givenModel_whenTuningWithGridSearch_thenReturnBestModel(input_metabomodel):
-    best_model = input_metabomodel.train(FOLDS, DATA, CLASSES, GridSearchCV)
+    best_model = input_metabomodel.train(FOLDS, DATA, CLASSES, GridSearchCV, NUMBER_OF_PROCESSES)
     real_model = GridSearchCV(
         DecisionTreeClassifier(random_state=42), PARAMETER_GRID, cv=FOLDS
     )
@@ -32,5 +32,5 @@ def test_givenModel_whenTuningWithRandomizedSearch_thenReturnBestModel(
     real_model.fit(DATA, CLASSES)
     for i in range(10):
         print(f"Run {i}")
-        best_model = input_metabomodel.train(FOLDS, DATA, CLASSES, RandomizedSearchCV)
+        best_model = input_metabomodel.train(FOLDS, DATA, CLASSES, RandomizedSearchCV, NUMBER_OF_PROCESSES)
         assert best_model.get_params() == real_model.best_estimator_.get_params()

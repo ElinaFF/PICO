@@ -211,6 +211,8 @@ MOCKED_DATAMATRIX_CLASS = Mock(name="MockedDatamatrix")
 MOCKED_DATAMATRIX = MOCKED_DATAMATRIX_CLASS.return_value
 MOCKED_DATAMATRIX.load_data.return_value = DATAMATRIX_DATAFRAME
 MOCKED_DATAMATRIX.get_hash.return_value = DATAMATRIX_DATAFRAME_HASH
+MOCKED_DATAMATRIX.is_raw.return_value = False
+MOCKED_DATAMATRIX.get_remove_rt.return_value = False
 
 RESULTS = _get_random_results(NUMBER_OF_SPLITS)
 
@@ -285,3 +287,5 @@ FEATURE_IMPORTANCE_TABLE = pd.DataFrame(
         "importance_usage": [random.random() for _ in range(COLUMNS_NUMBER)],
     }
 ).sort_values(by=["importance_usage"], ascending=False)
+
+NUMBER_OF_PROCESSES = 2

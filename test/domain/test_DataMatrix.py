@@ -33,6 +33,8 @@ def test_givenData_whenLoadData_thenDataIsLoaded(
 def test_givenBase64Data_whenReadFormat_thenDataIsLoaded(
     open_mock, pickle_dump, input_data_matrix
 ):
+    input_data_matrix.set_raw_use(False)
+    input_data_matrix.set_remove_rt(False)
     input_data_matrix.read_format_and_store_data(
         "test.csv", data=ENCODED_DATAMATRIX_DATAFRAME
     )
