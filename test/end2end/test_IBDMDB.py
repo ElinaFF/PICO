@@ -8,7 +8,7 @@ from ..TestsUtility import (
     TARGETS_COLUMN,
     CLASSES_DESIGN,
     ENCODED_METADATA_DATAFRAME,
-    SELECTED_MODELS,
+    SELECTED_MODELS_NAME,
 )
 
 
@@ -19,8 +19,10 @@ def input_controller():
 
 def test_givenIBDMDBDataset_whenLearning_thenNoThrow(input_controller):
     input_controller.set_metadata("metadata.csv", data=ENCODED_METADATA_DATAFRAME)
+    input_controller.set_data_matrix_remove_rt(False)
+    input_controller.set_raw_use_for_data(False)
     input_controller.set_data_matrix_from_path(
-        "data.csv", data=ENCODED_DATAMATRIX_DATAFRAME, remove_features=False
+        "data.csv", data=ENCODED_DATAMATRIX_DATAFRAME
     )
 
     input_controller.set_id_column(SAMPLES_ID_COLUMN)
@@ -30,6 +32,7 @@ def test_givenIBDMDBDataset_whenLearning_thenNoThrow(input_controller):
     input_controller.set_train_test_proportion(0.2)
     input_controller.set_number_of_splits(2)
     input_controller.create_splits()
-    input_controller.set_selected_models(SELECTED_MODELS)
+    input_controller.set_selected_models(SELECTED_MODELS_NAME)
 
-    input_controller.learn(2)
+    input_controller.set_cv_folds(2)
+    input_controller.learn()

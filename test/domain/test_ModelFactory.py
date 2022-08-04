@@ -30,9 +30,19 @@ def test_givenAModelFactory_whenCreateCustomModel_thenTheCustomModelIsCorrect_2(
 ):
     model_name = "SVC"
     needed_imports = "svm"
-    model_param_grid = {"test_param": "test_value"}
+    model_param_grid = ["test_value_1", "test_value_2"]
+    value_to_test = [
+        ["test_value_11", "test_value_12"],
+        ["test_value_21", "test_value_22", "test_value_23"],
+    ]
+    real_grid_search_param = {
+        "test_value_1": ["test_value_11", "test_value_12"],
+        "test_value_2": ["test_value_21", "test_value_22", "test_value_23"],
+    }
+
     custom_model = input_model_factory.create_custom_model(
-        model_name, needed_imports, model_param_grid
+        model_name, needed_imports, model_param_grid, value_to_test
     )
+
     assert custom_model.model == SVC
-    assert custom_model.grid_search_param == model_param_grid
+    assert custom_model.grid_search_param == real_grid_search_param

@@ -19,26 +19,26 @@ def main():
     start_time = datetime.now()
     print("Starting the MetaboDashboard")
     metabo_controller = MetaboController()
+    metabo_controller.set_raw_use_for_data(False)
 
-    metabo_controller.set_data_matrix_from_path(
-        DATAMATRIX_PATH, use_raw=False, from_base64=False
-    )
+    metabo_controller.set_data_matrix_from_path(DATAMATRIX_PATH, from_base64=False)
     metabo_controller.set_metadata(METADATA_PATH, from_base64=False)
     print("Metadata and DataMatrix are set_from_path")
 
     metabo_controller.set_id_column("Sample")
     metabo_controller.set_target_column("diet")
     metabo_controller.set_pairing_group_column("subject")
-    metabo_controller.add_experimental_design({"NA": "NA", "MED": ["MED", "MED/w"]})
+    metabo_controller.add_experimental_design({"NA": ["NA"], "MED": ["MED", "MED/w"]})
     print("Experimental design added")
 
     metabo_controller.set_train_test_proportion(0.2)
-    metabo_controller.set_number_of_splits(2)
+    metabo_controller.set_number_of_splits(25)
     metabo_controller.create_splits()
     metabo_controller.set_selected_models(["DecisionTree", "RandomForest"])
 
     print("Learning starts...")
-    metabo_controller.learn(2)
+    metabo_controller.set_cv_folds(5)
+    metabo_controller.learn()
     print("finished")
     #
     print(metabo_controller.get_all_results())

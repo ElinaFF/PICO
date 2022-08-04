@@ -169,27 +169,57 @@ class InfoTab(MetaTab):
                             "If you only want to see the results, it will be available (Load results) but metadata and data "
                             "matrix will be reset, as well as the experimental designs."
                         ),
-                        dcc.Upload(
-                            id="upload_datatable_modal",
+                        html.Div(
                             children=[
-                                dbc.Button(
-                                    "Upload Data Matrix",
-                                    id="upload_datatable_modal_button",
-                                    # className="custom_buttons",
-                                    color="outline-primary",
-                                )
+                                dcc.Upload(
+                                    id="upload_datatable_modal",
+                                    children=[
+                                        dbc.Button(
+                                            "Upload Data Matrix",
+                                            id="upload_datatable_modal_button",
+                                            # className="custom_buttons",
+                                            color="outline-primary",
+                                        )
+                                    ],
+                                ),
+                                dcc.Loading(
+                                    id="upload_datatable_modal_loading",
+                                    type="dot",
+                                    color="#13BD00",
+                                    children=[
+                                        html.Div(id="upload_datatable_modal_output"),
+                                    ],
+                                ),
                             ],
+                            style={"display": "flex", "align-items": "center"},
                         ),
-                        dcc.Upload(
-                            id="upload_metadata_modal",
+                        html.Div(
                             children=[
-                                dbc.Button(
-                                    "Upload Metadata",
-                                    id="upload_metadata_modal_button",
-                                    # className="custom_buttons",
-                                    color="outline-primary",
-                                )
+                                dcc.Upload(
+                                    id="upload_metadata_modal",
+                                    children=[
+                                        dbc.Button(
+                                            "Upload Metadata",
+                                            id="upload_metadata_modal_button",
+                                            # className="custom_buttons",
+                                            color="outline-primary",
+                                        )
+                                    ],
+                                ),
+                                dcc.Loading(
+                                    id="upload_metadata_modal_loading",
+                                    type="dot",
+                                    color="#13BD00",
+                                    children=[
+                                        html.Div(id="upload_metadata_modal_output"),
+                                    ],
+                                ),
                             ],
+                            style={"display": "flex", "align-items": "center"},
+                        ),
+                        html.Div(
+                            id="upload_datatable_modal_error_output",
+                            style={"color": "red"},
                         ),
                     ],
                 ),
@@ -199,20 +229,19 @@ class InfoTab(MetaTab):
                         dbc.Button(
                             "Close", id="close", className="custom_buttons", n_clicks=0
                         ),
-                        # Show diff
+                        # NO FILES
                         dbc.Button(
                             "Load results",
                             id="loadAnyway",
                             className="custom_buttons push",
                             n_clicks=0,
                         ),
-                        # NO FILES
+                        # require files
                         dbc.Button(
                             "Partial restore",
                             id="partialRestore",
                             className="custom_buttons",
                             n_clicks=0,
-                            disabled=True,
                         ),
                         # require files
                         dbc.Button(
@@ -220,7 +249,6 @@ class InfoTab(MetaTab):
                             id="fullRestore",
                             className="custom_buttons",
                             n_clicks=0,
-                            disabled=True,
                         ),
                     ],
                 ),
@@ -266,7 +294,52 @@ class InfoTab(MetaTab):
 
     def _registerCallbacks(self) -> None:
         @self.app.callback(
-            [Output("warning-not-match", "is_open"), Output("hidden_div", "children")],
+            [
+                Output("upload_datatable_modal_output", "children"),
+                Output("upload_datatable_modal_output", "style"),
+            ],
+            [Input("upload_datatable_modal", "contents")],
+            [State("load_expe", "contents")],
+        )
+        def set_data_matrix_in_modal(contents, dto_contents):
+            if contents is not None:
+                metabo_experiment_dto = decode_pickle_from_base64(dto_contents)
+                if Utils.is_data_the_same(contents, metabo_experiment_dto):
+                    return "Data matrix uploaded successfully", {"color": "green"}
+                else:
+                    return (
+                        "Data matrix uploaded but not corresponding to the local one",
+                        {"color": "yellow"},
+                    )
+            else:
+                return dash.no_update, dash.no_update
+
+        @self.app.callback(
+            [
+                Output("upload_metadata_modal_output", "children"),
+                Output("upload_metadata_modal_output", "style"),
+            ],
+            [Input("upload_metadata_modal", "contents")],
+            [State("load_expe", "contents")],
+        )
+        def set_metadata_in_modal(contents, dto_contents):
+            if contents is not None:
+                metabo_experiment_dto = decode_pickle_from_base64(dto_contents)
+                if Utils.is_metadata_the_same(contents, metabo_experiment_dto):
+                    return "Metadata uploaded successfully", {"color": "green"}
+                else:
+                    return "Metadata uploaded but not corresponding to the local one", {
+                        "color": "yellow"
+                    }
+            else:
+                return dash.no_update, dash.no_update
+
+        @self.app.callback(
+            [
+                Output("warning-not-match", "is_open"),
+                Output("hidden_div", "children"),
+                Output("upload_datatable_modal_error_output", "children"),
+            ],
             [
                 Input("close", "n_clicks"),
                 Input("loadAnyway", "n_clicks"),
@@ -305,119 +378,66 @@ class InfoTab(MetaTab):
                         self.metabo_controller.full_restore(metabo_exp_dto)
                         return (
                             False,
+                            "reload",
                             "",
-                        )  # dcc.Location(href="/home", id="someid_doesnt_matter")
+                        )
                     else:
-                        return True, dash.no_update
+                        return True, dash.no_update, dash.no_update
 
                 elif triggered_id == "loadAnyway":
                     metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
-                    print("self.metabo_controller before loading results")
-                    attrs = vars(self.metabo_controller._metabo_experiment)
-                    print(", ".join("%s: %s" % item for item in attrs.items()))
-                    print("---------")
                     self.metabo_controller.load_results(metabo_exp_dto)
-                    print("self.metabo_controller after loading results")
-                    attrs = vars(self.metabo_controller._metabo_experiment)
-                    print(", ".join("%s: %s" % item for item in attrs.items()))
-                    print("---------")
                     return (
                         False,
+                        "",
                         "",
                     )  # dcc.Location(href="/home", id="someid_doesnt_matter")
 
                 elif triggered_id == "partialRestore":
                     metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
                     if new_data and new_metadata:
-                        self.metabo_controller.partial_restore(
-                            metabo_exp_dto,
-                            new_data_name,
-                            new_metadata_name,
-                            data=new_data,
-                            metadata=new_metadata,
-                        )
-                        print("partial restore")
-                        print(self.metabo_controller.get_metadata_columns())
+                        try:
+                            self.metabo_controller.partial_restore(
+                                metabo_exp_dto,
+                                new_data_name,
+                                new_metadata_name,
+                                data=new_data,
+                                metadata=new_metadata,
+                            )
+                        except ValueError as ve:
+                            return True, dash.no_update, str(ve)
                         return (
                             False,
                             "",
-                        )  # dcc.Location(href="/home", id="someid_doesnt_matter")
+                            "",
+                        )
                     else:
-                        return True, ""
+                        return (
+                            True,
+                            "",
+                            "You need to upload both data and metadata to do a partial restore",
+                        )
 
                 elif triggered_id == "fullRestore":
                     metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
-                    if Utils.are_files_corresponding(
-                        new_data, new_metadata, metabo_exp_dto
+                    if (
+                        new_data is not None
+                        and new_metadata is not None
+                        and Utils.are_files_corresponding_to_dto(
+                            new_data, new_metadata, metabo_exp_dto
+                        )
                     ):
                         self.metabo_controller.full_restore(metabo_exp_dto)
                         return (
                             False,
                             "",
-                        )  # dcc.Location(href="/home", id="someid_doesnt_matter")
+                            "",
+                        )
                     else:
-                        return True, ""
+                        return (
+                            True,
+                            "",
+                            "You need to restore original data matrix and metadata to do a full restore",
+                        )
 
-                return False, dash.no_update
-
-        # @self.app.callback(
-        #     [Output("warning-not-match", "is_open"), Output("hidden_div", "children")],
-        #     [Input("close", "n_clicks"),
-        #      Input("loadAnyway", "n_clicks"),
-        #      Input("partialRestore", "n_clicks"),
-        #      Input("fullRestore", "n_clicks"),
-        #      Input("load_expe", "contents"),
-        #      Input("upload_datatable_modal", "contents"),
-        #      Input("upload_metadata_modal", "contents"),
-        #      Input("upload_datatable_modal", "filename"),
-        #      Input("upload_metadata_modal", "filename")],
-        #     [State("warning-not-match", "is_open"), State("load_expe", "filename")],
-        # )
-        # def toggle_modal(close, load_anyway, partial_restore, full_restore, file, data, metadata,
-        #                  data_name, metadata_name, is_open, filename):
-        #
-        #
-        #
-        #     print("close:{}, load_anyway:{}, partial_restore:{}, full_restore:{}, \
-        #             data_name:{}, metadata_name:{}, is_open:{}, filename:{}".format(close, load_anyway, partial_restore,
-        #                                                                             full_restore,
-        #                                                                             data_name, metadata_name, is_open,
-        #                                                                             filename))
-        #
-        #     if filename is not None:
-        #         if self.metabo_controller.is_save_safe(metabo_exp_dto):
-        #             self.metabo_controller.full_restore(metabo_exp_dto)
-        #             return False, dcc.Location(href="/home", id="someid_doesnt_matter")
-        #         else:
-        #             return True, dash.no_update
-        #
-        #     if close >= 1:
-        #         return False, dash.no_update
-        #
-        #     metabo_exp_dto = decode_pickle_from_base64(file)
-        #
-        #     if full_restore >= 1:
-        #         if Utils.are_files_corresponding(data, metadata, metabo_exp_dto):
-        #             self.metabo_controller.full_restore(metabo_exp_dto)
-        #             return False, dcc.Location(href="/home", id="someid_doesnt_matter")
-        #         else:
-        #             return True, ""
-        #     elif partial_restore >= 1:
-        #         if data and metadata:
-        #             self.metabo_controller.partial_restore(
-        #                 metabo_exp_dto,
-        #                 data_name,
-        #                 metadata_name,
-        #                 data=data,
-        #                 metadata=metadata,
-        #             )
-        #             print("partial restore")
-        #             print(self.metabo_controller.get_metadata_columns())
-        #             return False, dcc.Location(href="/home", id="someid_doesnt_matter")
-        #         else:
-        #             return True, ""
-        #     elif load_anyway >= 1:
-        #         self.metabo_controller.load_results(metabo_exp_dto)
-        #         return False, dcc.Location(href="/home", id="someid_doesnt_matter")
-        #
-        #     return is_open, dash.no_update
+                return False, dash.no_update, dash.no_update

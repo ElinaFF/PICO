@@ -211,6 +211,8 @@ MOCKED_DATAMATRIX_CLASS = Mock(name="MockedDatamatrix")
 MOCKED_DATAMATRIX = MOCKED_DATAMATRIX_CLASS.return_value
 MOCKED_DATAMATRIX.load_data.return_value = DATAMATRIX_DATAFRAME
 MOCKED_DATAMATRIX.get_hash.return_value = DATAMATRIX_DATAFRAME_HASH
+MOCKED_DATAMATRIX.is_raw.return_value = False
+MOCKED_DATAMATRIX.get_remove_rt.return_value = False
 
 RESULTS = _get_random_results(NUMBER_OF_SPLITS)
 
@@ -220,7 +222,10 @@ MOCKED_RESULT = MOCKED_RESULT_CLASS.return_value
 EXP_RESULTS = {
     "DecisionTree": MOCKED_RESULT,
     "RandomForest": MOCKED_RESULT,
-    "LogisticRegression": MOCKED_RESULT,
+}
+
+ALL_RESULTS = {
+    EXPERIMENT_NAME: EXP_RESULTS,
 }
 
 MOCKED_EXPERIMENTAL_DESIGN_CLASS = Mock(name="MockedExperimentalDesign")
@@ -229,6 +234,7 @@ MOCKED_EXPERIMENTAL_DESIGN.get_classes_design.return_value = CLASSES_DESIGN
 MOCKED_EXPERIMENTAL_DESIGN.get_name.return_value = EXPERIMENT_NAME
 MOCKED_EXPERIMENTAL_DESIGN.get_full_name.return_value = EXPERIMENT_FULL_NAME
 MOCKED_EXPERIMENTAL_DESIGN.get_results.return_value = EXP_RESULTS
+MOCKED_EXPERIMENTAL_DESIGN.get_is_done.return_value = True
 
 EXPERIMENT_DESIGNS = {EXPERIMENT_NAME: MOCKED_EXPERIMENTAL_DESIGN}
 
@@ -239,7 +245,7 @@ CUSTOM_MODELS = {
     "Custom model": MOCKED_CUSTOM_MODEL,
 }
 
-SELECTED_MODELS = ["RandomForest", "DecisionTree"]
+SELECTED_MODELS_NAME = ["RandomForest", "DecisionTree"]
 CV_TYPE = "GridSearchCV"
 
 MOCKED_METABOEXPERIMENT_CLASS = Mock(name="MockedMetaboExperiment")
@@ -250,7 +256,7 @@ MOCKED_METABOEXPERIMENT.get_number_of_splits.return_value = NUMBER_OF_SPLITS
 MOCKED_METABOEXPERIMENT.get_train_test_proportion.return_value = TRAIN_TEST_PROPORTION
 MOCKED_METABOEXPERIMENT.get_experimental_designs.return_value = EXPERIMENT_DESIGNS
 MOCKED_METABOEXPERIMENT.get_custom_models.return_value = CUSTOM_MODELS
-MOCKED_METABOEXPERIMENT.get_selected_models.return_value = SELECTED_MODELS
+MOCKED_METABOEXPERIMENT.get_selected_models.return_value = SELECTED_MODELS_NAME
 MOCKED_METABOEXPERIMENT.get_selected_cv_type.return_value = CV_TYPE
 
 MOCKED_METABOEXPERIMENT_DTO_CLASS = Mock(name="MockedMetaboExperimentDTO")
@@ -261,7 +267,7 @@ MOCKED_METABOEXPERIMENT_DTO.number_of_splits = NUMBER_OF_SPLITS
 MOCKED_METABOEXPERIMENT_DTO.train_test_proportion = TRAIN_TEST_PROPORTION
 MOCKED_METABOEXPERIMENT_DTO.experimental_designs = EXPERIMENT_DESIGNS
 MOCKED_METABOEXPERIMENT_DTO.custom_models = CUSTOM_MODELS
-MOCKED_METABOEXPERIMENT_DTO.selected_models = SELECTED_MODELS
+MOCKED_METABOEXPERIMENT_DTO.selected_models = SELECTED_MODELS_NAME
 MOCKED_METABOEXPERIMENT_DTO.selected_cv_type = CV_TYPE
 
 SPLITS = _get_splits(NUMBER_OF_SPLITS, TRAIN_TEST_PROPORTION, SAMPLES_ID, CLASSES)
@@ -281,3 +287,5 @@ FEATURE_IMPORTANCE_TABLE = pd.DataFrame(
         "importance_usage": [random.random() for _ in range(COLUMNS_NUMBER)],
     }
 ).sort_values(by=["importance_usage"], ascending=False)
+
+NUMBER_OF_PROCESSES = 2
