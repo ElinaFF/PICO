@@ -712,7 +712,7 @@ class ResultsTab(MetaTab):
                 return dash.no_update
 
         @self.app.callback(
-            Output("F", "figure"),
+            Output("features_stripChart", "figure"),
             [Input("features_dropdown", "value")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
