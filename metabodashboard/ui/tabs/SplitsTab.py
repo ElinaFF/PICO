@@ -839,7 +839,10 @@ class SplitsTab(MetaTab):
         def update_possible_classes_exp_design(target_col, children, active_tab):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
             if active_tab == "tab-1":
-                if triggered_id == "in_target_col_name":
+                if triggered_id == "in_target_col_name" and target_col not in [
+                    None,
+                    "",
+                ]:
                     self.metabo_controller.set_target_column(target_col)
                 formatted_possible_targets = Utils.format_list_for_checklist(
                     self.metabo_controller.get_unique_targets()
@@ -867,6 +870,7 @@ class SplitsTab(MetaTab):
                 Input("remove_experimental_design_button", "n_clicks"),
                 Input("in_target_col_name", "value"),
                 Input("info_progenesis_loaded", "children"),
+                Input("custom_big_tabs", "active_tab"),
             ],
             [
                 State("class1_name", "value"),
@@ -876,7 +880,7 @@ class SplitsTab(MetaTab):
             ],
         )
         def add_n_reset_classes_exp_design(
-            n_add, n_remove, target_col, children, c1, g1, c2, g2
+            n_add, n_remove, target_col, children, active_tab, c1, g1, c2, g2
         ):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
@@ -922,48 +926,71 @@ class SplitsTab(MetaTab):
             return is_open
 
         @self.app.callback(
-            Output("in_ID_col_name", "value"), [Input("in_ID_col_name", "value")]
+            Output("in_ID_col_name", "value"),
+            [Input("in_ID_col_name", "value"), Input("custom_big_tabs", "active_tab")],
         )
-        def update_ID_col_name(new_value):
-            if new_value is not None:
-                self.metabo_controller.set_id_column(new_value)
-            return self.metabo_controller.get_id_column()
+        def update_ID_col_name(new_value, active_tab):
+            if active_tab == "tab-1":
+                if new_value not in [None, ""]:
+                    self.metabo_controller.set_id_column(new_value)
+                return self.metabo_controller.get_id_column()
+            return dash.no_update
 
         @self.app.callback(
-            Output("in_nbr_splits", "value"), [Input("in_nbr_splits", "value")]
+            Output("in_target_col_name", "value"),
+            [Input("custom_big_tabs", "active_tab")],
         )
-        def update_nbr_splits(new_value):
-            if callback_context.triggered[0]["prop_id"] == ".":
+        def update_in_target_col_name(active_tab):
+            if active_tab == "tab-1":
+                return self.metabo_controller.get_target_column()
+            return dash.no_update
+
+        @self.app.callback(
+            Output("in_nbr_splits", "value"),
+            [Input("in_nbr_splits", "value"), Input("custom_big_tabs", "active_tab")],
+        )
+        def update_nbr_splits(new_value, active_tab):
+            if active_tab == "tab-1":
+                if new_value not in [None, ""]:
+                    try:
+                        casted_value = int(new_value)
+                    except (ValueError, TypeError):
+                        return new_value
+                    self.metabo_controller.set_number_of_splits(int(casted_value))
                 return self.metabo_controller.get_number_of_splits()
-            try:
-                casted_value = int(new_value)
-            except (ValueError, TypeError):
-                return new_value
-            self.metabo_controller.set_number_of_splits(int(casted_value))
-            return casted_value
+            return dash.no_update
 
         @self.app.callback(
             Output("in_percent_samples_in_test", "value"),
-            [Input("in_percent_samples_in_test", "value")],
+            [
+                Input("in_percent_samples_in_test", "value"),
+                Input("custom_big_tabs", "active_tab"),
+            ],
         )
-        def update_percent_samples_in_test(new_value):
-            if callback_context.triggered[0]["prop_id"] == ".":
+        def update_percent_samples_in_test(new_value, active_tab):
+            if active_tab == "tab-1":
+                if new_value not in [None, ""]:
+                    try:
+                        casted_value = float(new_value)
+                    except (ValueError, TypeError):
+                        return new_value
+                    self.metabo_controller.set_train_test_proportion(casted_value)
                 return self.metabo_controller.get_train_test_proportion()
-            try:
-                casted_value = float(new_value)
-            except (ValueError, TypeError):
-                return new_value
-            self.metabo_controller.set_train_test_proportion(casted_value)
-            return casted_value
+            return dash.no_update
 
         @self.app.callback(
             Output("pairing_group_column", "value"),
-            [Input("pairing_group_column", "value")],
+            [
+                Input("pairing_group_column", "value"),
+                Input("custom_big_tabs", "active_tab"),
+            ],
         )
-        def update_pairing_group_column(new_value):
-            if new_value is not None:
-                self.metabo_controller.set_pairing_group_column(new_value)
-            return self.metabo_controller.get_pairing_group_column()
+        def update_pairing_group_column(new_value, active_tab):
+            if active_tab == "tab-1":
+                if new_value not in [None, ""]:
+                    self.metabo_controller.set_pairing_group_column(new_value)
+                return self.metabo_controller.get_pairing_group_column()
+            return dash.no_update
 
         @self.app.callback(
             [
