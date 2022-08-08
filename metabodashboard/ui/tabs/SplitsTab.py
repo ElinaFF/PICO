@@ -867,6 +867,7 @@ class SplitsTab(MetaTab):
                 Input("remove_experimental_design_button", "n_clicks"),
                 Input("in_target_col_name", "value"),
                 Input("info_progenesis_loaded", "children"),
+                Input("custom_big_tabs", "active_tab")
             ],
             [
                 State("class1_name", "value"),
@@ -876,7 +877,7 @@ class SplitsTab(MetaTab):
             ],
         )
         def add_n_reset_classes_exp_design(
-            n_add, n_remove, target_col, children, c1, g1, c2, g2
+            n_add, n_remove, target_col, children, active_tab, c1, g1, c2, g2
         ):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
