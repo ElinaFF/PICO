@@ -685,7 +685,7 @@ class SplitsTab(MetaTab):
             [State("upload_metadata", "filename")],
         )
         def get_metadata_cols_names_to_choose_from(
-                list_of_contents, active_tab, list_of_names
+            list_of_contents, active_tab, list_of_names
         ):
             triggered_item = callback_context.triggered[0]["prop_id"].split(".")[0]
             if active_tab == "tab-1":
@@ -839,7 +839,10 @@ class SplitsTab(MetaTab):
         def update_possible_classes_exp_design(target_col, children, active_tab):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
             if active_tab == "tab-1":
-                if triggered_id == "in_target_col_name" and target_col not in [None, ""]:
+                if triggered_id == "in_target_col_name" and target_col not in [
+                    None,
+                    "",
+                ]:
                     self.metabo_controller.set_target_column(target_col)
                 formatted_possible_targets = Utils.format_list_for_checklist(
                     self.metabo_controller.get_unique_targets()
@@ -877,14 +880,14 @@ class SplitsTab(MetaTab):
             ],
         )
         def add_n_reset_classes_exp_design(
-                n_add, n_remove, target_col, children, active_tab, c1, g1, c2, g2
+            n_add, n_remove, target_col, children, active_tab, c1, g1, c2, g2
         ):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
             if (
-                    triggered_id == "remove_experimental_design_button"
-                    or triggered_id == "in_target_col_name"
-                    or triggered_id == "info_progenesis_loaded"
+                triggered_id == "remove_experimental_design_button"
+                or triggered_id == "in_target_col_name"
+                or triggered_id == "info_progenesis_loaded"
             ):
                 self.metabo_controller.reset_experimental_designs()
             elif triggered_id == "btn_add_design_exp":
@@ -924,8 +927,7 @@ class SplitsTab(MetaTab):
 
         @self.app.callback(
             Output("in_ID_col_name", "value"),
-            [Input("in_ID_col_name", "value"),
-             Input("custom_big_tabs", "active_tab")]
+            [Input("in_ID_col_name", "value"), Input("custom_big_tabs", "active_tab")],
         )
         def update_ID_col_name(new_value, active_tab):
             if active_tab == "tab-1":
@@ -936,7 +938,7 @@ class SplitsTab(MetaTab):
 
         @self.app.callback(
             Output("in_target_col_name", "value"),
-            [Input("custom_big_tabs", "active_tab")]
+            [Input("custom_big_tabs", "active_tab")],
         )
         def update_in_target_col_name(active_tab):
             if active_tab == "tab-1":
@@ -945,8 +947,7 @@ class SplitsTab(MetaTab):
 
         @self.app.callback(
             Output("in_nbr_splits", "value"),
-            [Input("in_nbr_splits", "value"),
-             Input("custom_big_tabs", "active_tab")]
+            [Input("in_nbr_splits", "value"), Input("custom_big_tabs", "active_tab")],
         )
         def update_nbr_splits(new_value, active_tab):
             if active_tab == "tab-1":
@@ -961,8 +962,10 @@ class SplitsTab(MetaTab):
 
         @self.app.callback(
             Output("in_percent_samples_in_test", "value"),
-            [Input("in_percent_samples_in_test", "value"),
-             Input("custom_big_tabs", "active_tab")],
+            [
+                Input("in_percent_samples_in_test", "value"),
+                Input("custom_big_tabs", "active_tab"),
+            ],
         )
         def update_percent_samples_in_test(new_value, active_tab):
             if active_tab == "tab-1":
@@ -977,8 +980,10 @@ class SplitsTab(MetaTab):
 
         @self.app.callback(
             Output("pairing_group_column", "value"),
-            [Input("pairing_group_column", "value"),
-             Input("custom_big_tabs", "active_tab")],
+            [
+                Input("pairing_group_column", "value"),
+                Input("custom_big_tabs", "active_tab"),
+            ],
         )
         def update_pairing_group_column(new_value, active_tab):
             if active_tab == "tab-1":
