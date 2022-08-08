@@ -867,7 +867,7 @@ class SplitsTab(MetaTab):
                 Input("remove_experimental_design_button", "n_clicks"),
                 Input("in_target_col_name", "value"),
                 Input("info_progenesis_loaded", "children"),
-                Input("custom_big_tabs", "active_tab")
+                Input("custom_big_tabs", "active_tab"),
             ],
             [
                 State("class1_name", "value"),
