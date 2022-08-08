@@ -749,6 +749,6 @@ class ResultsTab(MetaTab):
                     )
 
                     return False, dg.DashInteractiveGraphviz(
-                        id="DTTT", dot_source=dot_data
+                        id="DTTT_graph", dot_source=dot_data
                     )
             return True, ""
