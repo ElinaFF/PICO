@@ -183,7 +183,8 @@ class Results:
                     count[n][0] += 1
                     liste_val.append(values[idx])
             if liste_val:
-                count[n].append(np.mean(liste_val))
+                # mean on all the splits, even if feature not used
+                count[n].append(np.sum(liste_val)/len(self.splits_number))  # np.mean(liste_val) : for mean on number on time its used
             else:
                 count[n].append(0)
         return count
