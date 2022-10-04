@@ -13,7 +13,7 @@ LEARN_CONFIG = {
     },
     "RandomForest": {
         "function": RandomForestClassifier,
-        "ParamGrid": {"n_estimators": [1, 2, 4, 10, 30, 70, 100, 500, 1000]},
+        "ParamGrid": {"n_estimators": [5, 10, 30, 70, 100, 200, 500]},
     },
     "SCM": {
         "function": SetCoveringMachineClassifier,
@@ -28,6 +28,7 @@ LEARN_CONFIG = {
         "ParamGrid": {
             "p_options": [[0.5, 1.0, 2.0]],
             "max_rules": [1, 2, 3, 4, 5],
+            "n_estimators": [5, 10, 30, 70, 100, 200, 500],
             "model_type": ["conjunction", "disjunction"],
         },
     },
