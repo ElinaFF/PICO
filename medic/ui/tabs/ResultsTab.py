@@ -320,6 +320,17 @@ class ResultsTab(MetaTab):
                         ),
                     ],
                 ),
+                html.Div(
+                    className="",
+                    children=[
+                        html.H6("Hyperparameter of the trained model"),
+                        dcc.Loading(
+                            html.Div(id="hyperparameter_table_ctn"),
+                            type="dot",
+                            color="#13BD00",
+                        ),
+                    ],
+                ),
             ],
         )
         ___metricsTable = html.Div(
@@ -664,6 +675,26 @@ class ResultsTab(MetaTab):
 
                 return self._plots.show_general_confusion_matrix(
                     cm, labels, text_mat, algo, split
+                )
+            else:
+                return dash.no_update
+
+        @self.app.callback(
+            Output("hyperparameter_table_ctn", "children"),
+            [Input("update_specific_results_button", "n_clicks")],
+            [
+                State("ml_dropdown", "value"),
+                State("design_dropdown", "value"),
+                State("splits_dropdown", "value"),
+            ],
+        )
+        def compute_hyperparameter_table(n_clicks, algo, design_name, split):
+            if n_clicks >= 1:
+
+                params = self.r[design_name][algo].results[split]["selected_parameter"]
+
+                return dbc.Table(
+                    params, id="hyperparameter_table", borderless=True, hover=True
                 )
             else:
                 return dash.no_update

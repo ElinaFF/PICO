@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 if __name__ != "__main__":
-    from ..metabodashboard.conf.SupportedModels import LEARN_CONFIG
+    from ..medic.conf.SupportedModels import LEARN_CONFIG
 
 
 def _get_samples_id(size: int) -> List[str]:

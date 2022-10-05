@@ -1,6 +1,6 @@
 import pytest
 
-from ...metabodashboard.domain import ResultsDT
+from ...medic.domain import ResultsDT
 from ..TestsUtility import NUMBER_OF_SPLITS, RESULTS
 
 

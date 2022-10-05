@@ -1,7 +1,7 @@
 import pytest
 from sklearn.svm import SVC
 
-from ...metabodashboard.domain import ModelFactory
+from ...medic.domain import ModelFactory
 from ..TestsUtility import SUPPORTED_MODEL
 
 

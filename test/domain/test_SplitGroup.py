@@ -16,7 +16,7 @@ from ..TestsUtility import (
     SELECTED_TARGETS,
     ALL_TARGETS,
 )
-from ...metabodashboard.domain import SplitGroup
+from ...medic.domain import SplitGroup
 
 
 @pytest.fixture

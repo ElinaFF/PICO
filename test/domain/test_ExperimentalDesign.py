@@ -2,7 +2,7 @@ from unittest.mock import patch, mock_open
 
 import pytest as pytest
 
-from ...metabodashboard.domain import ExperimentalDesign
+from ...medic.domain import ExperimentalDesign
 
 from ..TestsUtility import (
     MOCKED_METADATA,

@@ -2,7 +2,7 @@ from unittest.mock import patch, mock_open
 
 import pytest
 
-from ...metabodashboard.domain import DataMatrix
+from ...medic.domain import DataMatrix
 
 from ..TestsUtility import (
     DATAMATRIX_DATAFRAME,
