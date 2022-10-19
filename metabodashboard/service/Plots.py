@@ -59,10 +59,11 @@ class Plots:
         )
         return fig
 
-    def show_PCA(self, pca_data, classes, slider_value, algo):
+    def show_PCA(self, pca_data, pca_labels, classes, slider_value, algo):
         val = [5, 10, 40, 100, "used", "all"]
         fig = px.scatter(
             pca_data,
+            labels=pca_labels,
             x=0,
             y=1,
             color=classes,
@@ -227,15 +228,60 @@ class Plots:
         (with a dropdown to select the metabolite, max of N? metabolite)
         And show the intensity of this metabolite/ this feature in each class (one box per class)
         """
+        df_dup = pd.DataFrame(columns=["features_name", "intensity", "targets"])
         df = features_data
+        for c in df.columns:
+            if c != "targets":
+                newdf = pd.DataFrame({
+                    "features_name": [c]*len(df["targets"]),
+                    "intensity": list(df[c]),
+                    "targets": list(df["targets"])
+                })
+                df_dup = df_dup.append(newdf, ignore_index=True)
+
+        # ----> for violin plot
+        # fig = go.Figure()
+        #
+        # fig.add_trace(
+        #     go.Violin(
+        #         x=df_dup["features_name"][df_dup["targets"]=="NA"],
+        #         y=df_dup["intensity"][df_dup["targets"]=="NA"],
+        #         legendgroup='Yes', scalegroup='Yes', name='NA',
+        #         side='negative',
+        #     )
+        # )
+        #
+        # fig.add_trace(
+        #     go.Violin(
+        #         x=df_dup["features_name"][df_dup["targets"] == "Med"],
+        #         y=df_dup["intensity"][df_dup["targets"] == "Med"],
+        #         legendgroup='Yes', scalegroup='Yes', name='Med',
+        #         side='positive',
+        #     )
+        # )
+        #
+        # fig.update_traces(meanline_visible=True,
+        #                   # points='all',  # show all points
+        #                   # jitter=0.05,  # add some jitter on points for better visibility
+        #                   # scalemode='count'
+        #                   )
+        # fig.update_layout(violingap=0, violinmode='overlay')
+        #---> end for violin plot
+
+
         fig = px.strip(
-            df,
-            x="targets",
-            y=feature,
-            title="Abundance of {} in each sample by class for {}".format(
-                feature, algo
+            df_dup,
+            x="features_name",
+            y="intensity",
+            color="targets",
+            title="Abundance of {} in each sample by class for {}".format("all",
+                #feature,
+                algo
             ),
         )
+
+
+
         fig.update_layout(
             {
                 "plot_bgcolor": "rgba(0, 0, 0, 0)",
@@ -265,6 +311,15 @@ class Plots:
             )
         )
         fig.update_layout(title="Mean importance of features (>0.01) for all splits")
+        return fig
+
+    def show_barplot_comparaison_algo(self, algos, train_acc, train_std, test_acc, test_std):
+        fig = go.Figure(data=[
+            go.Bar(name='Train', x=algos, y=train_acc, error_y=dict(type='data', array=train_std)),
+            go.Bar(name='Test', x=algos, y=test_acc, error_y=dict(type='data', array=test_std))
+        ])
+        # Change the bar mode
+        fig.update_layout(barmode='group')
         return fig
 
     def show_2d(self, data, classes, algo):

@@ -69,6 +69,8 @@ app.layout = html.Div(
                         infoTab.getLayout(),
                         splitsTab.getLayout(),
                         mLTab.getLayout(),
+                        #dbc.Tab(label="Splits", disabled=True),
+                        #dbc.Tab(label="Machine Learning", disabled=True),
                         resultsTab.getLayout(),
                         resultsSummaryTab.getLayout()
                         # interpretTab.getLayout()

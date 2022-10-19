@@ -520,10 +520,13 @@ class ResultsTab(MetaTab):
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
         def show_pca(n_clicks, pca_value, algo, design_name):
+            """
+            pca_value : represent the number of feature selected by the slider, but is given as indexes
+            """
             if n_clicks >= 1:
-                df = self.r[design_name][algo].results["pca_data"]
+                data_list, labels_list = self.r[design_name][algo].results["pca_data"]
                 classes = self.r[design_name][algo].results["classes"]
-                return self._plots.show_PCA(df[pca_value], classes, pca_value, algo)
+                return self._plots.show_PCA(data_list[pca_value], labels_list[pca_value], classes, pca_value, algo)
             else:
                 return dash.no_update
 
@@ -719,7 +722,7 @@ class ResultsTab(MetaTab):
         def show_stripChart_features(feature, algo, design_name):
             if feature != "None":
                 df = self.r[design_name][algo].results["features_stripchart"]
-                df = df.loc[:, [feature, "targets"]]
+                # df = df.loc[:, [feature, "targets"]]  #!!! ---> Test
                 return self._plots.show_metabolite_levels(df, feature, algo)
             else:
                 return dash.no_update

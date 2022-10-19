@@ -153,6 +153,34 @@ class ResultsSummaryTab(MetaTab):
             ],
         )
 
+        _barplotComparaisonAlgo = html.Div(
+            className="umap_plot_and_title",
+            children=[
+                html.Div(
+                    className="title_and_help",
+                    children=[
+                        html.H6("Comparaison of algorithms performances"),
+                        dbc.Button(
+                            "[?]",
+                            className="text-muted btn-secondary popover_btn",
+                            id="help_barplotAlgo",
+                        ),
+                        dbc.Popover(
+                            children=[dbc.PopoverBody("Blablabla wout wout")],
+                            id="pop_help_barplotAlgo",
+                            is_open=False,
+                            target="help_barplotAlgo",
+                        ),
+                    ],
+                ),
+                dcc.Loading(
+                    dcc.Graph(id="barplotAlgo", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
+                ),
+            ],
+        )
+
         return dbc.Tab(
             className="global_tab",
             label="Results aggregated",
@@ -165,7 +193,10 @@ class ResultsSummaryTab(MetaTab):
                         _randomHeatmapUsedFeatures,
                     ],
                 ),
-                html.Div(className="fig_group", children=[_heatmapSamplesAlwaysWrong]),
+                html.Div(className="fig_group", children=[
+                    _heatmapSamplesAlwaysWrong,
+                    _barplotComparaisonAlgo
+                ]),
             ],
         )
         # html.Div(className="column_content",
@@ -303,3 +334,32 @@ class ResultsSummaryTab(MetaTab):
                 return fig
             else:
                 return dash.no_update
+
+        @self.app.callback(
+            Output("barplotAlgo", "figure"),
+            [Input("load_results_button", "n_clicks")],
+            State("design_dropdown_summary", "value"),
+        )
+        def show_barplot_compare_accuracy_algo(n_clicks, design_name):
+            if n_clicks >= 1:
+                algos = list(self.r[design_name].keys())
+
+                train_acc = []
+                train_std = []
+                test_acc = []
+                test_std = []
+                for a in algos:
+                    df = self.r[design_name][a].results["metrics_table"]
+                    train_m, train_s = df["train"][0].split("(")
+                    train_acc.append(float(train_m))
+                    train_std.append(float(train_s.split(")")[0]))
+
+                    test_m, test_s = df["test"][0].split("(")
+                    test_acc.append(float(test_m))
+                    test_std.append(float(test_s.split(")")[0]))
+
+                fig = self._plots.show_barplot_comparaison_algo(algos, train_acc, train_std, test_acc, test_std)
+                return fig
+            else:
+                return dash.no_update
+

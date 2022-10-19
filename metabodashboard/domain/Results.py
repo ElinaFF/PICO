@@ -2,6 +2,7 @@ import os
 from abc import abstractmethod
 from collections import Counter
 from typing import List
+import math
 
 import numpy as np
 import pandas as pd
@@ -223,6 +224,7 @@ class Results:
     def _produce_PCA(self, X: pd.DataFrame, features_df: pd.DataFrame):
         nbr_feat = [5, 10, 40, 100]
         pcas = []
+        labels = []
 
         for nbr in nbr_feat:
             selected_feat = features_df["features"][:nbr]
@@ -231,8 +233,10 @@ class Results:
 
             pca = PCA(n_components=2)
             pcas.append(pca.fit_transform(x))
+            labels.append(
+                {str(i): f"PC {i + 1} ({var:.1f}%)" for i, var in enumerate(pca.explained_variance_ratio_ * 100)})
 
-        # Do the PCA for all used metrics
+        # Do the PCA for all used feature
         selected_feat = features_df.loc[features_df["times_used"] > 0]["features"]
         if selected_feat.shape[0] < 3:
             selected_feat = features_df["features"][:3]
@@ -240,12 +244,15 @@ class Results:
         x = X.loc[:, selected_feat]
         pca = PCA(n_components=2)
         pcas.append(pca.fit_transform(x))
+        labels.append({str(i): f"PC {i + 1} ({var:.1f}%)" for i, var in enumerate(pca.explained_variance_ratio_ * 100)})
 
         # Redo the PCA but on all the data
         x = X.to_numpy()
         pca = PCA(n_components=2)
         pcas.append(pca.fit_transform(x))
-        return pcas
+        labels.append({str(i): f"PC {i + 1} ({var:.1f}%)" for i, var in enumerate(pca.explained_variance_ratio_ * 100)})
+
+        return pcas, labels
 
     def _produce_info_expe(self, y_train_true, y_test_true):
         """
@@ -258,7 +265,7 @@ class Results:
         nom_stats = ["Number of samples", "Train-test repartition"]
         valeurs_stats = [str(tot)]
         valeurs_stats.append(
-            str(int(nbr_train / tot * 100)) + " - " + str(int(nbr_test / tot * 100))
+            str(math.ceil(nbr_train / tot * 100)) + " - " + str(math.ceil(nbr_test / tot * 100))
         )
         y = y_train_true + y_test_true
         c = Counter(y)
