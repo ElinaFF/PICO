@@ -678,8 +678,9 @@ class ResultsTab(MetaTab):
         )
         def show_features(n_clicks, algo, design_name):
             if n_clicks >= 1:
-                df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
-                return dbc.Table.from_dataframe(df, borderless=True)
+                df = self.r[design_name][algo].results["features_table"].copy()
+                df = df.sort_values(by="importance_usage", ascending=False)
+                return dbc.Table.from_dataframe(df.iloc[:10, :], borderless=True)
             else:
                 return dash.no_update
 
