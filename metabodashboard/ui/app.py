@@ -43,15 +43,16 @@ app.layout = html.Div(
                         html.H1(id="title", children="MeDIC"),
                         html.Div(
                             children=[
-                                html.H6(
-                                    "Metabolomics Dashboard", style={"color": "white"}
+                                html.P(
+                                    "Metabolomics Dashboard", style={"color": "white", 'text-transform': 'uppercase', "margin-bottom": "0"}
                                 ),
-                                html.H6(
+                                html.P(
                                     "for Interpretable Classification",
-                                    style={"color": "white"},
+                                    style={"color": "white", 'text-transform': 'uppercase', "margin-bottom": "0"},
                                 ),
                             ],
                             id="acronym",
+                            style={"display": "flex", "justify-content": "center"},
                         ),
                     ],
                     id="title_bg",
