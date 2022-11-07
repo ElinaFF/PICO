@@ -5,7 +5,7 @@ import pandas as pd
 import pickle as pkl
 import umap
 
-from metabodashboard.domain import MetaboController
+from medic.domain import MetaboController
 import dash_bootstrap_components as dbc
 import plotly.express as px
 from collections import Counter
@@ -34,7 +34,7 @@ def main():
     metabo_controller.set_train_test_proportion(0.2)
     metabo_controller.set_number_of_splits(5)
     metabo_controller.create_splits()
-    metabo_controller.set_selected_models(["DecisionTree", "RandomForest"])
+    metabo_controller.set_selected_models(["RandomSCM"])
 
     print("Learning starts...")
     metabo_controller.set_cv_folds(5)
@@ -42,6 +42,7 @@ def main():
     print("finished")
     #
     print(metabo_controller.get_all_results())
+    print(pickle.dump(metabo_controller.generate_save(), open("test.mtxp")))
     # pickle.dump(metabo_controller.get_all_results(), open("big_results.p", "wb"))
 
     end_time = datetime.now()

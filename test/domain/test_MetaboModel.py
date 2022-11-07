@@ -3,7 +3,7 @@ from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.tree import DecisionTreeClassifier
 
 from ..TestsUtility import FOLDS, DATA, CLASSES, PARAMETER_GRID, NUMBER_OF_PROCESSES
-from ...metabodashboard.domain.MetaboModel import MetaboModel
+from ...medic.domain.MetaboModel import MetaboModel
 
 
 @pytest.fixture

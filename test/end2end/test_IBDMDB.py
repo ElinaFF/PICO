@@ -1,6 +1,6 @@
 import pytest
 
-from ...metabodashboard.domain import MetaboController
+from ...medic.domain import MetaboController
 from ..TestsUtility import (
     ENCODED_DATAMATRIX_DATAFRAME,
     SAMPLES_ID_COLUMN,

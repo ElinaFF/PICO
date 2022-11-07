@@ -1,12 +1,12 @@
 import pytest
 import os
-from ...metabodashboard.service import Utils
+from ...medic.service import Utils
 
 
 def test_givenUtils_whenGetFilePath_thenReturnFilePath():
     assert Utils.DUMP_EXPE_PATH == os.path.join(
         os.sep.join(os.path.dirname(__file__).split(os.sep)[:-2]),
-        "metabodashboard",
+        "medic",
         "domain",
         "dumps",
         "save.mtxp",

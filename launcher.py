@@ -209,7 +209,7 @@ class Loader:
 # Check if MeDIC's files are already here
 def check_if_minimum_file_requirement_exist():
     logging.info("Checking if the github repository is already downloaded")
-    return os.path.exists("metabodashboard") and os.path.exists("requirements.txt")
+    return os.path.exists("medic") and os.path.exists("requirements.txt")
 
 
 # Check if Git is already installed
@@ -642,7 +642,7 @@ def main():
     else:
         check_other_env()  # If it has been specified, check if exist
 
-    check_python_version()  # Check that the python version in the environment (auto or custom) is 3.8
+    # check_python_version()  # Check that the python version in the environment (auto or custom) is 3.8
 
     dependency_handler()  # Check if the packages are installed, if not : installs them inside the environment
 
