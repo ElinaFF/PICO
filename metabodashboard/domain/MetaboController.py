@@ -39,8 +39,8 @@ class MetaboController:
     def get_metadata_columns(self) -> list:
         return self._metabo_experiment.get_metadata_columns()
 
-    def get_unique_targets(self) -> list:
-        return self._metabo_experiment.get_unique_targets()
+    def get_setted_targets(self) -> list:
+        return self._metabo_experiment.get_setted_targets()
 
     def add_experimental_design(self, classes_design: dict):
         self._metabo_experiment.add_experimental_design(classes_design)
@@ -71,7 +71,7 @@ class MetaboController:
                 )  # append list of X_train & X_test samples names
         return samples_list
 
-    def set_target_column(self, target_column: str):
+    def set_target_columns(self, target_column: List[str]):
         self._metabo_experiment.set_target_column(target_column)
 
     def set_id_column(self, id_column: str):
@@ -148,8 +148,8 @@ class MetaboController:
     def load_results(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
         self._metabo_experiment.load_results(saved_metabo_experiment_dto)
 
-    def get_target_column(self) -> str:
-        return self._metabo_experiment.get_target_column()
+    def get_target_columns(self) -> List[str]:
+        return self._metabo_experiment.get_target_columns()
 
     def get_id_column(self) -> str:
         return self._metabo_experiment.get_id_column()

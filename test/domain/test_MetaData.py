@@ -3,13 +3,13 @@ import pytest as pytest
 from ..TestsUtility import (
     METADATA_DATAFRAME,
     SAMPLES_ID_COLUMN,
-    TARGETS_COLUMN,
+    UNIQUE_TARGET_COLUMN,
     SAMPLES_ID,
     TARGETS,
     SELECTED_TARGETS,
     FILTERED_TARGETS,
     FILTERED_SAMPLES_ID,
-    ALL_TARGETS,
+    ALL_TARGETS, MULTIPLE_TARGET_COLUMN,
 )
 from ...metabodashboard.domain.MetaData import MetaData
 
@@ -33,7 +33,7 @@ def test_givenNoSampleIDColumn_whenSamplesID_thenEmptyList(input_meta_data):
 
 
 def test_givenTargetColumn_whenGetTargets_thenTargetsAreCorrect(input_meta_data):
-    input_meta_data.set_target_column(TARGETS_COLUMN)
+    input_meta_data.set_target_columns(UNIQUE_TARGET_COLUMN)
     assert input_meta_data.get_targets() == TARGETS
 
 
@@ -44,19 +44,25 @@ def test_givenNoTargetColumn_whenGetTargets_thenEmptyList(input_meta_data):
 def test_givenTargetColumn_whenGetSelectedTargets_thenTargetsAreCorrect(
     input_meta_data,
 ):
-    input_meta_data.set_target_column(TARGETS_COLUMN)
+    input_meta_data.set_target_columns(UNIQUE_TARGET_COLUMN)
     assert input_meta_data.get_selected_targets(SELECTED_TARGETS) == FILTERED_TARGETS
 
 
 def test_givenAllTargets_whenGetSelectedTargets_thenTargetsAreCorrect(input_meta_data):
-    input_meta_data.set_target_column(TARGETS_COLUMN)
+    input_meta_data.set_target_columns(UNIQUE_TARGET_COLUMN)
     assert input_meta_data.get_selected_targets(ALL_TARGETS) == TARGETS
+
+
+def test_givenMultipleTargetColumn_whenGetTargets_thenTargetsAreCorrect(input_meta_data):
+    input_meta_data.set_target_columns(MULTIPLE_TARGET_COLUMN)
+    expected_targets = [f"{target}_{target}" for target in TARGETS]
+    assert input_meta_data.get_targets() == expected_targets
 
 
 def test_givenSelectedTarget_whenGetSelectedTargetsANDIds_thenIdsAndTargetAreCorrect(
     input_meta_data,
 ):
-    input_meta_data.set_target_column(TARGETS_COLUMN)
+    input_meta_data.set_target_columns(UNIQUE_TARGET_COLUMN)
     input_meta_data.set_id_column(SAMPLES_ID_COLUMN)
 
     assert input_meta_data.get_selected_targets_and_ids(SELECTED_TARGETS) == (
