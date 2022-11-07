@@ -66,16 +66,16 @@ class SplitGroup:
 
     def filter_sample_with_pairing_group(self, pairing_column: str) -> Tuple[List[str], List[str]]:
         metadata_dataframe = self._metadata.get_metadata()
-        id_column = self._metadata.get_id_column()
-        target_column = self._metadata.get_target_column()
+        sample_ids = self._metadata.get_samples_id()
+        targets = self._metadata.get_targets()
         filtered_id = []
         filtered_target = []
         already_selected_value = set()
         for index, row in metadata_dataframe.iterrows():
             if row[pairing_column] not in already_selected_value:
                 already_selected_value.add(row[pairing_column])
-                filtered_id.append(row[id_column])
-                filtered_target.append(row[target_column])
+                filtered_id.append(sample_ids[int(index)])
+                filtered_target.append(targets[int(index)])
         return filtered_id, filtered_target
 
     def restore_filtered_samples_from_pairing_group(
@@ -87,40 +87,31 @@ class SplitGroup:
     ) -> List[List[str]]:
         metadata_dataframe = self._metadata.get_metadata()
         id_column = self._metadata.get_id_column()
-        target_column = self._metadata.get_target_column()
-        (
-            restored_X_train,
-            restored_y_train,
-        ) = Utils.restore_ids_and_targets_from_pairing_groups(
+        restored_X_train = Utils.restore_ids_from_pairing_groups(
             X_train,
             metadata_dataframe,
             id_column,
-            pairing_column,
-            target_column,
-            classes_design,
+            pairing_column
         )
-        (
-            restored_X_test,
-            restored_y_test,
-        ) = Utils.restore_ids_and_targets_from_pairing_groups(
+        restored_targets = self._metadata.get_targets_from_ids(restored_X_train)
+        restored_y_train = Utils.load_classes_from_targets(
+            classes_design, restored_targets
+        )
+        restored_X_test = Utils.restore_ids_from_pairing_groups(
             X_test,
             metadata_dataframe,
             id_column,
-            pairing_column,
-            target_column,
-            classes_design,
+            pairing_column
+        )
+        restored_targets = self._metadata.get_targets_from_ids(restored_X_test)
+        restored_y_test = Utils.load_classes_from_targets(
+            classes_design, restored_targets
         )
         return [restored_X_train, restored_X_test, restored_y_train, restored_y_test]
 
-    def get_selected_targets_and_ids(
-        self, selected_targets: List[str], samples_id: List[str], targets: List[str]
-    ) -> Tuple[Tuple[str], Tuple[str]]:
+    def get_selected_targets_and_ids(self, selected_targets: List[str], samples_id: List[str], targets: List[str]) -> Tuple[Tuple[str], Tuple[str]]:
         return tuple(
             zip(
-                *[
-                    (target, id)
-                    for target, id in zip(targets, samples_id)
-                    if target in selected_targets
-                ]
+                *[(target, id) for target, id in zip(targets, samples_id) if target in selected_targets]
             )
         )
