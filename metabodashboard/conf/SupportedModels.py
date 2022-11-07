@@ -27,8 +27,8 @@ LEARN_CONFIG = {
         "function": RandomScmClassifier,
         "ParamGrid": {
             "p_options": [[0.5, 1.0, 2.0]],
-            "max_rules": [1, 2, 3, 4, 5],
-            "n_estimators": [5, 10, 30, 70, 100, 200, 500],
+            "max_rules": [1, 5, 10],
+            "n_estimators": [5, 15, 45, 85, 150, 350],
             "model_type": ["conjunction", "disjunction"],
         },
     },

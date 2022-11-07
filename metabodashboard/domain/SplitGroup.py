@@ -64,9 +64,7 @@ class SplitGroup:
     def get_number_of_splits(self):
         return self._number_of_split
 
-    def filter_sample_with_pairing_group(
-        self, pairing_column: str
-    ) -> Tuple[List[str], List[str]]:
+    def filter_sample_with_pairing_group(self, pairing_column: str) -> Tuple[List[str], List[str]]:
         metadata_dataframe = self._metadata.get_metadata()
         id_column = self._metadata.get_id_column()
         target_column = self._metadata.get_target_column()

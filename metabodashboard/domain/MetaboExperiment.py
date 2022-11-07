@@ -49,17 +49,20 @@ class MetaboExperiment:
 
     def set_metadata_with_dataframe(self, filename, data=None, from_base64=True):
         self.init_metadata()
-        self._metadata.read_format_and_store_metadata(
-            filename, data=data, from_base64=from_base64
-        )
+        self._metadata.read_format_and_store_metadata(filename, data=data, from_base64=from_base64)
 
-    def set_data_matrix(
-        self, path_data_matrix: str, data=None, from_base64: bool = True
-    ):
+    def set_data_matrix(self, path_data_matrix: str, data=None, from_base64: bool = True):
+        """
+        set metadata from progenesis data file while handling progenesis data file
+        it creates a "fake" metadata structure from the retrieved id and classes of progenesis
+        """
         self._data_matrix.reset_file()
-        metadata_df = self._data_matrix.read_format_and_store_data(
-            path_data_matrix, data=data, from_base64=from_base64
-        )
+        # self._data_matrix handles itself to store data, and it also creates a "fake" metadata dataframe to keep
+        # the same metadata format as if it was given by a metadata file
+        # it returns None if it is not a progenesis file
+        metadata_df = self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, from_base64=from_base64)
+
+        # format the metadata df (in case progenesis is given)
         if metadata_df is not None:
             self._metadata = MetaData(metadata_df)
             self._metadata.set_id_column("sample_names")
@@ -242,10 +245,7 @@ class MetaboExperiment:
         for _, experimental_design in self.experimental_designs.items():
             results = experimental_design.get_results()
             selected_targets_name = experimental_design.get_selected_targets_name()
-            (
-                selected_targets,
-                selected_ids,
-            ) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
+            (selected_targets, selected_ids,) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
             classes = Utils.load_classes_from_targets(
                 experimental_design.get_classes_design(), selected_targets
             )

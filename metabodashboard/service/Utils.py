@@ -124,6 +124,9 @@ def read_Progenesis_compounds_table(fileName, with_raw=True):
 
 
 def filter_sample_based_on_labels(data, labels, labels_to_keep):
+    """
+    function not used
+    """
     labels_filter = np.array([i in labels_to_keep for i in labels])
     d = data.iloc[labels_filter]
     l = np.array(labels)[labels_filter]
@@ -131,6 +134,9 @@ def filter_sample_based_on_labels(data, labels, labels_to_keep):
 
 
 def get_group_to_class(classes):
+    """
+    function not used
+    """
     group_to_class = {}
     for class_name in classes:
         for subgroup in classes[class_name]:
@@ -149,9 +155,7 @@ def reverse_dict(dictionnary: dict) -> dict:
     return reversed_dict
 
 
-def load_classes_from_targets(
-    classes_design: dict, targets: Iterable[str]
-) -> List[str]:
+def load_classes_from_targets(classes_design: dict, targets: Iterable[str]) -> List[str]:
     reverse_classes_design = reverse_dict(classes_design)
     classes = []
     for target in targets:
@@ -201,22 +205,13 @@ def reset_file(file_path: str):
     open(file_path, "w+b").close()
 
 
-def restore_ids_and_targets_from_pairing_groups(
-    filtered_samples: List[str],
-    dataframe: pd.DataFrame,
-    id_column: str,
-    paired_column: str,
-    target_column: str,
-    classes_design: dict,
-) -> Tuple[List[str], List[str]]:
-    values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][
-        paired_column
-    ].tolist()
+def restore_ids_and_targets_from_pairing_groups(filtered_samples: List[str], dataframe: pd.DataFrame, id_column: str,
+                                                paired_column: str, target_column: str, classes_design: dict,) -> Tuple[List[str], List[str]]:
+
+    values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][paired_column].tolist()
     restored_ids = dataframe[dataframe[paired_column].isin(values)][id_column].tolist()
-    restored_targets = dataframe.loc[dataframe[id_column].isin(restored_ids)][
-        target_column
-    ].tolist()
-    return (restored_ids, load_classes_from_targets(classes_design, restored_targets))
+    restored_targets = dataframe.loc[dataframe[id_column].isin(restored_ids)][target_column].tolist()
+    return restored_ids, load_classes_from_targets(classes_design, restored_targets)
 
 
 def convert_str_to_list_of_lists(str_to_convert: str) -> List[List[str]]:

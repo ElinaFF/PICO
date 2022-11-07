@@ -98,17 +98,9 @@ class MetaData:
             return []
         return self._dataframe[self._target_column].tolist()
 
-    def get_selected_targets_and_ids(
-        self, selected_targets: List[str]
-    ) -> Tuple[Tuple[str], Tuple[str]]:
+    def get_selected_targets_and_ids(self, selected_targets: List[str]) -> Tuple[Tuple[str], Tuple[str]]:
         return tuple(
-            zip(
-                *[
-                    (target, id)
-                    for target, id in zip(self.get_targets(), self.get_samples_id())
-                    if target in selected_targets
-                ]
-            )
+            zip(*[(target, id) for target, id in zip(self.get_targets(), self.get_samples_id()) if target in selected_targets])
         )
 
     def get_selected_targets(self, selected_targets: List[str]) -> List[str]:
