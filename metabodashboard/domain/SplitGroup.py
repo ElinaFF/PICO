@@ -50,7 +50,7 @@ class SplitGroup:
                     X_train, pairing_column, selected_targets
                 )
                 (X_test, y_test) = self._restore_ids_and_classes_from_pairing_and_filtered_samples(
-                    X_train, pairing_column, selected_targets
+                    X_test, pairing_column, selected_targets
                 )
             self._splits.append([X_train, X_test, y_train, y_test])
 
