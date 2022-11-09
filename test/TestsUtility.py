@@ -143,7 +143,10 @@ EXPERIMENT_NAME = "sick_vs_healthy"
 EXPERIMENT_FULL_NAME = "sick (sick, ill) versus healthy (healthy)"
 
 CLASSES_DESIGN = {"sick": ["sick", "ill"], "healthy": ["healthy"]}
+ALTERNATIVE_CLASSES_DESIGN = {"sick": ["sick"], "ill": ["ill"]}
 PARTIAL_CLASSES_DESIGN = {"sick": ["sick"], "healthy": ["healthy"]}
+CLASSES_DESIGN_FOR_MULTICLASS = {"sick": ["sick_sick", "ill_ill"], "healthy": ["healthy_healthy"]}
+ALTERNATIVE_CLASSES_DESIGN_FOR_MULTICLASS = {"sick": ["sick_sick"], "ill": ["ill_ill"]}
 
 NUMBER_OF_SPLITS = 10
 TRAIN_TEST_PROPORTION = 0.25

@@ -78,7 +78,7 @@ def read_Progenesis_compounds_table(fileName, with_raw=True):
     if with_raw:
         start_raw = header.columns.tolist().index("Raw abundance")
         sample_names = datatable.iloc[:, start_normalized:start_raw].columns
-        possible_labels = possible_labels[0 : int(len(possible_labels) / 2)]
+        possible_labels = possible_labels[0: int(len(possible_labels) / 2)]
     else:
         sample_names = datatable.iloc[:, start_normalized:].columns
 
@@ -155,13 +155,15 @@ def reverse_dict(dictionnary: dict) -> dict:
     return reversed_dict
 
 
-def load_classes_from_targets(classes_design: dict, targets: Iterable[str]) -> List[str]:
+def load_classes_from_targets(classes_design: dict, targets: Iterable[str], throw_if_target_not_in_design: bool = True) -> List[str]:
     reverse_classes_design = reverse_dict(classes_design)
     classes = []
     for target in targets:
-        if target not in reverse_classes_design:
+        if target not in reverse_classes_design and throw_if_target_not_in_design:
             raise ValueError("Target {} not found in classes_design".format(target))
-        classes.append(reverse_classes_design[target])
+        elif target in reverse_classes_design:
+            classes.append(reverse_classes_design[target])
+        # If target is not in the design, and the throw_if_target_not_in_design is False, then do nothing
     return classes
 
 
@@ -176,8 +178,8 @@ def compute_hash(data: str) -> str:
 
 def is_save_safe(saved_metabo_experiment_dto) -> bool:
     return (
-        saved_metabo_experiment_dto.metadata.is_data_the_same()
-        and saved_metabo_experiment_dto.data_matrix.is_data_the_same()
+            saved_metabo_experiment_dto.metadata.is_data_the_same()
+            and saved_metabo_experiment_dto.data_matrix.is_data_the_same()
     )
 
 
@@ -194,7 +196,7 @@ def decode_pickle_from_base64(encoded_object: str):
 
 
 def are_files_corresponding_to_dto(
-    data: str, metadata: str, metabo_experiment_dto
+        data: str, metadata: str, metabo_experiment_dto
 ) -> bool:
     return is_data_the_same(data, metabo_experiment_dto) and is_metadata_the_same(
         metadata, metabo_experiment_dto
@@ -206,17 +208,20 @@ def reset_file(file_path: str):
 
 
 def restore_ids_from_pairing_groups(
-    filtered_samples: List[str],
-    dataframe: pd.DataFrame,
-    id_column: str,
-    paired_column: str,
+        filtered_samples: List[str],
+        metadata_dataframe: pd.DataFrame,
+        id_column: str,
+        paired_column: str,
+        classes_design: Dict[str, List[str]],
 ) -> List[str]:
-    values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][
+    values = metadata_dataframe.loc[metadata_dataframe[id_column].isin(filtered_samples)][
         paired_column
     ].tolist()
-    restored_ids = dataframe[dataframe[paired_column].isin(values)][id_column].tolist()
-    # TODO : ne devrait pas get tout seul les targets, probablement refiltré sur les selected targets (target for target in getTarget if target in selected_targets)
-    return restored_ids
+    all_restored_ids = metadata_dataframe[metadata_dataframe[paired_column].isin(values)][id_column].tolist()
+
+    targets = load_classes_from_targets(classes_design, all_restored_ids)
+    selected_restored_ids = [all_restored_ids[i] for i, target in enumerate(targets) if target in reverse_dict(classes_design)]
+    return selected_restored_ids
 
 
 def convert_str_to_list_of_lists(str_to_convert: str) -> List[List[str]]:
@@ -233,3 +238,17 @@ def is_data_the_same(data: str, metabo_experiment_dto) -> bool:
 
 def is_metadata_the_same(metadata: str, metabo_experiment_dto) -> bool:
     return metabo_experiment_dto.metadata.get_hash() == compute_hash(metadata)
+
+
+def filter_sample_with_pairing_group(metadata_dataframe: pd.DataFrame, selected_sample_ids: List[str],
+                                     selected_targets: List[str], pairing_column: str) -> Tuple[List[str], List[str]]:
+    filtered_id = []
+    filtered_target = []
+    already_selected_value = set()
+    for index in range(len(selected_sample_ids)):
+        row = metadata_dataframe.loc[index]
+        if row[pairing_column] not in already_selected_value:
+            already_selected_value.add(row[pairing_column])
+            filtered_id.append(selected_sample_ids[int(index)])
+            filtered_target.append(selected_targets[int(index)])
+    return filtered_id, filtered_target
