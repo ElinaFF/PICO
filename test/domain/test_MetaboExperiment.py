@@ -21,7 +21,7 @@ from ..TestsUtility import (
     EXP_RESULTS,
     SELECTED_MODELS_NAME,
     SAMPLES_ID_COLUMN,
-    UNIQUE_TARGET_COLUMN,
+    TARGETS_COLUMN,
     ALL_RESULTS,
 )
 from ...metabodashboard.domain import MetaboExperiment
@@ -44,7 +44,7 @@ def input_set_metabo_experiment():
     metabo_experiment.set_data_matrix("data.csv", data=ENCODED_DATAMATRIX_DATAFRAME)
 
     metabo_experiment.set_id_column(SAMPLES_ID_COLUMN)
-    metabo_experiment.set_target_column(UNIQUE_TARGET_COLUMN)
+    metabo_experiment.set_target_column(TARGETS_COLUMN)
     metabo_experiment.add_experimental_design(CLASSES_DESIGN)
 
     metabo_experiment.set_train_test_proportion(0.2)

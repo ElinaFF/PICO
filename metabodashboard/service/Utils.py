@@ -205,18 +205,13 @@ def reset_file(file_path: str):
     open(file_path, "w+b").close()
 
 
-def restore_ids_from_pairing_groups(
-    filtered_samples: List[str],
-    dataframe: pd.DataFrame,
-    id_column: str,
-    paired_column: str,
-) -> List[str]:
-    values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][
-        paired_column
-    ].tolist()
+def restore_ids_and_targets_from_pairing_groups(filtered_samples: List[str], dataframe: pd.DataFrame, id_column: str,
+                                                paired_column: str, target_column: str, classes_design: dict,) -> Tuple[List[str], List[str]]:
+
+    values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][paired_column].tolist()
     restored_ids = dataframe[dataframe[paired_column].isin(values)][id_column].tolist()
-    # TODO : ne devrait pas get tout seul les targets, probablement refiltré sur les selected targets (target for target in getTarget if target in selected_targets)
-    return restored_ids
+    restored_targets = dataframe.loc[dataframe[id_column].isin(restored_ids)][target_column].tolist()
+    return restored_ids, load_classes_from_targets(classes_design, restored_targets)
 
 
 def convert_str_to_list_of_lists(str_to_convert: str) -> List[List[str]]:
