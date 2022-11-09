@@ -60,29 +60,29 @@ class SplitGroup:
     def get_number_of_splits(self):
         return self._number_of_split
 
-    def _restore_ids_and_classes_from_pairing_and_filtered_samples(
-            self,
-            filtered_samples: List[str],
-            paired_column: str,
-            selected_targets: List[str],
-    ) -> Tuple[List[str], List[str]]:
+    def _restore_ids_and_classes_from_pairing_and_filtered_samples(self, filtered_samples: List[str],
+                                                                   paired_column: str, selected_targets: List[str]) -> Tuple[List[str], List[str]]:
 
         metadata_dataframe = self._metadata.get_metadata()
+        # Pairing column (ex: Subject) value for all kept sample after pairing and train-test split
         paired_values_for_filtered_samples = \
             metadata_dataframe.loc[metadata_dataframe[self._metadata.get_id_column()].isin(filtered_samples)][
                 paired_column
             ].tolist()
-        all_restored_ids = \
+        # Retrieve ids for all the samples corresponding to paired_values_for_filtered_samples
+        all_ids_restored_with_pair_value = \
             metadata_dataframe[metadata_dataframe[paired_column].isin(paired_values_for_filtered_samples)][
                 self._metadata.get_id_column()].tolist()
 
-        targets = self._metadata.get_targets_from_ids(all_restored_ids)
+        # Remove ids where the target doesn't correspond to the classification design
+        targets = self._metadata.get_targets_from_ids(all_ids_restored_with_pair_value)
         selected_restored_ids = []
         selected_restored_targets = []
         for i, target in enumerate(targets):
             if target in selected_targets:
-                selected_restored_ids.append(all_restored_ids[i])
+                selected_restored_ids.append(all_ids_restored_with_pair_value[i])
                 selected_restored_targets.append(target)
+
         selected_restored_classes = Utils.load_classes_from_targets(self._classes_design, selected_restored_targets)
 
         return selected_restored_ids, selected_restored_classes

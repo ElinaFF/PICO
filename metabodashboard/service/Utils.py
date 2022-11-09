@@ -244,11 +244,11 @@ def filter_sample_with_pairing_group(metadata_dataframe: pd.DataFrame, selected_
                                      selected_targets: List[str], pairing_column: str) -> Tuple[List[str], List[str]]:
     filtered_id = []
     filtered_target = []
-    already_selected_value = set()
+    already_selected_values = set()
     for index in range(len(selected_sample_ids)):
         row = metadata_dataframe.loc[index]
-        if row[pairing_column] not in already_selected_value:
-            already_selected_value.add(row[pairing_column])
+        if row[pairing_column] not in already_selected_values:
+            already_selected_values.add(row[pairing_column])
             filtered_id.append(selected_sample_ids[int(index)])
             filtered_target.append(selected_targets[int(index)])
     return filtered_id, filtered_target

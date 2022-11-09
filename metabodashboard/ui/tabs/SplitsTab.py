@@ -942,22 +942,25 @@ class SplitsTab(MetaTab):
             return dash.no_update
 
         @self.app.callback(
-            Output("in_nbr_splits", "value"),
+            [Output("in_nbr_splits", "value"),
+             Output("in_nbr_splits", "invalid")],
             [Input("in_nbr_splits", "value"), Input("custom_big_tabs", "active_tab")],
         )
         def update_nbr_splits(new_value, active_tab):
             if active_tab == "tab-1":
-                if new_value not in [None, ""]:
-                    try:
-                        casted_value = int(new_value)
-                    except (ValueError, TypeError):
-                        return new_value
-                    self.metabo_controller.set_number_of_splits(int(casted_value))
-                return self.metabo_controller.get_number_of_splits()
-            return dash.no_update
+                if new_value in [None, ""]:
+                    return new_value, True
+                try:
+                    casted_value = int(new_value)
+                except (ValueError, TypeError):
+                    return new_value, True
+                self.metabo_controller.set_number_of_splits(int(casted_value))
+                return self.metabo_controller.get_number_of_splits(), False
+            return dash.no_update, dash.no_update, dash.no_update
 
         @self.app.callback(
-            Output("in_percent_samples_in_test", "value"),
+            [Output("in_percent_samples_in_test", "value"),
+             Output("in_percent_samples_in_test", "invalid")],
             [
                 Input("in_percent_samples_in_test", "value"),
                 Input("custom_big_tabs", "active_tab"),
@@ -965,14 +968,15 @@ class SplitsTab(MetaTab):
         )
         def update_percent_samples_in_test(new_value, active_tab):
             if active_tab == "tab-1":
-                if new_value not in [None, ""]:
-                    try:
-                        casted_value = float(new_value)
-                    except (ValueError, TypeError):
-                        return new_value
-                    self.metabo_controller.set_train_test_proportion(casted_value)
-                return self.metabo_controller.get_train_test_proportion()
-            return dash.no_update
+                if new_value in [None, ""]:
+                    return new_value, True
+                try:
+                    casted_value = float(new_value)
+                except (ValueError, TypeError):
+                    return new_value, True
+                self.metabo_controller.set_train_test_proportion(casted_value)
+                return self.metabo_controller.get_train_test_proportion(), False
+            return dash.no_update, dash.no_update, dash.no_update
 
         @self.app.callback(
             Output("pairing_group_column", "value"),

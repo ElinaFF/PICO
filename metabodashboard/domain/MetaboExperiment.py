@@ -24,7 +24,7 @@ class MetaboExperiment:
         self._is_progenesis_data = False
         self._metadata = MetaData()
 
-        self._number_of_splits = 5
+        self._number_of_splits = 20
         self._train_test_proportion = 0.2
         self._pairing_group_column = ""
         self._cv_folds = 5

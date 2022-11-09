@@ -44,13 +44,6 @@ def test_givenASplitGroup_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(
     assert input_splits.get_number_of_splits() == NUMBER_OF_SPLITS
 
 
-def test_givenASplitGroup_whenFilterSample_thenSamplesAreFiltered(input_splits):
-    assert input_splits.filter_sample_with_pairing_group(PAIRING_GROUP_COLUMN) == (
-        GROUPED_ID,
-        GROUPED_TARGETS,
-    )
-
-
 # def test_givenASplitGroup_whenRestoreFilteredSamples_thenSamplesAreRestored(
 #     input_splits,
 # ):
