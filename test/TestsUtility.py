@@ -164,8 +164,7 @@ DATA = _get_random_data(ROW_NUMBER, COLUMNS_NUMBER)
 SCALED_DATA = pd.DataFrame(StandardScaler().fit_transform(DATA), columns=DATA.columns)
 
 SAMPLES_ID_COLUMN = "samples_id"
-UNIQUE_TARGET_COLUMN = ["target"]
-MULTIPLE_TARGET_COLUMN = ["target", "target_2"]
+TARGETS_COLUMN = "target"
 PAIRING_GROUP_COLUMN = "pairing_group"
 
 PAIRING_GROUP, GROUPED_ID = _get_group_pairing_column_and_filtered_index(ROW_NUMBER)
@@ -174,8 +173,7 @@ GROUPED_TARGETS = _get_targets_with_index(GROUPED_ID, TARGETS)
 METADATA_DATAFRAME = pd.DataFrame(
     {
         SAMPLES_ID_COLUMN: SAMPLES_ID,
-        MULTIPLE_TARGET_COLUMN[0]: TARGETS,
-        MULTIPLE_TARGET_COLUMN[1]: TARGETS,
+        TARGETS_COLUMN: TARGETS,
         PAIRING_GROUP_COLUMN: PAIRING_GROUP,
     }
 )
@@ -209,7 +207,7 @@ MOCKED_METADATA.get_samples_id.return_value = SAMPLES_ID
 MOCKED_METADATA.get_id_column.return_value = SAMPLES_ID_COLUMN
 MOCKED_METADATA.get_targets.return_value = TARGETS
 MOCKED_METADATA.get_selected_targets_and_ids.return_value = FILTERED_TARGETS_AND_IDS
-MOCKED_METADATA.get_target_columns.return_value = UNIQUE_TARGET_COLUMN
+MOCKED_METADATA.get_target_column.return_value = TARGETS_COLUMN
 MOCKED_METADATA.get_hash.return_value = METADATA_DATAFRAME_HASH
 
 MOCKED_DATAMATRIX_CLASS = Mock(name="MockedDatamatrix")

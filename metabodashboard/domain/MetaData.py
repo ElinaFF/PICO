@@ -20,7 +20,7 @@ class MetaData:
         self._dataframe = metadata_dataframe
 
         self._id_column = None
-        self._target_columns: list = []
+        self._target_column = None
 
         self._hash = None
 
@@ -68,7 +68,7 @@ class MetaData:
             return []
         return self._dataframe.columns.tolist()
 
-    def get_setted_targets(self) -> List[str]:
+    def get_unique_targets(self) -> List[str]:
         targets = self.get_targets()
         return list(set(targets))
 
@@ -79,39 +79,24 @@ class MetaData:
             )
         self._id_column = id_column
 
-    def set_target_columns(self, target_columns: List[str]) -> None:
-        for target_column in target_columns:
-            if target_column not in self.get_columns():
-                raise ValueError(
-                    f"'{target_column}' is not a column of the metadata. The columns are: {self.get_columns()}"
-                )
-        self._target_columns = target_columns
+    def set_target_column(self, target_column: str) -> None:
+        if target_column not in self.get_columns():
+            raise ValueError(
+                f"'{target_column}' is not a column of the metadata. The columns are: {self.get_columns()}"
+            )
+        self._target_column = target_column
 
-    def get_target_columns(self) -> List[str]:
-        return self._target_columns
+    def get_target_column(self) -> str:
+        return self._target_column
 
     def get_id_column(self) -> str:
         return self._id_column
 
     def get_targets(self) -> List[str]:
-        if not self._target_columns:
+        if self._target_column is None:
             print("WARNING: accessing targets before setting the column")
             return []
-        if len(self._target_columns) == 1:
-            return self._dataframe[self._target_columns[0]].tolist()
-        else:
-            return ["_".join(row) for _, row in self._dataframe.loc[:, self._target_columns].iterrows()]
-
-    def get_targets_from_ids(self, ids: List[str]) -> List[str]:
-        if self._id_column is None:
-            print("WARNING: accessing samples id before setting the column")
-            return []
-
-        index = self._dataframe[self._id_column].isin(ids)
-        if len(self._target_columns) == 1:
-            return self._dataframe.loc[index, self._target_columns[0]].tolist()
-        else:
-            return ["_".join(row) for _, row in self._dataframe.loc[index, self._target_columns].iterrows()]
+        return self._dataframe[self._target_column].tolist()
 
     def get_selected_targets_and_ids(self, selected_targets: List[str]) -> Tuple[Tuple[str], Tuple[str]]:
         return tuple(

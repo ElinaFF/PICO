@@ -66,7 +66,7 @@ class MetaboExperiment:
         if metadata_df is not None:
             self._metadata = MetaData(metadata_df)
             self._metadata.set_id_column("sample_names")
-            self._metadata.set_target_columns(["labels"])
+            self._metadata.set_target_column("labels")
             self._is_progenesis_data = True
         else:
             self._is_progenesis_data = False
@@ -173,19 +173,19 @@ class MetaboExperiment:
             raise RuntimeError("Metadata is not set.")
         return self._metadata.get_columns()
 
-    def set_target_column(self, target_column: List[str]):
+    def set_target_column(self, target_column: str):
         if self._metadata is None:
             raise RuntimeError("Metadata is not set.")
-        self._metadata.set_target_columns(target_column)
+        self._metadata.set_target_column(target_column)
 
     def set_id_column(self, id_column: str):
         if self._metadata is None:
             raise RuntimeError("Metadata is not set.")
         self._metadata.set_id_column(id_column)
 
-    def get_setted_targets(self) -> list:
+    def get_unique_targets(self) -> list:
         try:
-            return self._metadata.get_setted_targets()
+            return self._metadata.get_unique_targets()
         except RuntimeError:
             return []
 
@@ -375,8 +375,8 @@ class MetaboExperiment:
     def is_the_metadata_corresponding(self, metadata: str) -> bool:
         return self._metadata.get_hash() == Utils.compute_hash(metadata)
 
-    def get_target_columns(self) -> List[str]:
-        return self._metadata.get_target_columns()
+    def get_target_column(self) -> str:
+        return self._metadata.get_target_column()
 
     def get_id_column(self) -> str:
         return self._metadata.get_id_column()
