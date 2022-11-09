@@ -1,4 +1,4 @@
-from typing import Generator, Tuple, List, Dict
+from typing import Generator, Tuple, List, Dict, Union
 
 import sklearn
 
@@ -106,8 +106,8 @@ class MetaboExperiment:
     def get_pairing_group_column(self) -> str:
         return self._pairing_group_column
 
-    def set_pairing_group_column(self, pairing_group_column: str):
-        if pairing_group_column not in self._metadata.get_columns():
+    def set_pairing_group_column(self, pairing_group_column: Union[str, None]):
+        if pairing_group_column not in self._metadata.get_columns() and pairing_group_column is not None:
             raise RuntimeError(
                 "Column {} is not in the metadata".format(pairing_group_column)
             )

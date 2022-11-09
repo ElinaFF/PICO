@@ -982,9 +982,12 @@ class SplitsTab(MetaTab):
             ],
         )
         def update_pairing_group_column(new_value, active_tab):
+            triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
             if active_tab == "tab-1":
                 if new_value not in [None, ""]:
                     self.metabo_controller.set_pairing_group_column(new_value)
+                elif triggered_id == "pairing_group_column":
+                    return self.metabo_controller.set_pairing_group_column(None)
                 return self.metabo_controller.get_pairing_group_column()
             return dash.no_update
 
