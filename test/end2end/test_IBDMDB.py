@@ -1,10 +1,11 @@
 import pytest
 
 from ...metabodashboard.domain import MetaboController
+from ...metabodashboard.service import Utils
 from ..TestsUtility import (
     ENCODED_DATAMATRIX_DATAFRAME,
     SAMPLES_ID_COLUMN,
-    UNIQUE_TARGET_COLUMN,
+    TARGETS_COLUMN,
     CLASSES_DESIGN,
     ENCODED_METADATA_DATAFRAME,
     SELECTED_MODELS_NAME,
@@ -25,7 +26,7 @@ def test_givenIBDMDBDataset_whenLearning_thenNoThrow(input_controller):
     )
 
     input_controller.set_id_column(SAMPLES_ID_COLUMN)
-    input_controller.set_target_columns(UNIQUE_TARGET_COLUMN)
+    input_controller.set_target_column(TARGETS_COLUMN)
     input_controller.add_experimental_design(CLASSES_DESIGN)
 
     input_controller.set_train_test_proportion(0.2)

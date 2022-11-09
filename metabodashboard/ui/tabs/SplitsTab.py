@@ -201,12 +201,12 @@ class SplitsTab(MetaTab):
                 html.Div(
                     [
                         dbc.Label("Name of the targets column"),
-                        dbc.Checklist(
+                        dbc.RadioItems(
                             id="in_target_col_name",
                             options=Utils.format_list_for_checklist(
                                 self.metabo_controller.get_metadata_columns()
                             ),
-                            value=self.metabo_controller.get_target_columns(),
+                            value=self.metabo_controller.get_target_column(),
                             inline=True,
                         ),
                     ],
@@ -836,13 +836,17 @@ class SplitsTab(MetaTab):
                 Input("custom_big_tabs", "active_tab"),
             ],
         )
-        def update_possible_classes_exp_design(selected_target_columns, children, active_tab):
+        def update_possible_classes_exp_design(target_col, children, active_tab):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
             if active_tab == "tab-1":
-                if triggered_id == "in_target_col_name" and selected_target_columns not in [None, ""]:
-                    print(f"target_col : {selected_target_columns}")
-                    self.metabo_controller.set_target_columns(selected_target_columns)
-                formatted_possible_targets = Utils.format_list_for_checklist(self.metabo_controller.get_setted_targets())
+                if triggered_id == "in_target_col_name" and target_col not in [
+                    None,
+                    "",
+                ]:
+                    self.metabo_controller.set_target_column(target_col)
+                formatted_possible_targets = Utils.format_list_for_checklist(
+                    self.metabo_controller.get_unique_targets()
+                )
                 return (
                     formatted_possible_targets,
                     formatted_possible_targets,
@@ -938,7 +942,7 @@ class SplitsTab(MetaTab):
         )
         def update_in_target_col_name(active_tab):
             if active_tab == "tab-1":
-                return self.metabo_controller.get_target_columns()
+                return self.metabo_controller.get_target_column()
             return dash.no_update
 
         @self.app.callback(
