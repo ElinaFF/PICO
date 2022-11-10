@@ -143,7 +143,10 @@ EXPERIMENT_NAME = "sick_vs_healthy"
 EXPERIMENT_FULL_NAME = "sick (sick, ill) versus healthy (healthy)"
 
 CLASSES_DESIGN = {"sick": ["sick", "ill"], "healthy": ["healthy"]}
+ALTERNATIVE_CLASSES_DESIGN = {"sick": ["sick"], "ill": ["ill"]}
 PARTIAL_CLASSES_DESIGN = {"sick": ["sick"], "healthy": ["healthy"]}
+CLASSES_DESIGN_FOR_MULTICLASS = {"sick": ["sick_sick", "ill_ill"], "healthy": ["healthy_healthy"]}
+ALTERNATIVE_CLASSES_DESIGN_FOR_MULTICLASS = {"sick": ["sick_sick"], "ill": ["ill_ill"]}
 
 NUMBER_OF_SPLITS = 10
 TRAIN_TEST_PROPORTION = 0.25
@@ -161,7 +164,8 @@ DATA = _get_random_data(ROW_NUMBER, COLUMNS_NUMBER)
 SCALED_DATA = pd.DataFrame(StandardScaler().fit_transform(DATA), columns=DATA.columns)
 
 SAMPLES_ID_COLUMN = "samples_id"
-TARGETS_COLUMN = "target"
+UNIQUE_TARGETS_COLUMN = ["target"]
+MULTIPLE_TARGETS_COLUMN = ["target", "target_2"]
 PAIRING_GROUP_COLUMN = "pairing_group"
 
 PAIRING_GROUP, GROUPED_ID = _get_group_pairing_column_and_filtered_index(ROW_NUMBER)
@@ -170,7 +174,8 @@ GROUPED_TARGETS = _get_targets_with_index(GROUPED_ID, TARGETS)
 METADATA_DATAFRAME = pd.DataFrame(
     {
         SAMPLES_ID_COLUMN: SAMPLES_ID,
-        TARGETS_COLUMN: TARGETS,
+        MULTIPLE_TARGETS_COLUMN[0]: TARGETS,
+        MULTIPLE_TARGETS_COLUMN[1]: TARGETS,
         PAIRING_GROUP_COLUMN: PAIRING_GROUP,
     }
 )
@@ -204,7 +209,7 @@ MOCKED_METADATA.get_samples_id.return_value = SAMPLES_ID
 MOCKED_METADATA.get_id_column.return_value = SAMPLES_ID_COLUMN
 MOCKED_METADATA.get_targets.return_value = TARGETS
 MOCKED_METADATA.get_selected_targets_and_ids.return_value = FILTERED_TARGETS_AND_IDS
-MOCKED_METADATA.get_target_column.return_value = TARGETS_COLUMN
+MOCKED_METADATA.get_target_column.return_value = UNIQUE_TARGETS_COLUMN
 MOCKED_METADATA.get_hash.return_value = METADATA_DATAFRAME_HASH
 
 MOCKED_DATAMATRIX_CLASS = Mock(name="MockedDatamatrix")
