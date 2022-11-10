@@ -31,26 +31,30 @@ class SplitGroup:
         pairing_column: str,
         selected_targets: List[str],
     ):
-        targets = self._metadata.get_targets()
-        sample_ids = self._metadata.get_samples_id()
-        targets, sample_ids = self.get_selected_targets_and_ids(
+        if pairing_column != "":
+            sample_ids, targets = self.filter_sample_with_pairing_group(pairing_column)
+        else:
+            sample_ids, targets = (
+                self._metadata.get_samples_id(),
+                self._metadata.get_targets(),
+            )
+        targets, ids = self.get_selected_targets_and_ids(
             selected_targets, sample_ids, targets
         )
-        if pairing_column != "":
-            sample_ids, targets = Utils.filter_sample_with_pairing_group(self._metadata.get_metadata(), sample_ids,
-                                                                         targets, pairing_column)
         classes = Utils.load_classes_from_targets(self._classes_design, targets)
         for split_index in range(number_of_splits):
             X_train, X_test, y_train, y_test = train_test_split(
-                sample_ids, classes, test_size=train_test_proportion, random_state=split_index
+                ids, classes, test_size=train_test_proportion, random_state=split_index
             )
 
             if pairing_column != "":
-                (X_train, y_train) = self._restore_ids_and_classes_from_pairing_and_filtered_samples(
-                    X_train, pairing_column, selected_targets
-                )
-                (X_test, y_test) = self._restore_ids_and_classes_from_pairing_and_filtered_samples(
-                    X_test, pairing_column, selected_targets
+                (
+                    X_train,
+                    X_test,
+                    y_train,
+                    y_test,
+                ) = self.restore_filtered_samples_from_pairing_group(
+                    X_train, X_test, pairing_column, self._classes_design
                 )
             self._splits.append([X_train, X_test, y_train, y_test])
 
@@ -60,37 +64,63 @@ class SplitGroup:
     def get_number_of_splits(self):
         return self._number_of_split
 
-    def _restore_ids_and_classes_from_pairing_and_filtered_samples(self, filtered_samples: List[str],
-                                                                   paired_column: str, selected_targets: List[str]) -> Tuple[List[str], List[str]]:
-
+    def filter_sample_with_pairing_group(self, pairing_column: str) -> Tuple[List[str], List[str]]:
         metadata_dataframe = self._metadata.get_metadata()
-        # Pairing column (ex: Subject) value for all kept sample after pairing and train-test split
-        paired_values_for_filtered_samples = \
-            metadata_dataframe.loc[metadata_dataframe[self._metadata.get_id_column()].isin(filtered_samples)][
-                paired_column
-            ].tolist()
-        # Retrieve ids for all the samples corresponding to paired_values_for_filtered_samples
-        all_ids_restored_with_pair_value = \
-            metadata_dataframe[metadata_dataframe[paired_column].isin(paired_values_for_filtered_samples)][
-                self._metadata.get_id_column()].tolist()
+        id_column = self._metadata.get_id_column()
+        target_column = self._metadata.get_target_column()
+        filtered_id = []
+        filtered_target = []
+        already_selected_value = set()
+        for index, row in metadata_dataframe.iterrows():
+            if row[pairing_column] not in already_selected_value:
+                already_selected_value.add(row[pairing_column])
+                filtered_id.append(row[id_column])
+                filtered_target.append(row[target_column])
+        return filtered_id, filtered_target
 
-        # Remove ids where the target doesn't correspond to the classification design
-        targets = self._metadata.get_targets_from_ids(all_ids_restored_with_pair_value)
-        selected_restored_ids = []
-        selected_restored_targets = []
-        for i, target in enumerate(targets):
-            if target in selected_targets:
-                selected_restored_ids.append(all_ids_restored_with_pair_value[i])
-                selected_restored_targets.append(target)
+    def restore_filtered_samples_from_pairing_group(
+        self,
+        X_train: List[str],
+        X_test: List[str],
+        pairing_column: str,
+        classes_design: dict,
+    ) -> List[List[str]]:
+        metadata_dataframe = self._metadata.get_metadata()
+        id_column = self._metadata.get_id_column()
+        target_column = self._metadata.get_target_column()
+        (
+            restored_X_train,
+            restored_y_train,
+        ) = Utils.restore_ids_and_targets_from_pairing_groups(
+            X_train,
+            metadata_dataframe,
+            id_column,
+            pairing_column,
+            target_column,
+            classes_design,
+        )
+        (
+            restored_X_test,
+            restored_y_test,
+        ) = Utils.restore_ids_and_targets_from_pairing_groups(
+            X_test,
+            metadata_dataframe,
+            id_column,
+            pairing_column,
+            target_column,
+            classes_design,
+        )
+        return [restored_X_train, restored_X_test, restored_y_train, restored_y_test]
 
-        selected_restored_classes = Utils.load_classes_from_targets(self._classes_design, selected_restored_targets)
-
-        return selected_restored_ids, selected_restored_classes
-
-    def get_selected_targets_and_ids(self, selected_targets: List[str], samples_id: List[str], targets: List[str]) -> \
-            Tuple[List[str], List[str]]:
+    def get_selected_targets_and_ids(
+        self, selected_targets: List[str], samples_id: List[str], targets: List[str]
+    ) -> Tuple[Tuple[str], Tuple[str]]:
         return tuple(
             zip(
-                *[(target, id) for target, id in zip(targets, samples_id) if target in selected_targets]
+                *[
+                    (target, id)
+                    for target, id in zip(targets, samples_id)
+                    if target in selected_targets
+                ]
             )
         )

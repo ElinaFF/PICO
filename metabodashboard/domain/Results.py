@@ -200,7 +200,7 @@ class Results:
         nbr_feat = [5, 10, 40, 100]
         umaps = []
         for nbr in nbr_feat:
-            selected_feat = features_df["features"].iloc[:nbr]
+            selected_feat = features_df["features"][:nbr]
             selected_x = X.loc[:, selected_feat]
             selected_x = selected_x.to_numpy()
             umap_data = umap.UMAP(n_components=2, init="random", random_state=13)
@@ -209,7 +209,7 @@ class Results:
         # Do the umap for all used metrics
         selected_feat = features_df.loc[features_df["times_used"] > 0]["features"]
         if selected_feat.shape[0] < 3:
-            selected_feat = features_df["features"].iloc[:3]
+            selected_feat = features_df["features"][:3]
         selected_x = X.loc[:, selected_feat]
         selected_x = selected_x.to_numpy()
         umap_data = umap.UMAP(n_components=2, init="random", random_state=13)
@@ -227,7 +227,7 @@ class Results:
         labels = []
 
         for nbr in nbr_feat:
-            selected_feat = features_df["features"].iloc[:nbr]
+            selected_feat = features_df["features"][:nbr]
             x = X.loc[:, selected_feat]
             x = x.to_numpy()
 
@@ -239,7 +239,7 @@ class Results:
         # Do the PCA for all used feature
         selected_feat = features_df.loc[features_df["times_used"] > 0]["features"]
         if selected_feat.shape[0] < 3:
-            selected_feat = features_df["features"].iloc[:3]
+            selected_feat = features_df["features"][:3]
 
         x = X.loc[:, selected_feat]
         pca = PCA(n_components=2)
@@ -490,7 +490,7 @@ class Results:
         return train_samples, test_samples
 
     def produce_features_2d_and_3d(self, features_table: pd.DataFrame, scaled_data):
-        selected_features = features_table["features"].iloc[:3]
+        selected_features = features_table[:3]["features"]
         return scaled_data.loc[:, selected_features]
 
 
