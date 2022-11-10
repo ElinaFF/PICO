@@ -1,7 +1,5 @@
 import pytest
 import os
-
-from ..TestsUtility import *
 from ...metabodashboard.service import Utils
 
 

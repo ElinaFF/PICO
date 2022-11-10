@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Generator, Tuple, Union
+from typing import Generator, Tuple
 
 import pandas as pd
 
@@ -178,7 +178,7 @@ class MetaboController:
     def get_pairing_group_column(self) -> str:
         return self._metabo_experiment.get_pairing_group_column()
 
-    def set_pairing_group_column(self, pairing_group_column: Union[str, None]):
+    def set_pairing_group_column(self, pairing_group_column: str):
         self._metabo_experiment.set_pairing_group_column(pairing_group_column)
 
     def is_data_raw(self) -> bool:
