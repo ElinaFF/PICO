@@ -39,40 +39,61 @@ class SplitGroup:
 
         # 1 - filter out the samples with a target not included in the classification design
         # retrieve metadata dataframe
-        df_select = self._metadata.get_metadata()
+        df_filter = self._metadata.get_metadata()
         # extract a dataframe with only the targets columns
         df_targets = self._metadata.get_metadata().loc[:, self._metadata.get_targets()]
         # new column of unified targets name
-        df_select["unified_targets"] = df_targets.apply(lambda row: "__".join(row), axis=1)
+        df_filter["unified_targets"] = df_targets.apply(lambda row: "__".join(row), axis=1)
         # keep only the lines for which their value in the unified_targets column is in selected_targets
-        df_select = df_select[df_select["unified_targets"].isin(selected_targets)]
+        df_filter = df_filter[df_filter["unified_targets"].isin(selected_targets)]
         print("_compute_split step #1 done")
 
         # 2 - select only one sample per entity
         if pairing_column != "":
             # sort the dataframe by the pairing_column values
-            df_select.sort_values(pairing_column, axis=0, inplace=True)
+            df_entity = df_filter.sort_values(pairing_column, axis=0)
             # group samples by the pairing column and keep only the first row of each group (.nth(0) is more stable
             # than .first())
-            df_select = df_select.groupby(pairing_column).nth(0)
+            df_entity = df_entity.groupby(pairing_column).nth(0)
+        else:
+            df_entity = df_filter
         print("_compute_split step #2 done")
 
         # 2.5 - extract ids and targets, transform targets to labels
-        ids = df_select[self._metadata.get_id_column()]
-        targets = df_select["unified_targets"]
+        ids = df_entity[self._metadata.get_id_column()]
+        targets = df_entity["unified_targets"]
         labels = Utils.load_classes_from_targets(self._classes_design, targets)
         print("_compute_split step #2.5 done")
 
         # 3- procede with the train-test division on the selected samples
         print("start _compute_split step #3")
         for split_index in range(number_of_splits):
-            X_train, X_test, y_train, y_test = train_test_split(ids, labels, test_size=train_test_proportion, random_state=split_index)
 
-            # 4- retrieve the paired samples corresponding to the one in train or test set
-            # TODO : rendue à gérer cette étape
-            if pairing_column != "":
-                (X_train, X_test, y_train, y_test) = self.restore_filtered_samples_from_pairing_group(X_train, X_test,
-                                                                                                      pairing_column, self._classes_design)
+            if pairing_column == "":
+                X_train, X_test, y_train, y_test = train_test_split(ids, labels, test_size=train_test_proportion, random_state=split_index)
+
+                # 4- retrieve the paired samples corresponding to the one in train or test set
+            else:
+                # define the ids column as the index of the dataframe, so it can be extracted with groupby().groups
+                df_filter = df_filter.set_index(self._metadata.get_id_column())
+                # groups is a dictionary with 'keys' as the pairing value and 'values' as the index of the lines corresponding to the pairing
+                groups = df_filter.groupby(pairing_column).groups
+                # apply the train-test division on the pairing values / the entity
+                X_train_temp, X_test_temp, y_train_temp, y_test_temp = train_test_split(df_entity[pairing_column], labels, test_size=train_test_proportion, random_state=split_index)
+
+                # retrieve the ids corresponding the to entities in train
+                X_train = np.concatenate([list(groups[i]) for i in X_train_temp])
+                # retrieve targets corresponding to ids and then convert to labels
+                targets = df_filter.loc[X_train]["unified_targets"]
+                y_train = Utils.load_classes_from_targets(self._classes_design, targets)
+
+                # retrieve the ids corresponding the to entities in train
+                X_test = np.concatenate([list(groups[i]) for i in X_test_temp])
+                # retrieve targets corresponding to ids and then convert to labels
+                targets = df_filter.loc[X_test]["unified_targets"]
+                y_test = Utils.load_classes_from_targets(self._classes_design, targets)
+
+
             print("_compute_split step #4 done")
             self._splits.append([X_train, X_test, y_train, y_test])
 
