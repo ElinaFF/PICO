@@ -173,7 +173,7 @@ class MetaboExperiment:
             raise RuntimeError("Metadata is not set.")
         return self._metadata.get_columns()
 
-    def set_target_column(self, target_column: str):
+    def set_target_column(self, target_column: List[str]):
         if self._metadata is None:
             raise RuntimeError("Metadata is not set.")
         self._metadata.set_target_column(target_column)

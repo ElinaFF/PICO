@@ -20,21 +20,10 @@ class MetaboController:
             self._metabo_experiment = metaboExp
 
     def set_metadata(self, filename: str, data=None, from_base64=True) -> None:
-        self._metabo_experiment.set_metadata_with_dataframe(
-            filename=filename, data=data, from_base64=from_base64
-        )
+        self._metabo_experiment.set_metadata_with_dataframe(filename=filename, data=data, from_base64=from_base64)
 
-    def set_data_matrix_from_path(
-        self,
-        path_data_matrix,
-        data=None,
-        from_base64=True,
-    ):
-        return self._metabo_experiment.set_data_matrix(
-            path_data_matrix,
-            data=data,
-            from_base64=from_base64,
-        )
+    def set_data_matrix_from_path(self, path_data_matrix, data=None, from_base64=True):
+        return self._metabo_experiment.set_data_matrix(path_data_matrix, data=data, from_base64=from_base64)
 
     def get_metadata_columns(self) -> list:
         return self._metabo_experiment.get_metadata_columns()
@@ -71,7 +60,7 @@ class MetaboController:
                 )  # append list of X_train & X_test samples names
         return samples_list
 
-    def set_target_column(self, target_column: str):
+    def set_target_column(self, target_column: List[str]):
         self._metabo_experiment.set_target_column(target_column)
 
     def set_id_column(self, id_column: str):

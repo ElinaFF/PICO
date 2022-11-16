@@ -201,11 +201,10 @@ class SplitsTab(MetaTab):
                 html.Div(
                     [
                         dbc.Label("Name of the targets column"),
-                        dbc.RadioItems(
+                        dbc.Checklist(
                             id="in_target_col_name",
-                            options=Utils.format_list_for_checklist(
-                                self.metabo_controller.get_metadata_columns()
-                            ),
+                            # TODO : are the options comming from this call of functions or from the callback
+                            options=Utils.format_list_for_checklist(self.metabo_controller.get_metadata_columns()),
                             value=self.metabo_controller.get_target_column(),
                             inline=True,
                         ),
@@ -684,49 +683,24 @@ class SplitsTab(MetaTab):
             ],
             [State("upload_metadata", "filename")],
         )
-        def get_metadata_cols_names_to_choose_from(
-            list_of_contents, active_tab, list_of_names
-        ):
+        def get_metadata_cols_names_to_choose_from(list_of_contents, active_tab, list_of_names):
             triggered_item = callback_context.triggered[0]["prop_id"].split(".")[0]
             if active_tab == "tab-1":
                 if triggered_item == "upload_metadata":
                     try:
-                        self.metabo_controller.set_metadata(
-                            list_of_names, data=list_of_contents
-                        )
+                        self.metabo_controller.set_metadata(list_of_names, data=list_of_contents)
                     except TypeError as err:
                         return [], [], [], html.P(str(err)), {"color": "red"}
                     self.metabo_controller.reset_experimental_designs()
 
-                    formatted_columns = Utils.format_list_for_checklist(
-                        self.metabo_controller.get_metadata_columns()
-                    )
-                    return (
-                        formatted_columns,
-                        formatted_columns,
-                        formatted_columns,
-                        html.P(f'"{list_of_names}" has successfully been uploaded !'),
-                        {"color": "green"},
-                    )
+                    formatted_columns = Utils.format_list_for_checklist(self.metabo_controller.get_metadata_columns())
+                    return (formatted_columns, formatted_columns, formatted_columns,
+                            html.P(f'"{list_of_names}" has successfully been uploaded !'), {"color": "green"})
                 else:
-                    formatted_columns = Utils.format_list_for_checklist(
-                        self.metabo_controller.get_metadata_columns()
-                    )
-                    return (
-                        formatted_columns,
-                        formatted_columns,
-                        formatted_columns,
-                        dash.no_update,
-                        dash.no_update,
-                    )
+                    formatted_columns = Utils.format_list_for_checklist(self.metabo_controller.get_metadata_columns())
+                    return formatted_columns, formatted_columns, formatted_columns, dash.no_update, dash.no_update
 
-            return (
-                dash.no_update,
-                dash.no_update,
-                dash.no_update,
-                dash.no_update,
-                dash.no_update,
-            )
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
         @self.app.callback(
             Output("warning_select_false", "children"),
@@ -839,81 +813,47 @@ class SplitsTab(MetaTab):
         def update_possible_classes_exp_design(target_col, children, active_tab):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
             if active_tab == "tab-1":
-                if triggered_id == "in_target_col_name" and target_col not in [
-                    None,
-                    "",
-                ]:
+                if triggered_id == "in_target_col_name" and target_col not in [None, []]:
                     self.metabo_controller.set_target_column(target_col)
-                formatted_possible_targets = Utils.format_list_for_checklist(
-                    self.metabo_controller.get_unique_targets()
-                )
-                return (
-                    formatted_possible_targets,
-                    formatted_possible_targets,
-                    "",
-                )
+                formatted_possible_targets = Utils.format_list_for_checklist(self.metabo_controller.get_unique_targets())
+                return (formatted_possible_targets, formatted_possible_targets, "")
             else:
                 return dash.no_update, dash.no_update, dash.no_update
 
         @self.app.callback(
-            [
-                Output("class1_name", "value"),
+            [Output("class1_name", "value"),
                 Output("possible_groups_for_class1", "value"),
                 Output("class2_name", "value"),
                 Output("possible_groups_for_class2", "value"),
                 Output("setted_classes_container", "children"),
                 Output("setted_classes_container", "style"),
-                Output("error_classification_type", "children"),
-            ],
-            [
-                Input("btn_add_design_exp", "n_clicks"),
+                Output("error_classification_type", "children")],
+            [Input("btn_add_design_exp", "n_clicks"),
                 Input("remove_experimental_design_button", "n_clicks"),
                 Input("in_target_col_name", "value"),
                 Input("info_progenesis_loaded", "children"),
-                Input("custom_big_tabs", "active_tab"),
-            ],
-            [
-                State("class1_name", "value"),
+                Input("custom_big_tabs", "active_tab")],
+            [State("class1_name", "value"),
                 State("possible_groups_for_class1", "value"),
                 State("class2_name", "value"),
-                State("possible_groups_for_class2", "value"),
-            ],
+                State("possible_groups_for_class2", "value")],
         )
-        def add_n_reset_classes_exp_design(
-            n_add, n_remove, target_col, children, active_tab, c1, g1, c2, g2
-        ):
+        def add_n_reset_classes_exp_design(n_add, n_remove, target_col, children, active_tab, c1, g1, c2, g2):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
-            if (
-                triggered_id == "remove_experimental_design_button"
-                or triggered_id == "in_target_col_name"
-                or triggered_id == "info_progenesis_loaded"
-            ):
+            if (triggered_id == "remove_experimental_design_button" or triggered_id == "in_target_col_name"
+                or triggered_id == "info_progenesis_loaded"):
                 self.metabo_controller.reset_experimental_designs()
             elif triggered_id == "btn_add_design_exp":
                 print("HEEEERE", {c1: g1, c2: g2})
                 try:
                     self.metabo_controller.add_experimental_design({c1: g1, c2: g2})
+                    print("bip bip : ", self.metabo_controller._metabo_experiment.experimental_designs)
                 except ValueError as ve:
-                    return (
-                        dash.no_update,
-                        dash.no_update,
-                        dash.no_update,
-                        dash.no_update,
-                        dash.no_update,
-                        dash.no_update,
-                        str(ve),
-                    )
+                    return (dash.no_update, dash.no_update, dash.no_update, dash.no_update,
+                            dash.no_update, dash.no_update, str(ve))
 
-            return (
-                "",
-                0,
-                "",
-                0,
-                self._get_wrapped_experimental_designs(),
-                {"display": "block", "padding": "1em"},
-                "",
-            )
+            return ("", 0, "", 0, self._get_wrapped_experimental_designs(), {"display": "block", "padding": "1em"},"")
 
         @self.app.callback(
             Output("collapse_preprocessing", "is_open"),
@@ -1004,13 +944,13 @@ class SplitsTab(MetaTab):
             Create the file (json) which will contains all info about the split creation / data experiment.
             """
             if n >= 1:
+                print("bip bip 2 : ", self.metabo_controller._metabo_experiment.experimental_designs)
                 self.metabo_controller.create_splits()
                 Utils.dump_metabo_expe(self.metabo_controller.generate_save())
+                print("bip bip 3 : ", self.metabo_controller._metabo_experiment.experimental_designs)
 
-                return (
-                    "The parameters file is created, the splits's creation should start shortly...",
-                    send_file(Utils.get_metabo_experiment_path()),
-                )
+                return ("The parameters file is created, the splits's creation should start shortly...",
+                        send_file(Utils.get_metabo_experiment_path()))
             else:
                 return dash.no_update, dash.no_update
 
