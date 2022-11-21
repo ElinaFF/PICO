@@ -208,9 +208,16 @@ def reset_file(file_path: str):
 def restore_ids_and_targets_from_pairing_groups(filtered_samples: List[str], dataframe: pd.DataFrame, id_column: str,
                                                 paired_column: str, target_column: str, classes_design: dict,) -> Tuple[List[str], List[str]]:
 
-    values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][paired_column].tolist()
-    restored_ids = dataframe[dataframe[paired_column].isin(values)][id_column].tolist()
-    restored_targets = dataframe.loc[dataframe[id_column].isin(restored_ids)][target_column].tolist()
+    pairing_values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][paired_column].tolist()
+    ids = dataframe[dataframe[paired_column].isin(pairing_values)][id_column].tolist()
+    targets = dataframe.loc[dataframe[id_column].isin(ids)][target_column].tolist()
+    duo = list(zip(ids, targets))
+    restored_ids = []
+    restored_targets = []
+    for d in duo:
+        if d[1] in np.concatenate(list(classes_design.values())):
+            restored_ids.append(d[0])
+            restored_targets.append(d[1])
     return restored_ids, load_classes_from_targets(classes_design, restored_targets)
 
 
