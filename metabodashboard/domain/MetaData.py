@@ -21,8 +21,39 @@ class MetaData:
 
         self._id_column = None
         self._target_column = None
+        self._final_targets_values = []
 
         self._hash = None
+
+    def get_final_targets_values(self):
+        """
+        get the value of the attribute
+        """
+        return self._final_targets_values
+
+    def set_final_targets_values(self, columns: List[str]):
+        """
+        compute the list of new strings (unite targets str with '__') and
+        modify the value of the attribute with the list of values
+        """
+        if len(columns) > 1:
+            df = self._dataframe.loc[:, columns]
+            final = list(df.apply(lambda row: "__".join(row), axis=1))
+        else:
+            final = self._dataframe[columns[0]].tolist()
+        self._final_targets_values = final
+
+    def add_final_targets_col_to_dataframe(self):
+        """
+        modify the attribute _dataframe to add the column of unified targets values
+        """
+        self._dataframe["final_targets"] = self._final_targets_values
+
+    def add_final_targets_col_to_dump(self):
+        """
+        modify the temporary save of metadata (dump)
+        """
+        return None
 
     def read_format_and_store_metadata(self, path, data=None, from_base64=True):
         df = self._load_and_format(path, data=data, from_base64=from_base64)
@@ -65,6 +96,7 @@ class MetaData:
 
     def get_columns(self) -> List[str]:
         if self._dataframe is None:
+            print("MetaData get_columns self._dataframe is None")
             return []
         return self._dataframe.columns.tolist()
 

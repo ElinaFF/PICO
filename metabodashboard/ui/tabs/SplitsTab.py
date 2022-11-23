@@ -141,13 +141,13 @@ class SplitsTab(MetaTab):
                         {"label": "Normalized", "value": "normalized"},
                         {"label": "Not Progenesis", "value": "nap"},
                     ],
-                    value=None
-                    if self.metabo_controller.is_data_raw() is None
-                    else (
-                        "raw"
-                        if not self.metabo_controller.is_data_raw()
-                        else "normalized"
-                    ),
+                    value="normalized",#None
+                    #if self.metabo_controller.is_data_raw() is None
+                    #else (
+                    #    "raw"
+                    #    if not self.metabo_controller.is_data_raw()
+                    #    else "normalized"
+                    #),
                     labelCheckedStyle={"color": "#13BD00"},
                 ),
                 html.Div(id="error_data_normalization", style={"color": "red"}),
@@ -201,12 +201,13 @@ class SplitsTab(MetaTab):
                 html.Div(
                     [
                         dbc.Label("Name of the targets column"),
-                        dbc.RadioItems(
+                        dbc.Checklist(
                             id="in_target_col_name",
-                            options=Utils.format_list_for_checklist(
-                                self.metabo_controller.get_metadata_columns()
-                            ),
-                            value=self.metabo_controller.get_target_column(),
+                            value=[],
+                            #options=Utils.format_list_for_checklist(
+                            #    self.metabo_controller.get_metadata_columns()
+                            #),
+                            #value=[], #if self.metabo_controller.get_target_column() is None else [self.metabo_controller.get_target_column()],
                             inline=True,
                         ),
                     ],
@@ -616,7 +617,6 @@ class SplitsTab(MetaTab):
             [Input("in_use_raw", "value"), Input("custom_big_tabs", "active_tab")],
         )
         def normalization_selection(value, active_tab):
-            print("active_tab", active_tab)
 
             if value is not None:
                 print("normalization_selection", value)
@@ -680,7 +680,7 @@ class SplitsTab(MetaTab):
             ],
             [
                 Input("upload_metadata", "contents"),
-                Input("custom_big_tabs", "active_tab"),
+                Input("custom_big_tabs", "active_tab")
             ],
             [State("upload_metadata", "filename")],
         )
@@ -688,6 +688,8 @@ class SplitsTab(MetaTab):
             list_of_contents, active_tab, list_of_names
         ):
             triggered_item = callback_context.triggered[0]["prop_id"].split(".")[0]
+            print("triggered_item")
+            print(triggered_item)
             if active_tab == "tab-1":
                 if triggered_item == "upload_metadata":
                     try:
@@ -696,6 +698,8 @@ class SplitsTab(MetaTab):
                         )
                     except TypeError as err:
                         return [], [], [], html.P(str(err)), {"color": "red"}
+                    except Exception as e:
+                        return [], [], [], html.P(str(e)), {"color": "red"}
                     self.metabo_controller.reset_experimental_designs()
 
                     formatted_columns = Utils.format_list_for_checklist(
@@ -842,16 +846,26 @@ class SplitsTab(MetaTab):
                 if triggered_id == "in_target_col_name" and target_col not in [
                     None,
                     "",
+                    [],
                 ]:
-                    self.metabo_controller.set_target_column(target_col)
-                formatted_possible_targets = Utils.format_list_for_checklist(
-                    self.metabo_controller.get_unique_targets()
-                )
-                return (
-                    formatted_possible_targets,
-                    formatted_possible_targets,
-                    "",
-                )
+                    # Give the MetaData attribute the values of either one or multiple column to create the targets
+                    # for the experiment
+                    self.metabo_controller.set_final_targets_values(target_col)
+                    # Add the values of the final (new) targets to the dataframe of metadata (in memory)
+                    self.metabo_controller.add_final_targets_col_to_dataframe()
+                    # Define the name of the column of targets as final_targets
+                    self.metabo_controller.set_target_column("final_targets")
+                    # Format the targets list to get only the (maybe new) classes names to display
+                    formatted_possible_targets = Utils.format_list_for_checklist(
+                        self.metabo_controller.get_unique_targets()
+                    )
+                    return (
+                        formatted_possible_targets,
+                        formatted_possible_targets,
+                        "",
+                    )
+                else:
+                    return dash.no_update, dash.no_update, dash.no_update
             else:
                 return dash.no_update, dash.no_update, dash.no_update
 
@@ -936,14 +950,14 @@ class SplitsTab(MetaTab):
                 return self.metabo_controller.get_id_column()
             return dash.no_update
 
-        @self.app.callback(
-            Output("in_target_col_name", "value"),
-            [Input("custom_big_tabs", "active_tab")],
-        )
-        def update_in_target_col_name(active_tab):
-            if active_tab == "tab-1":
-                return self.metabo_controller.get_target_column()
-            return dash.no_update
+        #@self.app.callback(
+        #    Output("in_target_col_name", "value"),
+        #    [Input("custom_big_tabs", "active_tab")],
+        #)
+        #def update_in_target_col_name(active_tab):
+        #    if active_tab == "tab-1":
+        #        return self.metabo_controller.get_target_column()
+        #    return dash.no_update
 
         @self.app.callback(
             Output("in_nbr_splits", "value"),
