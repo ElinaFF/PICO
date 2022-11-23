@@ -145,7 +145,7 @@ class Results:
             self.results["info_expe"] = self._produce_info_expe(
                 y_train_true, y_test_true
             )
-            print("------> last split, start features importance")
+            print("------> last split")
             self.results["features_table"] = self.produce_features_importance_table()
             self.results["accuracies_table"] = self.produce_accuracy_plot_all()
             self.results["classes"] = classes
@@ -507,7 +507,6 @@ class ResultsDT(Results):
         """
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
-        print("----> entered in _get_features_importance of DT, importances :")
         importances = model.feature_importances_
         zipped = zip(self.f_names, importances)
         return zipped

@@ -44,6 +44,15 @@ class MetaboExperiment:
     def get_metadata(self) -> MetaData:
         return self._metadata
 
+    def get_final_targets_values(self):
+        return self._metadata.get_final_targets_values()
+
+    def set_final_targets_values(self, columns: List[str]):
+        self._metadata.set_final_targets_values(columns)
+
+    def add_final_targets_col_to_dataframe(self):
+        self._metadata.add_final_targets_col_to_dataframe()
+
     def init_data_matrix(self):
         self._data_matrix = DataMatrix()
 
@@ -243,6 +252,7 @@ class MetaboExperiment:
         self._check_experimental_design()
         self._data_matrix.load_data()
         for _, experimental_design in self.experimental_designs.items():
+            print("-> Experimental design : ", _)
             results = experimental_design.get_results()
             selected_targets_name = experimental_design.get_selected_targets_name()
             (selected_targets, selected_ids,) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
@@ -250,6 +260,7 @@ class MetaboExperiment:
                 experimental_design.get_classes_design(), selected_targets
             )
             for split_index, split in experimental_design.all_splits():
+                print("---> Split : ", split_index)
                 x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
                     split[X_TRAIN_INDEX]
                 )
@@ -257,6 +268,7 @@ class MetaboExperiment:
                     split[X_TEST_INDEX]
                 )
                 for model_name in self._selected_models:
+                    print("-----> Algorithm : ", model_name)
                     results[model_name].set_feature_names(x_train)
                     results[model_name].design_name = experimental_design.get_name()
                     metabo_model = self.get_model_from_name(model_name)
@@ -315,7 +327,7 @@ class MetaboExperiment:
         return MetaboExperimentDTO(self)
 
     def full_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
-        if self.is_save_safe(saved_metabo_experiment_dto):
+        if not self.is_save_safe(saved_metabo_experiment_dto):
             raise ValueError(
                 "The save is not safe : either the data matrix or the metadata are not the same."
             )

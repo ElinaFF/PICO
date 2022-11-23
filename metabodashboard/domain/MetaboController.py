@@ -213,3 +213,12 @@ class MetaboController:
 
     def is_the_metadata_corresponding(self, metadata: str) -> bool:
         return self._metabo_experiment.is_the_metadata_corresponding(metadata)
+
+    def get_final_targets_values(self):
+        return self._metabo_experiment.get_final_targets_values()
+
+    def set_final_targets_values(self, targets_columns: List[str]):
+        self._metabo_experiment.set_final_targets_values(targets_columns)
+
+    def add_final_targets_col_to_dataframe(self):
+        self._metabo_experiment.add_final_targets_col_to_dataframe()
