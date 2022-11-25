@@ -1,4 +1,5 @@
 from typing import Generator, Tuple, List, Dict
+from multiprocessing import Pool, cpu_count
 
 import sklearn
 
@@ -260,41 +261,50 @@ class MetaboExperiment:
                 experimental_design.get_classes_design(), selected_targets
             )
             for split_index, split in experimental_design.all_splits():
-                print("---> Split : ", split_index)
-                x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
-                    split[X_TRAIN_INDEX]
-                )
-                x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
-                    split[X_TEST_INDEX]
-                )
-                for model_name in self._selected_models:
-                    print("-----> Algorithm : ", model_name)
-                    results[model_name].set_feature_names(x_train)
-                    results[model_name].design_name = experimental_design.get_name()
-                    metabo_model = self.get_model_from_name(model_name)
-                    best_model = metabo_model.train(
-                        self._cv_folds,
-                        x_train,
-                        split[y_TRAIN_INDEX],
-                        cv_algorithm,
-                        self._number_of_processes_for_cv,
-                    )
-                    y_train_pred = best_model.predict(x_train)
-                    y_test_pred = best_model.predict(x_test)
-                    results[model_name].add_results_from_one_algo_on_one_split(
-                        best_model,
-                        self._data_matrix.get_scaled_data(selected_ids),
-                        classes,
-                        split[y_TRAIN_INDEX],
-                        y_train_pred,
-                        split[y_TEST_INDEX],
-                        y_test_pred,
-                        str(split_index),
-                        split[X_TRAIN_INDEX],
-                        split[X_TEST_INDEX],
-                    )
-                experimental_design.set_is_done(True)
-        self._data_matrix.unload_data()
+                self.run_split(experimental_design, split_index, split, cv_algorithm, selected_ids, classes, results)
+                self._data_matrix.unload_data()
+
+    def run_on_model(self, model_name, results, experimental_design, split_index, split, x_train, x_test, cv_algorithm,
+                     selected_ids, classes):
+        results[model_name].set_feature_names(x_train)
+        results[model_name].design_name = experimental_design.get_name()
+        metabo_model = self.get_model_from_name(model_name)
+        best_model = metabo_model.train(
+            self._cv_folds,
+            x_train,
+            split[y_TRAIN_INDEX],
+            cv_algorithm,
+            self._number_of_processes_for_cv,
+        )
+        y_train_pred = best_model.predict(x_train)
+        y_test_pred = best_model.predict(x_test)
+        results[model_name].add_results_from_one_algo_on_one_split(
+            best_model,
+            self._data_matrix.get_scaled_data(selected_ids),
+            classes,
+            split[y_TRAIN_INDEX],
+            y_train_pred,
+            split[y_TEST_INDEX],
+            y_test_pred,
+            str(split_index),
+            split[X_TRAIN_INDEX],
+            split[X_TEST_INDEX],
+        )
+
+    def run_split(self, experimental_design, split_index, split, cv_algorithm, selected_ids, classes, results):
+        x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
+            split[X_TRAIN_INDEX]
+        )
+        x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
+            split[X_TEST_INDEX]
+        )
+        pool_size = cpu_count()
+        pool = Pool(pool_size)
+
+        for model_name in self._selected_models:
+            self.run_on_model(model_name, results, experimental_design, split_index, split, x_train, x_test,
+                              cv_algorithm, selected_ids, classes)
+        experimental_design.set_is_done(True)
 
     def get_results(self, classes_design: str, algo_name) -> dict:
         return self.experimental_designs[classes_design].get_results()[algo_name]
