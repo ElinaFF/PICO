@@ -1,5 +1,10 @@
 import pytest
 import os
+
+from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+
 from ...metabodashboard.service import Utils
 
 
@@ -26,3 +31,44 @@ def test_givenMultiClass_whenGettingBinary_thenBinaryIsReturned():
         0,
         2,
     ]
+
+
+def test_given_str_to_convert_when_converting_to_list_of_lists_then_return_list_of_lists():
+    assert Utils.convert_str_to_list_of_lists("[1,2],[3,4]") == [[1, 2], [3, 4]]
+
+
+def test_given_str_to_convert_when_converting_to_list_then_return_list():
+    assert Utils.convert_str_to_list_of_lists("[1,2]") == [[1, 2]]
+
+
+def test_given_PCA_when_getting_model_parameters_then_return_attributes():
+    assert Utils.get_model_parameters(PCA) == [('n_components', 'NoneType'),
+                                               ('copy', 'bool'),
+                                               ('whiten', 'bool'),
+                                               ('svd_solver', 'str'),
+                                               ('tol', 'float'),
+                                               ('iterated_power', 'str'),
+                                               ('n_oversamples', 'int'),
+                                               ('power_iteration_normalizer', 'str')]
+
+
+def test_given_DecisionTreeClassifier_when_getting_model_parameters_then_return_attributes():
+    assert Utils.get_model_parameters(DecisionTreeClassifier) == [('criterion', 'str'),
+                                                                  ('splitter', 'str'),
+                                                                  ('max_depth', 'NoneType'),
+                                                                  ('min_samples_split', 'int'),
+                                                                  ('min_samples_leaf', 'int'),
+                                                                  ('min_weight_fraction_leaf', 'float'),
+                                                                  ('max_features', 'NoneType'),
+                                                                  ('max_leaf_nodes', 'NoneType'),
+                                                                  ('min_impurity_decrease', 'float'),
+                                                                  ('class_weight', 'NoneType'),
+                                                                  ('ccp_alpha', 'float')]
+
+
+def test_givenDT_whenGetParametersAfterTraining_thenReturnParameters():
+    assert Utils.get_model_parameters_after_training(DecisionTreeClassifier) == [('feature_importances_', 'ndarray')]
+
+
+def test_givenRF_whenGetParametersAfterTraining_thenReturnParameters():
+    assert Utils.get_model_parameters_after_training(RandomForestClassifier) == [('feature_importances_', 'ndarray')]

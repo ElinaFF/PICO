@@ -80,9 +80,8 @@ class MetaData:
         self._id_column = id_column
 
     def set_target_column(self, target_column: List[str]) -> None:
-        for t in target_column:
-            if t not in self.get_columns():
-                raise ValueError(f"'{t}' is not a column of the metadata. The columns are: {self.get_columns()}")
+        if target_column not in self.get_columns():
+            raise ValueError(f"'{target_column}' is not a column of the metadata. The columns are: {self.get_columns()}")
         self._target_column = target_column
 
     def get_target_column(self) -> List[str]:
@@ -100,13 +99,7 @@ class MetaData:
         if self._target_column is None:
             print("WARNING: accessing targets before setting the column")
             return []
-        df_targets = self._dataframe.loc[:, self._target_column]
-        if len(self._target_column) > 1:
-            targets = df_targets.apply(lambda row: "__".join(row), axis=1)
-            targets = targets.to_list()
-        else:
-            targets = df_targets.to_list()
-        return targets
+        return self._dataframe.loc[:, self._target_column]
 
     def get_selected_targets_and_ids(self, selected_targets: List[str]) -> Tuple[Tuple[str], Tuple[str]]:
         return tuple(zip(*[(target, id) for target, id in zip(self.get_targets(), self.get_samples_id()) if target in selected_targets]))

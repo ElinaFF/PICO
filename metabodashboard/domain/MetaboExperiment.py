@@ -1,4 +1,4 @@
-from typing import Generator, Tuple, List, Dict
+from typing import Generator, Tuple, List, Dict, Union
 
 import sklearn
 
@@ -139,14 +139,14 @@ class MetaboExperiment:
         self.experimental_designs.pop(name)
 
     def add_custom_model(
-        self,
-        model_name: str,
-        needed_imports: str,
-        params: List[str],
-        values_to_explore: List[List[str]],
+            self,
+            model_name: str,
+            needed_imports: str,
+            params_grid: dict,
+            importance_attribute: str
     ):
         self._custom_models[model_name] = self._model_factory.create_custom_model(
-            model_name, needed_imports, params, values_to_explore
+            model_name, needed_imports, params_grid, importance_attribute
         )
 
     def get_custom_models(self) -> dict:
@@ -272,6 +272,7 @@ class MetaboExperiment:
                     results[model_name].add_results_from_one_algo_on_one_split(
                         best_model,
                         self._data_matrix.get_scaled_data(selected_ids),
+                        metabo_model.get_importance_attribute(),
                         classes,
                         split[y_TRAIN_INDEX],
                         y_train_pred,
@@ -324,7 +325,7 @@ class MetaboExperiment:
         self._static_restore_for_partial(saved_metabo_experiment_dto)
 
     def _static_restore_for_partial(
-        self, saved_metabo_experiment_dto: MetaboExperimentDTO
+            self, saved_metabo_experiment_dto: MetaboExperimentDTO
     ):
         self._number_of_splits = saved_metabo_experiment_dto.number_of_splits
         self._train_test_proportion = saved_metabo_experiment_dto.train_test_proportion
@@ -334,14 +335,14 @@ class MetaboExperiment:
         self._selected_cv_type = saved_metabo_experiment_dto.selected_cv_type
 
     def partial_restore(
-        self,
-        saved_metabo_experiment_dto: MetaboExperimentDTO,
-        filename_data: str,
-        filename_metadata: str,
-        data=None,
-        from_base64_data: bool = True,
-        metadata=None,
-        from_base64_metadata=True,
+            self,
+            saved_metabo_experiment_dto: MetaboExperimentDTO,
+            filename_data: str,
+            filename_metadata: str,
+            data=None,
+            from_base64_data: bool = True,
+            metadata=None,
+            from_base64_metadata=True,
     ):
         self._data_matrix.set_raw_use(saved_metabo_experiment_dto.data_matrix.is_raw())
         self._data_matrix.set_remove_rt(
@@ -364,9 +365,9 @@ class MetaboExperiment:
 
     def is_save_safe(self, saved_metabo_experiment_dto: MetaboExperimentDTO) -> bool:
         return (
-            self._metadata.get_hash() == saved_metabo_experiment_dto.metadata.get_hash()
-            and self._data_matrix.get_hash()
-            == saved_metabo_experiment_dto.data_matrix.get_hash()
+                self._metadata.get_hash() == saved_metabo_experiment_dto.metadata.get_hash()
+                and self._data_matrix.get_hash()
+                == saved_metabo_experiment_dto.data_matrix.get_hash()
         )
 
     def is_the_data_matrix_corresponding(self, data: str) -> bool:
@@ -410,6 +411,5 @@ class MetaboExperiment:
 
     def set_number_of_processes_for_cv(self, number_of_processes: int):
         self._number_of_processes_for_cv = number_of_processes
-
 
 # TODO: print current algo when training

@@ -94,7 +94,7 @@ class SplitGroup:
 
 
             print("_compute_split step #4 done")
-            self._splits.append([X_train, X_test, y_train, y_test])
+            self._splits.append([X_train.tolist(), X_test.tolist(), y_train, y_test])
 
     def load_split_with_index(self, split_index: int) -> list:
         return self._splits[split_index]

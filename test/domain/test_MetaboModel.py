@@ -2,13 +2,13 @@ import pytest
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.tree import DecisionTreeClassifier
 
-from ..TestsUtility import FOLDS, DATA, CLASSES, PARAMETER_GRID, NUMBER_OF_PROCESSES
+from ..TestsUtility import FOLDS, DATA, CLASSES, PARAMETER_GRID, NUMBER_OF_PROCESSES, IMPORTANCE_ATTRIBUTE, SEED
 from ...metabodashboard.domain.MetaboModel import MetaboModel
 
 
 @pytest.fixture
-def input_metabomodel():
-    return MetaboModel(DecisionTreeClassifier, PARAMETER_GRID)
+def input_metabomodel() -> MetaboModel:
+    return MetaboModel(DecisionTreeClassifier, PARAMETER_GRID,SEED, IMPORTANCE_ATTRIBUTE)
 
 
 def test_givenModel_whenTuningWithGridSearch_thenReturnBestModel(input_metabomodel):

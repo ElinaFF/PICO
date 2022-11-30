@@ -1,4 +1,7 @@
+import re
+
 import dash_bootstrap_components as dbc
+import pandas as pd
 from dash import html, State, Input, Output, dash, dcc, callback_context
 
 from .MetaTab import MetaTab
@@ -91,26 +94,30 @@ class MLTab(MetaTab):
                     placeholder="Enter Name (B)",
                     className="form_input_text",
                 ),
+                dbc.Button(
+                    "Get attributes",
+                    color="success",
+                    id="get_attribute_button",
+                    className="custom_buttons",
+                    n_clicks=0,
+                ),
+                html.Div(id="output_import_algo"),
+                html.Br(),
                 dbc.Label("Specify parameters to explore by gridsearch"),
-                dbc.Input(
-                    id="name_param",
-                    placeholder="Name of parameter",
-                    className="form_input_text",
-                ),
-                dbc.Input(
-                    id="values_param",
-                    placeholder="Values to explore",
-                    className="form_input_text",
-                ),
                 html.Div(
                     children=[
                         html.Br(),
                         html.P("You can set the grid search parameters as followed:"),
-                        html.P("Name of parameter: 'param1, param2'"),
                         html.P(
-                            "Values to explore: '[val1A, val1B, val1C], [val2A, val2B, val2C]'"
+                            "Values: 'val1A, val1B, val1C'"
                         ),
                     ]
+                ),
+                html.Div(id="table_param"),
+                html.Div(id="output_error_import_algo"),
+                dbc.Label("Specify importance attribute"),
+                dbc.Select(
+                    id="attribute_dropdown_menu",
                 ),
                 dbc.Button(
                     "Add",
@@ -121,6 +128,7 @@ class MLTab(MetaTab):
                 ),
             ],
             className="form_field",
+
         )
 
         __validationButton = html.Div(
@@ -147,8 +155,7 @@ class MLTab(MetaTab):
                     n_clicks=0,
                 ),
                 html.Div(id="output_button_ml", children="", style={"display": "none"}),
-            ],
-        )
+            ], )
 
         _definitionLearningAlgorithm = html.Div(
             className="title_and_form",
@@ -159,7 +166,19 @@ class MLTab(MetaTab):
                         dbc.Col(
                             children=[
                                 __availableAlgorithms,
-                                __addCustomAlgorithm,
+                                # TODO: change button style
+                                dbc.Button(
+                                    "Add custom sklearn algorithm (for experts)",
+                                    id="collapse-button",
+                                    className="mb-3",
+                                    color="primary",
+                                    n_clicks=0,
+                                ),
+                                dbc.Collapse(
+                                    dbc.Card(dbc.CardBody(__addCustomAlgorithm)),
+                                    id="collapse",
+                                    is_open=False,
+                                ),
                                 __validationButton,
                             ],
                         )
@@ -224,11 +243,8 @@ class MLTab(MetaTab):
             [
                 Output("in_algo_ML", "options"),
                 Output("in_algo_ML", "value"),
-                Output("import_new_algo", "value"),
-                Output("name_new_algo", "value"),
-                Output("name_param", "value"),
-                Output("values_param", "value"),
                 Output("output_checklist_ml", "children"),
+                Output("output_error_import_algo", "children"),
             ],
             [
                 Input("add_n_refresh_sklearn_algo_button", "n_clicks"),
@@ -238,12 +254,11 @@ class MLTab(MetaTab):
             [
                 State("import_new_algo", "value"),
                 State("name_new_algo", "value"),
-                State("name_param", "value"),
-                State("values_param", "value"),
-            ],
+                State("table_param", "children"),
+            ]
         )
         def add_refresh_available_sklearn_algorithms(
-            n, value, active_tab, import_new, new_algo_name, name_param, values_param
+                n, value, active_tab, import_algo, name_algo, table_param
         ):
             triggered_by = callback_context.triggered[0]["prop_id"].split(".")[0]
             if triggered_by == "custom_big_tabs":
@@ -252,13 +267,34 @@ class MLTab(MetaTab):
                     self.metabo_controller.update_experimental_designs_with_selected_models()
 
             if triggered_by == "add_n_refresh_sklearn_algo_button":
-                print("Triggered by button")
+                model = Utils.get_model_from_import([import_algo], name_algo)
+                params_and_values = re.findall(r"{'id': '(\w+)'[\w,' :]*'value': '([\[\],. \w]+)',[\w,': ]*}",
+                                               str(table_param))
+                grid_search_params = {}
+                param_types = {param: type for param, type in Utils.get_model_parameters(model)}
+                error_children = []
+                for param, value in params_and_values:
+                    values = re.split(r" *, *", value)
+                    param_type = param_types[param]
+                    if param_type == "float":
+                        try:
+                            grid_search_params[param] = [float(val) for val in values]
+                        except ValueError:
+                            error_children.append(html.P(f"{param} must be decimal numbers (with '.')", style={"color": "red"}))
+                    elif param_type == "int":
+                        try:
+                            grid_search_params[param] = [int(val) for val in values]
+                        except ValueError:
+                            error_children.append(html.P(f"{param} must be integers", style={"color": "red"}))
+                    else:
+                        grid_search_params[param] = values
+
+                if error_children:
+                    return dash.no_update, dash.no_update, dash.no_update, error_children
+
 
                 self.metabo_controller.add_custom_model(
-                    new_algo_name,
-                    import_new,
-                    name_param.split(","),
-                    Utils.convert_str_to_list_of_lists(values_param),
+                    name_algo, import_algo, grid_search_params, imporance_attributes[0][0]
                 )
             if triggered_by == "in_algo_ML":
                 print("Triggered by dropdown")
@@ -271,11 +307,8 @@ class MLTab(MetaTab):
                             self.metabo_controller.get_all_algos_names()
                         ),
                         [],
-                        "",
-                        "",
-                        "",
-                        "",
                         str(ve),
+                        "",
                     )
 
             return (
@@ -283,9 +316,6 @@ class MLTab(MetaTab):
                     self.metabo_controller.get_all_algos_names()
                 ),
                 self.metabo_controller.get_selected_models(),
-                "",
-                "",
-                "",
                 "",
                 "",
             )
@@ -318,3 +348,45 @@ class MLTab(MetaTab):
                 self.metabo_controller.set_cv_type(value)
 
             return self.metabo_controller.get_selected_cv_type()
+
+        @self.app.callback(
+            [Output("output_import_algo", "children"),
+             Output("output_import_algo", "style"),
+             Output("table_param", "children"),
+             Output("attribute_dropdown_menu", "options")],
+            [Input("get_attribute_button", "n_clicks")],
+            [State("import_new_algo", "value"),
+             State("name_new_algo", "value")],
+        )
+        def get_attribute_algo(n, import_new, new_algo_name):
+            if n >= 1:
+                try:
+                    model = Utils.get_model_from_import([import_new], new_algo_name)
+                    attributes = Utils.get_model_parameters(model)
+                    attributes_table = pd.DataFrame(attributes, columns=["Name", "Type"])
+                    attributes_table["Type"].replace(
+                        {"str": "String", "int": "Integer", "float": "Float", "NoneType": "Unspecified"}, inplace=True)
+
+                    inputs = []
+                    for attribute, _ in attributes:
+                        inputs.append(dbc.Input(id=attribute, type="text", placeholder="Value"))
+
+                    attributes_table["Value"] = inputs
+
+                    imporance_attributes = Utils.get_model_parameters_after_training(model)
+
+                    return f"{model.__name__} found", {"color": "green"}, dbc.Table.from_dataframe(attributes_table), Utils.format_list_for_checklist(imporance_attributes)
+                except Exception as e:
+                    return "Import failed: " + str(e), {"color": "red"}, "", ""
+            else:
+                return dash.no_update, dash.no_update, dash.no_update, dash.no_update
+
+        @self.app.callback(
+            Output("collapse", "is_open"),
+            [Input("collapse-button", "n_clicks")],
+            [State("collapse", "is_open")],
+        )
+        def toggle_collapse(n, is_open):
+            if n:
+                return not is_open
+            return is_open
