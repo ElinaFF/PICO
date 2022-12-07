@@ -85,7 +85,7 @@ class MetaData:
             df = pd.read_excel(data)
         else:
             raise TypeError(
-                "The input file is not of the right type, must be excel, odt or csv."
+                "The input file is not of the right type, must be excel or csv."
             )
         return df
 

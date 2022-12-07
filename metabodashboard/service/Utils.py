@@ -145,6 +145,11 @@ def get_group_to_class(classes):
 
 
 def reverse_dict(dictionnary: dict) -> dict:
+    """
+    example
+    input dict is in shape {label1 : [target1, target2], label2 : [target3, target4]}
+    output dict would be {target1 : label1, target2 : label1, target3 : label2, target4 : label2}
+    """
     reversed_dict = {}
     for key, value in dictionnary.items():
         if type(value) is list:
