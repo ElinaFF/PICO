@@ -146,5 +146,8 @@ class MetaData:
             return []
         return self._dataframe[self._id_column].tolist()
 
+    def is_set(self) -> bool:
+        return self._dataframe is not None
+
 
 # TODO: join sampleId and target in same pickle file

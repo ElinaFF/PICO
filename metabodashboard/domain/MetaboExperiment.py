@@ -2,7 +2,7 @@ from typing import Generator, Tuple, List, Dict
 
 import sklearn
 
-from . import ExperimentalDesign
+from . import ExperimentalDesign, Results
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
 from .MetaboExperimentDTO import MetaboExperimentDTO
@@ -20,23 +20,23 @@ class MetaboExperiment:
     def __init__(self):
         self._model_factory = ModelFactory()
 
-        self._data_matrix = DataMatrix()
+        self._data_matrix: DataMatrix = DataMatrix()
         self._is_progenesis_data = False
-        self._metadata = MetaData()
+        self._metadata: MetaData = MetaData()
 
-        self._number_of_splits = 5
-        self._train_test_proportion = 0.2
-        self._pairing_group_column = ""
-        self._cv_folds = 5
-        self._number_of_processes_for_cv = 2
+        self._number_of_splits: int = 5
+        self._train_test_proportion: float = 0.2
+        self._pairing_group_column: str = ""
+        self._cv_folds: int = 5
+        self._number_of_processes_for_cv: int = 2
 
-        self.experimental_designs = {}
+        self.experimental_designs: Dict[str, ExperimentalDesign] = {}
 
-        self._supported_models = self._model_factory.create_supported_models()
-        self._custom_models = {}
-        self._selected_models = []
-        self._cv_algorithms = CV_ALGORITHMS
-        self._selected_cv_type = list(self._cv_algorithms.keys())[0]
+        self._supported_models: Dict[str, MetaboModel] = self._model_factory.create_supported_models()
+        self._custom_models: Dict[str, MetaboModel] = {}
+        self._selected_models: List[str] = []
+        self._cv_algorithms: Dict[str, sklearn.model_selection] = CV_ALGORITHMS
+        self._selected_cv_type: str = list(self._cv_algorithms.keys())[0]
 
     def init_metadata(self):
         self._metadata = MetaData()
@@ -72,7 +72,7 @@ class MetaboExperiment:
         metadata_df = self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, from_base64=from_base64)
 
         # format the metadata df (in case progenesis is given)
-        if metadata_df is not None:
+        if metadata_df is not None and not self._metadata.is_set():
             self._metadata = MetaData(metadata_df)
             self._metadata.set_id_column("sample_names")
             self._metadata.set_target_column("labels")
@@ -96,14 +96,7 @@ class MetaboExperiment:
         self._train_test_proportion = train_test_proportion
 
     def create_splits(self):
-        if self._number_of_splits is None:
-            raise ValueError("Number of splits not set")
-        if self._train_test_proportion is None:
-            raise ValueError("Train test proportion not set")
-        if self._pairing_group_column is None:
-            raise ValueError("Pairing group column not set")
-        if self._metadata is None:
-            raise ValueError("Metadata not set")
+        self._raise_if_value_for_split_not_set()
         for _, experimental_design in self.experimental_designs.items():
             experimental_design.set_split_parameter_and_compute_splits(
                 self._train_test_proportion,
@@ -148,11 +141,11 @@ class MetaboExperiment:
         self.experimental_designs.pop(name)
 
     def add_custom_model(
-        self,
-        model_name: str,
-        needed_imports: str,
-        params: List[str],
-        values_to_explore: List[List[str]],
+            self,
+            model_name: str,
+            needed_imports: str,
+            params: List[str],
+            values_to_explore: List[List[str]],
     ):
         self._custom_models[model_name] = self._model_factory.create_custom_model(
             model_name, needed_imports, params, values_to_explore
@@ -211,13 +204,12 @@ class MetaboExperiment:
             )
 
     def _check_experimental_design(self):
-        error_message = "Train test proportion, number of splits and metadata need to be set before start learning: "
+        error_message = "Train test proportion and number of splits need to be set before start learning: "
         if self._number_of_splits is None:
             raise RuntimeError(error_message + "missing number of splits")
         if self._train_test_proportion is None:
             raise RuntimeError(error_message + "missing train test proportion")
-        if self._metadata is None:
-            raise RuntimeError(error_message + "missing metadata")
+
 
     def all_experimental_designs_names(self) -> Generator[Tuple[str, str], None, None]:
         for name, experimental_design in self.experimental_designs.items():
@@ -226,30 +218,27 @@ class MetaboExperiment:
     def reset_experimental_designs(self):
         self.experimental_designs = {}
 
-    def _raise_if_value_for_learning_not_setted(self):
-        if self._data_matrix is None:
-            raise RuntimeError("Data matrix not set")
-        if self._metadata is None:
-            raise RuntimeError("Metadata not set")
-        if self._pairing_group_column is None:
-            raise RuntimeError("Pairing group column not set")
-        if self._train_test_proportion is None:
-            raise RuntimeError("Train test proportion not set")
-        if self._number_of_splits is None:
-            raise RuntimeError("Number of splits not set")
-        if self._selected_models is None:
-            raise RuntimeError("Selected models not set")
-        if self._cv_folds is None:
-            raise RuntimeError("CV folds not set")
+    def _raise_if_value_for_split_not_set(self):
+        if not self._data_matrix.is_set():
+            raise RuntimeError("Please set the data matrix")
+        if not self._metadata.is_set():
+            raise RuntimeError("Please set the metadata")
+        self._check_experimental_design()
         if self.experimental_designs == {}:
             raise RuntimeError(
                 "You must define at least one experimental design before learning."
             )
 
+    def _raise_if_value_for_learning_not_setted(self):
+        self._raise_if_value_for_split_not_set()
+        if self._selected_models is None:
+            raise RuntimeError("Please select at least one model")
+        if self._cv_folds is None:
+            raise RuntimeError("Please correctly fill the number of folds")
+
     def learn(self):
         self._raise_if_value_for_learning_not_setted()
         cv_algorithm = self.get_cv_algorithm()
-        self._check_experimental_design()
         self._data_matrix.load_data()
         for _, experimental_design in self.experimental_designs.items():
             print("-> Experimental design : ", _)
@@ -296,7 +285,7 @@ class MetaboExperiment:
                 experimental_design.set_is_done(True)
         self._data_matrix.unload_data()
 
-    def get_results(self, classes_design: str, algo_name) -> dict:
+    def get_results(self, classes_design: str, algo_name) -> Results:
         return self.experimental_designs[classes_design].get_results()[algo_name]
 
     def get_all_updated_results(self) -> dict:
@@ -336,7 +325,7 @@ class MetaboExperiment:
         self._static_restore_for_partial(saved_metabo_experiment_dto)
 
     def _static_restore_for_partial(
-        self, saved_metabo_experiment_dto: MetaboExperimentDTO
+            self, saved_metabo_experiment_dto: MetaboExperimentDTO
     ):
         self._number_of_splits = saved_metabo_experiment_dto.number_of_splits
         self._train_test_proportion = saved_metabo_experiment_dto.train_test_proportion
@@ -346,14 +335,14 @@ class MetaboExperiment:
         self._selected_cv_type = saved_metabo_experiment_dto.selected_cv_type
 
     def partial_restore(
-        self,
-        saved_metabo_experiment_dto: MetaboExperimentDTO,
-        filename_data: str,
-        filename_metadata: str,
-        data=None,
-        from_base64_data: bool = True,
-        metadata=None,
-        from_base64_metadata=True,
+            self,
+            saved_metabo_experiment_dto: MetaboExperimentDTO,
+            filename_data: str,
+            filename_metadata: str,
+            data=None,
+            from_base64_data: bool = True,
+            metadata=None,
+            from_base64_metadata=True,
     ):
         self._data_matrix.set_raw_use(saved_metabo_experiment_dto.data_matrix.is_raw())
         self._data_matrix.set_remove_rt(
@@ -376,9 +365,9 @@ class MetaboExperiment:
 
     def is_save_safe(self, saved_metabo_experiment_dto: MetaboExperimentDTO) -> bool:
         return (
-            self._metadata.get_hash() == saved_metabo_experiment_dto.metadata.get_hash()
-            and self._data_matrix.get_hash()
-            == saved_metabo_experiment_dto.data_matrix.get_hash()
+                self._metadata.get_hash() == saved_metabo_experiment_dto.metadata.get_hash()
+                and self._data_matrix.get_hash()
+                == saved_metabo_experiment_dto.data_matrix.get_hash()
         )
 
     def is_the_data_matrix_corresponding(self, data: str) -> bool:
@@ -422,6 +411,5 @@ class MetaboExperiment:
 
     def set_number_of_processes_for_cv(self, number_of_processes: int):
         self._number_of_processes_for_cv = number_of_processes
-
 
 # TODO: print current algo when training

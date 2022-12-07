@@ -124,3 +124,6 @@ class DataMatrix:
 
     def get_remove_rt(self) -> bool:
         return self._remove_rt
+
+    def is_set(self):
+        return self._hash is not None
