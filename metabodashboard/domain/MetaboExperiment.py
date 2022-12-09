@@ -24,7 +24,7 @@ class MetaboExperiment:
         self._is_progenesis_data = False
         self._metadata: MetaData = MetaData()
 
-        self._number_of_splits: int = 5
+        self._number_of_splits: int = 20
         self._train_test_proportion: float = 0.2
         self._pairing_group_column: str = ""
         self._cv_folds: int = 5
@@ -225,9 +225,11 @@ class MetaboExperiment:
             raise RuntimeError("Please set the metadata")
         self._check_experimental_design()
         if self.experimental_designs == {}:
-            raise RuntimeError(
-                "You must define at least one experimental design before learning."
-            )
+            raise RuntimeError("You must define at least one experimental design.")
+        if self._number_of_splits is None or self._number_of_splits == 0:
+            raise RuntimeError("Adjust the number of splits, it should be > 0, (20 to 25 recommended in general).")
+        if self._train_test_proportion is None or self._train_test_proportion >= 1 or self._train_test_proportion <= 0:
+            raise RuntimeError("The proportion of samples in the test set must be > 0 and < 1 (0.2 is recommended in general)")
 
     def _raise_if_value_for_learning_not_setted(self):
         self._raise_if_value_for_split_not_set()
