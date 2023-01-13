@@ -1,5 +1,8 @@
 title: MeDIC
 logo: logo.png
+favicon: favicon.ico
+apple_touch_icon: logo.png
+accent_image: /imgs/pexels-roman-odintsov-4871011.jpg
 description: Metabolomic Dashboard for Interpretable Classification
 remote_theme: hydecorp/hydejack@v9.1.6
 plugins:
