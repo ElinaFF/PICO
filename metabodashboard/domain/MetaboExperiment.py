@@ -1,4 +1,4 @@
-from typing import Generator, Tuple, List, Dict
+from typing import Generator, Tuple, List, Dict, Union
 
 import sklearn
 
@@ -75,7 +75,7 @@ class MetaboExperiment:
         if metadata_df is not None:
             self._metadata = MetaData(metadata_df)
             self._metadata.set_id_column("sample_names")
-            self._metadata.set_target_column("labels")
+            self._metadata.set_target_columns(["labels"])
             self._is_progenesis_data = True
         else:
             self._is_progenesis_data = False
@@ -181,11 +181,6 @@ class MetaboExperiment:
         if self._metadata is None:
             raise RuntimeError("Metadata is not set.")
         return self._metadata.get_columns()
-
-    def set_target_column(self, target_column: str):
-        if self._metadata is None:
-            raise RuntimeError("Metadata is not set.")
-        self._metadata.set_target_column(target_column)
 
     def set_id_column(self, id_column: str):
         if self._metadata is None:
@@ -396,8 +391,7 @@ class MetaboExperiment:
     def is_progenesis_data(self) -> bool:
         return self._is_progenesis_data
 
-    def is_data_raw(self) -> bool:
-        print("is_data_raw", self._data_matrix.is_raw())
+    def is_data_raw(self) -> Union[bool, None]:
         return self._data_matrix.is_raw()
 
     def set_raw_use_for_data(self, use_raw: bool):
@@ -423,5 +417,13 @@ class MetaboExperiment:
     def set_number_of_processes_for_cv(self, number_of_processes: int):
         self._number_of_processes_for_cv = number_of_processes
 
+    def data_is_set(self) -> bool:
+        return self._data_matrix.data_is_set()
+
+    def metadata_is_set(self) -> bool:
+        return self._metadata.metadata_is_set()
+
+    def set_target_columns(self, target_cols: List[str]) -> None:
+        self._metadata.set_target_columns(target_cols)
 
 # TODO: print current algo when training

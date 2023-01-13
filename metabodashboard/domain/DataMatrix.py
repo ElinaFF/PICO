@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Tuple, Optional, Iterable
+from typing import Tuple, Optional, Iterable, Union
 
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
@@ -60,7 +60,7 @@ class DataMatrix:
         """
         return self._hash
 
-    def is_raw(self) -> bool:
+    def is_raw(self) -> Union[bool, None]:
         return self._use_raw
 
     def get_scaled_data(self, selected_ids: Iterable = None) -> pd.DataFrame:
@@ -124,3 +124,6 @@ class DataMatrix:
 
     def get_remove_rt(self) -> bool:
         return self._remove_rt
+
+    def data_is_set(self) -> bool:
+        return self._hash is not None
