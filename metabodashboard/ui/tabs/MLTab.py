@@ -117,7 +117,7 @@ class MLTab(MetaTab):
                 html.Div(id="output_error_import_algo"),
                 dbc.Label("Specify importance attribute"),
                 dbc.Select(
-                    id="attribute_dropdown_menu",
+                    id="importance_attributes_dropdown_menu",
                 ),
                 dbc.Button(
                     "Add",
@@ -171,7 +171,7 @@ class MLTab(MetaTab):
                                     "Add custom sklearn algorithm (for experts)",
                                     id="collapse-button",
                                     className="mb-3",
-                                    color="primary",
+                                    color="outline-primary",
                                     n_clicks=0,
                                 ),
                                 dbc.Collapse(
@@ -255,10 +255,11 @@ class MLTab(MetaTab):
                 State("import_new_algo", "value"),
                 State("name_new_algo", "value"),
                 State("table_param", "children"),
+                State("importance_attributes_dropdown_menu", "value")
             ]
         )
         def add_refresh_available_sklearn_algorithms(
-                n, value, active_tab, import_algo, name_algo, table_param
+                n, value, active_tab, import_algo, name_algo, table_param, importance_attribute
         ):
             triggered_by = callback_context.triggered[0]["prop_id"].split(".")[0]
             if triggered_by == "custom_big_tabs":
@@ -292,9 +293,8 @@ class MLTab(MetaTab):
                 if error_children:
                     return dash.no_update, dash.no_update, dash.no_update, error_children
 
-
                 self.metabo_controller.add_custom_model(
-                    name_algo, import_algo, grid_search_params, imporance_attributes[0][0]
+                    name_algo, import_algo, grid_search_params, importance_attribute
                 )
             if triggered_by == "in_algo_ML":
                 print("Triggered by dropdown")
@@ -353,7 +353,7 @@ class MLTab(MetaTab):
             [Output("output_import_algo", "children"),
              Output("output_import_algo", "style"),
              Output("table_param", "children"),
-             Output("attribute_dropdown_menu", "options")],
+             Output("importance_attributes_dropdown_menu", "options")],
             [Input("get_attribute_button", "n_clicks")],
             [State("import_new_algo", "value"),
              State("name_new_algo", "value")],
@@ -366,17 +366,15 @@ class MLTab(MetaTab):
                     attributes_table = pd.DataFrame(attributes, columns=["Name", "Type"])
                     attributes_table["Type"].replace(
                         {"str": "String", "int": "Integer", "float": "Float", "NoneType": "Unspecified"}, inplace=True)
-
                     inputs = []
                     for attribute, _ in attributes:
                         inputs.append(dbc.Input(id=attribute, type="text", placeholder="Value"))
-
                     attributes_table["Value"] = inputs
 
-                    imporance_attributes = Utils.get_model_parameters_after_training(model)
-
-                    return f"{model.__name__} found", {"color": "green"}, dbc.Table.from_dataframe(attributes_table), Utils.format_list_for_checklist(imporance_attributes)
+                    importance_attributes = [param_name for param_name, _ in Utils.get_model_parameters_after_training(model)]
+                    return f"{model.__name__} found", {"color": "green"}, dbc.Table.from_dataframe(attributes_table), Utils.format_list_for_checklist(importance_attributes)
                 except Exception as e:
+                    print(e)
                     return "Import failed: " + str(e), {"color": "red"}, "", ""
             else:
                 return dash.no_update, dash.no_update, dash.no_update, dash.no_update

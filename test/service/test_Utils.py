@@ -3,6 +3,7 @@ import os
 
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
 from ...metabodashboard.service import Utils
@@ -72,3 +73,6 @@ def test_givenDT_whenGetParametersAfterTraining_thenReturnParameters():
 
 def test_givenRF_whenGetParametersAfterTraining_thenReturnParameters():
     assert Utils.get_model_parameters_after_training(RandomForestClassifier) == [('feature_importances_', 'ndarray')]
+
+def test_givenSVCwithMutuallyExclusiveParamater_whenGetParametersAfterTraining_thenReturnParameters():
+    assert Utils.get_model_parameters_after_training(LinearSVC) == [('coef_', 'ndarray')]

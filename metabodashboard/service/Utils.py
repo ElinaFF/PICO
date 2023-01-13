@@ -262,7 +262,7 @@ def get_model_from_import(imports_list: list, model_name: str) -> sklearn:
 
 
 def get_model_parameters(model) -> List[Tuple[str, str]]:
-    parameters = list(model.__dict__["__init__"].__code__.co_varnames)
+    parameters = vars(model()).keys()
     parameters = [(parameter, _get_type(parameter, model())) for parameter in parameters if parameter not in ["self", "random_state"]]
     return parameters
 
@@ -276,10 +276,20 @@ def _parameter_is_relevant(parameter: str, model: object) -> bool:
 
 
 def _parameter_is_collection(parameter: str, trained_model: sklearn) -> bool:
-    attribute = getattr(trained_model, parameter)
+    try:
+        attribute = getattr(trained_model, parameter)
+    except AttributeError:
+        print("Attribute {} not found in model".format(parameter))
+        return False
     if type(attribute) in (list, tuple, set, dict, pd.DataFrame, pd.Series, numpy.ndarray):
         if len(attribute) == 3:
             return True
+        try:
+            # TODO: manual test on the web app
+            if len(attribute[0]) == 3 and len(attribute) == 1:
+                return True
+        except (KeyError, TypeError):
+            pass
     return False
 
 
@@ -290,10 +300,8 @@ def get_model_parameters_after_training(model: sklearn) -> List[Tuple[str, str]]
     attributes = dir(trained_model)
     parameters = []
     for attribute in attributes:
-        print(attribute)
-        print(_parameter_is_relevant(attribute, trained_model))
-        print(_parameter_is_collection(attribute, trained_model))
-        if _parameter_is_collection(attribute, trained_model) and _parameter_is_relevant(attribute, model):
+        if _parameter_is_collection(attribute, trained_model) and \
+                _parameter_is_relevant(attribute, model):
             parameters.append((attribute, _get_type(attribute, trained_model)))
     if DEFAULT_IMPORTANCE_ATTRIBUTE in attributes:
         default_tuple = (DEFAULT_IMPORTANCE_ATTRIBUTE, _get_type(DEFAULT_IMPORTANCE_ATTRIBUTE, trained_model))
