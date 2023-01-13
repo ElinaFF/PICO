@@ -393,13 +393,13 @@ class ResultsTab(MetaTab):
                         ),
                     ],
                 ),
-                dbc.Select(
-                    id="features_dropdown",
-                    className="form_select",
-                    options=[{"label": "None", "value": "None"}],
-                    value="None",
-                    style={"width": "35%"},
-                ),
+                # dbc.Select(
+                #     id="features_dropdown",
+                #     className="form_select",
+                #     options=[{"label": "None", "value": "None"}],
+                #     value="None",
+                #     style={"width": "35%"},
+                # ),
                 dcc.Loading(
                     dcc.Graph(id="features_stripChart", config=CONFIG),
                     type="dot",
@@ -699,32 +699,31 @@ class ResultsTab(MetaTab):
             else:
                 return dash.no_update
 
-        @self.app.callback(
-            [
-                Output("features_dropdown", "options"),
-                Output("features_dropdown", "value"),
-            ],
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
-        )
-        def update_results_dropdown_features(n_click, algo, design_name):
-            if n_click >= 1:
-                df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
-                features = list(df.iloc[:, 0])
-                return Utils.format_list_for_checklist(features), features[0]
-            else:
-                return dash.no_update
+        #@self.app.callback(
+        #    [
+        #        Output("features_dropdown", "options"),
+        #        Output("features_dropdown", "value"),
+        #    ],
+        #    [Input("load_ML_results_button", "n_clicks")],
+        #    [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+        #)
+        #def update_results_dropdown_features(n_click, algo, design_name):
+        #    if n_click >= 1:
+        #        df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
+        #        features = list(df.iloc[:, 0])
+        #        return Utils.format_list_for_checklist(features), features[0]
+        #    else:
+        #        return dash.no_update
 
         @self.app.callback(
             Output("features_stripChart", "figure"),
-            [Input("features_dropdown", "value")],
+            [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
-        def show_stripChart_features(feature, algo, design_name):
-            if feature != "None":
+        def show_stripChart_features(n_click, algo, design_name):
+            if n_click >= 1:
                 df = self.r[design_name][algo].results["features_stripchart"]
-                # df = df.loc[:, [feature, "targets"]]  #!!! ---> Test
-                return self._plots.show_metabolite_levels(df, feature, algo)
+                return self._plots.show_metabolite_levels(df, algo)
             else:
                 return dash.no_update
 

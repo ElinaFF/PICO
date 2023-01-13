@@ -44,6 +44,15 @@ class MetaboExperiment:
     def get_metadata(self) -> MetaData:
         return self._metadata
 
+    def get_final_targets_values(self):
+        return self._metadata.get_final_targets_values()
+
+    def set_final_targets_values(self, columns: List[str]):
+        self._metadata.set_final_targets_values(columns)
+
+    def add_final_targets_col_to_dataframe(self):
+        self._metadata.add_final_targets_col_to_dataframe()
+
     def init_data_matrix(self):
         self._data_matrix = DataMatrix()
 
@@ -66,7 +75,7 @@ class MetaboExperiment:
         if metadata_df is not None:
             self._metadata = MetaData(metadata_df)
             self._metadata.set_id_column("sample_names")
-            self._metadata.set_target_column("labels")
+            self._metadata.set_target_columns(["labels"])
             self._is_progenesis_data = True
         else:
             self._is_progenesis_data = False
@@ -172,11 +181,6 @@ class MetaboExperiment:
         if self._metadata is None:
             raise RuntimeError("Metadata is not set.")
         return self._metadata.get_columns()
-
-    def set_target_column(self, target_column: List[str]):
-        if self._metadata is None:
-            raise RuntimeError("Metadata is not set.")
-        self._metadata.set_target_column(target_column)
 
     def set_id_column(self, id_column: str):
         if self._metadata is None:
@@ -316,7 +320,7 @@ class MetaboExperiment:
         return MetaboExperimentDTO(self)
 
     def full_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
-        if self.is_save_safe(saved_metabo_experiment_dto):
+        if not self.is_save_safe(saved_metabo_experiment_dto):
             raise ValueError(
                 "The save is not safe : either the data matrix or the metadata are not the same."
             )
@@ -325,7 +329,7 @@ class MetaboExperiment:
         self._static_restore_for_partial(saved_metabo_experiment_dto)
 
     def _static_restore_for_partial(
-            self, saved_metabo_experiment_dto: MetaboExperimentDTO
+        self, saved_metabo_experiment_dto: MetaboExperimentDTO
     ):
         self._number_of_splits = saved_metabo_experiment_dto.number_of_splits
         self._train_test_proportion = saved_metabo_experiment_dto.train_test_proportion
@@ -335,14 +339,14 @@ class MetaboExperiment:
         self._selected_cv_type = saved_metabo_experiment_dto.selected_cv_type
 
     def partial_restore(
-            self,
-            saved_metabo_experiment_dto: MetaboExperimentDTO,
-            filename_data: str,
-            filename_metadata: str,
-            data=None,
-            from_base64_data: bool = True,
-            metadata=None,
-            from_base64_metadata=True,
+        self,
+        saved_metabo_experiment_dto: MetaboExperimentDTO,
+        filename_data: str,
+        filename_metadata: str,
+        data=None,
+        from_base64_data: bool = True,
+        metadata=None,
+        from_base64_metadata=True,
     ):
         self._data_matrix.set_raw_use(saved_metabo_experiment_dto.data_matrix.is_raw())
         self._data_matrix.set_remove_rt(
@@ -385,8 +389,7 @@ class MetaboExperiment:
     def is_progenesis_data(self) -> bool:
         return self._is_progenesis_data
 
-    def is_data_raw(self) -> bool:
-        print("is_data_raw", self._data_matrix.is_raw())
+    def is_data_raw(self) -> Union[bool, None]:
         return self._data_matrix.is_raw()
 
     def set_raw_use_for_data(self, use_raw: bool):
@@ -411,5 +414,14 @@ class MetaboExperiment:
 
     def set_number_of_processes_for_cv(self, number_of_processes: int):
         self._number_of_processes_for_cv = number_of_processes
+
+    def data_is_set(self) -> bool:
+        return self._data_matrix.data_is_set()
+
+    def metadata_is_set(self) -> bool:
+        return self._metadata.metadata_is_set()
+
+    def set_target_columns(self, target_cols: List[str]) -> None:
+        self._metadata.set_target_columns(target_cols)
 
 # TODO: print current algo when training

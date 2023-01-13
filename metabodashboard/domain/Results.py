@@ -165,7 +165,7 @@ class Results:
             self.results["info_expe"] = self._produce_info_expe(
                 y_train_true, y_test_true
             )
-            print("------> last split, start features importance")
+            print("------> last split")
             self.results["features_table"] = self.produce_features_importance_table()
             self.results["accuracies_table"] = self.produce_accuracy_plot_all()
             self.results["classes"] = classes
@@ -283,11 +283,11 @@ class Results:
         nbr_train = len(y_train_true)
         nbr_test = len(y_test_true)
         tot = nbr_train + nbr_test
+        ratio_test = round(nbr_test / tot * 100)
+        ratio_train = 100 - ratio_test
         nom_stats = ["Number of samples", "Train-test repartition"]
         valeurs_stats = [str(tot)]
-        valeurs_stats.append(
-            str(math.ceil(nbr_train / tot * 100)) + " - " + str(math.ceil(nbr_test / tot * 100))
-        )
+        valeurs_stats.append(str(ratio_train) + "% - " + str(ratio_test) + "%")
         y = y_train_true + y_test_true
         c = Counter(y)
         for k in c.keys():

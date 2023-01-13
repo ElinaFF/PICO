@@ -3,8 +3,8 @@ import hashlib
 import importlib
 import os
 import pickle
+from typing import List, Dict, Iterable, Any, Union
 import re
-from typing import List, Dict, Iterable, Union, Any
 
 import pickle as pkl
 from typing import List, Dict, Tuple
@@ -151,6 +151,11 @@ def get_group_to_class(classes):
 
 
 def reverse_dict(dictionnary: dict) -> dict:
+    """
+    example
+    input dict is in shape {label1 : [target1, target2], label2 : [target3, target4]}
+    output dict would be {target1 : label1, target2 : label1, target3 : label2, target4 : label2}
+    """
     reversed_dict = {}
     for key, value in dictionnary.items():
         if type(value) is list:
@@ -213,17 +218,18 @@ def reset_file(file_path: str):
 
 # TODO : function to probably delete
 def restore_ids_and_targets_from_pairing_groups(filtered_samples: List[str], dataframe: pd.DataFrame, id_column: str,
-                                                paired_column: str, target_column: str, classes_design: dict, ) -> \
-        Tuple[List[str], List[str]]:
-    """
-    dataframe corresponds to the metadata dataframe
-    filtered_samples corresponds to only one sample of a pairing group and only the labels of the experiment
-    """
-    # retrieve identifier/pairing column of each entity and get it into list format
-    values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][paired_column].tolist()
+                                                paired_column: str, target_column: str, classes_design: dict,) -> Tuple[List[str], List[str]]:
 
-    restored_ids = dataframe[dataframe[paired_column].isin(values)][id_column].tolist()
-    restored_targets = dataframe.loc[dataframe[id_column].isin(restored_ids)][target_column].tolist()
+    pairing_values = dataframe.loc[dataframe[id_column].isin(filtered_samples)][paired_column].tolist()
+    ids = dataframe[dataframe[paired_column].isin(pairing_values)][id_column].tolist()
+    targets = dataframe.loc[dataframe[id_column].isin(ids)][target_column].tolist()
+    duo = list(zip(ids, targets))
+    restored_ids = []
+    restored_targets = []
+    for d in duo:
+        if d[1] in np.concatenate(list(classes_design.values())):
+            restored_ids.append(d[0])
+            restored_targets.append(d[1])
     return restored_ids, load_classes_from_targets(classes_design, restored_targets)
 
 

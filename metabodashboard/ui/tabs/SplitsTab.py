@@ -72,6 +72,7 @@ class SplitsTab(MetaTab):
                     "You can give a Progenesis abundance file, or a matrix with samples as lines and features as "
                     "columns.",
                 ),
+                html.Div(id="error_upload_datatable", style={"color": "red"}),
             ],
             className="form_field",
             id="datatable-section",
@@ -122,6 +123,7 @@ class SplitsTab(MetaTab):
                     "The metadata file should at least contain : one column with samples name corresponding to names in the"
                     "data file, and one column of target/class/condition.",
                 ),
+                html.Div(id="error_upload_metadata", style={"color": "red"}),
             ],
             className="form_field",
             id="metadata-section",
@@ -141,13 +143,12 @@ class SplitsTab(MetaTab):
                         {"label": "Normalized", "value": "normalized"},
                         {"label": "Not Progenesis", "value": "nap"},
                     ],
-                    value=None
-                    if self.metabo_controller.is_data_raw() is None
-                    else (
-                        "raw"
-                        if not self.metabo_controller.is_data_raw()
-                        else "normalized"
-                    ),
+                    #if self.metabo_controller.is_data_raw() is None
+                    #else (
+                    #    "raw"
+                    #    if not self.metabo_controller.is_data_raw()
+                    #    else "normalized"
+                    #),
                     labelCheckedStyle={"color": "#13BD00"},
                 ),
                 html.Div(id="error_data_normalization", style={"color": "red"}),
@@ -158,7 +159,7 @@ class SplitsTab(MetaTab):
         __removeRTlessThan1min = html.Div(
             [
                 dbc.Label(
-                    "Remove features with RT lower than 1 min", className="form_labels"
+                    "Remove features with RT lower than 1 min (progenesis only)", className="form_labels"
                 ),
                 dbc.FormText(
                     "We highly recommend to keep this as true, choose false at your own risks (see in documentation).",
@@ -166,15 +167,16 @@ class SplitsTab(MetaTab):
                 dbc.RadioItems(
                     id="in_remove_rt",
                     options=[
-                        {"label": "True", "value": True},
-                        {"label": "False", "value": False},
+                        {"label": "True", "value": True, "disabled": True},
+                        {"label": "False", "value": False, "disabled": True},
                     ],
-                    value=True,
                     labelCheckedStyle={"color": "#13BD00"},
                 ),
                 html.Div(id="warning_select_false", style={"color": "red"}),
             ],
             className="form_field",
+            id="remove-rt-section",
+            style={"display": "none"},
         )
 
         _file = html.Div(
@@ -185,8 +187,8 @@ class SplitsTab(MetaTab):
                     children=[
                         dbc.Col(
                             children=[
-                                __removeRTlessThan1min,
                                 __useRawData,
+                                __removeRTlessThan1min,
                                 __dataFile,
                                 __metaDataFile,
                             ]
@@ -203,9 +205,11 @@ class SplitsTab(MetaTab):
                         dbc.Label("Name of the targets column"),
                         dbc.Checklist(
                             id="in_target_col_name",
-                            # TODO : are the options comming from this call of functions or from the callback
-                            options=Utils.format_list_for_checklist(self.metabo_controller.get_metadata_columns()),
-                            value=self.metabo_controller.get_target_column(),
+                            value=[],
+                            #options=Utils.format_list_for_checklist(
+                            #    self.metabo_controller.get_metadata_columns()
+                            #),
+                            #value=[], #if self.metabo_controller.get_target_column() is None else [self.metabo_controller.get_target_column()],
                             inline=True,
                         ),
                     ],
@@ -310,6 +314,7 @@ class SplitsTab(MetaTab):
                                     children=self._get_wrapped_experimental_designs(),
                                     style={"display": "block", "padding": "1em"},
                                 ),
+                                html.Div(id="error_experimental_designs", style={"color": "red"}),
                                 dbc.FormText("Define labels and filter out samples."),
                                 __labelDefinition,
                             ]
@@ -352,11 +357,12 @@ class SplitsTab(MetaTab):
                     id="in_percent_samples_in_test",
                     value=self.metabo_controller.get_train_test_proportion(),
                     type="number",
-                    min=0,
+                    min=0.01,
                     max=1,
                     step=0.01,
                     size="5",
                 ),
+                html.Div(id="error_percent_samples_in_test", style={"color": "red", "margin-top": "0.5em"}),
             ],
             className="form_field",
         )
@@ -371,6 +377,7 @@ class SplitsTab(MetaTab):
                     min=1,
                     size="5",
                 ),
+                html.Div(id="error_nbr_splits", style={"color": "red", "margin-top": "0.5em"}),
             ],
             className="form_field",
         )
@@ -602,53 +609,68 @@ class SplitsTab(MetaTab):
                 return dash.no_update
 
         @self.app.callback(
-            Output("in_remove_rt", "value"), [Input("custom_big_tabs", "active_tab")]
-        )
-        def update_remove_rt(active_tab):
-            if active_tab == "tab-1":
-                return self.metabo_controller.get_data_matrix_remove_rt()
-            else:
-                return dash.no_update
-
-        @self.app.callback(
-            [Output("datatable-section", "style"), Output("metadata-section", "style")],
+            [Output("datatable-section", "style"),
+             Output("remove-rt-section", "style"),
+             Output("in_remove_rt", "options"),
+             Output("in_remove_rt", "value")],
             [Input("in_use_raw", "value"), Input("custom_big_tabs", "active_tab")],
         )
         def normalization_selection(value, active_tab):
-            print("active_tab", active_tab)
+            options = [
+                {"label": "True", "value": True},
+                {"label": "False", "value": False},
+            ]
+            disabled_options = []
+            for option in options:
+                copied_option = option.copy()
+                copied_option["disabled"] = True
+                disabled_options.append(copied_option)
 
             if value is not None:
-                print("normalization_selection", value)
+                if value == "nap": # Not a Progenesis file
+                    self.metabo_controller.set_raw_use_for_data(False)
+                    return {"display": "block"}, {"display": "block"}, disabled_options, None
+
                 self.metabo_controller.set_raw_use_for_data(
                     True if value == "raw" else False
                 )
-                return {"display": "block"}, {"display": "block"}
-            return dash.no_update, dash.no_update
+                return {"display": "block"}, {"display": "block"}, options, True
+            return dash.no_update
+
+        @self.app.callback(
+            Output("metadata-section", "style"),
+            [Input("upload_datatable_output", "style")],
+        )
+        def display_metadata_after_data_upload(style):
+            if style == {"color": "green"}:
+                return {"display": "block"}
+            return {"display": "none"}
 
         @self.app.callback(
             [
                 Output("info_progenesis_loaded", "children"),
                 Output("upload_datatable_output", "children"),
                 Output("upload_datatable_output", "style"),
-                Output("error_data_normalization", "children"),
             ],
-            [Input("upload_datatable", "contents")],
+            [Input("upload_datatable", "contents"),
+             Input("upload_metadata", "contents")],
             [State("upload_datatable", "filename")],
         )
-        def upload_data(list_of_contents, list_of_names):
+        def upload_data(list_of_contents, _, list_of_names):
+            if callback_context.triggered[0]["prop_id"] == "upload_metadata.contents":
+                return "", dash.no_update, dash.no_update
             if list_of_contents is not None:
                 try:
                     self.metabo_controller.set_data_matrix_from_path(
                         list_of_names, data=list_of_contents
                     )
                 except TypeError as err:
-                    return dash.no_update, [html.P(str(err))], {"color": "red"}, ""
+                    return dash.no_update, [html.P(str(err))], {"color": "red"}
                 except pandas.errors.ParserError as err:
                     return (
                         dash.no_update,
                         [html.P("Rows must have an equal number of columns")],
                         {"color": "red"},
-                        "",
                     )
                 self.metabo_controller.reset_experimental_designs()
 
@@ -658,16 +680,14 @@ class SplitsTab(MetaTab):
                         "Info: Selection not needed, handled by Progenesis.",
                         [html.P(f'"{list_of_names}" has successfully been uploaded !')],
                         {"color": "green"},
-                        "",
                     )
                 return (
                     "",
                     [html.P(f'"{list_of_names}" has successfully been uploaded !')],
                     {"color": "green"},
-                    "",
                 )
             else:
-                return dash.no_update, dash.no_update, dash.no_update, dash.no_update
+                return dash.no_update, dash.no_update, dash.no_update
 
         @self.app.callback(
             [
@@ -679,18 +699,22 @@ class SplitsTab(MetaTab):
             ],
             [
                 Input("upload_metadata", "contents"),
-                Input("custom_big_tabs", "active_tab"),
+                Input("custom_big_tabs", "active_tab")
             ],
             [State("upload_metadata", "filename")],
         )
         def get_metadata_cols_names_to_choose_from(list_of_contents, active_tab, list_of_names):
             triggered_item = callback_context.triggered[0]["prop_id"].split(".")[0]
+            print("triggered_item")
+            print(triggered_item)
             if active_tab == "tab-1":
                 if triggered_item == "upload_metadata":
                     try:
                         self.metabo_controller.set_metadata(list_of_names, data=list_of_contents)
                     except TypeError as err:
                         return [], [], [], html.P(str(err)), {"color": "red"}
+                    except Exception as e:
+                        return [], [], [], html.P(str(e)), {"color": "red"}
                     self.metabo_controller.reset_experimental_designs()
 
                     formatted_columns = Utils.format_list_for_checklist(self.metabo_controller.get_metadata_columns())
@@ -813,10 +837,23 @@ class SplitsTab(MetaTab):
         def update_possible_classes_exp_design(target_col, children, active_tab):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
             if active_tab == "tab-1":
-                if triggered_id == "in_target_col_name" and target_col not in [None, []]:
-                    self.metabo_controller.set_target_column(target_col)
-                formatted_possible_targets = Utils.format_list_for_checklist(self.metabo_controller.get_unique_targets())
-                return (formatted_possible_targets, formatted_possible_targets, "")
+                if triggered_id == "info_progenesis_loaded" or \
+                        (triggered_id == "in_target_col_name" and target_col not in [None, "", []]):
+                    # Give the MetaData attribute the values of either one or multiple column to create the targets
+                    # for the experiment
+                    if triggered_id == "in_target_col_name":
+                        self.metabo_controller.set_target_columns(target_col)
+                    # Format the targets list to get only the (maybe new) classes names to display
+                    formatted_possible_targets = Utils.format_list_for_checklist(
+                        self.metabo_controller.get_unique_targets()
+                    )
+                    return (
+                        formatted_possible_targets,
+                        formatted_possible_targets,
+                        "",
+                    )
+                else:
+                    return dash.no_update, dash.no_update, dash.no_update
             else:
                 return dash.no_update, dash.no_update, dash.no_update
 
@@ -845,7 +882,6 @@ class SplitsTab(MetaTab):
                 or triggered_id == "info_progenesis_loaded"):
                 self.metabo_controller.reset_experimental_designs()
             elif triggered_id == "btn_add_design_exp":
-                print("HEEEERE", {c1: g1, c2: g2})
                 try:
                     self.metabo_controller.add_experimental_design({c1: g1, c2: g2})
                     print("bip bip : ", self.metabo_controller._metabo_experiment.experimental_designs)
@@ -877,48 +913,6 @@ class SplitsTab(MetaTab):
             return dash.no_update
 
         @self.app.callback(
-            Output("in_target_col_name", "value"),
-            [Input("custom_big_tabs", "active_tab")],
-        )
-        def update_in_target_col_name(active_tab):
-            if active_tab == "tab-1":
-                return self.metabo_controller.get_target_column()
-            return dash.no_update
-
-        @self.app.callback(
-            Output("in_nbr_splits", "value"),
-            [Input("in_nbr_splits", "value"), Input("custom_big_tabs", "active_tab")],
-        )
-        def update_nbr_splits(new_value, active_tab):
-            if active_tab == "tab-1":
-                if new_value not in [None, ""]:
-                    try:
-                        casted_value = int(new_value)
-                    except (ValueError, TypeError):
-                        return new_value
-                    self.metabo_controller.set_number_of_splits(int(casted_value))
-                return self.metabo_controller.get_number_of_splits()
-            return dash.no_update
-
-        @self.app.callback(
-            Output("in_percent_samples_in_test", "value"),
-            [
-                Input("in_percent_samples_in_test", "value"),
-                Input("custom_big_tabs", "active_tab"),
-            ],
-        )
-        def update_percent_samples_in_test(new_value, active_tab):
-            if active_tab == "tab-1":
-                if new_value not in [None, ""]:
-                    try:
-                        casted_value = float(new_value)
-                    except (ValueError, TypeError):
-                        return new_value
-                    self.metabo_controller.set_train_test_proportion(casted_value)
-                return self.metabo_controller.get_train_test_proportion()
-            return dash.no_update
-
-        @self.app.callback(
             Output("pairing_group_column", "value"),
             [
                 Input("pairing_group_column", "value"),
@@ -936,23 +930,70 @@ class SplitsTab(MetaTab):
             [
                 Output("output_button_split_file", "children"),
                 Output("download-save-file-split", "data"),
+                Output("error_percent_samples_in_test", "children"),
+                Output("error_nbr_splits", "children"),
+                Output("error_upload_datatable", "children"),
+                Output("error_data_normalization", "children"),
+                Output("error_upload_metadata", "children"),
+                Output("error_experimental_designs", "children"),
             ],
             [Input("split_dataset_button", "n_clicks")],
+            [State("in_percent_samples_in_test", "value"),
+             State("in_nbr_splits", "value")],
         )
-        def saving_params_of_splits_batch(n):
+        def saving_params_of_splits_batch(n, train_test_proportion, nbr_splits):
             """
             Create the file (json) which will contains all info about the split creation / data experiment.
             """
             if n >= 1:
-                print("bip bip 2 : ", self.metabo_controller._metabo_experiment.experimental_designs)
+                train_test_proportion_error = ""
+                try:
+                    casted_train_test_proportion = float(train_test_proportion)
+                    if casted_train_test_proportion >= 1 or casted_train_test_proportion <= 0:
+                        train_test_proportion_error = "The proportion must be between 0 and 1 (excluded)."
+                    self.metabo_controller.set_train_test_proportion(casted_train_test_proportion)
+                except (ValueError, TypeError):
+                    train_test_proportion_error = "The train/test proportion must be a decimal number between 0 and 1 " \
+                                                  "excluded."
+
+                nbr_splits_error = ""
+                try:
+                    casted_nbr_splits = int(nbr_splits)
+                    self.metabo_controller.set_number_of_splits(casted_nbr_splits)
+                except (ValueError, TypeError):
+                    nbr_splits_error = "The number of splits must be an integer greater than 0."
+
+                normalization_error = ""
+                datatable_error = ""
+                metadata_error = ""
+                experimental_design_error = ""
+                if self.metabo_controller.is_data_raw() is None:
+                    normalization_error = "Please select a normalization method."
+                elif not self.metabo_controller.data_is_set():
+                    datatable_error = "You must upload a file before splitting it."
+                elif not self.metabo_controller.metadata_is_set():
+                    metadata_error = "You must upload a metadata file before splitting it."
+                elif not self.metabo_controller.get_all_experimental_designs_names():
+                    experimental_design_error = "You must add at least one experimental design before " \
+                                                "splitting the data."
+
+                if train_test_proportion_error != "" or nbr_splits_error != "" \
+                        or datatable_error != "" or normalization_error != "" \
+                        or metadata_error != "" or experimental_design_error != "":
+                    return dash.no_update, dash.no_update, train_test_proportion_error, \
+                        nbr_splits_error, datatable_error, normalization_error, metadata_error, experimental_design_error
+
                 self.metabo_controller.create_splits()
                 Utils.dump_metabo_expe(self.metabo_controller.generate_save())
                 print("bip bip 3 : ", self.metabo_controller._metabo_experiment.experimental_designs)
 
-                return ("The parameters file is created, the splits's creation should start shortly...",
-                        send_file(Utils.get_metabo_experiment_path()))
+                return (
+                    "The parameters file is created, the splits's creation should start shortly...",
+                    send_file(Utils.get_metabo_experiment_path()),
+                    "", "", "", "", "", "",
+                )
             else:
-                return dash.no_update, dash.no_update
+                return (dash.no_update,) * 8
 
     def _get_wrapped_experimental_designs(self):
         children_container = [html.Div("Experimental design")]

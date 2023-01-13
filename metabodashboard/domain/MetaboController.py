@@ -60,9 +60,6 @@ class MetaboController:
                 )  # append list of X_train & X_test samples names
         return samples_list
 
-    def set_target_column(self, target_column: List[str]):
-        self._metabo_experiment.set_target_column(target_column)
-
     def set_id_column(self, id_column: str):
         self._metabo_experiment.set_id_column(id_column)
 
@@ -172,7 +169,7 @@ class MetaboController:
     def set_pairing_group_column(self, pairing_group_column: str):
         self._metabo_experiment.set_pairing_group_column(pairing_group_column)
 
-    def is_data_raw(self) -> bool:
+    def is_data_raw(self) -> Union[bool, None]:
         return self._metabo_experiment.is_data_raw()
 
     def set_raw_use_for_data(self, use_raw_data: bool):
@@ -204,3 +201,21 @@ class MetaboController:
 
     def is_the_metadata_corresponding(self, metadata: str) -> bool:
         return self._metabo_experiment.is_the_metadata_corresponding(metadata)
+
+    def get_final_targets_values(self):
+        return self._metabo_experiment.get_final_targets_values()
+
+    def set_final_targets_values(self, targets_columns: List[str]):
+        self._metabo_experiment.set_final_targets_values(targets_columns)
+
+    def add_final_targets_col_to_dataframe(self):
+        self._metabo_experiment.add_final_targets_col_to_dataframe()
+
+    def data_is_set(self) -> bool:
+        return self._metabo_experiment.data_is_set()
+
+    def metadata_is_set(self) -> bool:
+        return self._metabo_experiment.metadata_is_set()
+
+    def set_target_columns(self, target_cols: List[str]) -> None:
+        self._metabo_experiment.set_target_columns(target_cols)

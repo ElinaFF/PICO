@@ -172,6 +172,7 @@ METADATA_DATAFRAME = pd.DataFrame(
         SAMPLES_ID_COLUMN: SAMPLES_ID,
         TARGETS_COLUMN: TARGETS,
         PAIRING_GROUP_COLUMN: PAIRING_GROUP,
+        "final_targets": TARGETS,
     }
 )
 

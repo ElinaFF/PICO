@@ -26,7 +26,7 @@ def main():
     print("Metadata and DataMatrix are set_from_path")
 
     metabo_controller.set_id_column("Sample")
-    metabo_controller.set_target_column("diet")
+    metabo_controller.set_target_columns(["diet"])
     metabo_controller.set_pairing_group_column("subject")
     metabo_controller.add_experimental_design({"NA": ["NA"], "MED": ["MED", "MED/w"]})
     print("Experimental design added")
