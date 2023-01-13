@@ -1,3 +1,4 @@
+import json
 import re
 
 import dash_bootstrap_components as dbc
@@ -101,18 +102,16 @@ class MLTab(MetaTab):
                     className="custom_buttons",
                     n_clicks=0,
                 ),
+                dbc.Button(
+                    "Manual configuration",
+                    color="success",
+                    id="manual_config_button",
+                    className="custom_buttons",
+                    n_clicks=0,
+                ),
                 html.Div(id="output_import_algo"),
                 html.Br(),
                 dbc.Label("Specify parameters to explore by gridsearch"),
-                html.Div(
-                    children=[
-                        html.Br(),
-                        html.P("You can set the grid search parameters as followed:"),
-                        html.P(
-                            "Values: 'val1A, val1B, val1C'"
-                        ),
-                    ]
-                ),
                 html.Div(id="table_param"),
                 html.Div(id="output_error_import_algo"),
                 dbc.Label("Specify importance attribute"),
@@ -268,9 +267,16 @@ class MLTab(MetaTab):
                     self.metabo_controller.update_experimental_designs_with_selected_models()
 
             if triggered_by == "add_n_refresh_sklearn_algo_button":
+                if "{'props': {'children': 'Name', 'colSpan': 1}, 'type': 'Th', 'namespace': 'dash_html_components'}" in str(table_param[-1]["props"]):
+                    params_and_values = re.findall(r"{'id': '(\w+)'[\w,' :]*'value': '([\[\],. \w]+)',[\w,': ]*}",
+                                                       str(table_param))
+                else:
+                    json_params_and_values = table_param[-1]["props"]["value"]
+                    params_and_values = json.loads(json_params_and_values)
+
+
                 model = Utils.get_model_from_import([import_algo], name_algo)
-                params_and_values = re.findall(r"{'id': '(\w+)'[\w,' :]*'value': '([\[\],. \w]+)',[\w,': ]*}",
-                                               str(table_param))
+
                 grid_search_params = {}
                 param_types = {param: type for param, type in Utils.get_model_parameters(model)}
                 error_children = []
@@ -290,8 +296,14 @@ class MLTab(MetaTab):
                     else:
                         grid_search_params[param] = values
 
+                if importance_attribute is None:
+                    error_children.append(html.P("Please select an importance attribute", style={"color": "red"}))
+
                 if error_children:
                     return dash.no_update, dash.no_update, dash.no_update, error_children
+
+
+
 
                 self.metabo_controller.add_custom_model(
                     name_algo, import_algo, grid_search_params, importance_attribute
@@ -354,12 +366,15 @@ class MLTab(MetaTab):
              Output("output_import_algo", "style"),
              Output("table_param", "children"),
              Output("importance_attributes_dropdown_menu", "options")],
-            [Input("get_attribute_button", "n_clicks")],
+            [Input("get_attribute_button", "n_clicks"),
+             Input("manual_config_button", "n_clicks")],
             [State("import_new_algo", "value"),
              State("name_new_algo", "value")],
         )
-        def get_attribute_algo(n, import_new, new_algo_name):
-            if n >= 1:
+        def get_attribute_algo(n_attribute, n_manual, import_new, new_algo_name):
+            triggered_by = callback_context.triggered[0]["prop_id"].split(".")[0]
+            print("triggered by: ", triggered_by)
+            if triggered_by == "get_attribute_button":
                 try:
                     model = Utils.get_model_from_import([import_new], new_algo_name)
                     attributes = Utils.get_model_parameters(model)
@@ -372,10 +387,30 @@ class MLTab(MetaTab):
                     attributes_table["Value"] = inputs
 
                     importance_attributes = [param_name for param_name, _ in Utils.get_model_parameters_after_training(model)]
-                    return f"{model.__name__} found", {"color": "green"}, dbc.Table.from_dataframe(attributes_table), Utils.format_list_for_checklist(importance_attributes)
+
+                    default_text = [
+                        html.Br(),
+                        html.P("You can set the grid search parameters as followed:"),
+                        html.P(
+                            "Values: 'val1A, val1B, val1C'"
+                        ),
+                        dbc.Table.from_dataframe(attributes_table)
+                    ]
+
+                    return f"{model.__name__} found", {"color": "green"}, default_text, Utils.format_list_for_checklist(importance_attributes)
                 except Exception as e:
                     print(e)
                     return "Import failed: " + str(e), {"color": "red"}, "", ""
+            elif triggered_by == "manual_config_button":
+                try:
+                    model = Utils.get_model_from_import([import_new], new_algo_name)
+                    importance_attributes = [param_name for param_name, _ in
+                                             Utils.get_model_parameters_after_training(model)]
+                except Exception as e:
+                    print(e)
+                    return "Import failed: " + str(e), {"color": "red"}, "", ""
+                return "", None, [html.P("The following configuration must be in JSON format",
+                                                               style={"color": "orange"}), html.Br(), dcc.Textarea()], Utils.format_list_for_checklist(importance_attributes)
             else:
                 return dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
