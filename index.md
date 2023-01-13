@@ -4,4 +4,4 @@ title:  Testwelcome
 cover:  true
 ---
 
-Lorem ipsum $$ f(x) = x^2 $$.
+Lorem ipsum $ f(x) = x^2 $.
