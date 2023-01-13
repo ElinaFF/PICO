@@ -1,6 +1,6 @@
 title: MeDIC
 logo: logo.png
 description: Metabolomic Dashboard for Interpretable Classification
-remote_theme: pages-themes/cayman@v0.2.0
+remote_theme: hydecorp/hydejack-starter-kit
 plugins:
 - jekyll-remote-theme
