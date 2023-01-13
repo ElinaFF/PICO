@@ -288,7 +288,7 @@ def _parameter_is_collection(parameter: str, trained_model: sklearn) -> bool:
             # TODO: manual test on the web app
             if len(attribute[0]) == 3 and len(attribute) == 1:
                 return True
-        except (KeyError, TypeError):
+        except (KeyError, TypeError, IndexError):
             pass
     return False
 
