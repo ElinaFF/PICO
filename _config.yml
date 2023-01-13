@@ -17,15 +17,15 @@ menu:
   - title: Installation
     url:   /installation
   - title: Home
-    url:   /home/
+    url:   /home
   - title: Splits
-    url:   /splits/
+    url:   /splits
   - title: Machine Learning
-    url: /ml/
+    url: /ml
   - title: Results
-    url: /results/
+    url: /results
   - title: Results aggregated
-    url: /resultsagg/
+    url: /resultsagg
   - title: Implementation
-    url: /implementation/
+    url: /implementation
 
