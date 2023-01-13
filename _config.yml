@@ -1,6 +1,28 @@
 title: MeDIC
 logo: logo.png
 description: Metabolomic Dashboard for Interpretable Classification
-remote_theme: hydecorp/hydejack-starter-kit
+remote_theme: hydecorp/hydejack@v9.1.6
 plugins:
 - jekyll-remote-theme
+- jekyll-include-cache
+kramdown:
+  math_engine: mathjax
+  math_engine_opts: {}
+menu:
+  - title: About
+    url:   /about/
+  - title: Installation
+    url:   /installation/
+  - title: Home
+    url:   /home/
+  - title: Splits
+    url:   /splits/
+  - title: Machine Learning
+    url: /ml/
+  - title: Results
+    url: /results/
+  - title: Results aggregated
+    url: /resultsagg/
+  - title: Implementation
+    url: /implementation/
+
