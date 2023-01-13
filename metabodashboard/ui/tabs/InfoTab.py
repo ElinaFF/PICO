@@ -16,7 +16,7 @@ class InfoTab(MetaTab):
                     [
                         "You can find the official documentation at this ",
                         html.A(
-                            href="https://elinaff.github.io/MetaboDashboard/",
+                            href="https://elinaff.github.io/MeDIC/",
                             target="_blank",
                             rel="noreferrer noopener",
                             children="link",
