@@ -47,7 +47,7 @@ def test_givenCustomModel_whenLearning_thenNoThrow(input_controller):
     )
 
     input_controller.set_id_column(SAMPLES_ID_COLUMN)
-    input_controller.set_target_column(TARGETS_COLUMN)
+    input_controller.set_target_columns([TARGETS_COLUMN])
     input_controller.add_experimental_design(CLASSES_DESIGN)
 
     input_controller.set_train_test_proportion(0.2)
