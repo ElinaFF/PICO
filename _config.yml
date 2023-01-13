@@ -15,7 +15,7 @@ menu:
   - title: About
     url:   /about/
   - title: Installation
-    url:   /installation/
+    url:   /installation
   - title: Home
     url:   /home/
   - title: Splits
