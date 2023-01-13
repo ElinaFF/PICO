@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Generator, Tuple
+from typing import Generator, Tuple, Union
 
 import pandas as pd
 
@@ -70,9 +70,6 @@ class MetaboController:
                     pickle.load(split_file)[:2]
                 )  # append list of X_train & X_test samples names
         return samples_list
-
-    def set_target_column(self, target_column: str):
-        self._metabo_experiment.set_target_column(target_column)
 
     def set_id_column(self, id_column: str):
         self._metabo_experiment.set_id_column(id_column)
@@ -181,7 +178,7 @@ class MetaboController:
     def set_pairing_group_column(self, pairing_group_column: str):
         self._metabo_experiment.set_pairing_group_column(pairing_group_column)
 
-    def is_data_raw(self) -> bool:
+    def is_data_raw(self) -> Union[bool, None]:
         return self._metabo_experiment.is_data_raw()
 
     def set_raw_use_for_data(self, use_raw_data: bool):
@@ -222,3 +219,12 @@ class MetaboController:
 
     def add_final_targets_col_to_dataframe(self):
         self._metabo_experiment.add_final_targets_col_to_dataframe()
+
+    def data_is_set(self) -> bool:
+        return self._metabo_experiment.data_is_set()
+
+    def metadata_is_set(self) -> bool:
+        return self._metabo_experiment.metadata_is_set()
+
+    def set_target_columns(self, target_cols: List[str]) -> None:
+        self._metabo_experiment.set_target_columns(target_cols)
