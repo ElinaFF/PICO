@@ -3,7 +3,8 @@ title: MeDIC
 logo: logo.png
 favicon: favicon.ico
 apple_touch_icon: logo.png
-accent_image: /imgs/pexels-roman-odintsov-4871011.jpg
+accent_image: none #/imgs/pexels-roman-odintsov-4871011.jpg
+accent_color: rgb(32,57,125)
 tagline: Documentation website
 
 remote_theme: hydecorp/hydejack@v9.1.6
