@@ -1,6 +1,7 @@
 from typing import Generator, Tuple, List, Dict
 from multiprocessing import Pool, cpu_count
 
+import numpy as np
 import sklearn
 
 from . import ExperimentalDesign
@@ -149,11 +150,11 @@ class MetaboExperiment:
         self.experimental_designs.pop(name)
 
     def add_custom_model(
-        self,
-        model_name: str,
-        needed_imports: str,
-        params: List[str],
-        values_to_explore: List[List[str]],
+            self,
+            model_name: str,
+            needed_imports: str,
+            params: List[str],
+            values_to_explore: List[List[str]],
     ):
         self._custom_models[model_name] = self._model_factory.create_custom_model(
             model_name, needed_imports, params, values_to_explore
@@ -252,6 +253,7 @@ class MetaboExperiment:
         cv_algorithm = self.get_cv_algorithm()
         self._check_experimental_design()
         self._data_matrix.load_data()
+        params = []
         for _, experimental_design in self.experimental_designs.items():
             print("-> Experimental design : ", _)
             results = experimental_design.get_results()
@@ -261,11 +263,30 @@ class MetaboExperiment:
                 experimental_design.get_classes_design(), selected_targets
             )
             for split_index, split in experimental_design.all_splits():
-                self.run_split(experimental_design, split_index, split, cv_algorithm, selected_ids, classes, results)
-                self._data_matrix.unload_data()
+                for model_name in self._selected_models:
+                    x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
+                        split[X_TRAIN_INDEX]
+                    )
+                    x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
+                        split[X_TEST_INDEX]
+                    )
+                    params.append(
+                        (model_name, results, experimental_design, split_index, split, x_train, x_test, cv_algorithm,
+                         selected_ids, classes)
+                    )
+                # self.run_split(experimental_design, split_index, split, cv_algorithm, selected_ids, classes, results)
+        self.run_learning(params)
+        self._data_matrix.unload_data()
+
+    def run_learning(self, params: List[tuple]):
+        pool = Pool(len(params))
+
+        pool.starmap(self.run_on_model, params)
 
     def run_on_model(self, model_name, results, experimental_design, split_index, split, x_train, x_test, cv_algorithm,
                      selected_ids, classes):
+        print("-> Split : ", split_index)
+        print("-> Model : ", model_name)
         results[model_name].set_feature_names(x_train)
         results[model_name].design_name = experimental_design.get_name()
         metabo_model = self.get_model_from_name(model_name)
@@ -291,20 +312,18 @@ class MetaboExperiment:
             split[X_TEST_INDEX],
         )
 
-    def run_split(self, experimental_design, split_index, split, cv_algorithm, selected_ids, classes, results):
-        x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
-            split[X_TRAIN_INDEX]
-        )
-        x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
-            split[X_TEST_INDEX]
-        )
-        pool_size = cpu_count()
-        pool = Pool(pool_size)
-
-        for model_name in self._selected_models:
-            self.run_on_model(model_name, results, experimental_design, split_index, split, x_train, x_test,
-                              cv_algorithm, selected_ids, classes)
-        experimental_design.set_is_done(True)
+    # def run_split(self, experimental_design, split_index, split, cv_algorithm, selected_ids, classes, results):
+    #     self._data_matrix.load_data()
+    #     x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
+    #         split[X_TRAIN_INDEX]
+    #     )
+    #     x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
+    #         split[X_TEST_INDEX]
+    #     )
+    #     pool_size = cpu_count()
+    #     pool = Pool(pool_size)
+    #
+    #     experimental_design.set_is_done(True)
 
     def get_results(self, classes_design: str, algo_name) -> dict:
         return self.experimental_designs[classes_design].get_results()[algo_name]
@@ -346,7 +365,7 @@ class MetaboExperiment:
         self._static_restore_for_partial(saved_metabo_experiment_dto)
 
     def _static_restore_for_partial(
-        self, saved_metabo_experiment_dto: MetaboExperimentDTO
+            self, saved_metabo_experiment_dto: MetaboExperimentDTO
     ):
         self._number_of_splits = saved_metabo_experiment_dto.number_of_splits
         self._train_test_proportion = saved_metabo_experiment_dto.train_test_proportion
@@ -356,14 +375,14 @@ class MetaboExperiment:
         self._selected_cv_type = saved_metabo_experiment_dto.selected_cv_type
 
     def partial_restore(
-        self,
-        saved_metabo_experiment_dto: MetaboExperimentDTO,
-        filename_data: str,
-        filename_metadata: str,
-        data=None,
-        from_base64_data: bool = True,
-        metadata=None,
-        from_base64_metadata=True,
+            self,
+            saved_metabo_experiment_dto: MetaboExperimentDTO,
+            filename_data: str,
+            filename_metadata: str,
+            data=None,
+            from_base64_data: bool = True,
+            metadata=None,
+            from_base64_metadata=True,
     ):
         self._data_matrix.set_raw_use(saved_metabo_experiment_dto.data_matrix.is_raw())
         self._data_matrix.set_remove_rt(
@@ -386,9 +405,9 @@ class MetaboExperiment:
 
     def is_save_safe(self, saved_metabo_experiment_dto: MetaboExperimentDTO) -> bool:
         return (
-            self._metadata.get_hash() == saved_metabo_experiment_dto.metadata.get_hash()
-            and self._data_matrix.get_hash()
-            == saved_metabo_experiment_dto.data_matrix.get_hash()
+                self._metadata.get_hash() == saved_metabo_experiment_dto.metadata.get_hash()
+                and self._data_matrix.get_hash()
+                == saved_metabo_experiment_dto.data_matrix.get_hash()
         )
 
     def is_the_data_matrix_corresponding(self, data: str) -> bool:
@@ -432,6 +451,5 @@ class MetaboExperiment:
 
     def set_number_of_processes_for_cv(self, number_of_processes: int):
         self._number_of_processes_for_cv = number_of_processes
-
 
 # TODO: print current algo when training
