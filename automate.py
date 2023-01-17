@@ -32,7 +32,7 @@ def main():
     print("Experimental design added")
 
     metabo_controller.set_train_test_proportion(0.2)
-    metabo_controller.set_number_of_splits(25)
+    metabo_controller.set_number_of_splits(5)
     metabo_controller.create_splits()
     metabo_controller.set_selected_models(["DecisionTree", "RandomForest"])
 

@@ -4,7 +4,7 @@ from multiprocessing import Pool, cpu_count
 import numpy as np
 import sklearn
 
-from . import ExperimentalDesign
+from . import ExperimentalDesign, Results
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
 from .MetaboExperimentDTO import MetaboExperimentDTO
@@ -271,24 +271,35 @@ class MetaboExperiment:
                         split[X_TEST_INDEX]
                     )
                     params.append(
-                        (model_name, results, experimental_design, split_index, split, x_train, x_test, cv_algorithm,
+                        (model_name, experimental_design.get_name(), split_index, split, x_train, x_test, cv_algorithm,
                          selected_ids, classes)
                     )
-                # self.run_split(experimental_design, split_index, split, cv_algorithm, selected_ids, classes, results)
         self.run_learning(params)
         self._data_matrix.unload_data()
 
     def run_learning(self, params: List[tuple]):
         pool = Pool(len(params))
 
-        pool.starmap(self.run_on_model, params)
+        # launch the run_on_model function with the params
+        result_params = pool.starmap(self.run_on_model, params)
 
-    def run_on_model(self, model_name, results, experimental_design, split_index, split, x_train, x_test, cv_algorithm,
+        for experimental_design_name, model_name, best_model, scaled_data, classes, y_train, y_train_pred, y_test, \
+                y_test_pred, split_index, X_train, X_test in result_params:
+            results = self.experimental_designs[experimental_design_name].get_results()
+            results[model_name].set_feature_names(X_train) # called multiple times but it's ok
+            results[model_name].design_name = experimental_design_name
+            # TODO: the last split is UNLIKELY to be called at last (result arrives in a random order)
+            # - most clean : move the "last split" logic in a separate function and call it at after the loop
+            # - most quick : process pool.map result to be sure to have the last split at the end of the list
+            results[model_name].add_results_from_one_algo_on_one_split(best_model, scaled_data, classes, y_train,
+                                                                       y_train_pred, y_test, y_test_pred, split_index,
+                                                                       X_train, X_test)
+
+    def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test, cv_algorithm,
                      selected_ids, classes):
         print("-> Split : ", split_index)
         print("-> Model : ", model_name)
-        results[model_name].set_feature_names(x_train)
-        results[model_name].design_name = experimental_design.get_name()
+
         metabo_model = self.get_model_from_name(model_name)
         best_model = metabo_model.train(
             self._cv_folds,
@@ -299,7 +310,9 @@ class MetaboExperiment:
         )
         y_train_pred = best_model.predict(x_train)
         y_test_pred = best_model.predict(x_test)
-        results[model_name].add_results_from_one_algo_on_one_split(
+        return (
+            experimental_design_name,
+            model_name,
             best_model,
             self._data_matrix.get_scaled_data(selected_ids),
             classes,
@@ -308,22 +321,9 @@ class MetaboExperiment:
             split[y_TEST_INDEX],
             y_test_pred,
             str(split_index),
-            split[X_TRAIN_INDEX],
-            split[X_TEST_INDEX],
+            x_train,
+            x_test
         )
-
-    # def run_split(self, experimental_design, split_index, split, cv_algorithm, selected_ids, classes, results):
-    #     self._data_matrix.load_data()
-    #     x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
-    #         split[X_TRAIN_INDEX]
-    #     )
-    #     x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
-    #         split[X_TEST_INDEX]
-    #     )
-    #     pool_size = cpu_count()
-    #     pool = Pool(pool_size)
-    #
-    #     experimental_design.set_is_done(True)
 
     def get_results(self, classes_design: str, algo_name) -> dict:
         return self.experimental_designs[classes_design].get_results()[algo_name]
