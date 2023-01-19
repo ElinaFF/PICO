@@ -141,29 +141,29 @@ class Results:
             y_test_true, y_test_pred
         )
 
-        if split_number == self.splits_number[-1]:
-            self.results["info_expe"] = self._produce_info_expe(
-                y_train_true, y_test_true
-            )
-            print("------> last split")
-            self.results["features_table"] = self.produce_features_importance_table()
-            self.results["accuracies_table"] = self.produce_accuracy_plot_all()
-            self.results["classes"] = classes
-            self.results["umap_data"] = self._produce_UMAP(
-                scaled_data, self.results["features_table"]
-            )
-            self.results["pca_data"] = self._produce_PCA(
-                scaled_data, self.results["features_table"]
-            )
-            self.results["metrics_table"] = self.produce_metrics_table()
-            self.results[
-                "features_stripchart"
-            ] = self.features_strip_chart_abundance_each_class(
-                self.results["features_table"], scaled_data
-            )
-            self.results["features_2d_and_3d"] = self.produce_features_2d_and_3d(
-                self.results["features_table"], scaled_data
-            )
+    def compute_remaining_results_on_all_splits(self):
+
+        self.results["info_expe"] = self._produce_info_expe(
+            y_train_true, y_test_true
+        )
+        self.results["features_table"] = self.produce_features_importance_table()
+        self.results["accuracies_table"] = self.produce_accuracy_plot_all()
+        self.results["classes"] = classes
+        self.results["umap_data"] = self._produce_UMAP(
+            scaled_data, self.results["features_table"]
+        )
+        self.results["pca_data"] = self._produce_PCA(
+            scaled_data, self.results["features_table"]
+        )
+        self.results["metrics_table"] = self.produce_metrics_table()
+        self.results[
+            "features_stripchart"
+        ] = self.features_strip_chart_abundance_each_class(
+            self.results["features_table"], scaled_data
+        )
+        self.results["features_2d_and_3d"] = self.produce_features_2d_and_3d(
+            self.results["features_table"], scaled_data
+        )
 
     def set_feature_names(self, x: pd.DataFrame):
         """

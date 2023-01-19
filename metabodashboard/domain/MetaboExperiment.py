@@ -282,6 +282,8 @@ class MetaboExperiment:
 
         # launch the run_on_model function with the params
         result_params = pool.starmap(self.run_on_model, params)
+        #result_params = sorted(result_params, key=lambda x: (x[0], x[1], x[9]))
+
 
         for experimental_design_name, model_name, best_model, scaled_data, classes, y_train, y_train_pred, y_test, \
                 y_test_pred, split_index, X_train, X_test in result_params:
@@ -294,6 +296,11 @@ class MetaboExperiment:
             results[model_name].add_results_from_one_algo_on_one_split(best_model, scaled_data, classes, y_train,
                                                                        y_train_pred, y_test, y_test_pred, split_index,
                                                                        X_train, X_test)
+
+        for _, experimental_design in self.experimental_designs.items():
+            for _, results in experimental_design.get_results():
+                results.compute_remaining_results_on_all_splits()
+
 
     def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test, cv_algorithm,
                      selected_ids, classes):
