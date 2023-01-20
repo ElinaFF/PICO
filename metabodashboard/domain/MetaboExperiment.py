@@ -1,4 +1,4 @@
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool, cpu_count, get_context
 from typing import Generator, Tuple, List, Dict, Union
 
 import numpy as np
@@ -272,7 +272,9 @@ class MetaboExperiment:
         self._data_matrix.unload_data()
 
     def run_learning(self, params: List[tuple]):
-        pool = Pool(len(params))
+        ctx = get_context("spawn")
+
+        pool = ctx.Pool(len(params))
 
         # launch the run_on_model function with the params
         result_params = pool.starmap(self.run_on_model, params)

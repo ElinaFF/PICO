@@ -2,7 +2,8 @@ import base64
 import hashlib
 import os
 import pickle
-from typing import List, Dict, Iterable, Any
+from typing import List, Dict, Iterable, Any, Union
+import re
 
 import pickle as pkl
 from typing import List, Dict, Tuple
@@ -226,12 +227,25 @@ def restore_ids_and_targets_from_pairing_groups(filtered_samples: List[str], dat
     return restored_ids, load_classes_from_targets(classes_design, restored_targets)
 
 
-def convert_str_to_list_of_lists(str_to_convert: str) -> List[List[str]]:
-    list_level_1 = str_to_convert.split(",")
-    list_level_2 = []
-    for val in list_level_1:
-        list_level_2.append(list(val))
-    return list_level_2
+def convert_str_to_list_of_lists(str_to_convert: str) -> List[List[Union[str, float, int]]]:
+    first_level = []
+    for find in re.findall(r'(\[((([\w\'".]+,? ?)+))\] ?,?)+', str_to_convert):
+        tmp = find[2].split(',')
+        second_level = []
+        for element in tmp:
+            element = element.strip()
+            try:
+                element = int(element)
+            except ValueError:
+                pass
+            try:
+                element = float(element)
+            except ValueError:
+                pass
+            second_level.append(element)
+
+        first_level.append(second_level)
+    return first_level
 
 
 def is_data_the_same(data: str, metabo_experiment_dto) -> bool:
