@@ -256,7 +256,6 @@ class MetaboExperiment:
         params = []
         for _, experimental_design in self.experimental_designs.items():
             print("-> Experimental design : ", _)
-            results = experimental_design.get_results()
             selected_targets_name = experimental_design.get_selected_targets_name()
             (selected_targets, selected_ids,) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
             classes = Utils.load_classes_from_targets(
@@ -280,28 +279,24 @@ class MetaboExperiment:
     def run_learning(self, params: List[tuple]):
         pool = Pool(len(params))
 
-        if True:
-            # launch the run_on_model function with the params
-            result_params = pool.starmap(self.run_on_model, params)
-        else:
-            # alternative with no multiprocessing
-            result_params = [self.run_on_model(*param) for param in params]
+        # launch the run_on_model function with the params
+        result_params = pool.starmap(self.run_on_model, params)
+        # alternative with no multiprocessing
+        # result_params = [self.run_on_model(*param) for param in params]
 
         for experimental_design_name, model_name, best_model, scaled_data, classes, y_train, y_train_pred, y_test, \
                 y_test_pred, split_index, X_train, X_test in result_params:
             results = self.experimental_designs[experimental_design_name].get_results()
             results[model_name].set_feature_names(X_train) # called multiple times but it's ok
             results[model_name].design_name = experimental_design_name
-            # TODO: the last split is UNLIKELY to be called at last (result arrives in a random order)
-            # - most clean : move the "last split" logic in a separate function and call it at after the loop
-            # - most quick : process pool.map result to be sure to have the last split at the end of the list
             results[model_name].add_results_from_one_algo_on_one_split(best_model, scaled_data, classes, y_train,
                                                                        y_train_pred, y_test, y_test_pred, split_index,
                                                                        X_train.index, X_test.index)
 
         for _, experimental_design in self.experimental_designs.items():
-            for _, results in experimental_design.get_results().items():
-                results.compute_remaining_results_on_all_splits()
+            for _, result in experimental_design.get_results().items():
+                result.compute_remaining_results_on_all_splits()
+            experimental_design.set_is_done(True)
 
     def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test, cv_algorithm,
                      selected_ids, classes):
