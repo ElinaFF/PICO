@@ -4,6 +4,9 @@ title:  Splits
 ---
 
 1. Define Experimental designs
+=========
+   
+
 The following instructions are for the B) DEFINE EXPERIMENTAL DESIGNS section.
 
 With the board, you can run multiple experimental design, under certain conditions. These conditions are:
@@ -52,6 +55,9 @@ Repository panel with two experimental design
 The RESET button will delete all the designs.
 
 2. Data fusion
+=======
+   
+
 Warning Not implemented yet
 
 Pos and Neg pairing allows to prevent the separation of positive and negative ionization and prevent the ML algorithms to learn the link between positive and negative ionization.
@@ -59,6 +65,9 @@ Pos and Neg pairing allows to prevent the separation of positive and negative io
 You can also use any other pattern for pairing with Other pairing.
 
 3. Define split
+=========
+   
+
 The following instructions are for the D) DEFINE SPLITS section.
 
 
@@ -83,14 +92,11 @@ If you want to achieve it, the probability that all samples are seen in the test
 
 P(X<1) (values) as a function of the number of splits n (1:nbr_limit) with m=250 samples and a test proportion of 0.2 (k=50)
 
-4. Other preprocessing
-Warning Not implemented yet
 
-This section is for LDTD support.
+4. Generate file
+=========
+   
 
-You can show all the processing parameter by clicking on the OPEN button.
-
-5. Generate file
 These finals instructions are for the F) GENERATE FILE section.
 
 Once all the parameters, the samples id and target columns, and at least one experimental design are set, you can run the splits' computation by clicking on the CREATE button.
