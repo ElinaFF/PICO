@@ -85,7 +85,7 @@ class MetaData:
             df = pd.read_excel(data)
         else:
             raise TypeError(
-                "The input file is not of the right type, must be excel, odt or csv."
+                "The input file is not of the right type, must be excel or csv."
             )
         return df
 
@@ -146,5 +146,14 @@ class MetaData:
             return []
         return self._dataframe[self._id_column].tolist()
 
+    def metadata_is_set(self) -> bool:
+        return self._dataframe is not None
+
+    def set_target_columns(self, target_cols: List[str]) -> None:
+        self.set_final_targets_values(target_cols)
+        # Add the values of the final (new) targets to the dataframe of metadata (in memory)
+        self.add_final_targets_col_to_dataframe()
+        # Define the name of the column of targets as final_targets
+        self.set_target_column("final_targets")
 
 # TODO: join sampleId and target in same pickle file

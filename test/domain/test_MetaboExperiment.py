@@ -44,7 +44,7 @@ def input_set_metabo_experiment():
     metabo_experiment.set_data_matrix("data.csv", data=ENCODED_DATAMATRIX_DATAFRAME)
 
     metabo_experiment.set_id_column(SAMPLES_ID_COLUMN)
-    metabo_experiment.set_target_column(TARGETS_COLUMN)
+    metabo_experiment.set_target_columns([TARGETS_COLUMN])
     metabo_experiment.add_experimental_design(CLASSES_DESIGN)
 
     metabo_experiment.set_train_test_proportion(0.2)
@@ -118,9 +118,7 @@ def test_givenMetaboExperiment_whenPartialRestore_thenMetaboExperimentIsUpdated(
     assert_dataframe_approximately_equal(
         dumped_data_matrix_dataframe, DATAMATRIX_DATAFRAME
     )
-    assert (
-        input_metabo_experiment.get_metadata().get_metadata().equals(METADATA_DATAFRAME)
-    )
+    assert input_metabo_experiment.get_metadata().get_metadata().equals(METADATA_DATAFRAME)
     assert input_metabo_experiment.get_number_of_splits() == NUMBER_OF_SPLITS
     assert input_metabo_experiment.get_train_test_proportion() == TRAIN_TEST_PROPORTION
     assert input_metabo_experiment.get_experimental_designs() == EXPERIMENT_DESIGNS

@@ -90,4 +90,8 @@ class ExperimentalDesign:
             yield split_index, self._split_group.load_split_with_index(split_index)
 
     def get_selected_targets_name(self) -> list:
+        """
+        get the _classes_design dict in input and reverse it to have the targets as key and their corresponding labels
+        as value. It is then easier to retrieve a label for a specific target
+        """
         return list(Utils.reverse_dict(self._classes_design).keys())

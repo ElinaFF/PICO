@@ -222,7 +222,7 @@ class Plots:
         """
         return
 
-    def show_metabolite_levels(self, features_data, feature, algo):
+    def show_metabolite_levels(self, features_data, algo):
         """
         Plot in stripchart (boxplot with point and no box)
         (with a dropdown to select the metabolite, max of N? metabolite)
