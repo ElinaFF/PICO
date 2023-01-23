@@ -273,6 +273,7 @@ class MetaboExperiment:
                         split[y_TRAIN_INDEX],
                         cv_algorithm,
                         self._number_of_processes_for_cv,
+                        seed=split_index
                     )
                     y_train_pred = best_model.predict(x_train)
                     y_test_pred = best_model.predict(x_test)
