@@ -83,8 +83,7 @@ Scroll down to select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or
 6. Move inside `cd MeDIC` (command for linux)
 7. Install the dependencies `python -m pip install -r requirements.txt`
 
-If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem (see here) return here to install, 
-or update, Microsoft Visual C++.
+If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem ([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d)).
 {: .alert .alert-warning}
 
 8. Launch the Web interface `python main.py`
@@ -94,6 +93,16 @@ or update, Microsoft Visual C++.
 It is the same steps as the manual installation, but executed on the WSL terminal.
 You can try to use the beta version launcher explained below, but uou may encounter a problem with the PATH variable. 
 We haven't found a solution yet appart from proceeding with the Manual installation.
+
+<div class="panel panel-info">
+**Note**
+{: .panel-heading}
+<div class="panel-body">
+
+NOTE DESCRIPTION
+
+</div>
+</div>
 
 
 ## Beta version launcher installation
