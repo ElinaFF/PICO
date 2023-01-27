@@ -3,6 +3,8 @@ layout: base
 title:  Installation
 cover:  true
 ---
+{::options parse_block_html="true" /}
+
 # Installation
 {: .no_toc}
 The MeDIC is a tool that must be installed locally. The visual interface is made with Dash from Plotly and can be 
@@ -74,8 +76,8 @@ Scroll down to select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or
 3. Create an environment with Conda `conda create medic`
 4. Enter in the environment `conda activate medic`
 
-If the command worked, you should see the name "medic" written at the beginning of your prompt.
-{: .alert .alert-info}
+   If the command worked, you should see the name "medic" written at the beginning of your prompt.
+   {: .alert .alert-info}
 
 5. Clone the Github repository `git clone https://github.com/ElinaFF/MeDIC`
 6. Move inside `cd MeDIC` (command for linux)
@@ -106,9 +108,9 @@ The launcher file needs Git and Python to be able to do all the installation ste
 3. Run the launcher on your computer with the command : python launcher.py [^1]
 
 [^1]: No need to clone the repository, we will install everything we need. If you still want to do so and don’t want the launcher to redownload it 
-  during the installation process, make sure to clone the repository in the same folder as the launcher. MeDIC uses conda for his environment, 
-  if you don’t have any Conda instance installed on your machine, the launcher will install one (Miniconda3). 
-  All the necessary dependencies will be installed in the conda environment.    
+during the installation process, make sure to clone the repository in the same folder as the launcher. MeDIC uses conda for his environment, 
+if you don’t have any Conda instance installed on your machine, the launcher will install one (Miniconda3). 
+All the necessary dependencies will be installed in the conda environment.    
   
 
 ### Clone repository and use the launcher  
