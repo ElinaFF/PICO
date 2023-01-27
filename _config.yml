@@ -31,6 +31,7 @@ hydejack:
 kramdown:
   math_engine: mathjax
   math_engine_opts: {}
+  parse_block_html: true
 
 menu:
   - title: Installation

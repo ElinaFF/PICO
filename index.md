@@ -3,12 +3,10 @@ layout: base
 title:  Installation
 cover:  true
 ---
-
 # Installation
-
-
+{: .no_toc}
 The MeDIC is a tool that must be installed locally. The visual interface is made with Dash from Plotly and can be 
-open in the majority of web browser. To install the MeDIC, the principal method is manually. A launcher file to automate 
+open in the majority of web browser. To install the MeDIC, the principal method is manually doing all the steps. A launcher file to automate 
 the installation is currently under development, and a beta version is available.
 Note that we only support Windows and Linux for now, and only Python 3.8, 3.9 and 3.10.
 
@@ -19,16 +17,12 @@ Note that we only support Windows and Linux for now, and only Python 3.8, 3.9 an
 The first step, to use MeDIC, is to install Python and Git. You also need to make sure that Microsoft Visual C++ is correctly installed.
 
 ### Linux installation
-
 #### Python
 In order to install Python, you need to go to this [link](https://www.python.org/downloads/source/). Download your 
 prefered version (or the latest 3.10 stable version) and proceed with the installation.
 You can also follow this [tutorial](https://www.scaler.com/topics/python/install-python-on-linux/) for further details.
 #### Git
-Open a terminal and run the command :
-~~~
-sudo apt-get install git
-~~~
+Open a terminal and run the command : `sudo apt-get install git`.
 Then enter your root password and follow the installation instructions. 
 For more details follow this [link](https://git-scm.com/download/linux).
 
@@ -80,39 +74,38 @@ Scroll down to select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or
 3. Create an environment with Conda `conda create medic`
 4. Enter in the environment `conda activate medic`
 
+If the command worked, you should see the name "medic" written at the beginning of your prompt.
+{: .alert .alert-info}
 
-Info
+5. Clone the Github repository `git clone https://github.com/ElinaFF/MeDIC`
+6. Move inside `cd MeDIC` (command for linux)
+7. Install the dependencies `python -m pip install -r requirements.txt`
 
-If the command worked, you should see the name "medic" written at the beginning of your prompt
-Clone the Github repository and move inside.
-  git clone https://github.com/ElinaFF/MeDIC
-  cd MeDIC
-Install the dependencies:
-python -m pip install -r requirements.txt
-Warning
+If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem (see here) return here to install, 
+or update, Microsoft Visual C++.
+{: .alert .alert-warning}
 
-If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem (see here) return here to install, or update, Microsoft Visual C++.
-Launch the Web interface
-python main.py
+8. Launch the Web interface `python main.py`
 
 
-Installation on WSL (Windows Subsystem for Linux)    
-==========   
-
-During the normal installation, you may have a problem with the Path variable. We haven't found a solution yet. You may need to go through the Manual installation.
+### Installation on WSL (Windows Subsystem for Linux)    
+It is the same steps as the manual installation, but executed on the WSL terminal.
+You can try to use the beta version launcher explained below, but uou may encounter a problem with the PATH variable. 
+We haven't found a solution yet appart from proceeding with the Manual installation.
 
 
 ## Beta version launcher installation
 
 A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the installation and to start MeDIC.
-The launcher file needs Git and Python to be able to do all the installation steps for you. {:.note title="Info"}    
+The launcher file needs Git and Python to be able to do all the installation steps for you. 
+{: .note title="Info"}    
 
 ### Launcher 
 1. Download launcher.py on our github
 2. Open a terminal (*cmd* in Windows)
-3. Run the launcher on your computer with the command : *python launcher.py
+3. Run the launcher on your computer with the command : python launcher.py [^1]
 
-* No need to clone the repository, we will install everything we need. If you still want to do so and don’t want the launcher to redownload it 
+[^1]: No need to clone the repository, we will install everything we need. If you still want to do so and don’t want the launcher to redownload it 
   during the installation process, make sure to clone the repository in the same folder as the launcher. MeDIC uses conda for his environment, 
   if you don’t have any Conda instance installed on your machine, the launcher will install one (Miniconda3). 
   All the necessary dependencies will be installed in the conda environment.    
@@ -131,23 +124,30 @@ The launcher file needs Git and Python to be able to do all the installation ste
 Those commands are optionals but allow more flexibility.
 They can be combined or used independently.
 
-1. Existing environment
-MeDIC can be installed or launch from an existing environment ** with :
- python launcher.py --environment <environment_name>
- python launcher.py -e <environment_name>
-** It is recommended not to create MeDIC environment into another environment as it may cause problems.
-2. Fast launch for everyday use
-MeDIC can be launched faster without any verifications of the environment with :
+1. Existing environment 
+   MeDIC can be installed or launch from an existing environment[^2] with :
+~~~~
+python launcher.py --environment <environment_name>
+python launcher.py -e <environment_name>
+~~~~
+[^2]: It is recommended not to create MeDIC environment into another environment as it may cause problems.
+2. Fast launch for everyday use 
+   MeDIC can be launched faster without any verifications of the environment with :
+~~~~
  python launcher.py --no-check
  python launcher.py -c
-3. Installing MeDIC for later use
-MeDIC can be installed without launching it at the end with :
+~~~~
+3. Installing MeDIC for later use 
+   MeDIC can be installed without launching automatically at the end of the installation with :
+~~~~
 python launcher.py --no-launch
 python launcher.py -l
-4. Update MeDIC to the latest version
-MeDIC can be updated with the command :
+~~~~
+4. Update MeDIC to the latest version 
+   MeDIC can be updated with the command :
+~~~~
 python launcher.py --update
 python launcher.py -u
-Info
-
+~~~~
 This will retrieve updates from the github repository, verify the environment and download packages if necessary, but it won't start MeDIC.
+{: .alert .alert-info}
