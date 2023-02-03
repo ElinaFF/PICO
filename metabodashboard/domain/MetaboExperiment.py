@@ -17,6 +17,8 @@ X_TEST_INDEX = 1
 y_TRAIN_INDEX = 2
 y_TEST_INDEX = 3
 
+DEFAULT_NJOB = 1
+
 
 class MetaboExperiment:
     def __init__(self):
@@ -30,7 +32,7 @@ class MetaboExperiment:
         self._train_test_proportion = 0.2
         self._pairing_group_column = ""
         self._cv_folds = 5
-        self._number_of_processes_for_cv = 2
+        self._activate_multithreading = True
 
         self.experimental_designs = {}
 
@@ -272,14 +274,15 @@ class MetaboExperiment:
         self._data_matrix.unload_data()
 
     def run_learning(self, params: List[tuple]):
-        ctx = get_context("spawn")
-
-        pool = ctx.Pool(len(params))
 
         # launch the run_on_model function with the params
-        result_params = pool.starmap(self.run_on_model, params)
-        # alternative with no multiprocessing
-        # result_params = [self.run_on_model(*param) for param in params]
+        if self._activate_multithreading:
+            print("-> Multithreading activated (", len(params), " models to run) ...")
+            # ctx = get_context("spawn")
+            pool = Pool(len(params))
+            result_params = pool.starmap(self.run_on_model, params)
+        else:
+            result_params = [self.run_on_model(*param) for param in params]
 
         for experimental_design_name, model_name, best_model, scaled_data, classes, y_train, y_train_pred, y_test, \
                 y_test_pred, split_index, X_train, X_test in result_params:
@@ -306,7 +309,7 @@ class MetaboExperiment:
             x_train,
             split[y_TRAIN_INDEX],
             cv_algorithm,
-            self._number_of_processes_for_cv,
+            DEFAULT_NJOB
         )
         y_train_pred = best_model.predict(x_train)
         y_test_pred = best_model.predict(x_test)
@@ -445,12 +448,6 @@ class MetaboExperiment:
             raise ValueError("CV folds must be greater than or equal to 2.")
         self._cv_folds = cv_folds
 
-    def get_number_of_processes_for_cv(self) -> int:
-        return self._number_of_processes_for_cv
-
-    def set_number_of_processes_for_cv(self, number_of_processes: int):
-        self._number_of_processes_for_cv = number_of_processes
-
     def data_is_set(self) -> bool:
         return self._data_matrix.data_is_set()
 
@@ -459,5 +456,8 @@ class MetaboExperiment:
 
     def set_target_columns(self, target_cols: List[str]) -> None:
         self._metadata.set_target_columns(target_cols)
+
+    def set_multithreading(self, activate_multithreading: bool):
+        self._activate_multithreading = activate_multithreading
 
 # TODO: print current algo when training
