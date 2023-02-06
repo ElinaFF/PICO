@@ -7,16 +7,16 @@ cover:  true
 
 # Installation
 {: .no_toc}
-The MeDIC is a tool that must be installed locally. The visual interface is made with Dash from Plotly and can be 
-open in the majority of web browser. To install the MeDIC, the principal method is manually doing all the steps. A launcher file to automate 
-the installation is currently under development, and a beta version is available.
+The MeDIC is a tool that must be installed on your computer. The visual interface is made with Dash from Plotly and can be 
+open in the majority of web browser. To install the MeDIC, the principal method is manually doing all the steps. A launcher script
+to automate the installation is currently under development, and a beta version is available.
 Note that we only support Windows and Linux for now, and only Python 3.8, 3.9 and 3.10.
 
 * toc
 {:toc}
 
 ## Prerequisites
-The first step, to use MeDIC, is to install Python and Git. You also need to make sure that Microsoft Visual C++ is correctly installed.
+The first step, to use MeDIC, is to install Python and Git. For Windows, you also need to make sure that Microsoft Visual C++ is correctly installed.
 
 ### Linux installation
 #### Python
@@ -30,7 +30,7 @@ For more details follow this [link](https://git-scm.com/download/linux).
 
 
 ### Windows installation
-Don't forget to make sure that Microsoft Visual C++ is correctly installed.
+Don't forget to check that Microsoft Visual C++ is correctly installed.
 
 #### Python
 In order to install Python, you need to go to this [link](https://www.python.org/downloads/windows/). Download your 
@@ -80,29 +80,20 @@ Scroll down to select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or
    {: .alert .alert-info}
 
 5. Clone the Github repository `git clone https://github.com/ElinaFF/MeDIC`
-6. Move inside `cd MeDIC` (command for linux)
+6. Move inside `cd MeDIC`
 7. Install the dependencies `python -m pip install -r requirements.txt`
 
-If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem ([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d)).
-{: .alert .alert-warning}
+   If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem ([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d)).
+   {: .alert .alert-warning}
 
 8. Launch the Web interface `python main.py`
 
 
 ### Installation on WSL (Windows Subsystem for Linux)    
 It is the same steps as the manual installation, but executed on the WSL terminal.
-You can try to use the beta version launcher explained below, but uou may encounter a problem with the PATH variable. 
+You can try to use the beta version launcher explained below, but you may encounter a problem with the PATH variable. 
 We haven't found a solution yet appart from proceeding with the Manual installation.
 
-<div class="panel panel-info">
-**Note**
-{: .panel-heading}
-<div class="panel-body">
-
-NOTE DESCRIPTION
-
-</div>
-</div>
 
 
 ## Beta version launcher installation
@@ -114,12 +105,13 @@ The launcher file needs Git and Python to be able to do all the installation ste
 ### Launcher 
 1. Download launcher.py on our github
 2. Open a terminal (*cmd* in Windows)
-3. Run the launcher on your computer with the command : python launcher.py [^1]
-
-[^1]: No need to clone the repository, we will install everything we need. If you still want to do so and don’t want the launcher to redownload it 
+3. Run the launcher on your computer with the command : `python launcher.py`
+   
+No need to clone the repository, we will install everything we need. If you still want to do so and don’t want the launcher to redownload it 
 during the installation process, make sure to clone the repository in the same folder as the launcher. MeDIC uses conda for his environment, 
 if you don’t have any Conda instance installed on your machine, the launcher will install one (Miniconda3). 
-All the necessary dependencies will be installed in the conda environment.    
+All the necessary dependencies will be installed in the conda environment.
+{: .note title="Info"} 
   
 
 ### Clone repository and use the launcher  

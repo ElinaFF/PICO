@@ -4,12 +4,16 @@ title:  Home
 ---
 
 
-Saving file    
-=======    
+# Saving file
 
-Before explaining the interface, lets see how the experiments are saved and how you can share them. To allow a better modularity of the experiments, the three major steps of MeDIC are saved independently into a file after each step. Moreover, the data and metadata are only saved in local repository, not in the saving file, which allow the sharing of the file to outside collaborators. To continue an experiments and/or visualize its results, MeDIC offers the possibility to load a saving file in the first tab (Home). However, to prevent any problem between a local data saving and a potential different saving file, a hashing process takes place to compare the file being loaded and the local dumps of data.
+Lets see how the experiments are saved and how you can share them. To allow a better 
+modularity of the experiments, the two major steps of MeDIC are saved independently into a file after each step. 
+Moreover, the data and metadata are only saved in local repository, not in the saving file, which allow the sharing of 
+the results file to outside collaborators. To continue an experiments and/or visualize its results, MeDIC offers the possibility 
+to load a saving file in the first tab (Home). However, to prevent any problem between a local data saving and a 
+potential different saving file, a hashing process takes place to compare the file being loaded and the local dumps of data.
 
-Welcome into MeDIC!
+
 
 The following sections will resume how to run an experiment and explore each parameter you can set.
 
