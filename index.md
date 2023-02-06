@@ -19,6 +19,7 @@ Note that we only support Windows and Linux for now, and only Python 3.8, 3.9 an
 The first step, to use MeDIC, is to install Python and Git. For Windows, you also need to make sure that Microsoft Visual C++ is correctly installed.
 
 ### Linux installation
+{: .titleclass}
 #### Python
 In order to install Python, you need to go to this [link](https://www.python.org/downloads/source/). Download your 
 prefered version (or the latest 3.10 stable version) and proceed with the installation.
