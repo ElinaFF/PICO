@@ -37,8 +37,8 @@ class MetaData:
         modify the value of the attribute with the list of values
         """
         if len(columns) > 1:
-            df = self._dataframe.loc[:, columns]
-            final = list(df.apply(lambda row: "__".join(str(row)), axis=1))
+            df = self._dataframe.loc[:, columns].astype(str)
+            final = list(df.apply(lambda row: "__".join(row), axis=1))
         else:
             final = self._dataframe[columns[0]].tolist()
         self._final_targets_values = final
