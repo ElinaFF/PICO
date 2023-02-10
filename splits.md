@@ -2,9 +2,10 @@
 layout: base
 title:  Splits
 ---
+# Splits
 
-1. Define Experimental designs
-=========
+
+### Define Experimental designs
    
 
 The following instructions are for the B) DEFINE EXPERIMENTAL DESIGNS section.
