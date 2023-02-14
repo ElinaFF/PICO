@@ -26,6 +26,7 @@ class MetaboModel:
                 cv=folds,
                 random_state=seed,
                 n_jobs=number_of_processes,
+                n_iter=10,  # 10 is the default sklearn value
             )
         else:
             search = cv_algorithms(
