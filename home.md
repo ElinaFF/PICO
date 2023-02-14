@@ -5,13 +5,13 @@ title:  Home
 
 # Home
 The 'Home' tab of the tool provides the link to this official documentation, the possibility to load results files, and gives small
-explanations of each step of the tool.
+explanations of each step of the pipeline.
 
 * toc
 {:toc}
 
 
-## Results file
+## Results file (Load MetaboExperiment)
 To allow a better modularity of the experiments, the two major steps of MeDIC are saved independently into a file after each step. 
 Moreover, the data and metadata are only saved (dumps) in a local repository, not in the saving file, which allow the sharing of 
 the results file to outside collaborators. To continue an experiments and/or visualize its results, MeDIC offers the possibility 
@@ -25,7 +25,7 @@ and parameters, and define the classification designs. A first saving file is cr
 choose the machine learning algorithmes and the options for the hyperparameters optimization. A second saving file is created.
 At the end, the user can analyse its results with the two last tabs : 'Results' and 'Results aggregated'.
 
-
+![](imgs/update_figure_steps_MeDIC_4.svg)
 
 
 MEATADATA FILE section
