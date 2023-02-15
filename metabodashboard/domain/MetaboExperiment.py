@@ -323,10 +323,6 @@ class MetaboExperiment:
         return MetaboExperimentDTO(self)
 
     def full_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
-        if not self.is_save_safe(saved_metabo_experiment_dto):
-            raise ValueError(
-                "The save is not safe : either the data matrix or the metadata are not the same."
-            )
         self._metadata = saved_metabo_experiment_dto.metadata
         self._data_matrix = saved_metabo_experiment_dto.data_matrix
         self._static_restore_for_partial(saved_metabo_experiment_dto)
