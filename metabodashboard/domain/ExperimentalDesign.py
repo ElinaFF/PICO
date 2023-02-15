@@ -57,16 +57,7 @@ class ExperimentalDesign:
         self._selected_models_name = selected_models_name
         # TODO : un genre d'emballage de classe results pour pouvoir appeler juste un nom de classe
         for n in self._selected_models_name:
-            if n == "RandomForest":
-                self.results[n] = ResultsRF(self._split_group.get_number_of_splits())
-            elif n == "DecisionTree":
-                self.results[n] = ResultsDT(self._split_group.get_number_of_splits())
-            elif n == "SCM":
-                self.results[n] = ResultsSCM(self._split_group.get_number_of_splits())
-            elif n == "RandomSCM":
-                self.results[n] = ResultsRSCM(self._split_group.get_number_of_splits())
-            else:
-                raise NotImplementedError(f"{n} is not implemented")
+            self.results[n] = Results(self._split_group.get_number_of_splits())
 
     def get_results(self) -> Dict[str, Results]:
         if self.results == {}:
