@@ -374,9 +374,18 @@ class MLTab(MetaTab):
         def get_attribute_algo(n_attribute, n_manual, import_new, new_algo_name):
             triggered_by = callback_context.triggered[0]["prop_id"].split(".")[0]
             print("triggered by: ", triggered_by)
+
+            try:
+                model = Utils.get_model_from_import([import_new], new_algo_name)
+            except Exception as e:
+                print("Error: ", e)
+                return "Import failed: " + str(e), {"color": "red"}, "", ""
+            importance_attributes = [param_name for param_name, _ in
+                                     Utils.get_model_parameters_after_training(model)]
+            if not importance_attributes:
+                return "Import failed: No importance attribute found.", {"color": "red"}, "", ""
             if triggered_by == "get_attribute_button":
                 try:
-                    model = Utils.get_model_from_import([import_new], new_algo_name)
                     attributes = Utils.get_model_parameters(model)
                     attributes_table = pd.DataFrame(attributes, columns=["Name", "Type"])
                     attributes_table["Type"].replace(
@@ -385,8 +394,6 @@ class MLTab(MetaTab):
                     for attribute, _ in attributes:
                         inputs.append(dbc.Input(id=attribute, type="text", placeholder="Value"))
                     attributes_table["Value"] = inputs
-
-                    importance_attributes = [param_name for param_name, _ in Utils.get_model_parameters_after_training(model)]
 
                     default_text = [
                         html.Br(),
@@ -402,13 +409,6 @@ class MLTab(MetaTab):
                     print(e)
                     return "Import failed: " + str(e), {"color": "red"}, "", ""
             elif triggered_by == "manual_config_button":
-                try:
-                    model = Utils.get_model_from_import([import_new], new_algo_name)
-                    importance_attributes = [param_name for param_name, _ in
-                                             Utils.get_model_parameters_after_training(model)]
-                except Exception as e:
-                    print(e)
-                    return "Import failed: " + str(e), {"color": "red"}, "", ""
                 return "", None, [html.P("The following configuration must be in JSON format",
                                                                style={"color": "orange"}), html.Br(), dcc.Textarea()], Utils.format_list_for_checklist(importance_attributes)
             else:
