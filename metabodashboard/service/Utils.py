@@ -235,8 +235,8 @@ def restore_ids_and_targets_from_pairing_groups(filtered_samples: List[str], dat
 
 def convert_str_to_list_of_lists(str_to_convert: str) -> List[List[Union[str, float, int]]]:
     first_level = []
-    for find in re.findall(r'(\[((([\w\'".]+,? ?)+))\] ?,?)+', str_to_convert):
-        tmp = find[2].split(',')
+    for find in re.findall(r'\[((([\w\'".]+,? ?)+))\] ?,?', str_to_convert):
+        tmp = find[0].split(',')
         second_level = []
         for element in tmp:
             element = element.strip()
