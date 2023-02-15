@@ -1,0 +1,16 @@
+# ignore pychache
+*/__pycache__/*
+*/.pytest_cache/*
+
+# ignore .p and .mtxp files
+*.p
+*.mtxp
+
+#ignore .idea
+.idea/*
+
+# ignore .DS_Store
+.DS_Store
+
+# ignore .log files
+*.log
