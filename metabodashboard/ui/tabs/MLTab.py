@@ -348,45 +348,44 @@ class MLTab(MetaTab):
         def get_attribute_algo(n_attribute, n_manual, import_new, new_algo_name):
             triggered_by = callback_context.triggered[0]["prop_id"].split(".")[0]
             print("triggered by: ", triggered_by)
-
-            try:
-                model = Utils.get_model_from_import([import_new], new_algo_name)
-            except Exception as e:
-                print("Error: ", e)
-                return "Import failed: " + str(e), {"color": "red"}, "", ""
-            importance_attributes = [param_name for param_name, _ in
-                                     Utils.get_model_parameters_after_training(model)]
-            if not importance_attributes:
-                return "Import failed: No importance attribute found.", {"color": "red"}, "", ""
-            if triggered_by == "get_attribute_button":
+            if n_manual > 0 or n_attribute > 0:
                 try:
-                    attributes = Utils.get_model_parameters(model)
-                    attributes_table = pd.DataFrame(attributes, columns=["Name", "Type"])
-                    attributes_table["Type"].replace(
-                        {"str": "String", "int": "Integer", "float": "Float", "NoneType": "Unspecified"}, inplace=True)
-                    inputs = []
-                    for attribute, _ in attributes:
-                        inputs.append(dbc.Input(id=attribute, type="text", placeholder="Value"))
-                    attributes_table["Value"] = inputs
-
-                    default_text = [
-                        html.Br(),
-                        html.P("You can set the grid search parameters as followed:"),
-                        html.P(
-                            "Values: 'val1A, val1B, val1C'"
-                        ),
-                        dbc.Table.from_dataframe(attributes_table)
-                    ]
-
-                    return f"{model.__name__} found", {"color": "green"}, default_text, Utils.format_list_for_checklist(importance_attributes)
+                    model = Utils.get_model_from_import([import_new], new_algo_name)
                 except Exception as e:
-                    print(e)
+                    print("Error: ", e)
                     return "Import failed: " + str(e), {"color": "red"}, "", ""
-            elif triggered_by == "manual_config_button":
-                return "", None, [html.P("The following configuration must be in JSON format",
-                                                               style={"color": "orange"}), html.Br(), dcc.Textarea()], Utils.format_list_for_checklist(importance_attributes)
-            else:
-                return dash.no_update, dash.no_update, dash.no_update, dash.no_update
+                importance_attributes = [param_name for param_name, _ in
+                                         Utils.get_model_parameters_after_training(model)]
+                if not importance_attributes:
+                    return "Import failed: No importance attribute found.", {"color": "red"}, "", ""
+                if triggered_by == "get_attribute_button":
+                    try:
+                        attributes = Utils.get_model_parameters(model)
+                        attributes_table = pd.DataFrame(attributes, columns=["Name", "Type"])
+                        attributes_table["Type"].replace(
+                            {"str": "String", "int": "Integer", "float": "Float", "NoneType": "Unspecified"}, inplace=True)
+                        inputs = []
+                        for attribute, _ in attributes:
+                            inputs.append(dbc.Input(id=attribute, type="text", placeholder="Value"))
+                        attributes_table["Value"] = inputs
+
+                        default_text = [
+                            html.Br(),
+                            html.P("You can set the grid search parameters as followed:"),
+                            html.P(
+                                "Values: 'val1A, val1B, val1C'"
+                            ),
+                            dbc.Table.from_dataframe(attributes_table)
+                        ]
+
+                        return f"{model.__name__} found", {"color": "green"}, default_text, Utils.format_list_for_checklist(importance_attributes)
+                    except Exception as e:
+                        print(e)
+                        return "Import failed: " + str(e), {"color": "red"}, "", ""
+                elif triggered_by == "manual_config_button":
+                    return "", None, [html.P("The following configuration must be in JSON format",
+                                                                   style={"color": "orange"}), html.Br(), dcc.Textarea()], Utils.format_list_for_checklist(importance_attributes)
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
         @self.app.callback(
             Output("collapse", "is_open"),
