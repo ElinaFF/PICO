@@ -1,8 +1,6 @@
 import os
-from abc import abstractmethod
 from collections import Counter
 from typing import List
-import math
 
 import numpy as np
 import pandas as pd
@@ -38,6 +36,8 @@ class Results:
         self.f_names = []
         self.best_acc = 0
         self.design_name = ""
+
+        self.tmp = {"scaled_data": pd.DataFrame(), "y_train_true": [], "y_test_true": [], "classes": []}
 
     def add_results_from_one_algo_on_one_split(
         self,
@@ -125,30 +125,32 @@ class Results:
         self.results[split_number]["Confusion_matrix"] = self._produce_conf_matrix(
             y_test_true, y_test_pred
         )
+        self.update_tmp(scaled_data, y_train_true, y_test_true, classes)
 
-        if split_number == self.splits_number[-1]:
-            self.results["info_expe"] = self._produce_info_expe(
-                y_train_true, y_test_true
-            )
-            print("------> last split")
-            self.results["features_table"] = self.produce_features_importance_table()
-            self.results["accuracies_table"] = self.produce_accuracy_plot_all()
-            self.results["classes"] = classes
-            self.results["umap_data"] = self._produce_UMAP(
-                scaled_data, self.results["features_table"]
-            )
-            self.results["pca_data"] = self._produce_PCA(
-                scaled_data, self.results["features_table"]
-            )
-            self.results["metrics_table"] = self.produce_metrics_table()
-            self.results[
-                "features_stripchart"
-            ] = self.features_strip_chart_abundance_each_class(
-                self.results["features_table"], scaled_data
-            )
-            self.results["features_2d_and_3d"] = self.produce_features_2d_and_3d(
-                self.results["features_table"], scaled_data
-            )
+
+    def compute_remaining_results_on_all_splits(self):
+
+        self.results["info_expe"] = self._produce_info_expe(
+            self.tmp["y_train_true"], self.tmp["y_test_true"]
+        )
+        self.results["features_table"] = self.produce_features_importance_table()
+        self.results["accuracies_table"] = self.produce_accuracy_plot_all()
+        self.results["classes"] = self.tmp["classes"]
+        self.results["umap_data"] = self._produce_UMAP(
+            self.tmp["scaled_data"], self.results["features_table"]
+        )
+        self.results["pca_data"] = self._produce_PCA(
+            self.tmp["scaled_data"], self.results["features_table"]
+        )
+        self.results["metrics_table"] = self.produce_metrics_table()
+        self.results[
+            "features_stripchart"
+        ] = self.features_strip_chart_abundance_each_class(
+            self.results["features_table"], self.tmp["scaled_data"]
+        )
+        self.results["features_2d_and_3d"] = self.produce_features_2d_and_3d(
+            self.results["features_table"], self.tmp["scaled_data"]
+        )
 
     def set_feature_names(self, x: pd.DataFrame):
         """
@@ -477,6 +479,16 @@ class Results:
     def produce_features_2d_and_3d(self, features_table: pd.DataFrame, scaled_data):
         selected_features = features_table[:3]["features"]
         return scaled_data.loc[:, selected_features]
+
+    def update_tmp(self, scaled_data, y_train_true, y_test_true, classes):
+        if self.tmp["scaled_data"].empty:
+            self.tmp["scaled_data"] = scaled_data
+        if not self.tmp["y_train_true"]:
+            self.tmp["y_train_true"] = y_train_true
+        if not self.tmp["y_test_true"]:
+            self.tmp["y_test_true"] = y_test_true
+        if not self.tmp["classes"]:
+            self.tmp["classes"] = classes
 
     def _get_features_importance(self, model):
         """

@@ -1,8 +1,10 @@
+from multiprocessing import Pool, cpu_count, get_context
 from typing import Generator, Tuple, List, Dict, Union
 
+import numpy as np
 import sklearn
 
-from . import ExperimentalDesign
+from . import ExperimentalDesign, Results
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
 from .MetaboExperimentDTO import MetaboExperimentDTO
@@ -14,6 +16,8 @@ X_TRAIN_INDEX = 0
 X_TEST_INDEX = 1
 y_TRAIN_INDEX = 2
 y_TEST_INDEX = 3
+
+DEFAULT_NJOB = 1
 
 
 class MetaboExperiment:
@@ -28,7 +32,7 @@ class MetaboExperiment:
         self._train_test_proportion = 0.2
         self._pairing_group_column = ""
         self._cv_folds = 5
-        self._number_of_processes_for_cv = 2
+        self._activate_multithreading = True
 
         self.experimental_designs = {}
 
@@ -148,11 +152,11 @@ class MetaboExperiment:
         self.experimental_designs.pop(name)
 
     def add_custom_model(
-        self,
-        model_name: str,
-        needed_imports: str,
-        params: List[str],
-        values_to_explore: List[List[str]],
+            self,
+            model_name: str,
+            needed_imports: str,
+            params: List[str],
+            values_to_explore: List[List[str]],
     ):
         self._custom_models[model_name] = self._model_factory.create_custom_model(
             model_name, needed_imports, params, values_to_explore
@@ -246,51 +250,84 @@ class MetaboExperiment:
         cv_algorithm = self.get_cv_algorithm()
         self._check_experimental_design()
         self._data_matrix.load_data()
+        params = []
         for _, experimental_design in self.experimental_designs.items():
             print("-> Experimental design : ", _)
-            results = experimental_design.get_results()
             selected_targets_name = experimental_design.get_selected_targets_name()
             (selected_targets, selected_ids,) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
             classes = Utils.load_classes_from_targets(
                 experimental_design.get_classes_design(), selected_targets
             )
             for split_index, split in experimental_design.all_splits():
-                print("---> Split : ", split_index)
-                x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
-                    split[X_TRAIN_INDEX]
-                )
-                x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
-                    split[X_TEST_INDEX]
-                )
                 for model_name in self._selected_models:
-                    print("-----> Algorithm : ", model_name)
-                    results[model_name].set_feature_names(x_train)
-                    results[model_name].design_name = experimental_design.get_name()
-                    metabo_model = self.get_model_from_name(model_name)
-                    best_model = metabo_model.train(
-                        self._cv_folds,
-                        x_train,
-                        split[y_TRAIN_INDEX],
-                        cv_algorithm,
-                        self._number_of_processes_for_cv,
-                        seed=split_index
+                    x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
+                        split[X_TRAIN_INDEX]
                     )
-                    y_train_pred = best_model.predict(x_train)
-                    y_test_pred = best_model.predict(x_test)
-                    results[model_name].add_results_from_one_algo_on_one_split(
-                        best_model,
-                        self._data_matrix.get_scaled_data(selected_ids),
-                        classes,
-                        split[y_TRAIN_INDEX],
-                        y_train_pred,
-                        split[y_TEST_INDEX],
-                        y_test_pred,
-                        str(split_index),
-                        split[X_TRAIN_INDEX],
-                        split[X_TEST_INDEX],
+                    x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
+                        split[X_TEST_INDEX]
                     )
-                experimental_design.set_is_done(True)
+                    params.append(
+                        (model_name, experimental_design.get_name(), split_index, split, x_train, x_test, cv_algorithm,
+                         selected_ids, classes)
+                    )
+        self.run_learning(params)
         self._data_matrix.unload_data()
+
+    def run_learning(self, params: List[tuple]):
+
+        # launch the run_on_model function with the params
+        if self._activate_multithreading:
+            print("-> Multithreading activated (", len(params), " models to run) ...")
+            # ctx = get_context("spawn")
+            pool = Pool(len(params))
+            result_params = pool.starmap(self.run_on_model, params)
+        else:
+            result_params = [self.run_on_model(*param) for param in params]
+
+        for experimental_design_name, model_name, best_model, scaled_data, classes, y_train, y_train_pred, y_test, \
+                y_test_pred, split_index, X_train, X_test in result_params:
+            results = self.experimental_designs[experimental_design_name].get_results()
+            results[model_name].set_feature_names(X_train) # called multiple times but it's ok
+            results[model_name].design_name = experimental_design_name
+            results[model_name].add_results_from_one_algo_on_one_split(best_model, scaled_data, classes, y_train,
+                                                                       y_train_pred, y_test, y_test_pred, split_index,
+                                                                       X_train.index, X_test.index)
+
+        for _, experimental_design in self.experimental_designs.items():
+            for _, result in experimental_design.get_results().items():
+                result.compute_remaining_results_on_all_splits()
+            experimental_design.set_is_done(True)
+
+    def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test, cv_algorithm,
+                     selected_ids, classes):
+        print("-> Split : ", split_index)
+        print("-> Model : ", model_name)
+
+        metabo_model = self.get_model_from_name(model_name)
+        best_model = metabo_model.train(
+            self._cv_folds,
+            x_train,
+            split[y_TRAIN_INDEX],
+            cv_algorithm,
+            DEFAULT_NJOB,
+            seed=split_index
+        )
+        y_train_pred = best_model.predict(x_train)
+        y_test_pred = best_model.predict(x_test)
+        return (
+            experimental_design_name,
+            model_name,
+            best_model,
+            self._data_matrix.get_scaled_data(selected_ids),
+            classes,
+            split[y_TRAIN_INDEX],
+            y_train_pred,
+            split[y_TEST_INDEX],
+            y_test_pred,
+            str(split_index),
+            x_train,
+            x_test
+        )
 
     def get_results(self, classes_design: str, algo_name) -> dict:
         return self.experimental_designs[classes_design].get_results()[algo_name]
@@ -328,7 +365,7 @@ class MetaboExperiment:
         self._static_restore_for_partial(saved_metabo_experiment_dto)
 
     def _static_restore_for_partial(
-        self, saved_metabo_experiment_dto: MetaboExperimentDTO
+            self, saved_metabo_experiment_dto: MetaboExperimentDTO
     ):
         self._number_of_splits = saved_metabo_experiment_dto.number_of_splits
         self._train_test_proportion = saved_metabo_experiment_dto.train_test_proportion
@@ -338,14 +375,14 @@ class MetaboExperiment:
         self._selected_cv_type = saved_metabo_experiment_dto.selected_cv_type
 
     def partial_restore(
-        self,
-        saved_metabo_experiment_dto: MetaboExperimentDTO,
-        filename_data: str,
-        filename_metadata: str,
-        data=None,
-        from_base64_data: bool = True,
-        metadata=None,
-        from_base64_metadata=True,
+            self,
+            saved_metabo_experiment_dto: MetaboExperimentDTO,
+            filename_data: str,
+            filename_metadata: str,
+            data=None,
+            from_base64_data: bool = True,
+            metadata=None,
+            from_base64_metadata=True,
     ):
         self._data_matrix.set_raw_use(saved_metabo_experiment_dto.data_matrix.is_raw())
         self._data_matrix.set_remove_rt(
@@ -368,9 +405,9 @@ class MetaboExperiment:
 
     def is_save_safe(self, saved_metabo_experiment_dto: MetaboExperimentDTO) -> bool:
         return (
-            self._metadata.get_hash() == saved_metabo_experiment_dto.metadata.get_hash()
-            and self._data_matrix.get_hash()
-            == saved_metabo_experiment_dto.data_matrix.get_hash()
+                self._metadata.get_hash() == saved_metabo_experiment_dto.metadata.get_hash()
+                and self._data_matrix.get_hash()
+                == saved_metabo_experiment_dto.data_matrix.get_hash()
         )
 
     def is_the_data_matrix_corresponding(self, data: str) -> bool:
@@ -408,12 +445,6 @@ class MetaboExperiment:
             raise ValueError("CV folds must be greater than or equal to 2.")
         self._cv_folds = cv_folds
 
-    def get_number_of_processes_for_cv(self) -> int:
-        return self._number_of_processes_for_cv
-
-    def set_number_of_processes_for_cv(self, number_of_processes: int):
-        self._number_of_processes_for_cv = number_of_processes
-
     def data_is_set(self) -> bool:
         return self._data_matrix.data_is_set()
 
@@ -422,5 +453,8 @@ class MetaboExperiment:
 
     def set_target_columns(self, target_cols: List[str]) -> None:
         self._metadata.set_target_columns(target_cols)
+
+    def set_multithreading(self, activate_multithreading: bool):
+        self._activate_multithreading = activate_multithreading
 
 # TODO: print current algo when training

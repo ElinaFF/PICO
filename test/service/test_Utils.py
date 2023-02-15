@@ -26,3 +26,11 @@ def test_givenMultiClass_whenGettingBinary_thenBinaryIsReturned():
         0,
         2,
     ]
+
+
+def test_givenListAsString_whenConvertStringToList_thenListIsReturned():
+    assert Utils.convert_str_to_list_of_lists("[1, 2, 3], [a, b, c], [15.35, .35, 15]") == [
+        [1, 2, 3],
+        ["a", "b", "c"],
+        [15.35, 0.35, 15],
+    ]
