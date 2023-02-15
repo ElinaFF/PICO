@@ -187,12 +187,6 @@ class MetaboController:
     def set_cv_folds(self, cv_folds: int):
         self._metabo_experiment.set_cv_folds(cv_folds)
 
-    def get_number_of_processes_for_cv(self) -> int:
-        return self._metabo_experiment.get_number_of_processes_for_cv()
-
-    def set_number_of_processes_for_cv(self, number_of_processes: int):
-        self._metabo_experiment.set_number_of_processes_for_cv(number_of_processes)
-
     def update_experimental_designs_with_selected_models(self):
         self._metabo_experiment.update_experimental_designs_with_selected_models()
 
@@ -219,3 +213,6 @@ class MetaboController:
 
     def set_target_columns(self, target_cols: List[str]) -> None:
         self._metabo_experiment.set_target_columns(target_cols)
+
+    def set_multithreading(self, activate_multithreading: bool):
+        self._metabo_experiment.set_multithreading(activate_multithreading)

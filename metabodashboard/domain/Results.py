@@ -1,8 +1,6 @@
 import os
-from abc import abstractmethod
 from collections import Counter
 from typing import List
-import math
 
 import numpy as np
 import pandas as pd
@@ -39,39 +37,7 @@ class Results:
         self.best_acc = 0
         self.design_name = ""
 
-    def _get_features_importance(self, model, importance_attribute: str):
-        if self.f_names is None:
-            raise RuntimeError("Features names are not retrieved yet")
-
-        try:
-            importances = getattr(model, importance_attribute)
-        except AttributeError:
-            importances = [None] * len(self.f_names)
-
-        zipped = zip(self.f_names, importances)
-
-        return zipped
-
-    def _aggregate_features_info(self):
-        """
-        When all splits are done and saved, aggregate feature info from every split to compute stats
-        from all splits, concatenate in the same list the name of features, and another list their importance
-        """
-        features = []
-        imp = []
-        # Get values of all splits in two lists
-        for split in self.splits_number:
-            f, i = list(zip(*self.results[split]["feature_importances"]))
-            features.extend(f)
-            imp.extend(i)
-
-        # Store the mean importance, and the number of time used, per feature
-        count_f = self.format_name_and_associated_values(features, imp)
-
-        features = [f for f in count_f.keys()]
-        times_used_all_splits = [count_f[f][0] for f in count_f.keys()]
-        importance_or_usage_or_ = [count_f[f][1] for f in count_f.keys()]
-        return features, times_used_all_splits, importance_or_usage_or_
+        self.tmp = {"scaled_data": pd.DataFrame(), "y_train_true": [], "y_test_true": [], "classes": []}
 
     def add_results_from_one_algo_on_one_split(
             self,
@@ -160,30 +126,32 @@ class Results:
         self.results[split_number]["Confusion_matrix"] = self._produce_conf_matrix(
             y_test_true, y_test_pred
         )
+        self.update_tmp(scaled_data, y_train_true, y_test_true, classes)
 
-        if split_number == self.splits_number[-1]:
-            self.results["info_expe"] = self._produce_info_expe(
-                y_train_true, y_test_true
-            )
-            print("------> last split")
-            self.results["features_table"] = self.produce_features_importance_table()
-            self.results["accuracies_table"] = self.produce_accuracy_plot_all()
-            self.results["classes"] = classes
-            self.results["umap_data"] = self._produce_UMAP(
-                scaled_data, self.results["features_table"]
-            )
-            self.results["pca_data"] = self._produce_PCA(
-                scaled_data, self.results["features_table"]
-            )
-            self.results["metrics_table"] = self.produce_metrics_table()
-            self.results[
-                "features_stripchart"
-            ] = self.features_strip_chart_abundance_each_class(
-                self.results["features_table"], scaled_data
-            )
-            self.results["features_2d_and_3d"] = self.produce_features_2d_and_3d(
-                self.results["features_table"], scaled_data
-            )
+
+    def compute_remaining_results_on_all_splits(self):
+
+        self.results["info_expe"] = self._produce_info_expe(
+            self.tmp["y_train_true"], self.tmp["y_test_true"]
+        )
+        self.results["features_table"] = self.produce_features_importance_table()
+        self.results["accuracies_table"] = self.produce_accuracy_plot_all()
+        self.results["classes"] = self.tmp["classes"]
+        self.results["umap_data"] = self._produce_UMAP(
+            self.tmp["scaled_data"], self.results["features_table"]
+        )
+        self.results["pca_data"] = self._produce_PCA(
+            self.tmp["scaled_data"], self.results["features_table"]
+        )
+        self.results["metrics_table"] = self.produce_metrics_table()
+        self.results[
+            "features_stripchart"
+        ] = self.features_strip_chart_abundance_each_class(
+            self.results["features_table"], self.tmp["scaled_data"]
+        )
+        self.results["features_2d_and_3d"] = self.produce_features_2d_and_3d(
+            self.results["features_table"], self.tmp["scaled_data"]
+        )
 
     def set_feature_names(self, x: pd.DataFrame):
         """
@@ -513,3 +481,66 @@ class Results:
     def produce_features_2d_and_3d(self, features_table: pd.DataFrame, scaled_data):
         selected_features = features_table[:3]["features"]
         return scaled_data.loc[:, selected_features]
+
+    def update_tmp(self, scaled_data, y_train_true, y_test_true, classes):
+        if self.tmp["scaled_data"].empty:
+            self.tmp["scaled_data"] = scaled_data
+        if not self.tmp["y_train_true"]:
+            self.tmp["y_train_true"] = y_train_true
+        if not self.tmp["y_test_true"]:
+            self.tmp["y_test_true"] = y_test_true
+        if not self.tmp["classes"]:
+            self.tmp["classes"] = classes
+
+    def _get_features_importance(self, model):
+        """
+        retrieve features and their importance from a model to save it in the Results dict after each split
+        """
+        if self.f_names is None:
+            raise RuntimeError("Features names are not retrieved yet")
+        if hasattr(model, 'feature_importances_'):
+            importances = model.feature_importances_
+        elif hasattr(model, 'rule_importances_'):
+            importances = [0] * len(self.f_names)
+            for rule, f_importance in zip(model.model_.rules, model.rule_importances_):
+                importances[rule.feature_idx] = f_importance
+        zipped = zip(self.f_names, importances)
+        return zipped
+
+    def _aggregate_features_info(self):
+        """
+        When all splits are done and saved, aggregate feature info from every split to compute stats
+        from all splits, concatenate in the same list the name of features, and another list their importance
+        """
+        features = []
+        imp = []
+        # Get values of all splits in two lists
+        for split in self.splits_number:
+            f, i = list(zip(*self.results[split]["feature_importances"]))
+            features.extend(f)
+            imp.extend(i)
+
+        # Store the mean importance, and the number of time used, per feature
+        count_f = self.format_name_and_associated_values(features, imp)
+
+        features = [f for f in count_f.keys()]
+        times_used_all_splits = [count_f[f][0] for f in count_f.keys()]
+        importance_or_usage_or_ = [count_f[f][1] for f in count_f.keys()]
+        return features, times_used_all_splits, importance_or_usage_or_
+
+
+# Kept old classes for compatibility
+class ResultsDT(Results):
+    pass
+
+
+class ResultsRF(Results):
+    pass
+
+
+class ResultsSCM(Results):
+    pass
+
+
+class ResultsRSCM(Results):
+    pass

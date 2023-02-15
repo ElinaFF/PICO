@@ -7,10 +7,9 @@ from sklearn.model_selection import RandomizedSearchCV
 # TODO : get_specific_results, retourne les attributs nécessaires de feat importance pour n'importe quel algo sklearn
 # TODO : (suite) , faire un genre de moule d'algo, goulot d'étranglement de nom de méthode
 class MetaboModel:
-    def __init__(self, model: sklearn, grid_search_configuration: dict, seed: int, importance_attribute: str):
+    def __init__(self, model: sklearn, grid_search_configuration: dict, importance_attribute: str):
         self.grid_search_param = grid_search_configuration
         self.model = model
-        self.seed = seed
 
         self.importance_attribute = importance_attribute
 
@@ -20,19 +19,20 @@ class MetaboModel:
         X_train: pd.DataFrame,
         y_train: list,
         cv_algorithms: sklearn.model_selection,
-        number_of_processes: int,
+        number_of_processes: int, seed: int
     ) -> sklearn:
         if cv_algorithms == RandomizedSearchCV:
             search = cv_algorithms(
-                self.model(random_state=self.seed),
+                self.model(random_state=seed),
                 self.grid_search_param,
                 cv=folds,
-                random_state=self.seed,
+                random_state=seed,
                 n_jobs=number_of_processes,
+                n_iter=10,  # 10 is the default sklearn value
             )
         else:
             search = cv_algorithms(
-                self.model(random_state=self.seed),
+                self.model(random_state=seed),
                 self.grid_search_param,
                 cv=folds,
                 n_jobs=number_of_processes,

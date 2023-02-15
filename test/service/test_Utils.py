@@ -76,3 +76,11 @@ def test_givenRF_whenGetParametersAfterTraining_thenReturnParameters():
 
 def test_givenSVCwithMutuallyExclusiveParamater_whenGetParametersAfterTraining_thenReturnParameters():
     assert Utils.get_model_parameters_after_training(LinearSVC) == [('coef_', 'ndarray')]
+
+
+def test_givenListAsString_whenConvertStringToList_thenListIsReturned():
+    assert Utils.convert_str_to_list_of_lists("[1, 2, 3], [a, b, c], [15.35, .35, 15]") == [
+        [1, 2, 3],
+        ["a", "b", "c"],
+        [15.35, 0.35, 15],
+    ]

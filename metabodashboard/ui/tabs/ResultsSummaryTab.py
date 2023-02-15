@@ -262,6 +262,8 @@ class ResultsSummaryTab(MetaTab):
                 global_df = global_df.set_index("features")
                 global_df = global_df.fillna(0)
 
+                # TODO: wrap with try catch to prevent error when no data for a algo
+
                 random_df = global_df.loc[:, ("RandomForest", "RandomSCM")]
                 random_df = random_df[
                     (random_df["RandomForest"] > 0.001)

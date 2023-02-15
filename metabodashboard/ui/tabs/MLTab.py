@@ -25,28 +25,18 @@ class MLTab(MetaTab):
             className="form_field",
         )
 
-        __CVConfig = html.Div(
+        __ThreadingConfig = html.Div(
             [
-                dbc.Label("Number of Cross Validation folds", className="form_labels"),
-                dbc.Input(
-                    id="in_nbr_CV_folds",
-                    value=self.metabo_controller.get_cv_folds(),
-                    type="number",
-                    min=2,
-                    size="5",
+                dbc.Label("Multi-threading activation", className="form_labels"),
+                dbc.Checklist(
+                    options=[
+                        {"label": "Multi-threading is off", "value": 1},
+                    ],
+                    id="switches-input",
+                    value=[1],
+                    switch=True,
                 ),
                 html.Div(id="output_cv_folds_ml", style={"color": "red"}),
-            ],
-            className="form_field",
-        )
-
-        __processNumberConfig = html.Div(
-            [
-                dbc.Label("Number of processes"),
-                dbc.Input(
-                    id="in_nbr_processes", value="2", type="number", min=1, size="5"
-                ),
-                html.Div(id="output_cv_nbr_processes_ml", style={"color": "red"}),
             ],
             className="form_field",
         )
@@ -60,8 +50,7 @@ class MLTab(MetaTab):
                         dbc.Col(
                             children=[
                                 __splitConfigFile,
-                                __CVConfig,
-                                __processNumberConfig,
+                                __ThreadingConfig,
                             ],
                         )
                     ]
@@ -208,35 +197,20 @@ class MLTab(MetaTab):
             return dash.no_update
 
         @self.app.callback(
-            Output("output_cv_folds_ml", "children"),
-            [Input("in_nbr_CV_folds", "value")],
+            Output("switches-input", "options"), [Input("switches-input", "value")]
         )
-        def set_nbr_CV_folds(value):
-            if value is None:
-                return "The number of folds must be an integer greater than 2"
-
-            self.metabo_controller.set_cv_folds(int(value))
-            return ""
-
-        @self.app.callback(
-            Output("in_nbr_processes", "value"),
-            [Input("custom_big_tabs", "active_tab")],
-        )
-        def update_nbr_processes(active_tab):
-            if active_tab == "tab-2":
-                return self.metabo_controller.get_number_of_processes_for_cv()
+        def update_switch(value):
+            if value == [1]:
+                self.metabo_controller.set_multithreading(True)
+                return [
+                    {"label": "Multi-threading is on", "value": 1},
+                ]
+            elif not value:
+                self.metabo_controller.set_multithreading(False)
+                return [
+                    {"label": "Multi-threading is off", "value": 1},
+                ]
             return dash.no_update
-
-        @self.app.callback(
-            Output("output_cv_nbr_processes_ml", "children"),
-            [Input("in_nbr_processes", "value")],
-        )
-        def set_nbr_CV_folds(value):
-            if value is None:
-                return "The number of processes must be an integer greater than 1"
-
-            self.metabo_controller.set_number_of_processes_for_cv(int(value))
-            return ""
 
         @self.app.callback(
             [

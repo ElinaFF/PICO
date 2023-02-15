@@ -233,20 +233,25 @@ def restore_ids_and_targets_from_pairing_groups(filtered_samples: List[str], dat
     return restored_ids, load_classes_from_targets(classes_design, restored_targets)
 
 
-def convert_str_to_list_of_lists(str_to_convert: str) -> List[List[Union[str, int, float]]]:
-    list_level_1 = re.findall(r"\[([\w.]+( ?, ?[\w.]+)*)]", str_to_convert)
-    list_level_2 = []
-    for element in list_level_1:
-        values = re.split(r" ?, ?", element[0])
-        try:
-            values = [int(i) for i in values]
-        except ValueError:
+def convert_str_to_list_of_lists(str_to_convert: str) -> List[List[Union[str, float, int]]]:
+    first_level = []
+    for find in re.findall(r'(\[((([\w\'".]+,? ?)+))\] ?,?)+', str_to_convert):
+        tmp = find[2].split(',')
+        second_level = []
+        for element in tmp:
+            element = element.strip()
             try:
-                values = [float(i) for i in values]
+                element = int(element)
             except ValueError:
                 pass
-        list_level_2.append(values)
-    return list_level_2
+            try:
+                element = float(element)
+            except ValueError:
+                pass
+            second_level.append(element)
+
+        first_level.append(second_level)
+    return first_level
 
 
 def is_data_the_same(data: str, metabo_experiment_dto) -> bool:
