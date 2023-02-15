@@ -484,7 +484,12 @@ class Results:
         """
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
-        importances = model.feature_importances_
+        if hasattr(model, 'feature_importances_'):
+            importances = model.feature_importances_
+        elif hasattr(model, 'rule_importances_'):
+            importances = [0] * len(self.f_names)
+            for rule, f_importance in zip(model.model_.rules, model.rule_importances_):
+                importances[rule.feature_idx] = f_importance
         zipped = zip(self.f_names, importances)
         return zipped
 
