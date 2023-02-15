@@ -1,8 +1,6 @@
 import os
-from abc import abstractmethod
 from collections import Counter
 from typing import List
-import math
 
 import numpy as np
 import pandas as pd
@@ -40,21 +38,6 @@ class Results:
         self.design_name = ""
 
         self.tmp = {"scaled_data": pd.DataFrame(), "y_train_true": [], "y_test_true": [], "classes": []}
-
-    @abstractmethod
-    def _get_features_importance(self, model):
-        """
-        retrieve features and their importance from a model to save it in the Results dict after each split
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def _aggregate_features_info(self):
-        """
-        When all splits are done and saved, aggregate feature info from every split to compute stats
-        from all splits, concatenate in the same list the name of features, and another list their importance
-        """
-        raise NotImplementedError()
 
     def add_results_from_one_algo_on_one_split(
         self,
