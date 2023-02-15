@@ -1,5 +1,5 @@
-# from pyscm.scm import SetCoveringMachineClassifier
-# from randomscm.randomscm import RandomScmClassifier
+from pyscm.scm import SetCoveringMachineClassifier
+from randomscm.randomscm import RandomScmClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 
@@ -17,23 +17,23 @@ LEARN_CONFIG = {
         "ParamGrid": {"n_estimators": [5, 10, 30, 70, 100, 200, 500]},
         "importance_attribute": "feature_importances_",
     },
-    # "SCM": {
-    #     "function": SetCoveringMachineClassifier,
-    #     "ParamGrid": {
-    #         "p": [0.5, 1.0, 2.0],
-    #         "max_rules": [1, 2, 3, 4, 5],
-    #         "model_type": ["conjunction", "disjunction"],
-    #     },
-    #     "importance_attribute": "feature_importances_",
-    # },
-    # "RandomSCM": {
-    #     "function": RandomScmClassifier,
-    #     "ParamGrid": {
-    #         "p_options": [[0.5, 1.0, 2.0]],
-    #         "max_rules": [1, 5, 10],
-    #         "n_estimators": [5, 15, 45, 85, 150, 350],
-    #         "model_type": ["conjunction", "disjunction"],
-    #     },
-    #     "importance_attribute": "feature_importances_",
-    # },
+    "SCM": {
+        "function": SetCoveringMachineClassifier,
+        "ParamGrid": {
+            "p": [0.5, 1.0, 2.0],
+            "max_rules": [1, 2, 3, 4, 5],
+            "model_type": ["conjunction", "disjunction"],
+        },
+        "importance_attribute": "feature_importances_",
+    },
+    "RandomSCM": {
+        "function": RandomScmClassifier,
+        "ParamGrid": {
+            "p_options": [[0.5, 1.0, 2.0]],
+            "max_rules": [1, 5, 10],
+            "n_estimators": [5, 15, 45, 85, 150, 350],
+            "model_type": ["conjunction", "disjunction"],
+        },
+        "importance_attribute": "feature_importances_",
+    },
 }
