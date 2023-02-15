@@ -18,7 +18,7 @@ class ModelFactory:
         supported_models = {}
         for model_name, model_configuration in LEARN_CONFIG.items():
             supported_models[model_name] = MetaboModel(
-                model_configuration["function"], model_configuration["ParamGrid"], self._SEED,
+                model_configuration["function"], model_configuration["ParamGrid"],
                 model_configuration["importance_attribute"]
 
             )
@@ -33,4 +33,4 @@ class ModelFactory:
     ) -> MetaboModel:
         imports_list = needed_imports.split(".")
         model = Utils.get_model_from_import(imports_list, model_name)
-        return MetaboModel(model, params_grid, self._SEED, importance_attribute)
+        return MetaboModel(model, params_grid, importance_attribute)

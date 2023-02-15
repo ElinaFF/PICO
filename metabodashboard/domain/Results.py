@@ -492,14 +492,14 @@ class Results:
         if not self.tmp["classes"]:
             self.tmp["classes"] = classes
 
-    def _get_features_importance(self, model):
+    def _get_features_importance(self, model, importance_attribute):
         """
         retrieve features and their importance from a model to save it in the Results dict after each split
         """
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
-        if hasattr(model, 'feature_importances_'):
-            importances = model.feature_importances_
+        if hasattr(model, importance_attribute):
+            importances = getattr(model, importance_attribute)
         elif hasattr(model, 'rule_importances_'):
             importances = [0] * len(self.f_names)
             for rule, f_importance in zip(model.model_.rules, model.rule_importances_):
