@@ -498,8 +498,11 @@ class Results:
         """
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
+
         if hasattr(model, importance_attribute):
             importances = getattr(model, importance_attribute)
+            if len(importances) == 1 and len(importances[0]) == len(self.f_names):
+                importances = importances[0]
         elif hasattr(model, 'rule_importances_'):
             importances = [0] * len(self.f_names)
             for rule, f_importance in zip(model.model_.rules, model.rule_importances_):
