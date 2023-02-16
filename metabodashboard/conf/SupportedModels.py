@@ -10,10 +10,12 @@ LEARN_CONFIG = {
             "max_depth": [1, 2, 3, 4, 5, 10],
             "min_samples_split": [2, 4, 6, 8, 10],
         },
+        "importance_attribute": "feature_importances_",
     },
     "RandomForest": {
         "function": RandomForestClassifier,
         "ParamGrid": {"n_estimators": [5, 10, 30, 70, 100, 200, 500]},
+        "importance_attribute": "feature_importances_",
     },
     "SCM": {
         "function": SetCoveringMachineClassifier,
@@ -22,6 +24,7 @@ LEARN_CONFIG = {
             "max_rules": [1, 2, 3, 4, 5],
             "model_type": ["conjunction", "disjunction"],
         },
+        "importance_attribute": "feature_importances_",
     },
     "RandomSCM": {
         "function": RandomScmClassifier,
@@ -31,5 +34,6 @@ LEARN_CONFIG = {
             "n_estimators": [5, 15, 45, 85, 150, 350],
             "model_type": ["conjunction", "disjunction"],
         },
+        "importance_attribute": "feature_importances_",
     },
 }

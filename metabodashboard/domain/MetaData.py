@@ -37,7 +37,7 @@ class MetaData:
         modify the value of the attribute with the list of values
         """
         if len(columns) > 1:
-            df = self._dataframe.loc[:, columns]
+            df = self._dataframe.loc[:, columns].astype(str)
             final = list(df.apply(lambda row: "__".join(row), axis=1))
         else:
             final = self._dataframe[columns[0]].tolist()
@@ -85,7 +85,7 @@ class MetaData:
             df = pd.read_excel(data)
         else:
             raise TypeError(
-                "The input file is not of the right type, must be excel, odt or csv."
+                "The input file is not of the right type, must be excel or csv."
             )
         return df
 
@@ -111,29 +111,30 @@ class MetaData:
             )
         self._id_column = id_column
 
-    def set_target_column(self, target_column: str) -> None:
+    def set_target_column(self, target_column: List[str]) -> None:
         if target_column not in self.get_columns():
-            raise ValueError(
-                f"'{target_column}' is not a column of the metadata. The columns are: {self.get_columns()}"
-            )
+            raise ValueError(f"'{target_column}' is not a column of the metadata. The columns are: {self.get_columns()}")
         self._target_column = target_column
 
-    def get_target_column(self) -> str:
+    def get_target_column(self) -> List[str]:
         return self._target_column
 
     def get_id_column(self) -> str:
         return self._id_column
 
     def get_targets(self) -> List[str]:
+        """
+        return a list of all the targets
+        either just the targets indicated in the column
+        or "__".join() of the multiple target column selected
+        """
         if self._target_column is None:
             print("WARNING: accessing targets before setting the column")
             return []
-        return self._dataframe[self._target_column].tolist()
+        return self._dataframe.loc[:, self._target_column]
 
     def get_selected_targets_and_ids(self, selected_targets: List[str]) -> Tuple[Tuple[str], Tuple[str]]:
-        return tuple(
-            zip(*[(target, id) for target, id in zip(self.get_targets(), self.get_samples_id()) if target in selected_targets])
-        )
+        return tuple(zip(*[(target, id) for target, id in zip(self.get_targets(), self.get_samples_id()) if target in selected_targets]))
 
     def get_selected_targets(self, selected_targets: List[str]) -> List[str]:
         if selected_targets is None or len(selected_targets) == 0:
@@ -146,5 +147,14 @@ class MetaData:
             return []
         return self._dataframe[self._id_column].tolist()
 
+    def metadata_is_set(self) -> bool:
+        return self._dataframe is not None
+
+    def set_target_columns(self, target_cols: List[str]) -> None:
+        self.set_final_targets_values(target_cols)
+        # Add the values of the final (new) targets to the dataframe of metadata (in memory)
+        self.add_final_targets_col_to_dataframe()
+        # Define the name of the column of targets as final_targets
+        self.set_target_column("final_targets")
 
 # TODO: join sampleId and target in same pickle file

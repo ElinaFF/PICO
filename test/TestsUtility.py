@@ -19,6 +19,7 @@ def _get_samples_id(size: int) -> List[str]:
 
 
 def _get_random_data(size: int, number_of_columns: int):
+    np.random.seed(42)
     data = np.random.rand(size, number_of_columns)
     column = ["feature-" + str(index) for index in range(number_of_columns)]
     return pd.DataFrame(data, columns=column)
@@ -172,6 +173,7 @@ METADATA_DATAFRAME = pd.DataFrame(
         SAMPLES_ID_COLUMN: SAMPLES_ID,
         TARGETS_COLUMN: TARGETS,
         PAIRING_GROUP_COLUMN: PAIRING_GROUP,
+        "final_targets": TARGETS,
     }
 )
 
@@ -199,7 +201,7 @@ ENCODED_DIFFERENT_DATAMATRIX_DATAFRAMES = base64_encode_dataframe(
 
 MOCKED_METADATA_CLASS = Mock(name="MockedMetadata")
 MOCKED_METADATA = MOCKED_METADATA_CLASS.return_value
-MOCKED_METADATA.get_metadata.return_value = METADATA_DATAFRAME
+MOCKED_METADATA.get_metadata.return_value = METADATA_DATAFRAME.copy()
 MOCKED_METADATA.get_samples_id.return_value = SAMPLES_ID
 MOCKED_METADATA.get_id_column.return_value = SAMPLES_ID_COLUMN
 MOCKED_METADATA.get_targets.return_value = TARGETS
@@ -289,3 +291,5 @@ FEATURE_IMPORTANCE_TABLE = pd.DataFrame(
 ).sort_values(by=["importance_usage"], ascending=False)
 
 NUMBER_OF_PROCESSES = 2
+IMPORTANCE_ATTRIBUTE = "feature_importances_"
+SEED = 42

@@ -35,7 +35,9 @@ def test_givenASplitGroup_whenLoadSplitWithIndex_thenTheSplitsAreReproducible(
     input_splits,
 ):
     for split_index in range(NUMBER_OF_SPLITS):
-        assert input_splits.load_split_with_index(split_index) == SPLITS[split_index]
+        actual = input_splits.load_split_with_index(split_index)
+        expected = SPLITS[split_index]
+        assert actual == expected
 
 
 def test_givenASplitGroup_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(

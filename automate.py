@@ -26,15 +26,15 @@ def main():
     print("Metadata and DataMatrix are set_from_path")
 
     metabo_controller.set_id_column("Sample")
-    metabo_controller.set_target_column("diet")
+    metabo_controller.set_target_columns(["diet"])
     metabo_controller.set_pairing_group_column("subject")
     metabo_controller.add_experimental_design({"NA": ["NA"], "MED": ["MED", "MED/w"]})
     print("Experimental design added")
 
     metabo_controller.set_train_test_proportion(0.2)
-    metabo_controller.set_number_of_splits(25)
+    metabo_controller.set_number_of_splits(2)
     metabo_controller.create_splits()
-    metabo_controller.set_selected_models(["DecisionTree", "RandomForest"])
+    metabo_controller.set_selected_models(["DecisionTree"])
 
     print("Learning starts...")
     metabo_controller.set_cv_folds(5)

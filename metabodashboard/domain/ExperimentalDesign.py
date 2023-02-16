@@ -9,12 +9,9 @@ class ExperimentalDesign:
         self._classes_design = classes_design
         self._name = ""
         self._compute_name()
-
         self._split_group = None
-
         self._selected_models_name = None
         self.results = {}
-
         self._is_done = False
 
     def get_is_done(self) -> bool:
@@ -23,21 +20,12 @@ class ExperimentalDesign:
     def set_is_done(self, is_done: bool) -> None:
         self._is_done = is_done
 
-    def set_split_parameter_and_compute_splits(
-        self,
-        train_test_proportion: float,
-        number_of_splits: int,
-        metadata: MetaData,
-        pairing_column: str,
-    ) -> None:
-        self._split_group = SplitGroup(
-            metadata,
-            self.get_selected_targets_name(),
-            train_test_proportion,
-            number_of_splits,
-            self._classes_design,
-            pairing_column,
-        )
+    def set_split_parameter_and_compute_splits(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData,
+                                               pairing_column: str) -> None:
+        print("entered function set_split_parameter_and_compute_splits of ExperimentalDesign.py")
+        self._split_group = SplitGroup(metadata, self.get_selected_targets_name(),
+                                       train_test_proportion, number_of_splits, self._classes_design, pairing_column)
+        print("self._split_group is supposed to be defined")
 
     def get_name(self) -> str:
         return self._name
@@ -57,16 +45,7 @@ class ExperimentalDesign:
         self._selected_models_name = selected_models_name
         # TODO : un genre d'emballage de classe results pour pouvoir appeler juste un nom de classe
         for n in self._selected_models_name:
-            if n == "RandomForest":
-                self.results[n] = ResultsRF(self._split_group.get_number_of_splits())
-            elif n == "DecisionTree":
-                self.results[n] = ResultsDT(self._split_group.get_number_of_splits())
-            elif n == "SCM":
-                self.results[n] = ResultsSCM(self._split_group.get_number_of_splits())
-            elif n == "RandomSCM":
-                self.results[n] = ResultsRSCM(self._split_group.get_number_of_splits())
-            else:
-                raise NotImplementedError(f"{n} is not implemented")
+            self.results[n] = Results(self._split_group.get_number_of_splits())
 
     def get_results(self) -> Dict[str, Results]:
         if self.results == {}:
@@ -90,4 +69,8 @@ class ExperimentalDesign:
             yield split_index, self._split_group.load_split_with_index(split_index)
 
     def get_selected_targets_name(self) -> list:
+        """
+        get the _classes_design dict in input and reverse it to have the targets as key and their corresponding labels
+        as value. It is then easier to retrieve a label for a specific target
+        """
         return list(Utils.reverse_dict(self._classes_design).keys())
