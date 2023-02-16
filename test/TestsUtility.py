@@ -19,6 +19,7 @@ def _get_samples_id(size: int) -> List[str]:
 
 
 def _get_random_data(size: int, number_of_columns: int):
+    np.random.seed(42)
     data = np.random.rand(size, number_of_columns)
     column = ["feature-" + str(index) for index in range(number_of_columns)]
     return pd.DataFrame(data, columns=column)
