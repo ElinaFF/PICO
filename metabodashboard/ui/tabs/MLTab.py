@@ -268,6 +268,14 @@ class MLTab(MetaTab):
                         except ValueError:
                             error_children.append(html.P(f"{param} must be integers", style={"color": "red"}))
                     else:
+                        try:
+                            values = [int(val) for val in values]
+                        except ValueError:
+                            try:
+                                values = [float(val) for val in values]
+                            except ValueError:
+                                pass
+
                         grid_search_params[param] = values
 
                 if importance_attribute is None:
