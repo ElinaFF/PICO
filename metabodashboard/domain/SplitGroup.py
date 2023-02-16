@@ -8,7 +8,8 @@ import numpy as np
 
 
 class SplitGroup:
-    def __init__(self, metadata: MetaData, selected_targets: List[str], train_test_proportion: float, number_of_splits: int, classes_design: dict, pairing_column: str):
+    def __init__(self, metadata: MetaData, selected_targets: List[str], train_test_proportion: float, number_of_splits: int,
+                 classes_design: dict, pairing_column: str):
         self._metadata = metadata
         self._number_of_split = number_of_splits
         self._classes_design = classes_design
@@ -91,12 +92,19 @@ class SplitGroup:
         return self._number_of_split
 
     def filter_sample_with_pairing_group(self, pairing_column: str) -> Tuple[List[str], List[str]]:
+        """
+        Function only needs the name of the column used to pair samples together.
+        It retrieves other informations from the attributes (object MetaData).
+        Then it iterates over all the metadata dataframe to store only one sample of each entity (entity stands for a
+        biological source, like an individual). Multiple samples can originate from one entity.
+        """
         metadata_dataframe = self._metadata.get_metadata()
         id_column = self._metadata.get_id_column()
         target_column = self._metadata.get_target_column()
         filtered_id = []
         filtered_target = []
         already_selected_value = set()
+        # TODO : might want to change the process to sorting all lines and then picking the first one
         for index, row in metadata_dataframe.iterrows():
             if row[pairing_column] not in already_selected_value:
                 already_selected_value.add(row[pairing_column])
@@ -104,49 +112,26 @@ class SplitGroup:
                 filtered_target.append(row[target_column])
         return filtered_id, filtered_target
 
-    def restore_filtered_samples_from_pairing_group(
-        self,
-        X_train: List[str],
-        X_test: List[str],
-        pairing_column: str,
-        classes_design: dict,
-    ) -> List[List[str]]:
+#TODO : function to delete
+    def restore_filtered_samples_from_pairing_group(self, X_train: List[str], X_test: List[str], pairing_column: str,
+                                                    classes_design: dict) -> List[List[str]]:
+        """
+        Function retrieve metadata informations.
+        Then restore the samples for the X_train, y_train combo and then the X_test, y_test combo
+        """
         metadata_dataframe = self._metadata.get_metadata()
         id_column = self._metadata.get_id_column()
         target_column = self._metadata.get_target_column()
-        (
-            restored_X_train,
-            restored_y_train,
-        ) = Utils.restore_ids_and_targets_from_pairing_groups(
-            X_train,
-            metadata_dataframe,
-            id_column,
-            pairing_column,
-            target_column,
-            classes_design,
-        )
-        (
-            restored_X_test,
-            restored_y_test,
-        ) = Utils.restore_ids_and_targets_from_pairing_groups(
-            X_test,
-            metadata_dataframe,
-            id_column,
-            pairing_column,
-            target_column,
-            classes_design,
-        )
+
+        (restored_X_train, restored_y_train) = Utils.restore_ids_and_targets_from_pairing_groups(X_train, metadata_dataframe, id_column,
+                                                                                                 pairing_column, target_column, classes_design)
+        (restored_X_test, restored_y_test) = Utils.restore_ids_and_targets_from_pairing_groups(X_test, metadata_dataframe, id_column,
+                                                                                               pairing_column, target_column, classes_design)
         return [restored_X_train, restored_X_test, restored_y_train, restored_y_test]
 
-    def get_selected_targets_and_ids(
-        self, selected_targets: List[str], samples_id: List[str], targets: List[str]
-    ) -> Tuple[Tuple[str], Tuple[str]]:
-        return tuple(
-            zip(
-                *[
-                    (target, id)
-                    for target, id in zip(targets, samples_id)
-                    if target in selected_targets
-                ]
-            )
-        )
+    def get_selected_targets_and_ids(self, selected_targets: List[str], samples_id: List[str],
+                                     targets: List[str]) -> Tuple[Tuple[str], Tuple[str]]:
+        """
+        Function just filters out the target/id that are not in the selected_targets list
+        """
+        return tuple(zip(*[(target, id) for target, id in zip(targets, samples_id) if target in selected_targets]))

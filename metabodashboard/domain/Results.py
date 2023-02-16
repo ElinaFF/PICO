@@ -40,17 +40,18 @@ class Results:
         self.tmp = {"scaled_data": pd.DataFrame(), "y_train_true": [], "y_test_true": [], "classes": []}
 
     def add_results_from_one_algo_on_one_split(
-        self,
-        model: sklearn,
-        scaled_data: pd.DataFrame,
-        classes: list,
-        y_train_true: list,
-        y_train_pred: list,
-        y_test_true: list,
-        y_test_pred: list,
-        split_number: str,
-        train_ids: List[str],
-        test_ids: List[str],
+            self,
+            model: sklearn,
+            scaled_data: pd.DataFrame,
+            importance_attribute: str,
+            classes: list,
+            y_train_true: list,
+            y_train_pred: list,
+            y_test_true: list,
+            y_test_pred: list,
+            split_number: str,
+            train_ids: List[str],
+            test_ids: List[str],
     ):
         """
         Besoin modèle pour extraire features, features importance
@@ -121,7 +122,7 @@ class Results:
             self.results["best_model"] = model
         self.results[split_number][
             "feature_importances"
-        ] = self._get_features_importance(model)
+        ] = self._get_features_importance(model, importance_attribute)
         self.results[split_number]["Confusion_matrix"] = self._produce_conf_matrix(
             y_test_true, y_test_pred
         )
@@ -172,7 +173,8 @@ class Results:
                     liste_val.append(values[idx])
             if liste_val:
                 # mean on all the splits, even if feature not used
-                count[n].append(np.sum(liste_val)/len(self.splits_number))  # np.mean(liste_val) : for mean on number on time its used
+                count[n].append(np.sum(liste_val) / len(
+                    self.splits_number))  # np.mean(liste_val) : for mean on number on time its used
             else:
                 count[n].append(0)
         return count
@@ -441,14 +443,14 @@ class Results:
         return df
 
     def produce_always_wrong_samples(
-        self,
-        y_train_true,
-        y_train_pred,
-        y_test_true,
-        y_test_pred,
-        split_number,
-        train_ids: List[str],
-        test_ids: List[str],
+            self,
+            y_train_true,
+            y_train_pred,
+            y_test_true,
+            y_test_pred,
+            split_number,
+            train_ids: List[str],
+            test_ids: List[str],
     ):
         """
         return: two dicts with sample names as keys, and wrongly predicted as values (0:good pred, 1:bad pred)
@@ -490,14 +492,17 @@ class Results:
         if not self.tmp["classes"]:
             self.tmp["classes"] = classes
 
-    def _get_features_importance(self, model):
+    def _get_features_importance(self, model, importance_attribute):
         """
         retrieve features and their importance from a model to save it in the Results dict after each split
         """
         if self.f_names is None:
             raise RuntimeError("Features names are not retrieved yet")
-        if hasattr(model, 'feature_importances_'):
-            importances = model.feature_importances_
+
+        if hasattr(model, importance_attribute):
+            importances = getattr(model, importance_attribute)
+            if len(importances) == 1 and len(importances[0]) == len(self.f_names):
+                importances = importances[0]
         elif hasattr(model, 'rule_importances_'):
             importances = [0] * len(self.f_names)
             for rule, f_importance in zip(model.model_.rules, model.rule_importances_):

@@ -111,29 +111,30 @@ class MetaData:
             )
         self._id_column = id_column
 
-    def set_target_column(self, target_column: str) -> None:
+    def set_target_column(self, target_column: List[str]) -> None:
         if target_column not in self.get_columns():
-            raise ValueError(
-                f"'{target_column}' is not a column of the metadata. The columns are: {self.get_columns()}"
-            )
+            raise ValueError(f"'{target_column}' is not a column of the metadata. The columns are: {self.get_columns()}")
         self._target_column = target_column
 
-    def get_target_column(self) -> str:
+    def get_target_column(self) -> List[str]:
         return self._target_column
 
     def get_id_column(self) -> str:
         return self._id_column
 
     def get_targets(self) -> List[str]:
+        """
+        return a list of all the targets
+        either just the targets indicated in the column
+        or "__".join() of the multiple target column selected
+        """
         if self._target_column is None:
             print("WARNING: accessing targets before setting the column")
             return []
-        return self._dataframe[self._target_column].tolist()
+        return self._dataframe.loc[:, self._target_column]
 
     def get_selected_targets_and_ids(self, selected_targets: List[str]) -> Tuple[Tuple[str], Tuple[str]]:
-        return tuple(
-            zip(*[(target, id) for target, id in zip(self.get_targets(), self.get_samples_id()) if target in selected_targets])
-        )
+        return tuple(zip(*[(target, id) for target, id in zip(self.get_targets(), self.get_samples_id()) if target in selected_targets]))
 
     def get_selected_targets(self, selected_targets: List[str]) -> List[str]:
         if selected_targets is None or len(selected_targets) == 0:

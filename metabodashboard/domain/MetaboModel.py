@@ -7,9 +7,11 @@ from sklearn.model_selection import RandomizedSearchCV
 # TODO : get_specific_results, retourne les attributs nécessaires de feat importance pour n'importe quel algo sklearn
 # TODO : (suite) , faire un genre de moule d'algo, goulot d'étranglement de nom de méthode
 class MetaboModel:
-    def __init__(self, model: sklearn, grid_search_configuration: dict):
+    def __init__(self, model: sklearn, grid_search_configuration: dict, importance_attribute: str):
         self.grid_search_param = grid_search_configuration
         self.model = model
+
+        self.importance_attribute = importance_attribute
 
     def train(
         self,
@@ -38,5 +40,7 @@ class MetaboModel:
         search.fit(X_train, y_train)
         return search.best_estimator_
 
+    def get_importance_attribute(self):
+        return self.importance_attribute
 
 # TODO: dump best model ?

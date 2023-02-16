@@ -16,7 +16,7 @@ from ...metabodashboard.domain.MetaData import MetaData
 
 @pytest.fixture
 def input_meta_data():
-    return MetaData(METADATA_DATAFRAME)
+    return MetaData(METADATA_DATAFRAME.copy())
 
 
 def test_givenMetadata_whenGetMetadata_thenMetadataIsCorrect(input_meta_data):
@@ -34,7 +34,7 @@ def test_givenNoSampleIDColumn_whenSamplesID_thenEmptyList(input_meta_data):
 
 def test_givenTargetColumn_whenGetTargets_thenTargetsAreCorrect(input_meta_data):
     input_meta_data.set_target_columns([TARGETS_COLUMN])
-    assert input_meta_data.get_targets() == TARGETS
+    assert input_meta_data.get_targets().to_list() == TARGETS
 
 
 def test_givenNoTargetColumn_whenGetTargets_thenEmptyList(input_meta_data):

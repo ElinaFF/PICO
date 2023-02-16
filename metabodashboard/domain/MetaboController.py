@@ -13,28 +13,17 @@ DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
 
 
 class MetaboController:
-    def __init__(self, metaboExp: MetaboExperiment = None):
-        if metaboExp is None:
+    def __init__(self, metabo_experiment: MetaboExperiment = None):
+        if metabo_experiment is None:
             self._metabo_experiment = MetaboExperiment()
         else:
-            self._metabo_experiment = metaboExp
+            self._metabo_experiment = metabo_experiment
 
     def set_metadata(self, filename: str, data=None, from_base64=True) -> None:
-        self._metabo_experiment.set_metadata_with_dataframe(
-            filename=filename, data=data, from_base64=from_base64
-        )
+        self._metabo_experiment.set_metadata_with_dataframe(filename=filename, data=data, from_base64=from_base64)
 
-    def set_data_matrix_from_path(
-        self,
-        path_data_matrix,
-        data=None,
-        from_base64=True,
-    ):
-        return self._metabo_experiment.set_data_matrix(
-            path_data_matrix,
-            data=data,
-            from_base64=from_base64,
-        )
+    def set_data_matrix_from_path(self, path_data_matrix, data=None, from_base64=True):
+        return self._metabo_experiment.set_data_matrix(path_data_matrix, data=data, from_base64=from_base64)
 
     def get_metadata_columns(self) -> list:
         return self._metabo_experiment.get_metadata_columns()
@@ -91,18 +80,20 @@ class MetaboController:
         return self._metabo_experiment.get_all_updated_results()
 
     def add_custom_model(
-        self,
-        model_name: str,
-        needed_imports: str,
-        params: List[str],
-        values_to_explore: List[List[str]],
+            self,
+            model_name: str,
+            needed_imports: str,
+            params_grid: dict,
+            importance_attribute: str
     ):
         self._metabo_experiment.add_custom_model(
-            model_name, needed_imports, params, values_to_explore
+            model_name, needed_imports, params_grid, importance_attribute
         )
 
     def get_all_algos_names(self) -> list:
-        return self._metabo_experiment.get_all_algos_names()
+        ret = self._metabo_experiment.get_all_algos_names()
+        print(f"get_all_algos_names: {ret}")
+        return ret
 
     def set_cv_type(self, cv_type: str):
         self._metabo_experiment.set_cv_type(cv_type)
@@ -123,14 +114,14 @@ class MetaboController:
         self._metabo_experiment.full_restore(saved_metabo_experiment_dto)
 
     def partial_restore(
-        self,
-        saved_metabo_experiment_dto: MetaboExperimentDTO,
-        filename_data: str,
-        filename_metadata: str,
-        data=None,
-        from_base64_data: bool = True,
-        metadata=None,
-        from_base64_metadata=True,
+            self,
+            saved_metabo_experiment_dto: MetaboExperimentDTO,
+            filename_data: str,
+            filename_metadata: str,
+            data=None,
+            from_base64_data: bool = True,
+            metadata=None,
+            from_base64_metadata=True,
     ):
         self._metabo_experiment.partial_restore(
             saved_metabo_experiment_dto,

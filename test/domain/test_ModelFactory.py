@@ -41,7 +41,7 @@ def test_givenAModelFactory_whenCreateCustomModel_thenTheCustomModelIsCorrect_2(
     }
 
     custom_model = input_model_factory.create_custom_model(
-        model_name, needed_imports, model_param_grid, value_to_test
+        model_name, needed_imports, real_grid_search_param, "feature_importances_"
     )
 
     assert custom_model.model == SVC

@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import importlib
 import os
 import pickle
 from typing import List, Dict, Iterable, Any, Union
@@ -8,12 +9,16 @@ import re
 import pickle as pkl
 from typing import List, Dict, Tuple
 
+import numpy
 import numpy as np
 import pandas as pd
+import sklearn
 
 PACKAGE_ROOT_PATH = os.sep.join(os.path.dirname(__file__).split(os.sep)[:-1])
 DUMP_PATH = os.path.join(PACKAGE_ROOT_PATH, "domain", "dumps")
 DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "save.mtxp")
+
+DEFAULT_IMPORTANCE_ATTRIBUTE = "feature_importances_"
 
 
 def dump_metabo_expe(obj):
@@ -79,7 +84,7 @@ def read_Progenesis_compounds_table(fileName, with_raw=True):
     if with_raw:
         start_raw = header.columns.tolist().index("Raw abundance")
         sample_names = datatable.iloc[:, start_normalized:start_raw].columns
-        possible_labels = possible_labels[0 : int(len(possible_labels) / 2)]
+        possible_labels = possible_labels[0: int(len(possible_labels) / 2)]
     else:
         sample_names = datatable.iloc[:, start_normalized:].columns
 
@@ -182,8 +187,8 @@ def compute_hash(data: str) -> str:
 
 def is_save_safe(saved_metabo_experiment_dto) -> bool:
     return (
-        saved_metabo_experiment_dto.metadata.is_data_the_same()
-        and saved_metabo_experiment_dto.data_matrix.is_data_the_same()
+            saved_metabo_experiment_dto.metadata.is_data_the_same()
+            and saved_metabo_experiment_dto.data_matrix.is_data_the_same()
     )
 
 
@@ -200,7 +205,7 @@ def decode_pickle_from_base64(encoded_object: str):
 
 
 def are_files_corresponding_to_dto(
-    data: str, metadata: str, metabo_experiment_dto
+        data: str, metadata: str, metabo_experiment_dto
 ) -> bool:
     return is_data_the_same(data, metabo_experiment_dto) and is_metadata_the_same(
         metadata, metabo_experiment_dto
@@ -211,6 +216,7 @@ def reset_file(file_path: str):
     open(file_path, "w+b").close()
 
 
+# TODO : function to probably delete
 def restore_ids_and_targets_from_pairing_groups(filtered_samples: List[str], dataframe: pd.DataFrame, id_column: str,
                                                 paired_column: str, target_column: str, classes_design: dict,) -> Tuple[List[str], List[str]]:
 
@@ -229,8 +235,8 @@ def restore_ids_and_targets_from_pairing_groups(filtered_samples: List[str], dat
 
 def convert_str_to_list_of_lists(str_to_convert: str) -> List[List[Union[str, float, int]]]:
     first_level = []
-    for find in re.findall(r'(\[((([\w\'".]+,? ?)+))\] ?,?)+', str_to_convert):
-        tmp = find[2].split(',')
+    for find in re.findall(r'\[((([\w\'".]+,? ?)+))\] ?,?', str_to_convert):
+        tmp = find[0].split(',')
         second_level = []
         for element in tmp:
             element = element.strip()
@@ -254,3 +260,62 @@ def is_data_the_same(data: str, metabo_experiment_dto) -> bool:
 
 def is_metadata_the_same(metadata: str, metabo_experiment_dto) -> bool:
     return metabo_experiment_dto.metadata.get_hash() == compute_hash(metadata)
+
+
+def get_model_from_import(imports_list: list, model_name: str) -> sklearn:
+    last_import = importlib.import_module("." + imports_list[0], package="sklearn")
+
+    for next_import in imports_list[1:]:
+        last_import = getattr(last_import, next_import)
+
+    model = getattr(last_import, model_name)
+    return model
+
+
+def get_model_parameters(model) -> List[Tuple[str, str]]:
+    parameters = vars(model()).keys()
+    parameters = [(parameter, _get_type(parameter, model())) for parameter in parameters if parameter not in ["self", "random_state"]]
+    return parameters
+
+
+def _get_type(attribute: str, owner_instance) -> str:
+    return str(type(getattr(owner_instance, attribute)).__name__)
+
+
+def _parameter_is_relevant(parameter: str, model: object) -> bool:
+    return parameter not in get_model_parameters(model) and parameter.endswith("_") and not parameter.startswith("_")
+
+
+def _parameter_is_collection(parameter: str, trained_model: sklearn) -> bool:
+    try:
+        attribute = getattr(trained_model, parameter)
+    except AttributeError:
+        print("Attribute {} not found in model".format(parameter))
+        return False
+    if type(attribute) in (list, tuple, set, dict, pd.DataFrame, pd.Series, numpy.ndarray):
+        if len(attribute) == 3:
+            return True
+        try:
+            # TODO: manual test on the web app
+            if len(attribute[0]) == 3 and len(attribute) == 1:
+                return True
+        except (KeyError, TypeError, IndexError):
+            pass
+    return False
+
+
+def get_model_parameters_after_training(model: sklearn) -> List[Tuple[str, str]]:
+    trained_model = model()
+    trained_model.fit([[1, 2, 3], [4, 5, 6]], [1, 2])
+
+    attributes = dir(trained_model)
+    parameters = []
+    for attribute in attributes:
+        if _parameter_is_collection(attribute, trained_model) and \
+                _parameter_is_relevant(attribute, model):
+            parameters.append((attribute, _get_type(attribute, trained_model)))
+    if DEFAULT_IMPORTANCE_ATTRIBUTE in attributes:
+        default_tuple = (DEFAULT_IMPORTANCE_ATTRIBUTE, _get_type(DEFAULT_IMPORTANCE_ATTRIBUTE, trained_model))
+        parameters.remove(default_tuple)
+        parameters.insert(0, default_tuple)
+    return parameters

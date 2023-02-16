@@ -51,10 +51,10 @@ def test_givenAnExperimentalDesign_whenGetAllSplit_thenTheSplitsAreReproducible(
         assert split_index == real_split_index
         real_X_train, real_X_test, real_y_train, real_y_test = actual_split
         X_train, X_test, y_train, y_test = SPLITS[split_index]
-        assert real_X_train == X_train
-        assert real_X_test == X_test
-        assert real_y_train == y_train
-        assert real_y_test == y_test
+        assert list(real_X_train) == X_train
+        assert list(real_X_test) == X_test
+        assert list(real_y_train) == y_train
+        assert list(real_y_test) == y_test
 
 
 def test_givenAnExperimentalDesign_whenGetName_thenTheNameIsCorrect(

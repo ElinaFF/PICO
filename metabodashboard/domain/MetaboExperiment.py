@@ -155,11 +155,11 @@ class MetaboExperiment:
             self,
             model_name: str,
             needed_imports: str,
-            params: List[str],
-            values_to_explore: List[List[str]],
+            params_grid: dict,
+            importance_attribute: str,
     ):
         self._custom_models[model_name] = self._model_factory.create_custom_model(
-            model_name, needed_imports, params, values_to_explore
+            model_name, needed_imports, params_grid, importance_attribute
         )
 
     def get_custom_models(self) -> dict:
@@ -284,14 +284,15 @@ class MetaboExperiment:
         else:
             result_params = [self.run_on_model(*param) for param in params]
 
-        for experimental_design_name, model_name, best_model, scaled_data, classes, y_train, y_train_pred, y_test, \
-                y_test_pred, split_index, X_train, X_test in result_params:
+        for experimental_design_name, model_name, best_model, scaled_data, importance_attribute, classes, y_train, \
+                y_train_pred, y_test, y_test_pred, split_index, X_train, X_test in result_params:
             results = self.experimental_designs[experimental_design_name].get_results()
             results[model_name].set_feature_names(X_train) # called multiple times but it's ok
             results[model_name].design_name = experimental_design_name
-            results[model_name].add_results_from_one_algo_on_one_split(best_model, scaled_data, classes, y_train,
-                                                                       y_train_pred, y_test, y_test_pred, split_index,
-                                                                       X_train.index, X_test.index)
+            results[model_name].add_results_from_one_algo_on_one_split(best_model, scaled_data,
+                                                                       importance_attribute, classes,
+                                                                       y_train, y_train_pred, y_test, y_test_pred,
+                                                                       split_index, X_train.index, X_test.index)
 
         for _, experimental_design in self.experimental_designs.items():
             for _, result in experimental_design.get_results().items():
@@ -319,6 +320,7 @@ class MetaboExperiment:
             model_name,
             best_model,
             self._data_matrix.get_scaled_data(selected_ids),
+            metabo_model.get_importance_attribute(),
             classes,
             split[y_TRAIN_INDEX],
             y_train_pred,

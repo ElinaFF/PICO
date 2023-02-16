@@ -9,12 +9,9 @@ class ExperimentalDesign:
         self._classes_design = classes_design
         self._name = ""
         self._compute_name()
-
         self._split_group = None
-
         self._selected_models_name = None
         self.results = {}
-
         self._is_done = False
 
     def get_is_done(self) -> bool:
@@ -23,21 +20,12 @@ class ExperimentalDesign:
     def set_is_done(self, is_done: bool) -> None:
         self._is_done = is_done
 
-    def set_split_parameter_and_compute_splits(
-        self,
-        train_test_proportion: float,
-        number_of_splits: int,
-        metadata: MetaData,
-        pairing_column: str,
-    ) -> None:
-        self._split_group = SplitGroup(
-            metadata,
-            self.get_selected_targets_name(),
-            train_test_proportion,
-            number_of_splits,
-            self._classes_design,
-            pairing_column,
-        )
+    def set_split_parameter_and_compute_splits(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData,
+                                               pairing_column: str) -> None:
+        print("entered function set_split_parameter_and_compute_splits of ExperimentalDesign.py")
+        self._split_group = SplitGroup(metadata, self.get_selected_targets_name(),
+                                       train_test_proportion, number_of_splits, self._classes_design, pairing_column)
+        print("self._split_group is supposed to be defined")
 
     def get_name(self) -> str:
         return self._name
