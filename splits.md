@@ -3,6 +3,34 @@ layout: base
 title:  Splits
 ---
 # Splits
+{: .no_toc}
+_ _ _ _
+
+This step exists in the pipeline mainly because of the nature of metabolomic data, or more generally biological data : it has few samples, but hundreds or thousands of features per sample. This situation is called *fat data*, as 
+opposed to *big data* where there is tens of thousands of samples to learn from and each of them is of a reasonable size.
+
+To apply machine learning to fat data, the strategy used here is to produce multiple splits. It is not a widespread practice in common machine learning applications, some confusion might arise when talking about it to machine learners.
+(It might be confused with cross-validations folds or boostrap aggregating.)
+The splitting process we are implementing here is the production of multiple train-test dataset division completely independent of each other.
+
+This tab is used to define all the parameters affecting the samples : the matrices, the classes, the pairing, the number of splits, etc.
+
+For data and metadata, the supported files are excel, odt or csv.
+If the error "Rows must have an equal number of columns" occurs when loading a file, it means that some lines don't have cells for all columns.
+
+## Files
+
+Normalization for Progenesis
+: Use this to specify if you are using a matrix produced by Progenesis or another matrix with samples as lines and features as columns. Also, if it is from Progenesis, it can be either the raw abundance values or the normalized.
+
+Retention time below 1min
+: Progenesis produced matrices identify their features with the retention time and the m/z ratio. It allows a filtering on features detected before 1 minute of acquisition (most likely noise, artefacts, other non-biologically relevent element). It prevents potential bias.
+
+Data
+: Data matrix input
+
+Metadata
+: Metadata matrix input, is optional but recommended for pairing, and often clearer labels.
 
 
 ### Define Experimental designs
@@ -81,7 +109,6 @@ the proportion is quite standard, it will suit most of the time
 5 splits is quick to run but some samples may never be used to test the algorithms. A more complete run will take 15 to 25 splits.
 In the other case, the splits are made by copying the dataset and applying a random separation with a different random seed at each time. This principle is called bootstrap.
 
-Most of the time, medical data are fat data ,i.e. contains many features (characteristic) for few samples, which can lead to many large when the training set is changed.
 
 Moreover, as the cross validation (explained in further details in section 1. Define learning configurations in the Machine Learning tab), it allows the model(s) to be tested on most of the samples.
 
