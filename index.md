@@ -7,6 +7,7 @@ cover:  true
 
 # Installation
 {: .no_toc}
+_ _ _ _
 The MeDIC is a tool that must be installed on your computer. The visual interface is made with Dash from Plotly and can be 
 open in the majority of web browser. To install the MeDIC, the principal method is manually doing all the steps. A launcher script
 to automate the installation is currently under development, and a beta version is available.
