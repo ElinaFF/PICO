@@ -127,6 +127,7 @@ class InfoTab(MetaTab):
                                     id="load_expe_button",
                                     className="custom_buttons",
                                     color="primary",
+                                    disabled=True,
                                 )
                             ],
                         ),
@@ -147,115 +148,56 @@ class InfoTab(MetaTab):
             children=[
                 dbc.ModalHeader(
                     style={"padding": "2rem 3rem"},
-                    children=[html.H6("Warning: Saved local files does not match")],
+                    children=[html.H6("Warning: STATIC VERSION")],
                 ),
                 dbc.ModalBody(
                     style={"padding": "2em"},
                     children=[
-                        html.P(
-                            "The data and/or metadata used in the MetaboExperiment file are not the same as the "
-                            "local ones."
+                        html.H3(
+                            "Welcome to MeDIC demo version !",
                         ),
                         html.P(
-                            "Please restore the correct data and/or metadata if you want "
-                            "to continue the same experiment. (Full restore)"
+                            "This is a static version, i.e. no experiments can be run. It is meant to give an overview of the results visualization possibilities. "
                         ),
-                        html.P(
-                            "Otherwise, you can use the same parameters with new data and/or metadata (Partial restore) "
-                            "but the sample column name, target column name and experimental designs won't be "
-                            "restored."
+                        html.P(children=[
+                            "If you want to use the complete version, you can access the ",
+                            html.A(
+                                href="https://elinaff.github.io/MeDIC/",
+                                target="_blank",
+                                rel="noreferrer noopener",
+                                children="official documentation",
+                            ),
+                            "."]
                         ),
-                        html.P(
-                            "If you only want to see the results, it will be available (Load results) but metadata and data "
-                            "matrix will be reset, as well as the experimental designs."
-                        ),
-                        html.Div(
-                            children=[
-                                dcc.Upload(
-                                    id="upload_datatable_modal",
-                                    children=[
-                                        dbc.Button(
-                                            "Upload Data Matrix",
-                                            id="upload_datatable_modal_button",
-                                            # className="custom_buttons",
-                                            color="outline-primary",
-                                        )
-                                    ],
-                                ),
-                                dcc.Loading(
-                                    id="upload_datatable_modal_loading",
-                                    type="dot",
-                                    color="#13BD00",
-                                    children=[
-                                        html.Div(id="upload_datatable_modal_output"),
-                                    ],
-                                ),
-                            ],
-                            style={"display": "flex", "align-items": "center"},
-                        ),
-                        html.Div(
-                            children=[
-                                dcc.Upload(
-                                    id="upload_metadata_modal",
-                                    children=[
-                                        dbc.Button(
-                                            "Upload Metadata",
-                                            id="upload_metadata_modal_button",
-                                            # className="custom_buttons",
-                                            color="outline-primary",
-                                        )
-                                    ],
-                                ),
-                                dcc.Loading(
-                                    id="upload_metadata_modal_loading",
-                                    type="dot",
-                                    color="#13BD00",
-                                    children=[
-                                        html.Div(id="upload_metadata_modal_output"),
-                                    ],
-                                ),
-                            ],
-                            style={"display": "flex", "align-items": "center"},
-                        ),
-                        html.Div(
-                            id="upload_datatable_modal_error_output",
-                            style={"color": "red"},
-                        ),
+
+                        #     Logo github and link to the github
+
                     ],
                 ),
                 dbc.ModalFooter(
-                    style={"padding-left": "1em"},
-                    children=[
-                        dbc.Button(
-                            "Close", id="close", className="custom_buttons", n_clicks=0
-                        ),
-                        # NO FILES
-                        dbc.Button(
-                            "Load results",
-                            id="loadAnyway",
-                            className="custom_buttons push",
-                            n_clicks=0,
-                        ),
-                        # require files
-                        dbc.Button(
-                            "Partial restore",
-                            id="partialRestore",
-                            className="custom_buttons",
-                            n_clicks=0,
-                        ),
-                        # require files
-                        dbc.Button(
-                            "Full restore",
-                            id="fullRestore",
-                            className="custom_buttons",
-                            n_clicks=0,
-                        ),
-                    ],
-                ),
+                    html.A([
+                        html.Img(
+                            src='/assets/github-logo.png',
+                            style={
+                                'width': '1.5em',
+                                'padding': 0,
+                                'margin-right': '0.5em',
+                            }),
+                        html.Span(
+                            "MeDIC on Github",
+                            style={
+                                'padding': 0,
+                                'margin': 0
+                            }
+                        )
+                    ], href='https://github.com/ElinaFF/MeDIC', target="_blank",
+                        style={"display": "flex", "align-items": "center", "justify-content": "flex-end",
+                               "width": "fit-content"}),
+                )
             ],
             id="warning-not-match",
             size="lg",
-            is_open=False,
+            is_open=True,
         )
 
         _hidden_div = html.Div(id="hidden_div", style={"display": "none"})
@@ -291,153 +233,3 @@ class InfoTab(MetaTab):
                 ),
             ],
         )  # _interpretInfo
-
-    def _registerCallbacks(self) -> None:
-        @self.app.callback(
-            [
-                Output("upload_datatable_modal_output", "children"),
-                Output("upload_datatable_modal_output", "style"),
-            ],
-            [Input("upload_datatable_modal", "contents")],
-            [State("load_expe", "contents")],
-        )
-        def set_data_matrix_in_modal(contents, dto_contents):
-            if contents is not None:
-                metabo_experiment_dto = decode_pickle_from_base64(dto_contents)
-                if Utils.is_data_the_same(contents, metabo_experiment_dto):
-                    return "Data matrix uploaded successfully", {"color": "green"}
-                else:
-                    return (
-                        "Data matrix uploaded but not corresponding to the local one",
-                        {"color": "yellow"},
-                    )
-            else:
-                return dash.no_update, dash.no_update
-
-        @self.app.callback(
-            [
-                Output("upload_metadata_modal_output", "children"),
-                Output("upload_metadata_modal_output", "style"),
-            ],
-            [Input("upload_metadata_modal", "contents")],
-            [State("load_expe", "contents")],
-        )
-        def set_metadata_in_modal(contents, dto_contents):
-            if contents is not None:
-                metabo_experiment_dto = decode_pickle_from_base64(dto_contents)
-                if Utils.is_metadata_the_same(contents, metabo_experiment_dto):
-                    return "Metadata uploaded successfully", {"color": "green"}
-                else:
-                    return "Metadata uploaded but not corresponding to the local one", {
-                        "color": "yellow"
-                    }
-            else:
-                return dash.no_update, dash.no_update
-
-        @self.app.callback(
-            [
-                Output("warning-not-match", "is_open"),
-                Output("hidden_div", "children"),
-                Output("upload_datatable_modal_error_output", "children"),
-            ],
-            [
-                Input("close", "n_clicks"),
-                Input("loadAnyway", "n_clicks"),
-                Input("partialRestore", "n_clicks"),
-                Input("fullRestore", "n_clicks"),
-                Input("load_expe", "filename"),
-            ],
-            [
-                State("load_expe", "contents"),
-                State("upload_datatable_modal", "contents"),
-                State("upload_metadata_modal", "contents"),
-                State("upload_datatable_modal", "filename"),
-                State("upload_metadata_modal", "filename"),
-            ],
-        )
-        def toggle_modal(
-            close,
-            load_anyway,
-            partial_restore,
-            full_restore,
-            filename_loaded,
-            contents_loaded,
-            new_data,
-            new_metadata,
-            new_data_name,
-            new_metadata_name,
-        ):
-            triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
-
-            if triggered_id == "close":
-                return False, dash.no_update
-            else:
-                if triggered_id == "load_expe":
-                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
-                    if self.metabo_controller.is_save_safe(metabo_exp_dto):
-                        self.metabo_controller.full_restore(metabo_exp_dto)
-                        return (
-                            False,
-                            "reload",
-                            "",
-                        )
-                    else:
-                        return True, dash.no_update, dash.no_update
-
-                elif triggered_id == "loadAnyway":
-                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
-                    self.metabo_controller.load_results(metabo_exp_dto)
-                    return (
-                        False,
-                        "",
-                        "",
-                    )  # dcc.Location(href="/home", id="someid_doesnt_matter")
-
-                elif triggered_id == "partialRestore":
-                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
-                    if new_data and new_metadata:
-                        try:
-                            self.metabo_controller.partial_restore(
-                                metabo_exp_dto,
-                                new_data_name,
-                                new_metadata_name,
-                                data=new_data,
-                                metadata=new_metadata,
-                            )
-                        except ValueError as ve:
-                            return True, dash.no_update, str(ve)
-                        return (
-                            False,
-                            "",
-                            "",
-                        )
-                    else:
-                        return (
-                            True,
-                            "",
-                            "You need to upload both data and metadata to do a partial restore",
-                        )
-
-                elif triggered_id == "fullRestore":
-                    metabo_exp_dto = decode_pickle_from_base64(contents_loaded)
-                    if (
-                        new_data is not None
-                        and new_metadata is not None
-                        and Utils.are_files_corresponding_to_dto(
-                            new_data, new_metadata, metabo_exp_dto
-                        )
-                    ):
-                        self.metabo_controller.full_restore(metabo_exp_dto)
-                        return (
-                            False,
-                            "",
-                            "",
-                        )
-                    else:
-                        return (
-                            True,
-                            "",
-                            "You need to restore original data matrix and metadata to do a full restore",
-                        )
-
-                return False, dash.no_update, dash.no_update

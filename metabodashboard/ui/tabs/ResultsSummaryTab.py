@@ -29,12 +29,16 @@ CONFIG = {
         "scale": 1,  # Multiply title/legend/axis/canvas sizes by this factor
     }
 }
-
+PATH_TO_FILE = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "multiFalseAvsBaliAvsaliBmedAvsmedBaliAvsmedA25splitDT-RF-SCM-rSCM_save.mtxp")
+)
 
 class ResultsSummaryTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
-        self.r = self.metabo_controller.get_all_results()
+        metabo_experiment = MetaboExperiment()
+        metabo_experiment.load_results(pkl.load(open(PATH_TO_FILE, "rb")))
+        self.r = metabo_experiment.get_all_updated_results()
         self._plots = Plots("blues")
 
     def getLayout(self) -> dbc.Tab:
@@ -81,7 +85,7 @@ class ResultsSummaryTab(MetaTab):
                             id="help_nonrandomHeatmapFeatures",
                         ),
                         dbc.Popover(
-                            children=[dbc.PopoverBody("Blablabla wout wout")],
+                            children=[dbc.PopoverBody("Test")],
                             id="pop_help_nonrandomHeatmapFeatures",
                             is_open=False,
                             target="help_nonrandomHeatmapFeatures",
@@ -108,7 +112,7 @@ class ResultsSummaryTab(MetaTab):
                             id="help_randomheatmapFeatures",
                         ),
                         dbc.Popover(
-                            children=[dbc.PopoverBody("Blablabla wout wout")],
+                            children=[dbc.PopoverBody("Test")],
                             id="pop_help_randomheatmapFeatures",
                             is_open=False,
                             target="help_randomheatmapFeatures",
@@ -136,7 +140,7 @@ class ResultsSummaryTab(MetaTab):
                             id="help_heatmapSamples",
                         ),
                         dbc.Popover(
-                            children=[dbc.PopoverBody("Blablabla wout wout")],
+                            children=[dbc.PopoverBody("Test")],
                             id="pop_help_heatmapSamples",
                             is_open=False,
                             target="help_heatmapSamples",
@@ -166,7 +170,7 @@ class ResultsSummaryTab(MetaTab):
                             id="help_barplotAlgo",
                         ),
                         dbc.Popover(
-                            children=[dbc.PopoverBody("Blablabla wout wout")],
+                            children=[dbc.PopoverBody("Test")],
                             id="pop_help_barplotAlgo",
                             is_open=False,
                             target="help_barplotAlgo",
@@ -217,7 +221,7 @@ class ResultsSummaryTab(MetaTab):
                     self.r = self.metabo_controller.get_all_results()
                     a = list(self.r.keys())
                     return [{"label": i, "value": i} for i in a], a[0]
-                except:  # TODO: wrong practice ???
+                except:  # TODO: wrong practice ?
                     return dash.no_update
             else:
                 return dash.no_update
@@ -236,7 +240,7 @@ class ResultsSummaryTab(MetaTab):
                 global_df = None
                 for a in algos:
                     if global_df is None:
-                        print("glob df is none")
+                        #print("glob df is none")
                         global_df = self.r[design][a].results["features_table"]
                         global_df = global_df.loc[
                             :, ("features", "importance_usage")
@@ -245,7 +249,7 @@ class ResultsSummaryTab(MetaTab):
                             columns={"importance_usage": a}, inplace=True
                         )  # rename column to identify algorithm
                     else:
-                        print("glob df not none, algo :", a)
+                        #print("glob df not none, algo :", a)
                         df = self.r[design][a].results[
                             "features_table"
                         ]  # retrieve features table of algo a

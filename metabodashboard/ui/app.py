@@ -68,10 +68,10 @@ app.layout = html.Div(
                     className="global_tabs_container",
                     children=[
                         infoTab.getLayout(),
-                        splitsTab.getLayout(),
-                        mLTab.getLayout(),
-                        #dbc.Tab(label="Splits", disabled=True),
-                        #dbc.Tab(label="Machine Learning", disabled=True),
+                        #splitsTab.getLayout(),
+                        #mLTab.getLayout(),
+                        dbc.Tab(label="Splits", disabled=True),
+                        dbc.Tab(label="Machine Learning", disabled=True),
                         resultsTab.getLayout(),
                         resultsSummaryTab.getLayout()
                         # interpretTab.getLayout()
