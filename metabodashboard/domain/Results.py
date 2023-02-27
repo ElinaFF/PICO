@@ -1,6 +1,7 @@
 import os
 from collections import Counter
 from typing import List
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -189,7 +190,7 @@ class Results:
         nbr_feat = [5, 10, 40, 100]
         umaps = []
         for nbr in nbr_feat:
-            selected_feat = features_df["features"][:nbr]
+            selected_feat = features_df["features"].iloc[:nbr]
             selected_x = X.loc[:, selected_feat]
             selected_x = selected_x.to_numpy()
             umap_data = umap.UMAP(n_components=2, init="random", random_state=13)
@@ -216,7 +217,7 @@ class Results:
         labels = []
 
         for nbr in nbr_feat:
-            selected_feat = features_df["features"][:nbr]
+            selected_feat = features_df["features"].iloc[:nbr]
             x = X.loc[:, selected_feat]
             x = x.to_numpy()
 
