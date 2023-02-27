@@ -21,9 +21,14 @@ DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "save.mtxp")
 DEFAULT_IMPORTANCE_ATTRIBUTE = "feature_importances_"
 
 
-def dump_metabo_expe(obj):
-    with open(DUMP_EXPE_PATH, "w+b") as expe_file:
-        pkl.dump(obj, expe_file)
+def dump_metabo_expe(obj, filename=''):
+    if filename == '':
+        with open(DUMP_EXPE_PATH, "w+b") as expe_file:
+            pkl.dump(obj, expe_file)
+    else:
+        print(os.path.join(DUMP_PATH, filename + '_save.mtxp'))
+        with open(os.path.join(DUMP_PATH, filename + '_save.mtxp'), "w+b") as expe_file:
+            pkl.dump(obj, expe_file)
 
 
 def get_metabo_experiment_path() -> str:
