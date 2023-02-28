@@ -8,11 +8,11 @@ from matplotlib import pyplot as plt
 from sklearn import tree
 
 from .MetaTab import MetaTab
-from ...domain import MetaboController
+from ...domain import MetaboController, MetaboExperiment
 from ...service import Plots, Utils
 
-PATH_TO_BIGRESULTS = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "big_results.p")
+PATH_TO_FILE = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "multiFalseAvsBaliAvsaliBmedAvsmedBaliAvsmedA25splitDT-RF-SCM-rSCM_save.mtxp")
 )
 
 CONFIG = {
@@ -28,8 +28,9 @@ CONFIG = {
 class ResultsTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
-        # self.r = pkl.load(open(PATH_TO_BIGRESULTS, "rb"))
-        self.r = self.metabo_controller.get_all_results()
+        metabo_experiment = MetaboExperiment()
+        metabo_experiment.load_results(pkl.load(open(PATH_TO_FILE, "rb")))
+        self.r = metabo_experiment.get_all_updated_results()
         self._plots = Plots("blues")
 
     def getLayout(self) -> dbc.Tab:
@@ -364,6 +365,7 @@ class ResultsTab(MetaTab):
                     id="export_features",
                     className="custom_buttons",
                     n_clicks=0,
+                    disabled=True,
                 ),
                 dcc.Download(id="download_dataframe_csv"),
                 dcc.Loading(
@@ -458,7 +460,6 @@ class ResultsTab(MetaTab):
         )
         def update_results_dropdown_design(active):
             if active == "tab-3":
-                self.r = self.metabo_controller.get_all_results()
                 experiment_designs = list(self.r.keys())
                 if len(experiment_designs) == 0:
                     return dash.no_update, dash.no_update
