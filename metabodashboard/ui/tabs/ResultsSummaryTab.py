@@ -19,7 +19,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 from .MetaTab import MetaTab
 from ...service import Plots
-from ...domain import MetaboController
+from ...domain import MetaboController, MetaboExperiment
 
 CONFIG = {
     "toImageButtonOptions": {

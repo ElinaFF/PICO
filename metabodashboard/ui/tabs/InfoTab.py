@@ -130,6 +130,7 @@ class InfoTab(MetaTab):
                                     disabled=True,
                                 )
                             ],
+                            disabled=True,
                         ),
                     ]
                 ),

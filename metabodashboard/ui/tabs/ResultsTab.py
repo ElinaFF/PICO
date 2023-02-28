@@ -6,6 +6,7 @@ import dash_interactive_graphviz as dg
 from dash import html, dcc, Output, Input, State, dash, Dash
 from matplotlib import pyplot as plt
 from sklearn import tree
+import pickle as pkl
 
 from .MetaTab import MetaTab
 from ...domain import MetaboController, MetaboExperiment
