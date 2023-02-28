@@ -218,7 +218,6 @@ class ResultsSummaryTab(MetaTab):
         def update_results_dropdown_design(active):
             if active == "tab-4":
                 try:
-                    self.r = self.metabo_controller.get_all_results()
                     a = list(self.r.keys())
                     return [{"label": i, "value": i} for i in a], a[0]
                 except:  # TODO: wrong practice ?
