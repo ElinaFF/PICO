@@ -3,35 +3,41 @@ layout: base
 title:  Implementation
 ---
 
+# Implementation
+{: .no_toc}
+_ _ _ _
+MeDIC software is organized in three main packages.
 
-MeDIC software is organized in three main package.
+* toc
+{:toc}
 
-The Domain package :
-It contains all the logic that compose MeDIC.
-This package can access freely the Service package.
-All the communication with the UI package must pass by the controller. This allows us to modify the Domain if necessary without having to modify the UI too.
-The User Interface (UI) package :
-It contains all the classes that are used to display the web interface of MeDIC.
-It manages only the interface and connects to the Domain by the controller only.
-The Service package :
-It can be accessed by both other packages and contains methods that are frequently used in different classes.
+## Packages
+
+Domain
+: It contains all the logic that compose MeDIC. This package can access freely the Service package. All the communication with the UI package must pass by the controller. This allows us to modify the Domain if necessary without having to modify the UI too.
+
+User Interface (UI)
+: It contains all the classes that are used to display the web interface of MeDIC. It manages only the interface and connects to the Domain by the controller only.
+
+Service
+: It can be accessed by both other packages and contains methods that are frequently used in different classes. 
+
 Here is a diagram that represents the communications between all three packages.
 
-
-
-Package diagram
+## Package diagram
 
 This diagram shows all the classes that compose the Domain package of MeDIC and the interaction between them.
-
-
+![](imgs/2022-06-08-16-51-32.png)
 
 Simplified class diagram of the Domain package
 
 This diagram shows all the classes that compose the UI package of MeDIC and the interaction between them.
 
-
-
 Simplified class diagram of the UI package
+
+(diagrams last updated in june 2022)
+{:.note title="Attention"}
+
 
 B. Controller interface
 This section can be use as a high-level documentation of the MetaboController class that serves of controller in MeDIC.

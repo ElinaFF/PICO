@@ -3,48 +3,73 @@ layout: base
 title:  Machine Learning
 ---
 
+# Machine Learning
+{: .no_toc}
+_ _ _ _
 
-1. Define learning configurations
-The following instructions are for the DEFINE LEARNING CONFIGS section.
+The machine learning tab is divided in two sections : the hyperparameters (HP) optimization and the selection of algorithms.
+If you're not comfortable with the HPs exploration, you can safely keep the default values and jump to the next section.
 
-If you're not comfortable with these parameters, you can safely keep the default values and jump to the next section.
+* toc
+{:toc}
 
-First, before choosing a Cross Validation (CV) search type, you need to understand the principle of CV.
+### Cross validation
 
-The method consist in separating the dataset in n sections. At each iteration, the first or the next section will be used as the test set and the other sections will form the training set. It allows us to train and test the model on all the dataset. Furthermore, the mean accuracy over the folds is a better measurement of the performance of the models.
+HPs
+: The HPs of a model are the parameters that can be changed before the learning phase and will impact the prediction performances.
 
-The number of folds defines the number of time the model(s) will be trained, and the number of division in the dataset.
+Cross validation (CV)
+: A process that divides the data in *k* parts (k-folds) and each part will be used to test a model while the remaining parts are used to train the model with a combination of HPs.
 
-We use CV in order to make sure the model doesn't overfit, we keep a sample of the dataset to test it at the end. If the algorithm is overfitting, it will make a lot of errors when presented a new set of data. This also allows us to make sure the algorithm is tested on all samples.
+GridSearch
+: a method that will test every HPs combination possible in what was given to explore. It is the standard default method. It is effective but may take a long time to run and may test useless combination.
 
-For more details, see this explanation.
+RandomSearch
+: a method that will sample a distribution to choose values to test for each hyperparamter listed. Has the reputation to better cover the space of hyperparamters. It allows more values to be tested and runs faster but isn't as rigorous as the GridSearchCV.
 
-The ability of a search algorithm is to train a set of models with a set of parameters, and compute a metric tested combination. This metric is most of the time the accuracy (the number of correct predictions over the total number of predictions (the number of samples)).
+Bayesian optimization
+: another method of HPs combination. **NOT IMPLEMENTED YET**.
 
-After the computation, the algorithm is able to find the model combined with the parameters that perform best, in the tested combinations.
 
-The GridSearchCV is a search algorithm using CV that test every possible combination of parameters, like in a grid. This method is effective but may take a long time to run and may test useless combination.
+We use CV in order to make sure the model doesn't overfit, we use the validation set to optimize the HPs and keep the test set unseen by the model. 
+To select the best HP combination, the search algorithm will compute a metric (often the accuracy) on each combination and choose the best.
 
-The RandomizedSearchCV comes as a counterpoint and take random combinations of parameters. This method allow more values to be tested and runs faster but isn't as rigorous as the GridSearchCV.
 
-In the SELECT CV SEARCH TYPE panel, you can choose either GridSearchCV or RandomizedSearchCV.
+###### Example
 
-You can set the number of folds in the NUMBER OF CROSS VALIDATION FOLDS.
+For a 5-folds CV, the train set defined earlier in the splits section will be divided in 5 sections. One by one, each of the section will become the validation set on which a combination of HPs will be tested.
+In case of a Gridsearch, the HP to test would look something like this :
+~~~
+{
+    p1: [1, 3, 6],
+    p2: [10, 50]
+}
+~~~
 
-The number of processes in the Number of processes field is the number of parallel job you want to run. Two is enough to increase the speed of computation. More processes might slow down to crash your PC.
+Then 6 combinations would each be tested 5 times (on the 5-folds).
 
-2. Define learning algorithms
-The following instructions are for the DEFINE LEARNING ALGORITHMS section.
+In case of a RandomSearch, the HP would look something like this:
+~~~
+{
+    p1: Normal(0.1, 8), ## A reviser, pas ok
+    p2: Normal(0, 75)
+}
+~~~
+Then X combinations would be tested 5 times, and the values in the combinations would be picked according to the distributions.
+
+
+
+### Algorithms
 
 The AVAILABLE ALGORITHMS are:
 
-Decision Tree
-Random Forest
-SCM
-Random SCM
+* Decision Tree
+* Random Forest
+* Set Covering Machine (SCM)
+* Random Set Covering Machine (RandomSCM)
+
 The first classifier implement a regular decision tree. To make a prediction, the data is the input of the root node. The root node, as the others, has a threshold for one feature : for example
-cholesterol≥2
-. If the value validate the threshold, it goes to the right node, otherwise it goes to the left, until it reach a leaf. The leaf assigns a class to the sample.
+cholesterol ≥ 2. If the value validate the threshold, it goes to the right node, otherwise it goes to the left, until it reach a leaf. The leaf assigns a class to the sample.
 
 The second classifier, the random forest, is a decision tree (DT) ensemble that classify independently the sample. Each DT vote the class of the sample. The class that has the most vote is assign to the sample.
 
@@ -52,15 +77,17 @@ The Set Covering Machine (SCM) is a combination of rules. For example, if the ch
 
 The last classifier is the Random SCM. As the random forest is a voting decision tree ensemble, the random SCM is a voting SCM ensemble.
 
-You have to tick at least one algorithms.
-
-But because of their differences, some may perform better than others on different datasets. It is advised to take at least one SCM-type and one DecisionTree-type algorithms.
-
-If you want to add scikit-learn algorithms that isn't in the available algorithms, you can in the ADD SKLEARN ALGORITHMS.
-
-You need to complete the import and specify the grid search parameter (for the CV search algorithm).
+You have to tick at least one algorithm.
+Because of their differences, some may perform better than others on different datasets. It is advised to take at least one SCM-type and one DecisionTree-type algorithms, as well as one ensemble type.
 
 
+###### Add scikit-learn algorithm
+
+The MeDIC support the addition of Sklearn models as long as they have a method to extract the importance of features in the prediction.
+After clicking on the button to add a Sklearn algorithms, the user must give the import information of the algorithm. The MeDIC will try to import and verify that it is compatible. If it is, the user can choose to add the HP to explore by using the table provided by the MeDIC, or to do it manually.
+The user must also select which attribute contains the features importances.
+
+###### Add custom algorithm
 
 To add a full custom model, you need to add it to the configuration file located at metabodashboard/conf/SupportedModel.py.
 Add a dictionary containing the NON-INSTANTIATED class and the param grid. Format is the following ( change only the attribute xxx)

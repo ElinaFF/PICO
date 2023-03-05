@@ -6,19 +6,19 @@ title:  Splits
 {: .no_toc}
 _ _ _ _
 
-This step exists in the pipeline mainly because of the nature of metabolomic data, or more generally biological data : it has few samples, but hundreds or thousands of features per sample. This situation is called *fat data*, as 
-opposed to *big data* where there is tens of thousands of samples to learn from and each of them is of a reasonable size.
-
-To apply machine learning to fat data, the strategy used here is to produce multiple splits. It is not a widespread practice in common machine learning applications, some confusion might arise when talking about it to machine learners.
-(It might be confused with cross-validations folds or boostrap aggregating.)
-The splitting process we are implementing here is the production of multiple train-test dataset division completely independent of each other.
-
 This tab is used to define all the parameters affecting the samples : the matrices, the classes, the pairing, the number of splits, etc.
 
-For data and metadata, the supported files are excel, odt or csv.
-If the error "Rows must have an equal number of columns" occurs when loading a file, it means that some lines don't have cells for all columns.
+This step exists in the pipeline mainly because of the nature of metabolomic data, or more generally biological data : it has few samples, but hundreds or thousands of features per sample. This situation is called *fat data*, as 
+opposed to *big data* where there is tens of thousands of samples to learn from and each of them is of a reasonable size. See more below in the [splits section][#explainationOfSplits].
+
+* toc
+{:toc}
+
 
 ## Files
+
+For data and metadata, the supported files are excel or csv.
+If the error "*Rows must have an equal number of columns*" occurs when loading a file, it means that some lines don't have cells for all columns.
 
 Normalization for Progenesis
 : Use this to specify if you are using a matrix produced by Progenesis or another matrix with samples as lines and features as columns. Also, if it is from Progenesis, it can be either the raw abundance values or the normalized.
@@ -33,102 +33,63 @@ Metadata
 : Metadata matrix input, is optional but recommended for pairing, and often clearer labels.
 
 
-### Define Experimental designs
+## Define Classification designs
    
+For now, the MeDIC only allows binary classification, so the classification designs add more flexibility.
+So first here are some definitions
 
-The following instructions are for the B) DEFINE EXPERIMENTAL DESIGNS section.
+Classes
+: Classes are the name of samples group in the data. A typical example is the column that contains a diagnosis.
 
-With the board, you can run multiple experimental design, under certain conditions. These conditions are:
+Labels
+: Labels are often considered the same as the classes. In the MeDIC, because of the multiple classification designs, labels simply designate the transition between the classes and the targets. 
 
-use the same split parameters
-use the same Machine Learning (ML) algorithms
-use the same ML parameters
-First, you need to select the target column. To clarify, the target column contains the values that the algorithms will try to predict. A typical example is the column that contain the diagnosis.
-
-The columns name prompted in the following figure are the column in the metadata file previously uploaded. If there are not the ones expected, please retry uploading the metadata in the section A. Set the metadata and data in the Home tab
-
-
-
-Targets column selection panel
-
-After setting the target column, we need to set the samples' column. This column has to contain unique IDs for each sample.
+Targets
+: Targets are the values or names the models will output as prediction 
 
 
+By default, if the user provides a Progenesis output file as data, the MeDIC will parse the file and select the second header of the table as classes. (The first header being Raw abundance and Normalized abundance, and the third header being the name of the samples.)
+Otherwise, the MeDIC will read the metadata file and displays the columns names. If there are not the column names expected, please retry uploading the metadata in the section A. The user can then choose which (one or multiple) column(s) to use as class(es). In other word, which information the model will try to predict. If the user choose multiple columns, the classes will be a combination of the values of those columns.
+Then, if the user gave a metadata file, he will need to also select which column of the metadata file contains the unique ID or sample names. It is used by the MeDIC to link the metadata information to each unique sample in the data.
 
-Samples column selection panel
+After this step, starts the creation of classification designs. With each 'class' column the user chose, this section updates and displays the possibilities (original classes are separated from each other by '__').
+Only one class can be selected to be designated by a label. 
+The user has to name the new group of classes by defining a label.
+Once it is filled, clicking on the '*Add*' button will adde this new design to the setup of the experiment and clear the fields. The user can then repeat the process to define a new design.
+The '*Reset*' button in the block of defined classification designs will erase all design already defined.
 
-The main part of the experimental designs configuration section is divided in two panel, respectively the repository and the configuration panel
-
-Once the target columns are defined, the possible labels are updated in the configuration panel as shown in the following figure.
-
-
-
-Updated possible labels in the configuration panel
-
-To build a binary design, you need to define the classes, in other words, to choose what you want to be opposed. An example using the previous values could be the identification of the sick person, opposing persons tagged with "Sickness A" and "Sickness B" and persons tagged "Control".
-
-Add the experimental design by clicking on the ADD button.
-
-
-
-Example of a experimental design
-
-Note that you need to set a name, a label, for each class. Also, you need to set at least one possible target per class, but you don't need to assign all possible targets.
-
-Once the designs are created, they will appear in the repository panel.
+All the designs will be run with the same:
+* Number of splits
+* Percentage of samples in the test set
+* Pairing group
+* Algorithms
 
 
+### Samples pairing   
 
-Repository panel with two experimental design
-
-The RESET button will delete all the designs.
-
-2. Data fusion
-=======
-   
-
-Warning Not implemented yet
-
-Pos and Neg pairing allows to prevent the separation of positive and negative ionization and prevent the ML algorithms to learn the link between positive and negative ionization.
-
-You can also use any other pattern for pairing with Other pairing.
-
-3. Define split
-=========
-   
-
-The following instructions are for the D) DEFINE SPLITS section.
+This section allows the user to select a column in the metadata that will be used to fine-tune the division of train and test set. 
+Indeed, sample pairing is meant to deal with a situation common in clinical studies: the crossover design. In these studies, the experimental design will include multiple sampling of each participant, each sampling corresponding to a different treatment. In those cases, we must ensure that all samples belonging to one individual are either used to train or to test the model. This prevents biasing the algorithm towards learning the specificities of each participant instead of what distinguishes the classes. The pairing section aims to group samples that are identified as a cluster by a selected column in the metadata.
+(from the paper)
 
 
+### Splits
 
-DEFINE SPLITS splits section
+To apply machine learning to fat data, the strategy used here is to produce multiple splits. It is not a widespread practice in common machine learning applications, some confusion might arise when talking about it to machine learners.
+(It might be confused with cross-validations folds or boostrap aggregating.)
+The splitting process we are implementing here is the production of multiple train-test dataset division completely independent of each other.
+{: #explainationOfSplits}
 
-If you don't feel conformable with these parameters, the minimum you need to know is:
+The train-test repartition of 20% of samples in test set and 80% in train set is quite common for metabolomic datasets. Often machine learning experiments will use a ratio closer to 30%-70%, but it always depend on the number of samples needed to train the model.
 
-the proportion is quite standard, it will suit most of the time
-5 splits is quick to run but some samples may never be used to test the algorithms. A more complete run will take 15 to 25 splits.
-In the other case, the splits are made by copying the dataset and applying a random separation with a different random seed at each time. This principle is called bootstrap.
+For the number of splits, a more complete run will be around 15 to 25 splits. Using 5 splits can be interesting when doing small tests of the parameters because it will be faster. However, it will not cover all the samples in a testing setting.
+We determined that the appropriate number of splits for an experiment can be found using a Markov chain process. Indeed, the probability that all samples are seen in the test set, i.e. the probability that a sample is never in the test set, follow a Markov chain.
 
-
-Moreover, as the cross validation (explained in further details in section 1. Define learning configurations in the Machine Learning tab), it allows the model(s) to be tested on most of the samples.
-
-If you want to achieve it, the probability that all samples are seen in the test set, i.e. the probability that a sample is never in the test set, follow a Markov chain. With an example of 5 samples with 80-20 train-test repartition, the chain is as follows:
-
-
-
-
+**Math example with equations and figure**
 
 P(X<1) (values) as a function of the number of splits n (1:nbr_limit) with m=250 samples and a test proportion of 0.2 (k=50)
 
 
-4. Generate file
-=========
-   
-
-These finals instructions are for the F) GENERATE FILE section.
+### Generate the splits file
 
 Once all the parameters, the samples id and target columns, and at least one experimental design are set, you can run the splits' computation by clicking on the CREATE button.
-
-
-
-GENERATE FILE section
+All the parameters will be saved and for each splits, the unique identification of the samples belonging in the train or test set will be saved. No data or metadata is saved, the matrices for the machine learing are retrieved with the samples unique identification when needed.

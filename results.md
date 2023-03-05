@@ -8,7 +8,7 @@ title:  Results
 _ _ _ _
 There is two dropdown menus automatically detecting the classification designs and the algorithms that were used. The user can select which design and which algorithm to explore, and then click on the load button to update the figures and tables.
 The “current experiment info” bloc displays the number of samples used, the repartition of samples as percentages, and the number of samples in each class (to see potential unbalanced classes).
-All graphs can be saved and will be saved by default in SVG format. This can be changed in the ResultAgregatedTab.py file at the beginning of the file.
+All graphs can be saved and will be saved by default in SVG format. This can be changed in the ResultTab.py file at the beginning of the file.
 
 Important to note for all figures and results exploration where a certain number of features is displayed : if the number of used features in the model is smaller than the number of features (or) top features displayed,
 the first features will be in the indicated order, and the rest will be features randomly selected. For example, if an SCM model uses only 3 features to make its prediction, the swarm plot in the Results > Features section will still display
