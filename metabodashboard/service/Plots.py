@@ -134,8 +134,8 @@ class Plots:
 
         fig = px.line(
             df,
-            x="splits",
-            y="accuracies",
+            x="split",
+            y="accuracy",
             color="color",
             title="Accuracies on train and test sets for each split of " + algo,
         )
@@ -210,9 +210,7 @@ class Plots:
                 )
             ]
         )
-        fig.update_layout(
-            title="Table of top 10 features sorted by importance for " + algo
-        )
+
         fig.update_layout(title="Table of top 10 features sorted by importance")
         return fig
 
@@ -271,10 +269,10 @@ class Plots:
 
         fig = px.strip(
             df_dup,
-            x="features_name",
+            x="feature name",
             y="intensity",
             color="targets",
-            title="Abundance of {} in each sample by class for {}".format("all",
+            title="Abundance of {} in each sample by class for {}".format("the top 10 features",
                 #feature,
                 algo
             ),
@@ -298,7 +296,7 @@ class Plots:
             )
         )
         fig.update_layout(
-            title="Number of wrong prediction per sample in test sets for all splits"
+            title="Number of wrong predictions per sample in test sets for all splits"
         )
 
         return fig

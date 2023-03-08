@@ -78,7 +78,7 @@ class ResultsSummaryTab(MetaTab):
                 html.Div(
                     className="title_and_help",
                     children=[
-                        html.H6("Features Usage"),
+                        html.H6("Feature Usage"),
                         dbc.Button(
                             "[?]",
                             className="text-muted btn-secondary popover_btn",
@@ -105,7 +105,7 @@ class ResultsSummaryTab(MetaTab):
                 html.Div(
                     className="title_and_help",
                     children=[
-                        html.H6("Features Usage"),
+                        html.H6("Feature Usage"),
                         dbc.Button(
                             "[?]",
                             className="text-muted btn-secondary popover_btn",
@@ -157,13 +157,13 @@ class ResultsSummaryTab(MetaTab):
             ],
         )
 
-        _barplotComparaisonAlgo = html.Div(
+        _barplotComparisonAlgo = html.Div(
             className="umap_plot_and_title",
             children=[
                 html.Div(
                     className="title_and_help",
                     children=[
-                        html.H6("Comparaison of algorithms performances"),
+                        html.H6("Comparison of algorithms performances"),
                         dbc.Button(
                             "[?]",
                             className="text-muted btn-secondary popover_btn",
@@ -199,7 +199,7 @@ class ResultsSummaryTab(MetaTab):
                 ),
                 html.Div(className="fig_group", children=[
                     _heatmapSamplesAlwaysWrong,
-                    _barplotComparaisonAlgo
+                    _barplotComparisonAlgo
                 ]),
             ],
         )

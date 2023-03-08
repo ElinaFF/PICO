@@ -294,7 +294,7 @@ class ResultsTab(MetaTab):
                 html.Div(
                     className="",
                     children=[
-                        html.H6("Splits number"),
+                        html.H6("Split number"),
                         dbc.Select(
                             id="splits_dropdown",
                             className="form_select_large",
