@@ -134,8 +134,9 @@ class Plots:
 
         fig = px.line(
             df,
-            x="split",
-            y="accuracy",
+            x="splits",
+            y="accuracies",
+            labels={"splits": "Split", "accuracies": "Accuracy"},
             color="color",
             title="Accuracies on train and test sets for each split of " + algo,
         )
@@ -269,8 +270,9 @@ class Plots:
 
         fig = px.strip(
             df_dup,
-            x="feature name",
+            x="features_name",
             y="intensity",
+            labels={"feature_name": "Feature name", "intensity": "Intensity"},
             color="targets",
             title="Abundance of {} in each sample by class for {}".format("the top 10 features",
                 #feature,
