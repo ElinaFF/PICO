@@ -9,7 +9,7 @@ _ _ _ _
 
 The **Me**tabolomics **D**ashboard for **I**nterpretable **C**lassification (MeDIC) is a tool to democratize machine learning (ML) for metabolomics.
 
-![](logo.png){:height="40px"}
+![](logo.png){:height="25%" width="25%"}
 
 It must be installed on a local computer and possess a visual interface which can be used to perform an ML experiment, from uploading the data to analysing the results. 
 Advanced users will find that a script *automate.py* allows the steps from uploading data to training the algorithms to be run directly with a terminal (command prompt). The output file can then be loaded into the MeDIC interface for results analysis.
