@@ -272,7 +272,7 @@ class Plots:
             df_dup,
             x="features_name",
             y="intensity",
-            labels={"feature_name": "Feature name", "intensity": "Intensity"},
+            labels={"features_name": "Feature name", "intensity": "Intensity"},
             color="targets",
             title="Abundance of {} in each sample by class for {}".format("the top 10 features",
                 #feature,
