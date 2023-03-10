@@ -9,7 +9,7 @@ _ _ _ _
 This tab is used to define all the parameters affecting the samples : the matrices, the classes, the pairing, the number of splits, etc.
 
 This step exists in the pipeline mainly because of the nature of metabolomic data, or more generally biological data : it has few samples, but hundreds or thousands of features per sample. This situation is called *fat data*, as 
-opposed to *big data* where there is tens of thousands of samples to learn from and each of them is of a reasonable size. See more below in the [splits section][#explainationOfSplits].
+opposed to *big data* where there is tens of thousands of samples to learn from and each of them is of a reasonable size. See more below in the Splits section.
 
 * toc
 {:toc}

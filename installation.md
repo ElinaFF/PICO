@@ -74,17 +74,18 @@ Scroll down to select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or
 1. Install Miniconda following the [documentation](https://docs.conda.io/en/latest/miniconda.html)
 2. Open a terminal ("cmd" in Windows not "Powershell")
 3. Create an environment with Conda `conda create medic`
+
+   It does not *have* to be with conda, but it seemed to be more stable for package versions control and compatibility.
+
 4. Enter in the environment `conda activate medic`
 
    If the command worked, you should see the name "medic" written at the beginning of your prompt.
-   {: .alert .alert-info}
 
 5. Clone the Github repository `git clone https://github.com/ElinaFF/MeDIC`
 6. Move inside `cd MeDIC`
 7. Install the dependencies `python -m pip install -r requirements.txt`
 
-   If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem ([see here](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d)).
-   {: .alert .alert-warning}
+   If you have an error for ParmEd, pyscm or randomscm, it may be a C++ compilation problem ([see here at https://answers.microsoft.com/](https://answers.microsoft.com/en-us/windows/forum/all/microsoft-visual-c-140/6f0726e2-6c32-4719-9fe5-aa68b5ad8e6d)).
 
 8. Launch the Web interface `python main.py`
 
@@ -98,7 +99,7 @@ We haven't found a solution yet appart from proceeding with the Manual installat
 
 ## Beta version launcher installation
 
-A launcher has been made for MeDIC to facilitate the installation process. This launcher can be used for the installation and to start MeDIC.
+A launcher is being made for MeDIC to try to facilitate the installation process. This launcher can be used for the installation and to start MeDIC.
 The launcher file needs Git and Python to be able to do all the installation steps for you.
 {: .note title="Info"}
 
