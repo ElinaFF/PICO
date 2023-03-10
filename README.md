@@ -1,4 +1,4 @@
-# MeDIC
+# MeDIC            <img src="metabodashboard/ui/assets/favicon.ico" height="30px">
 Metabolomic Dashboard for Interpretable Classification
 
 ## Description
