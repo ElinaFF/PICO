@@ -34,12 +34,14 @@ kramdown:
   parse_block_html: true
 
 menu:
+  - title: About
+    url: /index
   - title: Installation
-    url:   /index
+    url: /installation
   - title: Home
-    url:   /home
+    url: /home
   - title: Splits
-    url:   /splits
+    url: /splits
   - title: Machine Learning
     url: /ml
   - title: Results
