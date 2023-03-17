@@ -46,19 +46,19 @@ The explanation of the concepts and the pipelines are in the Home tab. Don't hes
 
 ### Main methods description
 
-  ```set_metadata(filename: str, data=None, from_base64=True)``` : 
+```set_metadata(filename: str, data=None, from_base64=True)```
 This function sets the metadata using the path specified in parameter. The from_base64 parameter must be set to false if your file isn't encoded (csv, xlsx, ...).
 
-  ```set_data_matrix_from_path(path_data_matrix, data=None, use_raw=False, from_base64=True)```
+```set_data_matrix_from_path(path_data_matrix, data=None, use_raw=False, from_base64=True)```
 This function sets the data matrix the same way as the metadata.
 
-  ```set_id_column(id_column: str)```
+```set_id_column(id_column: str)```
 This function sets the name of the column containing the unique IDs.
 
-  ```set_target_column(target_column: str)```
+```set_target_column(target_column: str)```
 This function sets the name of the column containing the targets.
 
-  ```add_experimental_design(classes_design: dict)```
+```add_experimental_design(classes_design: dict)```
 This function adds an experimental design. The input dictionary must follow the format :
 ```json
 {
@@ -67,22 +67,22 @@ This function adds an experimental design. The input dictionary must follow the 
 }
 ```
 
-  ```set_train_test_proportion(train_test_proportion: float)```
+```set_train_test_proportion(train_test_proportion: float)```
 This function sets the proportion of the data that will be used as tests after the training.
 
   ```set_number_of_splits(number_of_splits: int)```
 This function sets the number of splits as explain in the section 3. Define split in the Split tab
 
-  ```create_splits()```
+```create_splits()```
 Once all the splits are set, this function creates all the splits at the same time.
 
-  ```set_selected_models(selected_models: list)```
+```set_selected_models(selected_models: list)```
 Set the list of models that will be trained.
 
-  ```learn(folds: int)```
+```learn(folds: int)```
 Start the training of all the models on all splits. Folds is used for the cross-validation process (explained in Define learning configuration)
 
-  ```get_all_results()```
+```get_all_results()```
 Return all the data about the results, and the best model.
 
 ### Implementation example
