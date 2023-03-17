@@ -52,7 +52,7 @@ This function sets the metadata using the path specified in parameter. The from_
 ```set_data_matrix_from_path(path_data_matrix, data=None, use_raw=False, from_base64=True)```
 This function sets the data matrix the same way as the metadata.
 
-```set_id_column(id_column: str)```
+```create_splits(id_column: str)```
 Once all the splits are set, this function creates all the splits at the same time.
 
 ```set_id_column(id_column: str)```
