@@ -52,16 +52,14 @@ This function sets the metadata using the path specified in parameter. The from_
 ```set_data_matrix_from_path(path_data_matrix, data=None, use_raw=False, from_base64=True)```
 This function sets the data matrix the same way as the metadata.
 
-```create_splits()```
+```set_id_column(id_column: str)```
 Once all the splits are set, this function creates all the splits at the same time.
-
 
 ```set_id_column(id_column: str)```
 This function sets the name of the column containing the unique IDs.
 
 ```set_target_column(target_column: str)```
 This function sets the name of the column containing the targets.
-
 ```add_experimental_design(classes_design: dict)```
 This function adds an experimental design. The input dictionary must follow the format :
 ```json
