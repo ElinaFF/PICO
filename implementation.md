@@ -64,7 +64,7 @@ This function adds an experimental design. The input dictionary must follow the 
   "class1": ["target1", "target2"],
   "class2": ["target3"]
 }
-```
+```{:width="104%"}
 
 ```set_train_test_proportion(train_test_proportion: float)```
 This function sets the proportion of the data that will be used as tests after the training.
@@ -117,7 +117,7 @@ metabo_controller.learn()
 save = metabo_controller.generate_save()
 pickle.dump(save, open("save.mtxp", "wb"))
 
-```
+```{:width="104%"}
 
 ## Full class diagram
 ![](imgs/2022-06-08-16-51-32.png)
