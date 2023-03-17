@@ -23,15 +23,15 @@ Service
 : It can be accessed by both other packages and contains methods that are frequently used in different classes. 
 
 Here is a diagram that represents the communications between all three packages.
-![](imgs/2022-06-07-15-17-45.png)
+![](imgs/2022-06-07-15-17-45.png){:width="40%"}
 
 ## Package diagram
 
 This diagram shows all the classes that compose the Domain package of MeDIC and the interaction between them.
-![](imgs/2022-06-07-16-37-38.png)
+![](imgs/2022-06-07-16-37-38.png){:width="70%"}
 
 This diagram shows all the classes that compose the UI package of MeDIC and the interaction between them.
-![](imgs/2022-06-07-16-37-55.png)
+![](imgs/2022-06-07-16-37-55.png){:width="50%"}
 
 (diagrams last updated in june 2022)
 {:.note title="Attention"}
