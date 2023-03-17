@@ -52,9 +52,6 @@ This function sets the metadata using the path specified in parameter. The from_
 ```set_data_matrix_from_path(path_data_matrix, data=None, use_raw=False, from_base64=True)```
 This function sets the data matrix the same way as the metadata.
 
-```create_splits() ```
-Once all the splits are set, this function creates all the splits at the same time.
-
 ```set_id_column(id_column: str)```
 This function sets the name of the column containing the unique IDs.
 
@@ -75,7 +72,7 @@ This function sets the proportion of the data that will be used as tests after t
 ```set_number_of_splits(number_of_splits: int)```
 This function sets the number of splits as explain in the section 3. Define split in the Split tab
 
-```create_splits()```
+```create_splits() ```
 Once all the splits are set, this function creates all the splits at the same time.
 
 ```set_selected_models(selected_models: list)```
@@ -84,7 +81,7 @@ Set the list of models that will be trained.
 ```learn(folds: int)```
 Start the training of all the models on all splits. Folds is used for the cross-validation process (explained in Define learning configuration)
 
-```get_all_results()```
+```get_all_results() ```
 Return all the data about the results, and the best model.
 
 ### Implementation example
