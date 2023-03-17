@@ -52,6 +52,10 @@ This function sets the metadata using the path specified in parameter. The from_
 ```set_data_matrix_from_path(path_data_matrix, data=None, use_raw=False, from_base64=True)```
 This function sets the data matrix the same way as the metadata.
 
+```create_splits()```
+Once all the splits are set, this function creates all the splits at the same time.
+
+
 ```set_id_column(id_column: str)```
 This function sets the name of the column containing the unique IDs.
 
@@ -70,7 +74,7 @@ This function adds an experimental design. The input dictionary must follow the 
 ```set_train_test_proportion(train_test_proportion: float)```
 This function sets the proportion of the data that will be used as tests after the training.
 
-  ```set_number_of_splits(number_of_splits: int)```
+```set_number_of_splits(number_of_splits: int)```
 This function sets the number of splits as explain in the section 3. Define split in the Split tab
 
 ```create_splits()```
