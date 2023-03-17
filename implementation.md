@@ -23,17 +23,15 @@ Service
 : It can be accessed by both other packages and contains methods that are frequently used in different classes. 
 
 Here is a diagram that represents the communications between all three packages.
+![](imgs/2022-06-07-15-17-45.png)
 
 ## Package diagram
 
 This diagram shows all the classes that compose the Domain package of MeDIC and the interaction between them.
-![](imgs/2022-06-08-16-51-32.png)
-
-Simplified class diagram of the Domain package
+![](imgs/2022-06-07-16-37-38.png)
 
 This diagram shows all the classes that compose the UI package of MeDIC and the interaction between them.
-
-Simplified class diagram of the UI package
+![](imgs/2022-06-07-16-37-55.png)
 
 (diagrams last updated in june 2022)
 {:.note title="Attention"}
@@ -45,6 +43,8 @@ This section can be use as a high-level documentation of the MetaboController cl
 This class can be used to integrate MeDIC in a Python script.
 
 The explanation of the concepts and the pipelines are in the Home tab. Don't hesitate to go back to this section while reading this one.
+
+### Main methods description
 
   ```set_metadata(filename: str, data=None, from_base64=True)``` : 
 This function sets the metadata using the path specified in parameter. The from_base64 parameter must be set to false if your file isn't encoded (csv, xlsx, ...).
@@ -84,3 +84,41 @@ Start the training of all the models on all splits. Folds is used for the cross-
 
   ```get_all_results()```
 Return all the data about the results, and the best model.
+
+### Implementation example
+
+```python
+from metabodashboard.domain import MetaboController
+import pickle
+
+DATAMATRIX_PATH = "path/to/data_matrix"
+METADATA_PATH = "path/to/metadata"
+
+metabo_controller = MetaboController()
+metabo_controller.set_raw_use_for_data(False)
+
+metabo_controller.set_data_matrix_from_path(DATAMATRIX_PATH, from_base64=False)
+metabo_controller.set_metadata(METADATA_PATH, from_base64=False)
+
+metabo_controller.set_id_column("sample")
+metabo_controller.set_target_columns(["target"])
+metabo_controller.set_pairing_group_column("pairing")
+metabo_controller.add_experimental_design({
+  "class1": ["target1", "target2"],
+  "class2": ["target3"]
+})
+
+metabo_controller.set_train_test_proportion(0.2)
+metabo_controller.set_number_of_splits(25)
+metabo_controller.create_splits()
+metabo_controller.set_selected_models(["DecisionTree", "RandomForest", "SCM", "RandomSCM"])
+
+metabo_controller.learn()
+
+save = metabo_controller.generate_save()
+pickle.dump(save, open("save.mtxp", "wb"))
+
+```
+
+## Full class diagram
+![](imgs/2022-06-08-16-51-32.png)
