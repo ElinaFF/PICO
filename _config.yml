@@ -38,15 +38,15 @@ menu:
     url: /index
   - title: Installation
     url: /installation
-  - title: Home
+  - title: Home tab
     url: /home
-  - title: Splits
+  - title: Splits tab
     url: /splits
-  - title: Machine Learning
+  - title: Machine Learning tab
     url: /ml
-  - title: Results
+  - title: Results tab
     url: /results
-  - title: Results aggregated
+  - title: Results aggregated tab
     url: /resultsagg
   - title: Implementation
     url: /implementation
