@@ -87,7 +87,7 @@ We determined that the appropriate number of splits for an experiment can be fou
 **Math example with equations and figure**
 
 P(X<1) (values) as a function of the number of splits n (1:nbr_limit) with m=250 samples and a test proportion of 0.2 (k=50)
-
+![P(X<1) as a function of the number of splits n](imgs/2022-06-07-14-02-37.png)
 
 ### Generate the splits file
 
