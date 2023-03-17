@@ -1,9 +1,9 @@
 ---
 layout: base
-title:  Home
+title:  Home tab
 ---
 
-# Home
+# Home tab
 {: .no_toc}
 _ _ _ _
 The 'Home' tab of the tool provides the link to this official documentation, the possibility to load results files, and gives small

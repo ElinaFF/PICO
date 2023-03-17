@@ -1,9 +1,9 @@
 ---
 layout: base
-title:  Machine Learning
+title:  Machine Learning tab
 ---
 
-# Machine Learning
+# Machine Learning tab
 {: .no_toc}
 _ _ _ _
 

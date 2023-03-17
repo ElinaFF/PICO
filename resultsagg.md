@@ -1,10 +1,10 @@
 ---
 layout: base
-title:  Results aggregated
+title:  Results aggregated tab
 ---
 
 
-# Results aggregated
+# Results aggregated tab
 {: .no_toc}
 _ _ _ _
 There is one dropdown menu automatically detecting the classification designs that was used. The user can select which design to explore, and then click on the load button to update the figures.

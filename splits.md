@@ -1,8 +1,8 @@
 ---
 layout: base
-title:  Splits
+title:  Splits tab
 ---
-# Splits
+# Splits tab
 {: .no_toc}
 _ _ _ _
 

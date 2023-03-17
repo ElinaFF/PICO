@@ -1,9 +1,9 @@
 ---
 layout: base
-title:  Results
+title:  Results tab
 ---
 
-# Results
+# Results tab
 {: .no_toc}
 _ _ _ _
 There is two dropdown menus automatically detecting the classification designs and the algorithms that were used. The user can select which design and which algorithm to explore, and then click on the load button to update the figures and tables.
