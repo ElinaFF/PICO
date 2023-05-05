@@ -8,6 +8,8 @@ from ...domain import MetaboController
 from ...service import Utils, Plots
 
 EXP_NAME = []
+SPLIT_NUMBER_VALUES = {i: str(i) for i in range(0, 101, 10)}
+SPLIT_NUMBER_VALUES.update({1: "1"})
 
 
 class SplitsTab(MetaTab):
@@ -379,9 +381,7 @@ class SplitsTab(MetaTab):
                     max=100,
                     step=1,
                     value=self.metabo_controller.get_number_of_splits(),
-                    # marks={i: str(i) for i in range(0, 101, 10)} | {1: "1"},
-                    # unsupported in 3.8
-                    marks={i: str(i) for i in range(0, 101, 10)}.update({1: "1"}),
+                    marks=SPLIT_NUMBER_VALUES,
                 ),
                 html.Div(
                     children=[
