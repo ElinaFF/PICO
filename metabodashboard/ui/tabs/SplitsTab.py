@@ -379,7 +379,9 @@ class SplitsTab(MetaTab):
                     max=100,
                     step=1,
                     value=self.metabo_controller.get_number_of_splits(),
-                    marks={i: str(i) for i in range(0, 101, 10)} | {1: "1"},
+                    # marks={i: str(i) for i in range(0, 101, 10)} | {1: "1"},
+                    # unsupported in 3.8
+                    marks={i: str(i) for i in range(0, 101, 10)}.update({1: "1"}),
                 ),
                 html.Div(
                     children=[
