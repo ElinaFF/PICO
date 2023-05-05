@@ -5,7 +5,7 @@ from dash.dcc import send_file
 
 from .MetaTab import MetaTab
 from ...domain import MetaboController
-from ...service import Utils
+from ...service import Utils, Plots
 
 EXP_NAME = []
 
@@ -327,7 +327,7 @@ class SplitsTab(MetaTab):
         _dataFusion = html.Div(
             className="title_and_form",
             children=[
-                html.H4(id="sep_samples_title", children="C) Sample pairing"),
+                html.H4(id="sep_samples_title", children="D) Sample pairing"),
                 dbc.Form(
                     children=[
                         dbc.Col(
@@ -367,17 +367,28 @@ class SplitsTab(MetaTab):
             className="form_field",
         )
 
-        __splitsNumber = html.Div(
+        __trainTestSplitGraph = html.Div(
             [
-                dbc.Label("Number of splits"),
-                dbc.Input(
-                    id="in_nbr_splits",
-                    value=self.metabo_controller.get_number_of_splits(),
-                    type="number",
-                    min=1,
-                    size="5",
+                dbc.Label("Train/Test split graph (worst case scenario)"),
+                dcc.Graph(
+                    id="train_test_split_graph",
                 ),
-                html.Div(id="error_nbr_splits", style={"color": "red", "margin-top": "0.5em"}),
+                dcc.Slider(
+                    id='in_nbr_splits',
+                    min=1,
+                    max=100,
+                    step=1,
+                    value=self.metabo_controller.get_number_of_splits(),
+                    marks={i: str(i) for i in range(0, 101, 10)} | {1: "1"},
+                ),
+                html.Div(
+                    children=[
+                        html.H5('Variables legend'),
+                        html.P('a: Probability that all of the samples are seen at least one time in the test set'),
+                        html.P(
+                            'b: Proportion of the samples that are seen at least one time in the test set at a 99.99% '
+                            'confidence level'),
+                    ])
             ],
             className="form_field",
         )
@@ -385,10 +396,10 @@ class SplitsTab(MetaTab):
         _splitDefinition = html.Div(
             className="title_and_form",
             children=[
-                html.H4(id="Define_split_title", children="D) Define splits"),
+                html.H4(id="Define_split_title", children="C) Define splits"),
                 dbc.Form(
                     children=[
-                        dbc.Col(children=[__sampleProportion, __splitsNumber]),
+                        dbc.Col(children=[__sampleProportion, __trainTestSplitGraph]),
                     ]
                 ),
             ],
@@ -581,7 +592,7 @@ class SplitsTab(MetaTab):
                     ],
                 ),
                 html.Div(
-                    className="fig_group", children=[_dataFusion, _splitDefinition]
+                    className="fig_group", children=[_splitDefinition, _dataFusion]
                 ),
                 html.Div(
                     className="fig_group", children=[_otherProcessing, _generateFile]
@@ -591,6 +602,28 @@ class SplitsTab(MetaTab):
         )
 
     def _registerCallbacks(self) -> None:
+        @self.app.callback(
+            Output("train_test_split_graph", "figure"),
+            [
+             Input("in_nbr_splits", "value"),
+             Input("in_percent_samples_in_test", "value"),
+             Input("upload_datatable_output", "children"),
+             Input("upload_metadata_output", "children"),
+            ],
+        )
+        def update_train_test_split_graph(slider_value, percent_test, fm, fd):
+            if percent_test is None:
+                return dash.no_update
+            nbr_of_samples = len(self.metabo_controller.get_samples_id())
+            if nbr_of_samples == 0:
+                return dash.no_update
+            percent_test = float(percent_test)
+            slider_value = int(slider_value)
+
+            return Plots.get_train_test_split_graph(
+                nbr_of_samples, slider_value, percent_test
+            )
+
         @self.app.callback(
             Output("in_use_raw", "value"), [Input("custom_big_tabs", "active_tab")]
         )
@@ -931,7 +964,6 @@ class SplitsTab(MetaTab):
                 Output("output_button_split_file", "children"),
                 Output("download-save-file-split", "data"),
                 Output("error_percent_samples_in_test", "children"),
-                Output("error_nbr_splits", "children"),
                 Output("error_upload_datatable", "children"),
                 Output("error_data_normalization", "children"),
                 Output("error_upload_metadata", "children"),
@@ -956,13 +988,6 @@ class SplitsTab(MetaTab):
                     train_test_proportion_error = "The train/test proportion must be a decimal number between 0 and 1 " \
                                                   "excluded."
 
-                nbr_splits_error = ""
-                try:
-                    casted_nbr_splits = int(nbr_splits)
-                    self.metabo_controller.set_number_of_splits(casted_nbr_splits)
-                except (ValueError, TypeError):
-                    nbr_splits_error = "The number of splits must be an integer greater than 0."
-
                 normalization_error = ""
                 datatable_error = ""
                 metadata_error = ""
@@ -977,11 +1002,11 @@ class SplitsTab(MetaTab):
                     experimental_design_error = "You must add at least one experimental design before " \
                                                 "splitting the data."
 
-                if train_test_proportion_error != "" or nbr_splits_error != "" \
+                if train_test_proportion_error != "" \
                         or datatable_error != "" or normalization_error != "" \
                         or metadata_error != "" or experimental_design_error != "":
                     return dash.no_update, dash.no_update, train_test_proportion_error, \
-                        nbr_splits_error, datatable_error, normalization_error, metadata_error, experimental_design_error
+                        datatable_error, normalization_error, metadata_error, experimental_design_error
 
                 self.metabo_controller.create_splits()
                 Utils.dump_metabo_expe(self.metabo_controller.generate_save())
@@ -990,10 +1015,10 @@ class SplitsTab(MetaTab):
                 return (
                     "The parameters file is created, the splits's creation should start shortly...",
                     send_file(Utils.get_metabo_experiment_path()),
-                    "", "", "", "", "", "",
+                    "", "", "", "", "",
                 )
             else:
-                return (dash.no_update,) * 8
+                return (dash.no_update,) * 7
 
     def _get_wrapped_experimental_designs(self):
         children_container = [html.Div("Experimental design")]

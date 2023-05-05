@@ -216,3 +216,6 @@ class MetaboController:
 
     def set_multithreading(self, activate_multithreading: bool):
         self._metabo_experiment.set_multithreading(activate_multithreading)
+
+    def get_samples_id(self):
+        return self._metabo_experiment.get_samples_id()

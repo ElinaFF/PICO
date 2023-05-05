@@ -28,7 +28,7 @@ class MetaboExperiment:
         self._is_progenesis_data = False
         self._metadata = MetaData()
 
-        self._number_of_splits = 5
+        self._number_of_splits = 25
         self._train_test_proportion = 0.2
         self._pairing_group_column = ""
         self._cv_folds = 5
@@ -458,5 +458,8 @@ class MetaboExperiment:
 
     def set_multithreading(self, activate_multithreading: bool):
         self._activate_multithreading = activate_multithreading
+
+    def get_samples_id(self):
+        return self._metadata.get_samples_id()
 
 # TODO: print current algo when training
