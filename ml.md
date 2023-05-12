@@ -15,20 +15,20 @@ If you're not comfortable with the HPs exploration, you can safely keep the defa
 
 ### Cross validation
 
-HPs
-: The HPs of a model are the parameters that can be changed before the learning phase and will impact the prediction performances.
+Hyperparameters (HPs)
+: Parameters that can be changed before the learning phase and will impact the prediction performances.
 
 Cross validation (CV)
-: A process that divides the data in *k* parts (k-folds) and each part will be used to test a model while the remaining parts are used to train the model with a combination of HPs.
+: Process that divides the data in *k* parts (k-folds) and each part will be used to test a model while the remaining parts are used to train the model with a combination of HPs.
 
 GridSearch
-: a method that will test every HPs combination possible in what was given to explore. It is the standard default method. It is effective but may take a long time to run and may test useless combination.
+: Method that will test every HPs combination possible in what was given to explore. It is the standard default method. It is effective but may take a long time to run and may test useless combination.
 
 RandomSearch
-: a method that will sample a distribution to choose values to test for each hyperparamter listed. Has the reputation to better cover the space of hyperparamters. It allows more values to be tested and runs faster but isn't as rigorous as the GridSearchCV.
+: Method that will sample a distribution to choose values to test for each HP listed. It has the reputation to better cover the space of HPs. It allows more values to be tested and runs faster but isn't as rigorous as the GridSearchCV.
 
 Bayesian optimization
-: another method of HPs combination. **NOT IMPLEMENTED YET**.
+: Another method of HPs combination. **NOT IMPLEMENTED YET**.
 
 
 We use CV in order to make sure the model doesn't overfit, we use the validation set to optimize the HPs and keep the test set unseen by the model. 
@@ -63,19 +63,19 @@ Then X combinations would be tested 5 times, and the values in the combinations 
 
 The AVAILABLE ALGORITHMS are:
 
-* Decision Tree
+* Decision Tree (DT)
 * Random Forest
 * Set Covering Machine (SCM)
 * Random Set Covering Machine (RandomSCM)
 
-The first classifier implement a regular decision tree. To make a prediction, the data is the input of the root node. The root node, as the others, has a threshold for one feature : for example
+The first classifier implement a regular **decision tree**. To make a prediction, the data is the input of the root node. The root node, as the others, has a threshold for one feature : for example
 cholesterol ≥ 2. If the value validate the threshold, it goes to the right node, otherwise it goes to the left, until it reach a leaf. The leaf assigns a class to the sample.
 
-The second classifier, the random forest, is a decision tree (DT) ensemble that classify independently the sample. Each DT vote the class of the sample. The class that has the most vote is assign to the sample.
+The second classifier, the **random forest**, is a DT ensemble that classify independently the sample. Each DT vote the class of the sample. The class that has the most vote is assign to the sample.
 
-The Set Covering Machine (SCM) is a combination of rules. For example, if the cholesterol is greater than 2 g/l OR insulin is greater than 140 mg/dL AND insulin is less than 199 mg/dL.
+The **Set Covering Machine (SCM)** is a combination of rules. For example, if the cholesterol is greater than 2 g/l OR insulin is greater than 140 mg/dL AND insulin is less than 199 mg/dL.
 
-The last classifier is the Random SCM. As the random forest is a voting decision tree ensemble, the random SCM is a voting SCM ensemble.
+The last classifier is the **Random SCM**. As the random forest is a voting decision tree ensemble, the random SCM is a voting SCM ensemble.
 
 You have to tick at least one algorithm.
 Because of their differences, some may perform better than others on different datasets. It is advised to take at least one SCM-type and one DecisionTree-type algorithms, as well as one ensemble type.
@@ -101,7 +101,7 @@ Add a dictionary containing the NON-INSTANTIATED class and the param grid. Forma
           }
       },
 ~~~  
-After adding your configuration, reboot MeDIC by stopping and restarting the launcher.
+After adding your configuration, reboot the MeDIC by stopping and restarting the launcher.
 The algorithm should be in the AVAILABLE ALGORITHMS section with his printed name.
 Note, the custom model are in the save file (.mtxp) and will be restored.
 

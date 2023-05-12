@@ -39,7 +39,7 @@ For now, the MeDIC only allows binary classification, so the classification desi
 So first here are some definitions
 
 Classes
-: Classes are the name of samples group in the data. A typical example is the column that contains a diagnosis.
+: Classes are the name of samples groups in the data. A typical example is the column that contains a diagnosis.
 
 Labels
 : Labels are often considered the same as the classes. In the MeDIC, because of the multiple classification designs, labels simply designate the transition between the classes and the targets. 
@@ -55,7 +55,7 @@ Then, if the user gave a metadata file, he will need to also select which column
 After this step, starts the creation of classification designs. With each 'class' column the user chose, this section updates and displays the possibilities (original classes are separated from each other by '__').
 Only one class can be selected to be designated by a label. 
 The user has to name the new group of classes by defining a label.
-Once it is filled, clicking on the '*Add*' button will adde this new design to the setup of the experiment and clear the fields. The user can then repeat the process to define a new design.
+Once it is filled, clicking on the '*Add*' button will add this new design to the setup of the experiment and clear the fields. The user can then repeat the process to define a new design.
 The '*Reset*' button in the block of defined classification designs will erase all design already defined.
 
 All the designs will be run with the same:
@@ -92,4 +92,4 @@ P(X<1) (values) as a function of the number of splits n (1:nbr_limit) with m=250
 ### Generate the splits file
 
 Once all the parameters, the samples id and target columns, and at least one experimental design are set, you can run the splits' computation by clicking on the CREATE button.
-All the parameters will be saved and for each splits, the unique identification of the samples belonging in the train or test set will be saved. No data or metadata is saved, the matrices for the machine learing are retrieved with the samples unique identification when needed.
+All the parameters will be saved and for each split, the unique identification of the samples belonging in the train or test set will be saved. No data or metadata is saved, the matrices for the machine learing are retrieved with the samples unique identification when needed.
