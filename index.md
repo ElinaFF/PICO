@@ -27,12 +27,11 @@ Expert users will find that the *automate* script can be run on a distant server
 
 
 ###### With option to parallelize as *False*
-The recommended configuration keeps some power free to allow parallel use of the computer.
-In fact, MeDIC will use at most 700 MB of RAM and will never exceed 1GB in running time. Please note that the MeDIC needs to load the dataset in memory at the beginning, so it needs at least the size of the dataset of RAM. For example, a 3 GB dataset requires at least 4 GB of RAM. The rest is free for other uses.
+The recommended configuration keeps some power available to allow the user to keep using his computer.
+In fact, MeDIC will use at most 700 MB of RAM and will never exceed 1GB at run time. Please note that the MeDIC needs to load the dataset in memory at the beginning, so it needs at least the size of the dataset of RAM. For example, a 3 GB dataset requires at least 4 GB of RAM. The remaining RAM stays available to the user.
 
 If the available RAM is 4GB or less, MeDIC will run, but experiments may take a long time to execute.
-For example, with a dataset of 210 samples per 15000 features and the recommended parameters, the experiment will take about 6 hours to run.
+For example, with a dataset of 210 samples with 15000 features each and the recommended parameters, the experiment will take about 6 hours to compute.
 
 ###### With option to parallelize as *True*
-The implementation of multithreading will allow MeDIC to use all available resources to speed up the computation.
-The speed of the experiment and memory usage will depend on the available resources.
+Enabling multithreading allows MeDIC to use all the performance of the CPU. This allows to reduce the compute time of the experiment. The speed increase depends on the CPU’s performances.

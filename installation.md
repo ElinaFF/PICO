@@ -17,11 +17,11 @@ Note that we only support Windows and Linux for now, and only Python 3.8, 3.9 an
 ## Prerequisites
 The first step, to use MeDIC, is to install Python and Git. For Windows, you also need to make sure that Microsoft Visual C++ is correctly installed.
 
-### Linux installation
+## Linux installation
 {: .titleclass}
 #### Python
 In order to install Python, you need to go to this [link](https://www.python.org/downloads/source/). Download your
-prefered version (or the latest 3.10 stable version) and proceed with the installation.
+preferred version (or the latest 3.10 stable version) and proceed with the installation.
 You can also follow this [tutorial](https://www.scaler.com/topics/python/install-python-on-linux/) for further details.
 #### Git
 Open a terminal and run the command : `sudo apt-get install git`.
@@ -29,12 +29,12 @@ Then enter your root password and follow the installation instructions.
 For more details follow this [link](https://git-scm.com/download/linux).
 
 
-### Windows installation
+## Windows installation
 Don't forget to check that Microsoft Visual C++ is correctly installed.
 
 #### Python
 In order to install Python, you need to go to this [link](https://www.python.org/downloads/windows/). Download your
-prefered version (or the latest 3.10 stable version) and proceed with the installation.
+preferred version (or the latest 3.10 stable version) and proceed with the installation.
 You can also follow this [tutorial](https://phoenixnap.com/kb/how-to-install-python-3-windows) for further details.
 
 WARNING : Don't forget the select Add Python 3.X to PATH on the first page !
@@ -44,7 +44,7 @@ To verify that Python is in the PATH, you can open a new terminal (cmd prompt), 
 it's all good.
 ![](imgs/cmdOk.png)
 
-Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning and click repair.
+Otherwise, you have to double-click again on the python.exe file you downloaded at the beginning and click Repair.
 Then click on Next. Then you can click on add to path and install.
 ![](imgs/addToPathAfterRepair.png)
 
@@ -81,7 +81,7 @@ Scroll down to select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or
 
    If the command worked, you should see the name "medic" written at the beginning of your prompt.
 
-5. Clone the Github repository `git clone https://github.com/ElinaFF/MeDIC`
+5. Clone the GitHub repository `git clone https://github.com/ElinaFF/MeDIC`
 6. Move inside `cd MeDIC`
 7. Install the dependencies `python -m pip install -r requirements.txt`
 
@@ -90,10 +90,10 @@ Scroll down to select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or
 8. Launch the Web interface `python main.py`
 
 
-### Installation on WSL (Windows Subsystem for Linux)
+## Installation on WSL (Windows Subsystem for Linux)
 It is the same steps as the manual installation, but executed on the WSL terminal.
 You can try to use the beta version launcher explained below, but you may encounter a problem with the PATH variable.
-We haven't found a solution yet appart from proceeding with the Manual installation.
+We haven't found a solution yet apart from proceeding with the Manual installation.
 
 
 
@@ -118,7 +118,7 @@ All the necessary dependencies will be installed in the conda environment.
 ### Clone repository and use the launcher
 
 1. Open a terminal (cmd in Windows)
-2. Clone the Github repository `git clone https://github.com/ElinaFF/MeDIC`
+2. Clone the GitHub repository `git clone https://github.com/ElinaFF/MeDIC`
 3. Move inside the repository `cd MetaboDashboard`
 4. Run the launcher `python launcher.py`
 
@@ -128,30 +128,30 @@ All the necessary dependencies will be installed in the conda environment.
 Those commands are optionals but allow more flexibility.
 They can be combined or used independently.
 
-1. Existing environment
+1. Existing environment\
    MeDIC can be installed or launch from an existing environment[^2] with :
 ~~~~
 python launcher.py --environment <environment_name>
 python launcher.py -e <environment_name>
 ~~~~
 [^2]: It is recommended not to create MeDIC environment into another environment as it may cause problems.
-2. Fast launch for everyday use
+2. Fast launch for everyday use\
    MeDIC can be launched faster without any verifications of the environment with :
 ~~~~
  python launcher.py --no-check
  python launcher.py -c
 ~~~~
-3. Installing MeDIC for later use
+3. Installing MeDIC for later use\
    MeDIC can be installed without launching automatically at the end of the installation with :
 ~~~~
 python launcher.py --no-launch
 python launcher.py -l
 ~~~~
-4. Update MeDIC to the latest version
+4. Update MeDIC to the latest version\
    MeDIC can be updated with the command :
 ~~~~
 python launcher.py --update
 python launcher.py -u
 ~~~~
-This will retrieve updates from the github repository, verify the environment and download packages if necessary, but it won't start MeDIC.
+This will retrieve updates from the GitHub repository, verify the environment and download packages if necessary, but it won't start MeDIC.
 {: .alert .alert-info}

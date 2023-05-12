@@ -23,10 +23,10 @@ The idea of this section is to detect if the classes are visually distributed in
 
 The slider under the figure allows the visualization of the PCA computed on a certain number of features (indicated on the slider). The ‘used’ indicator refers to the number of features used by the model to give a prediction. The ‘all’ indicator refers to the PCA computed on all the data.
 
-##### PCA
+##### PCA (Principal component analysis)
 The PCA extracts the dimensions with the bigger variances to highlight the clusters in the data. The PCA detects *linear* relationships in the data. For more information see the [wikipedia article](https://en.wikipedia.org/wiki/Principal_component_analysis).
  
-##### UMAP
+##### UMAP (Uniform manifold approximation and projection)
 The UMAP is a dimensionality reduction technique to highlight the *non-linear* relationships in the data. For more detail see the official page. The UMAP can be used in the same way as the tSNE but is generally considered better. One of the differences is the random initialisation for the tSNE as opposed to the Graph Laplacian for the UMAP. Another problem of tSNE is the use of the Kullback-Leibler (KL) divergence which makes it impossible to preserve global distances, see more here.
 It is important to consider non-linear relationships in biological data, because it has many complex phenomena and interactions.
 
@@ -45,7 +45,7 @@ Overfitting can also be detected by this plot, when the accuracy on the train da
 This table gives the mean and standard deviation of multiple metrics of the models. 
 
 Accuracy
-: The accuracy is the proportion of correctly predicted samples. See scikit-learn’s documentation on [accuracy](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score)
+: Proportion of correctly predicted samples. See scikit-learn’s documentation on [accuracy](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score)
 
 Balanced accuracy 
 : takes into account the asymmetrical repartition of the samples through the classes. See scikit-learn’s documentation on [balanced accuracy](https://scikit-learn.org/stable/modules/model_evaluation.html#balanced-accuracy-score).
@@ -77,11 +77,11 @@ Thus, the table presents the top 10 most important features, the number of times
 The 'export' button allows the user to download a file with the entire list of features (even those not used by the models), with their number of use and their mean importance. 
 
 ##### Swarmplot of features
-The figure has the same top10 features as the table just beside it (with the most important on the left, and the least on the right). So on the *x* axis there is the 10 features and on the *y* axis it is the normalized abundance of hte features.
-each point represents the abundance of a corresponding feature for a sample. Thus, visually exploring the difference between the cluster of samples (points) in each class for a feature can help determine if the specific feature is of interest.
+The figure has the same top10 features as the table just beside it (with the most important on the left, and the least on the right). So on the *x* axis there is the 10 features and on the *y* axis it is the normalized abundance of the features.
+Each point represents the abundance of a corresponding feature for a sample. Thus, visually exploring the difference between the cluster of samples (points) in each class for a feature can help determine if the specific feature is of interest.
 For example, the top 1 feature could have a cluster near 0 for the samples of the control group, and a cluster near an abundance of 3 for the compared group.
 
-## DT Tree
+## Decision Tree
 Decision tree algorithms are easy to visualize and the sklean implementation can produce a representation of the process used to make the prediction. It displays the best model of all splits and is mostly to help neophytes understand a little bit better how this specific algorithm works.
 
 
