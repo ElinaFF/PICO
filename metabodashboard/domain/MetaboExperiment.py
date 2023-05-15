@@ -158,7 +158,16 @@ class MetaboExperiment:
             params_grid: dict,
             importance_attribute: str,
     ):
-        self._custom_models[model_name] = self._model_factory.create_custom_model(
+        model_index = model_name.strip()
+        model_index = "Custom" + model_index
+        # check if model name already exists, if yes, get the next available index
+        index = 1
+        model_index = model_index + "0"
+        while model_index in self._custom_models:
+            model_index = model_index[:-1]
+            model_index = model_index + str(index)
+            index += 1
+        self._custom_models[model_index] = self._model_factory.create_custom_model(
             model_name, needed_imports, params_grid, importance_attribute
         )
 

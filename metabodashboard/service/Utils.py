@@ -319,3 +319,41 @@ def get_model_parameters_after_training(model: sklearn) -> List[Tuple[str, str]]
         parameters.remove(default_tuple)
         parameters.insert(0, default_tuple)
     return parameters
+
+
+def transform_params_to_cross_validation_dict(params: List[Tuple[str, str]], param_types: dict) -> dict:
+    cross_validation_params = {}
+    error = []
+    for param, value in params:
+        values = re.split(r" *, *", value)
+        param_type = param_types[param]
+        if param_type == "float":
+            try:
+                cross_validation_params[param] = [float(val) for val in values]
+            except ValueError:
+                error.append(f"{param} must be decimal numbers (with '.')")
+        elif param_type == "int":
+            try:
+                cross_validation_params[param] = [int(val) for val in values]
+            except ValueError:
+                error.append(f"{param} must be integers")
+        else:
+            try:
+                values = int(value)
+            except ValueError:
+                try:
+                    values = float(value)
+                except ValueError:
+                    pass
+            try:
+                values = [int(val) for val in values]
+            except ValueError:
+                try:
+                    values = [float(val) for val in values]
+                except ValueError:
+                    pass
+
+            cross_validation_params[param] = values
+    if error:
+        raise ValueError(error)
+    return cross_validation_params
