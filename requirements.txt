@@ -18,3 +18,4 @@ matplotlib
 pyscm-ml@git+https://github.com/aldro61/pyscm.git#egg=pyscm-ml
 randomscm@git+https://github.com/thibgo/randomscm.git#egg=randomscm
 dash_interactive_graphviz
+dash_cytoscape
