@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -366,6 +367,66 @@ class Plots:
             color_continuous_scale=self.colors,
             title="",
         )
+
+    @staticmethod
+    def get_train_test_split_graph(nbr_element, slider_value, percent_test):
+        m_element = nbr_element
+        k_test = int(percent_test * m_element)
+
+        def choose(k, n):
+            if n > k:
+                return 0
+            if n < 0:
+                return 0
+            if k < 0:
+                return 0
+            a = 1
+            b = 1
+            for i in range(1, n + 1):
+                a = a * i
+                b = b * (k - i + 1)
+            return b / a
+
+        def f(i, j):
+            return choose(m_element - i, j - i) * choose(i, k_test - (j - i)) / choose(m_element, k_test)
+
+        M = np.zeros((m_element, m_element))
+        for a in range(1, m_element + 1):
+            for b in range(1, m_element + 1):
+                M[a - 1, b - 1] = f(a, b)
+
+        V = np.zeros(m_element)
+        V[k_test] = 1
+        nbr_limit = 100
+        valeurs = np.zeros(nbr_limit)
+
+        for c in range(nbr_limit):
+            valeurs[c] = V[m_element - 1]
+            V = np.matmul(V, M)
+
+        def threshold_at_99(selected):
+            vector = np.zeros(m_element)
+            vector[k_test] = 1
+            for i in range(selected - 1):
+                vector = np.matmul(vector, M)
+            result = 0
+            for i in range(m_element):
+                result += vector[m_element - i - 1]
+                if result > 0.9999:
+                    return int((m_element - i - 1) / m_element * 100)
+
+        fig = px.scatter(y=valeurs, x=[i for i in range(1, len(valeurs) + 1)],
+                    labels={'x': 'Number of splits',
+                            'y': 'Probability a'},
+                         )
+        fig.add_trace(go.Scatter(x=[slider_value], y=[valeurs[slider_value - 1]], mode='markers',
+                                 marker_symbol='circle',
+                                 marker_size=10))
+        fig.add_annotation(x=slider_value, y=valeurs[slider_value - 1],
+                           text=f"({slider_value} splits, a={valeurs[slider_value - 1]:.2f}, b={threshold_at_99(slider_value)}%)",
+                           showarrow=True, arrowhead=1)
+        fig.update_layout(showlegend=False)
+        return fig
 
     def get_default_stylesheet_for_cooc_graph(self):
         return self.__default_stylesheet_for_cooc
