@@ -23,7 +23,7 @@ from ..service import Utils
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
 
-MAX_NODE_NUMBER_FOR_COOCURENCE = 30
+MAX_CARDINALITY_FOR_COOCURENCE = 1000
 
 
 class Results:
@@ -552,8 +552,10 @@ class Results:
 
         # Mean of importance for all features
         mean_importance = weight_matrix.mean(axis=0)
-        if len(mean_importance) > MAX_NODE_NUMBER_FOR_COOCURENCE:
-            return None, None, None
+        number_of_nodes = len(mean_importance)
+        cardinality = (number_of_nodes * (number_of_nodes - 1)) / 2
+        if cardinality > MAX_CARDINALITY_FOR_COOCURENCE:
+            return None, None, None, cardinality
 
         all_pairs = []
         for split in splits:
@@ -563,7 +565,7 @@ class Results:
             all_pairs.extend(pairs)
 
         counter = Counter(all_pairs)
-        return counter, mean_importance, len(splits)
+        return counter, mean_importance, len(splits), int(cardinality)
 
 # Kept old classes for compatibility
 class ResultsDT(Results):

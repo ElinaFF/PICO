@@ -427,7 +427,8 @@ class ResultsTab(MetaTab):
                         html.Div(
                             id="cooc_matrix_graph_error",
                             children="",
-                            style={"color": "red", "height": "100%", "background-color": "grey"},
+                            style={"color": "red", "height": "100%", "background-color": "lightgrey",
+                                   "text-align": "center", "vertical-align": "middle"},
                         ),
                     ],
                     type="dot",
@@ -554,9 +555,12 @@ class ResultsTab(MetaTab):
         )
         def show_cooc_matrix(n_clicks, algo, design_name):
             if n_clicks >= 1:
-                counter, mean_importance, number_of_split = self.r[design_name][algo].results["coocurence_matrix"]
+                counter, mean_importance, number_of_split, cardinality = self.r[design_name][algo].results["coocurence_matrix"]
                 if counter is None:
-                    return dash.no_update, {'display': 'none'}, "Due to the high cardinality of the features, the co-occurrence graph cannot be displayed."
+                    return dash.no_update, {'display': 'none'}, "Due to the high cardinality of the features, " \
+                                                                "the co-occurrence graph cannot be displayed. " \
+                                                                "The estimated cardinality is " + str(int(cardinality)) + \
+                                                                " and exceed the 1000 links limit."
                 parameters = self._plots.create_coocurence_graph(counter, mean_importance, number_of_split)
                 return parameters, {'display': 'block', "width": "100%", "height": "800px"}, ""
             else:
