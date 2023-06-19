@@ -1009,7 +1009,7 @@ class SplitsTab(MetaTab):
                         or metadata_error != "" or experimental_design_error != "":
                     return dash.no_update, dash.no_update, train_test_proportion_error, \
                         datatable_error, normalization_error, metadata_error, experimental_design_error
-
+                self.metabo_controller.set_number_of_splits(nbr_splits)
                 self.metabo_controller.create_splits()
                 Utils.dump_metabo_expe(self.metabo_controller.generate_save())
                 print("bip bip 3 : ", self.metabo_controller._metabo_experiment.experimental_designs)
