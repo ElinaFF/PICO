@@ -1,3 +1,4 @@
+import itertools
 import os
 from collections import Counter
 from typing import List
@@ -21,6 +22,8 @@ from ..service import Utils
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
+
+MAX_NODE_NUMBER_FOR_COOCURENCE = 30
 
 
 class Results:
@@ -152,6 +155,8 @@ class Results:
         self.results["features_2d_and_3d"] = self.produce_features_2d_and_3d(
             self.results["features_table"], self.tmp["scaled_data"]
         )
+        self.results["coocurence_matrix"] = self.produce_coocurence_matrix()
+            
 
     def set_feature_names(self, x: pd.DataFrame):
         """
@@ -508,7 +513,7 @@ class Results:
             for rule, f_importance in zip(model.model_.rules, model.rule_importances_):
                 importances[rule.feature_idx] = f_importance
         zipped = zip(self.f_names, importances)
-        return zipped
+        return list(zipped)
 
     def _aggregate_features_info(self):
         """
@@ -531,6 +536,34 @@ class Results:
         importance_or_usage_or_ = [count_f[f][1] for f in count_f.keys()]
         return features, times_used_all_splits, importance_or_usage_or_
 
+    def produce_coocurence_matrix(self):
+
+        features = list(zip(*self.results["0"]["feature_importances"]))[0]
+        splits = [split for split in self.results.keys() if split.isdigit()]
+
+        weight_matrix = pd.DataFrame(0, columns=features, index=splits)
+        for split, values in self.results.items():
+            if split.isdigit():
+                for feature, weight in values['feature_importances']:
+                    if weight > 0:
+                        weight_matrix.loc[split, feature] = 1
+        weight_matrix = weight_matrix.loc[:, (weight_matrix != 0).any(axis=0)]
+        features = list(weight_matrix.columns)
+
+        # Mean of importance for all features
+        mean_importance = weight_matrix.mean(axis=0)
+        if len(mean_importance) > MAX_NODE_NUMBER_FOR_COOCURENCE:
+            return None, None, None
+
+        all_pairs = []
+        for split in splits:
+            split_features = weight_matrix.loc[split][weight_matrix.loc[split] == 1].index
+
+            pairs = list(itertools.combinations(split_features, 2))
+            all_pairs.extend(pairs)
+
+        counter = Counter(all_pairs)
+        return counter, mean_importance, len(splits)
 
 # Kept old classes for compatibility
 class ResultsDT(Results):

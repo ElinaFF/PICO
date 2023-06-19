@@ -4,6 +4,7 @@ import time
 import dash_bootstrap_components as dbc
 import dash_interactive_graphviz as dg
 from dash import html, dcc, Output, Input, State, dash, Dash
+import dash_cytoscape as cyto
 from matplotlib import pyplot as plt
 from sklearn import tree
 
@@ -408,13 +409,43 @@ class ResultsTab(MetaTab):
             ],
         )
 
+        ___coocMatrix = html.Div(
+            id="cooc_matrix",
+            style={"width": "50%", "height": "5em"},
+            children=[
+                html.H6("Co-occurence graph of features"),
+                dcc.Loading(
+                    children=[
+                        cyto.Cytoscape(
+                            id="cooc_matrix_graph",
+                            layout={"name": "cose"},
+                            style={"width": "100%", "height": "100%", "border": "1px solid black"},
+                            stylesheet=self._plots.get_default_stylesheet_for_cooc_graph(),
+                            elements=[],
+
+                        ),
+                        html.Div(
+                            id="cooc_matrix_graph_error",
+                            children="",
+                            style={"color": "red", "height": "100%", "background-color": "grey"},
+                        ),
+                    ],
+                    type="dot",
+                    color="#13BD00",
+                ),
+            ],
+        )
+
         __featuresResultsTab = dbc.Tab(
             className="sub_tab",
             label="Features",
             children=[
                 html.Div(
-                    className="fig_group", children=[___featuresTable, ___stripChart]
+                    className="fig_group", children=[___featuresTable,
+                                                     ___stripChart
+                                                     ]
                 ),
+                ___coocMatrix
             ],
         )
 
@@ -513,6 +544,37 @@ class ResultsTab(MetaTab):
         #         return self._plots.show_two_most_important_feature(df[pca_value], classes, pca_value, algo)
         #     else:
         #         return dash.no_update
+
+        @self.app.callback(
+            [Output("cooc_matrix_graph", "elements"),
+             Output("cooc_matrix_graph", "style"),
+             Output("cooc_matrix_graph_error", "children")],
+            [Input("load_ML_results_button", "n_clicks")],
+            [State("ml_dropdown", "value"), State("design_dropdown", "value")]
+        )
+        def show_cooc_matrix(n_clicks, algo, design_name):
+            if n_clicks >= 1:
+                counter, mean_importance, number_of_split = self.r[design_name][algo].results["coocurence_matrix"]
+                if counter is None:
+                    return dash.no_update, {'display': 'none'}, "Due to the high cardinality of the features, the co-occurrence graph cannot be displayed."
+                parameters = self._plots.create_coocurence_graph(counter, mean_importance, number_of_split)
+                return parameters, {'display': 'block', "width": "100%", "height": "800px"}, ""
+            else:
+                return dash.no_update, dash.no_update, dash.no_update
+
+        @self.app.callback(Output('cooc_matrix_graph', 'stylesheet'),
+                           [Input('cooc_matrix_graph', 'selectedNodeData')])
+        def update_stylesheet(nodes):
+            default_stylesheet = self._plots.get_default_stylesheet_for_cooc_graph()
+            if nodes is None:
+                return default_stylesheet
+            else:
+                updated_stylesheet = default_stylesheet.copy()
+                print("nodes")
+                print(nodes)
+                for node in nodes:
+                    updated_stylesheet.append(self._plots.format_style_for_selected_node(node))
+                return updated_stylesheet
 
         @self.app.callback(
             Output("PCA", "figure"),
@@ -699,15 +761,15 @@ class ResultsTab(MetaTab):
             else:
                 return dash.no_update
 
-        #@self.app.callback(
+        # @self.app.callback(
         #    [
         #        Output("features_dropdown", "options"),
         #        Output("features_dropdown", "value"),
         #    ],
         #    [Input("load_ML_results_button", "n_clicks")],
         #    [State("ml_dropdown", "value"), State("design_dropdown", "value")],
-        #)
-        #def update_results_dropdown_features(n_click, algo, design_name):
+        # )
+        # def update_results_dropdown_features(n_click, algo, design_name):
         #    if n_click >= 1:
         #        df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
         #        features = list(df.iloc[:, 0])
