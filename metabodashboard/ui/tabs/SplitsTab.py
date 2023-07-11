@@ -371,7 +371,7 @@ class SplitsTab(MetaTab):
 
         __trainTestSplitGraph = html.Div(
             [
-                dbc.Label("Train/Test split graph (worst case scenario)"),
+                dbc.Label("Train/Test split graph"),
                 dcc.Graph(
                     id="train_test_split_graph",
                 ),
@@ -385,11 +385,10 @@ class SplitsTab(MetaTab):
                 ),
                 html.Div(
                     children=[
-                        html.H5('Variables legend'),
-                        html.P('a: Probability that all of the samples are seen at least one time in the test set'),
+                        html.P('a) Probability that all the samples are seen at least once in a test set'),
                         html.P(
-                            'b: Proportion of the samples that are seen at least one time in the test set at a 99.99% '
-                            'confidence level'),
+                            'b) With a confidence level of 99.99%, proportion of the samples that are seen at least '
+                            'once in a test set'),
                     ])
             ],
             className="form_field",

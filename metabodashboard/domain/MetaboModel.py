@@ -19,6 +19,7 @@ class MetaboModel:
         X_train: pd.DataFrame,
         y_train: list,
         cv_algorithms: sklearn.model_selection,
+        cv_algorithm_config,
         number_of_processes: int, seed: int
     ) -> sklearn:
         if cv_algorithms == RandomizedSearchCV:
@@ -28,7 +29,7 @@ class MetaboModel:
                 cv=folds,
                 random_state=seed,
                 n_jobs=number_of_processes,
-                n_iter=10,  # 10 is the default sklearn value
+                n_iter=cv_algorithm_config[0]["value"],
             )
         else:
             search = cv_algorithms(

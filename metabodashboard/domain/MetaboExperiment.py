@@ -256,7 +256,8 @@ class MetaboExperiment:
 
     def learn(self):
         self._raise_if_value_for_learning_not_setted()
-        cv_algorithm = self.get_cv_algorithm()
+        cv_algorithm_constructor = self.get_cv_algorithm_constructor()
+        cv_algorithm_config = self.get_cv_algorithm_configuration()
         self._check_experimental_design()
         self._data_matrix.load_data()
         params = []
@@ -276,8 +277,8 @@ class MetaboExperiment:
                         split[X_TEST_INDEX]
                     )
                     params.append(
-                        (model_name, experimental_design.get_name(), split_index, split, x_train, x_test, cv_algorithm,
-                         selected_ids, classes)
+                        (model_name, experimental_design.get_name(), split_index, split, x_train, x_test,
+                         cv_algorithm_constructor, cv_algorithm_config, selected_ids, classes)
                     )
         self.run_learning(params)
         self._data_matrix.unload_data()
@@ -288,7 +289,7 @@ class MetaboExperiment:
         if self._activate_multithreading:
             print("-> Multithreading activated (", len(params), " models to run) ...")
             # ctx = get_context("spawn")
-            pool = Pool(len(params))
+            pool = Pool(cpu_count())
             result_params = pool.starmap(self.run_on_model, params)
         else:
             result_params = [self.run_on_model(*param) for param in params]
@@ -308,8 +309,8 @@ class MetaboExperiment:
                 result.compute_remaining_results_on_all_splits()
             experimental_design.set_is_done(True)
 
-    def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test, cv_algorithm,
-                     selected_ids, classes):
+    def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test,
+                     cv_algorithm_constructor, cv_algorithm_config, selected_ids, classes):
         print("-> Split : ", split_index)
         print("-> Model : ", model_name)
 
@@ -318,7 +319,8 @@ class MetaboExperiment:
             self._cv_folds,
             x_train,
             split[y_TRAIN_INDEX],
-            cv_algorithm,
+            cv_algorithm_constructor,
+            cv_algorithm_config,
             DEFAULT_NJOB,
             seed=split_index
         )
@@ -361,8 +363,19 @@ class MetaboExperiment:
     def get_selected_cv_type(self) -> str:
         return self._selected_cv_type
 
-    def get_cv_algorithm(self) -> sklearn.model_selection:
-        return self._cv_algorithms[self._selected_cv_type]
+    def get_cv_algorithm_constructor(self) -> sklearn.model_selection:
+        return self._cv_algorithms[self._selected_cv_type]["constructor"]
+
+    def get_cv_algorithm_configuration(self) -> list:
+        return self._cv_algorithms[self._selected_cv_type]["params"]
+
+    def set_cv_algorithm_configuration(self, cv_algorithm_configuration: list):
+        config_index = 0
+        for param_index, params in enumerate(self._cv_algorithms[self._selected_cv_type]["params"]):
+            if not params["constant"]:
+                self._cv_algorithms[self._selected_cv_type]["params"][param_index]["value"] = \
+                    cv_algorithm_configuration[config_index]
+                config_index += 1
 
     def get_cv_types(self) -> List[str]:
         return list(self._cv_algorithms.keys())

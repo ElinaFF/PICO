@@ -3,7 +3,7 @@ import re
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, State, Input, Output, dash, dcc, callback_context
+from dash import html, State, Input, Output, dash, dcc, callback_context, ALL
 
 from .MetaTab import MetaTab
 from ...service import Utils
@@ -21,6 +21,8 @@ class MLTab(MetaTab):
                     value=self.metabo_controller.get_selected_cv_type(),
                     id="radio_cv_types",
                 ),
+                html.Br(),
+                html.Div(id="cv_params"),
             ],
             className="form_field",
         )
@@ -99,6 +101,7 @@ class MLTab(MetaTab):
                     n_clicks=0,
                 ),
                 html.Div(id="output_import_algo"),
+                html.Div("WARNING: Incorrect configuration may lead to errors", style={"color": "orange"}),
                 html.Br(),
                 dbc.Label("Specify parameters to explore by gridsearch"),
                 html.Div(id="table_param"),
@@ -317,13 +320,51 @@ class MLTab(MetaTab):
                 return dash.no_update
 
         @self.app.callback(
-            Output("radio_cv_types", "value"), [Input("radio_cv_types", "value")]
+            [Output("radio_cv_types", "value"),
+             Output("cv_params", "children")],
+            [Input("radio_cv_types", "value"),
+             Input("custom_big_tabs", "active_tab"),
+             Input({"type": "cv_params", "index": ALL}, "value")],
         )
-        def set_cv_type(value):
+        def set_cv_type(cv_value, tab, input_params):
             if callback_context.triggered[0]["prop_id"] == "radio_cv_types.value":
-                self.metabo_controller.set_cv_type(value)
+                params_form = []
+                self.metabo_controller.set_cv_type(cv_value)
+                params = self.metabo_controller.get_cv_algorithm_configuration()
+                if params:
+                    for param in params:
+                        if not param["constant"]:
+                            name = param["name"]
+                            value = param["value"]
+                            type = param["type"]
+                            if type == "int":
+                                html_type = "number"
+                            elif type == "float":
+                                html_type = "number"
+                            elif type == "bool":
+                                html_type = "checkbox"
+                            else:
+                                html_type = "text"
+                            params_form.append(
+                                html.Tr(
+                                    [
+                                        html.Td(name),
+                                        html.Td(
+                                            dcc.Input(
+                                                id={"type": "cv_params", "index": name},
+                                                type=html_type,
+                                                value=value,
+                                            )
+                                        ),
+                                    ]
+                                )
+                            )
+                return cv_value, params_form
+            else:
+                if input_params is not None and input_params != []:
+                    self.metabo_controller.set_cv_algorithm_configuration(input_params)
 
-            return self.metabo_controller.get_selected_cv_type()
+            return self.metabo_controller.get_selected_cv_type(), dash.no_update
 
         @self.app.callback(
             [Output("output_import_algo", "children"),
