@@ -53,8 +53,9 @@ def test_givenCustomModel_whenLearning_thenNoThrow(input_controller):
     input_controller.set_train_test_proportion(0.2)
     input_controller.set_number_of_splits(2)
     input_controller.create_splits()
-    input_controller.add_custom_model("DecisionTreeClassifier", "tree", {"max_depth": [1, 5, 10]}, Utils.DEFAULT_IMPORTANCE_ATTRIBUTE)
-    input_controller.set_selected_models(["DecisionTreeClassifier"])
+    input_controller.add_custom_model("DecisionTreeClassifier", "tree", {"max_depth": [1, 5, 10]},
+                                      Utils.DEFAULT_IMPORTANCE_ATTRIBUTE)
+    input_controller.set_selected_models(["CustomDecisionTreeClassifier0"])
 
     input_controller.set_cv_folds(2)
     input_controller.learn()
