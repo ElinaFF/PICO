@@ -74,7 +74,7 @@ def test_givenMetaboExperiment_whenChangeCvType_thenTheCvTypeIsCorrect(
     input_metabo_experiment,
 ):
     input_metabo_experiment.set_cv_type("RandomizedSearchCV")
-    assert input_metabo_experiment.get_cv_algorithm() == RandomizedSearchCV
+    assert input_metabo_experiment.get_cv_algorithm_constructor() == RandomizedSearchCV
 
 
 def test_givenMetaboExperiment_whenChangeCvTypeToIncorrect_thenRaiseValueError(

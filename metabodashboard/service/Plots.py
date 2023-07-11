@@ -1,13 +1,41 @@
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from dash import html
-import umap
 
 
 class Plots:
     def __init__(self, colors: str):
         self.colors = colors
+        self.__default_stylesheet_for_cooc = [
+            {
+                "selector": "node",
+                "style": {
+                    "width": "mapData(size, 0, 1, 5, 50)",
+                    "height": "mapData(size, 0, 1, 5, 50)",
+                    "content": "data(label)",
+                    'text-background-color': 'white',  # Set the background color for the text
+                    'text-background-opacity': 1,  # Set the opacity of the text background
+                    'text-background-padding': '2px',
+                    "font-size": "6px",
+                    "text-valign": "center",
+                    "text-halign": "center",
+                    'border-color': 'black',  # Set the border color
+                    'border-width': '1px',  # Set the border width
+                    'border-style': 'solid',  # Set the border style
+                    'text-opacity': 0,
+                    'background-color': '#00143E',
+                }
+            },
+            {
+                "selector": "edge",
+                "style": {
+                    "width": "mapData(size, 0, 1, 1, 5)",
+                    'line-color': 'gray',
+                }
+            }
+        ]
 
     # TODO : faire la sauvegarde dans results des resultats de heatmap pour pouvoir sortir la figure
     def show_algo_comparison_by_heatmap(self):
@@ -53,9 +81,9 @@ class Plots:
                 "paper_bgcolor": "rgba(0, 0, 0, 0)",
             },
             title="UMAP applied on top "
-            + str(val[slider_value])
-            + " features selected by "
-            + algo,
+                  + str(val[slider_value])
+                  + " features selected by "
+                  + algo,
         )
         return fig
 
@@ -75,9 +103,9 @@ class Plots:
                 "paper_bgcolor": "rgba(0, 0, 0, 0)",
             },
             title="PCA applied on top "
-            + str(val[slider_value])
-            + " features selected by "
-            + algo,
+                  + str(val[slider_value])
+                  + " features selected by "
+                  + algo,
         )
         return fig
 
@@ -233,7 +261,7 @@ class Plots:
         for c in df.columns:
             if c != "targets":
                 newdf = pd.DataFrame({
-                    "features_name": [c]*len(df["targets"]),
+                    "features_name": [c] * len(df["targets"]),
                     "intensity": list(df[c]),
                     "targets": list(df["targets"])
                 })
@@ -266,8 +294,7 @@ class Plots:
         #                   # scalemode='count'
         #                   )
         # fig.update_layout(violingap=0, violinmode='overlay')
-        #---> end for violin plot
-
+        # ---> end for violin plot
 
         fig = px.strip(
             df_dup,
@@ -275,12 +302,10 @@ class Plots:
             y="intensity",
             color="targets",
             title="Abundance of {} in each sample by class for {}".format("all",
-                #feature,
-                algo
-            ),
+                                                                          # feature,
+                                                                          algo
+                                                                          ),
         )
-
-
 
         fig.update_layout(
             {
@@ -342,3 +367,97 @@ class Plots:
             color_continuous_scale=self.colors,
             title="",
         )
+
+    @staticmethod
+    def get_train_test_split_graph(nbr_element, slider_value, percent_test):
+        m_element = nbr_element
+        k_test = int(percent_test * m_element)
+
+        def choose(k, n):
+            if n > k:
+                return 0
+            if n < 0:
+                return 0
+            if k < 0:
+                return 0
+            a = 1
+            b = 1
+            for i in range(1, n + 1):
+                a = a * i
+                b = b * (k - i + 1)
+            return b / a
+
+        def f(i, j):
+            return choose(m_element - i, j - i) * choose(i, k_test - (j - i)) / choose(m_element, k_test)
+
+        M = np.zeros((m_element, m_element))
+        for a in range(1, m_element + 1):
+            for b in range(1, m_element + 1):
+                M[a - 1, b - 1] = f(a, b)
+
+        V = np.zeros(m_element)
+        V[k_test] = 1
+        nbr_limit = 100
+        valeurs = np.zeros(nbr_limit)
+
+        for c in range(nbr_limit):
+            valeurs[c] = V[m_element - 1]
+            V = np.matmul(V, M)
+
+        def threshold_at_99(selected):
+            vector = np.zeros(m_element)
+            vector[k_test] = 1
+            for i in range(selected - 1):
+                vector = np.matmul(vector, M)
+            result = 0
+            for i in range(m_element):
+                result += vector[m_element - i - 1]
+                if result > 0.9999:
+                    return int((m_element - i - 1) / m_element * 100)
+
+        fig = px.scatter(y=valeurs, x=[i for i in range(1, len(valeurs) + 1)],
+                    labels={'x': 'Number of splits',
+                            'y': 'Probability a'},
+                         )
+        fig.add_trace(go.Scatter(x=[slider_value], y=[valeurs[slider_value - 1]], mode='markers',
+                                 marker_symbol='circle',
+                                 marker_size=10))
+        fig.add_annotation(x=slider_value, y=valeurs[slider_value - 1],
+                           text=f"({slider_value} splits, a={valeurs[slider_value - 1]:.2f}, b={threshold_at_99(slider_value)}%)",
+                           showarrow=True, arrowhead=1)
+        fig.update_layout(showlegend=False)
+        return fig
+
+    def get_default_stylesheet_for_cooc_graph(self):
+        return self.__default_stylesheet_for_cooc
+
+    def format_style_for_selected_node(self, node):
+        return {
+            "selector": 'node[id = "{}"]'.format(node['id']),
+            'style': {
+                'content': 'data(label)',
+                'text-opacity': 1,
+                'background-color': '#13BD00'
+            }
+        }
+
+    def create_coocurence_graph(self, counter, mean_importance, number_of_split):
+        def formatNode(node):
+            return {'data': {'id': node, 'label': node, 'size': mean_importance[node]}}
+
+        def formatEdge(edge):
+            return {'data': {'source': edge[0], 'target': edge[1], 'size': counter[edge] / number_of_split}}
+
+        seen_feature = set()
+        dash_parameters = []
+        for pair, weight in counter.items():
+            x, y = pair
+            if x not in seen_feature:
+                dash_parameters.append(formatNode(x))
+                seen_feature.add(x)
+            if y not in seen_feature:
+                dash_parameters.append(formatNode(y))
+                seen_feature.add(y)
+            dash_parameters.append(formatEdge(pair))
+
+        return dash_parameters

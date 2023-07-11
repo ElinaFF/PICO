@@ -216,3 +216,11 @@ class MetaboController:
 
     def set_multithreading(self, activate_multithreading: bool):
         self._metabo_experiment.set_multithreading(activate_multithreading)
+
+    def get_cv_algorithm_configuration(self) -> list:
+        return self._metabo_experiment.get_cv_algorithm_configuration()
+
+    def set_cv_algorithm_configuration(self, cv_algorithm_configuration: list):
+        self._metabo_experiment.set_cv_algorithm_configuration(cv_algorithm_configuration)
+    def get_samples_id(self):
+        return self._metabo_experiment.get_samples_id()

@@ -3,7 +3,7 @@ import re
 
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import html, State, Input, Output, dash, dcc, callback_context
+from dash import html, State, Input, Output, dash, dcc, callback_context, ALL
 
 from .MetaTab import MetaTab
 from ...service import Utils
@@ -21,6 +21,8 @@ class MLTab(MetaTab):
                     value=self.metabo_controller.get_selected_cv_type(),
                     id="radio_cv_types",
                 ),
+                html.Br(),
+                html.Div(id="cv_params"),
             ],
             className="form_field",
         )
@@ -99,6 +101,7 @@ class MLTab(MetaTab):
                     n_clicks=0,
                 ),
                 html.Div(id="output_import_algo"),
+                html.Div("WARNING: Incorrect configuration may lead to errors", style={"color": "orange"}),
                 html.Br(),
                 dbc.Label("Specify parameters to explore by gridsearch"),
                 html.Div(id="table_param"),
@@ -241,51 +244,33 @@ class MLTab(MetaTab):
                     self.metabo_controller.update_experimental_designs_with_selected_models()
 
             if triggered_by == "add_n_refresh_sklearn_algo_button":
-                if "{'props': {'children': 'Name', 'colSpan': 1}, 'type': 'Th', 'namespace': 'dash_html_components'}" in str(table_param[-1]["props"]):
-                    params_and_values = re.findall(r"{'id': '(\w+)'[\w,' :]*'value': '([\[\],. \w]+)',[\w,': ]*}",
-                                                       str(table_param))
-                else:
-                    json_params_and_values = table_param[-1]["props"]["value"]
-                    params_and_values = json.loads(json_params_and_values)
-
-
-                model = Utils.get_model_from_import([import_algo], name_algo)
-
                 grid_search_params = {}
+                model = Utils.get_model_from_import([import_algo], name_algo)
                 param_types = {param: type for param, type in Utils.get_model_parameters(model)}
                 error_children = []
-                for param, value in params_and_values:
-                    values = re.split(r" *, *", value)
-                    param_type = param_types[param]
-                    if param_type == "float":
-                        try:
-                            grid_search_params[param] = [float(val) for val in values]
-                        except ValueError:
-                            error_children.append(html.P(f"{param} must be decimal numbers (with '.')", style={"color": "red"}))
-                    elif param_type == "int":
-                        try:
-                            grid_search_params[param] = [int(val) for val in values]
-                        except ValueError:
-                            error_children.append(html.P(f"{param} must be integers", style={"color": "red"}))
-                    else:
-                        try:
-                            values = [int(val) for val in values]
-                        except ValueError:
-                            try:
-                                values = [float(val) for val in values]
-                            except ValueError:
-                                pass
-
-                        grid_search_params[param] = values
+                if "{'props': {'children': 'Name', 'colSpan': 1}, 'type': 'Th', 'namespace': 'dash_html_components'}" in str(
+                        table_param[-1]["props"]):
+                    params_and_values = re.findall(r"{'id': '(\w+)'[\w,' :]*'value': '([\[\],. \w]+)',[\w,': ]*}",
+                                                   str(table_param))
+                    try:
+                        grid_search_params = Utils.transform_params_to_cross_validation_dict(params_and_values,
+                                                                                             param_types)
+                    except ValueError as e:
+                        for error in e.args[0]:
+                            error_children.append(html.P(error, style={"color": "red"}))
+                else:
+                    json_params_and_values = table_param[-1]["props"]["value"]
+                    try:
+                        params_and_values = json.loads(json_params_and_values)
+                    except json.decoder.JSONDecodeError as e:
+                        return dash.no_update, dash.no_update, dash.no_update, html.P("Error in parameters:" + e.msg,
+                                                                                      style={"color": "red"})
 
                 if importance_attribute is None:
                     error_children.append(html.P("Please select an importance attribute", style={"color": "red"}))
 
                 if error_children:
                     return dash.no_update, dash.no_update, dash.no_update, error_children
-
-
-
 
                 self.metabo_controller.add_custom_model(
                     name_algo, import_algo, grid_search_params, importance_attribute
@@ -335,13 +320,51 @@ class MLTab(MetaTab):
                 return dash.no_update
 
         @self.app.callback(
-            Output("radio_cv_types", "value"), [Input("radio_cv_types", "value")]
+            [Output("radio_cv_types", "value"),
+             Output("cv_params", "children")],
+            [Input("radio_cv_types", "value"),
+             Input("custom_big_tabs", "active_tab"),
+             Input({"type": "cv_params", "index": ALL}, "value")],
         )
-        def set_cv_type(value):
+        def set_cv_type(cv_value, tab, input_params):
             if callback_context.triggered[0]["prop_id"] == "radio_cv_types.value":
-                self.metabo_controller.set_cv_type(value)
+                params_form = []
+                self.metabo_controller.set_cv_type(cv_value)
+                params = self.metabo_controller.get_cv_algorithm_configuration()
+                if params:
+                    for param in params:
+                        if not param["constant"]:
+                            name = param["name"]
+                            value = param["value"]
+                            type = param["type"]
+                            if type == "int":
+                                html_type = "number"
+                            elif type == "float":
+                                html_type = "number"
+                            elif type == "bool":
+                                html_type = "checkbox"
+                            else:
+                                html_type = "text"
+                            params_form.append(
+                                html.Tr(
+                                    [
+                                        html.Td(name),
+                                        html.Td(
+                                            dcc.Input(
+                                                id={"type": "cv_params", "index": name},
+                                                type=html_type,
+                                                value=value,
+                                            )
+                                        ),
+                                    ]
+                                )
+                            )
+                return cv_value, params_form
+            else:
+                if input_params is not None and input_params != []:
+                    self.metabo_controller.set_cv_algorithm_configuration(input_params)
 
-            return self.metabo_controller.get_selected_cv_type()
+            return self.metabo_controller.get_selected_cv_type(), dash.no_update
 
         @self.app.callback(
             [Output("output_import_algo", "children"),
@@ -371,7 +394,8 @@ class MLTab(MetaTab):
                         attributes = Utils.get_model_parameters(model)
                         attributes_table = pd.DataFrame(attributes, columns=["Name", "Type"])
                         attributes_table["Type"].replace(
-                            {"str": "String", "int": "Integer", "float": "Float", "NoneType": "Unspecified"}, inplace=True)
+                            {"str": "String", "int": "Integer", "float": "Float", "NoneType": "Unspecified"},
+                            inplace=True)
                         inputs = []
                         for attribute, _ in attributes:
                             inputs.append(dbc.Input(id=attribute, type="text", placeholder="Value"))
@@ -386,13 +410,15 @@ class MLTab(MetaTab):
                             dbc.Table.from_dataframe(attributes_table)
                         ]
 
-                        return f"{model.__name__} found", {"color": "green"}, default_text, Utils.format_list_for_checklist(importance_attributes)
+                        return f"{model.__name__} found", {
+                            "color": "green"}, default_text, Utils.format_list_for_checklist(importance_attributes)
                     except Exception as e:
                         print(e)
                         return "Import failed: " + str(e), {"color": "red"}, "", ""
                 elif triggered_by == "manual_config_button":
                     return "", None, [html.P("The following configuration must be in JSON format",
-                                                                   style={"color": "orange"}), html.Br(), dcc.Textarea()], Utils.format_list_for_checklist(importance_attributes)
+                                             style={"color": "orange"}), html.Br(),
+                                      dcc.Textarea()], Utils.format_list_for_checklist(importance_attributes)
             return dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
         @self.app.callback(

@@ -7,7 +7,7 @@ dash-core-components==2.0.0
 dash-html-components==2.0.0
 dash-renderer
 dash-table==5.0.0
-numpy==1.22.4
+numpy==1.23
 pandas
 plotly
 scikit-learn
@@ -18,3 +18,4 @@ matplotlib
 pyscm-ml@git+https://github.com/aldro61/pyscm.git#egg=pyscm-ml
 randomscm@git+https://github.com/thibgo/randomscm.git#egg=randomscm
 dash_interactive_graphviz
+dash_cytoscape

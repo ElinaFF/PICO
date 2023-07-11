@@ -262,20 +262,13 @@ class ResultsSummaryTab(MetaTab):
                 global_df = global_df.set_index("features")
                 global_df = global_df.fillna(0)
 
-                # TODO: wrap with try catch to prevent error when no data for a algo
-
-                random_df = global_df.loc[:, ("RandomForest", "RandomSCM")]
-                random_df = random_df[
-                    (random_df["RandomForest"] > 0.001)
-                    | (random_df["RandomSCM"] > 0.001)
-                ]
-
-                non_random_df = global_df.loc[:, ("DecisionTree", "SCM")]
-                non_random_df = non_random_df[
-                    (non_random_df["DecisionTree"] > 0.01)
-                    | (non_random_df["SCM"] > 0.01)
-                ]
-
+                random_df = pd.DataFrame()
+                non_random_df = pd.DataFrame()
+                for algo in global_df.columns:
+                    if "random" in algo.lower():
+                        random_df[algo] = global_df[algo]
+                    else:
+                        non_random_df[algo] = global_df[algo]
                 random_fig = self._plots.show_heatmap_features_usage(random_df)
                 non_random_fig = self._plots.show_heatmap_features_usage(non_random_df)
 
