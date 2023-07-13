@@ -366,7 +366,13 @@ class ResultsTab(MetaTab):
         )
 
         __DTTreeTab = dbc.Tab(
-            id="DTTT", className="sub_tab", label="DT Tree", disabled=True
+            id="DTTT", className="sub_tab", label="DT Tree", disabled=True,
+            children=[
+                html.Div(dg.DashInteractiveGraphviz(
+                    id="DTTT_graph"
+                ),
+                style={"letter-spacing": "0"}),
+            ]
         )
 
         ___featuresTable = html.Div(
@@ -817,7 +823,7 @@ class ResultsTab(MetaTab):
                 return dash.no_update
 
         @self.app.callback(
-            [Output("DTTT", "disabled"), Output("DTTT", "children")],
+            [Output("DTTT", "disabled"), Output("DTTT_graph", "dot_source")],
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
@@ -835,12 +841,11 @@ class ResultsTab(MetaTab):
                         out_file=None,
                         class_names=classes,
                         feature_names=features_name,
+                        proportion=True,
                         filled=True,
                         rounded=True,
                         special_characters=True,
                     )
 
-                    return False, dg.DashInteractiveGraphviz(
-                        id="DTTT_graph", dot_source=dot_data
-                    )
+                    return False, dot_data
             return True, ""
