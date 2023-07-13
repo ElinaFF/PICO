@@ -120,6 +120,7 @@ class Results:
             train_ids,
             test_ids,
         )
+        self.results[split_number]["hyperparameters"] = model.get_params()
         if self.results[split_number]["test_accuracy"] > self.best_acc:
             self.best_acc = self.results[split_number]["test_accuracy"]
             self.results["best_model"] = model
