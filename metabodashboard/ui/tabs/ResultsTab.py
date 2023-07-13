@@ -3,6 +3,7 @@ import time
 
 import dash_bootstrap_components as dbc
 import dash_interactive_graphviz as dg
+import pandas as pd
 from dash import html, dcc, Output, Input, State, dash, Dash
 import dash_cytoscape as cyto
 from matplotlib import pyplot as plt
@@ -312,13 +313,26 @@ class ResultsTab(MetaTab):
                 ),
                 html.Div(
                     className="",
+                    style={"display": "flex", "width": "100%"},
                     children=[
-                        html.H6("Confusion matrix"),
-                        dcc.Loading(
-                            dcc.Graph(id="split_conf_matrix", config=CONFIG),
-                            type="dot",
-                            color="#13BD00",
+                        html.Div(
+                            children=[
+                                html.H6("Confusion matrix"),
+                                dcc.Loading(
+                                    dcc.Graph(id="split_conf_matrix", config=CONFIG),
+                                    type="dot",
+                                    color="#13BD00",
+                                ),
+                            ],
                         ),
+                        html.Div(
+                            children=[
+                                html.H6("Table of used hyperparameter"),
+                                dcc.Loading(
+                                    html.Div(id="hyperparam_table", children="", style={"margin-top": "2em"}),
+                                ),
+                            ],
+                        )
                     ],
                 ),
             ],
@@ -555,11 +569,13 @@ class ResultsTab(MetaTab):
         )
         def show_cooc_matrix(n_clicks, algo, design_name):
             if n_clicks >= 1:
-                counter, mean_importance, number_of_split, cardinality = self.r[design_name][algo].results["coocurence_matrix"]
+                counter, mean_importance, number_of_split, cardinality = self.r[design_name][algo].results[
+                    "coocurence_matrix"]
                 if counter is None:
                     return dash.no_update, {'display': 'none'}, "Due to the high cardinality of the features, " \
                                                                 "the co-occurrence graph cannot be displayed. " \
-                                                                "The estimated cardinality is " + str(int(cardinality)) + \
+                                                                "The estimated cardinality is " + str(
+                        int(cardinality)) + \
                                                                 " and exceed the 1000 links limit."
                 parameters = self._plots.create_coocurence_graph(counter, mean_importance, number_of_split)
                 return parameters, {'display': 'block', "width": "100%", "height": "800px"}, ""
@@ -711,7 +727,8 @@ class ResultsTab(MetaTab):
         #         return dash.no_update
 
         @self.app.callback(
-            Output("split_conf_matrix", "figure"),
+            [Output("split_conf_matrix", "figure"),
+             Output("hyperparam_table", "children")],
             [Input("update_specific_results_button", "n_clicks")],
             [
                 State("ml_dropdown", "value"),
@@ -731,11 +748,17 @@ class ResultsTab(MetaTab):
                     for j, col in enumerate(line):
                         text_mat[i].append(str(col))
 
+                hps = self.r[design_name][algo].results[split]["hyperparameters"]
+
+                hps_df = pd.DataFrame.from_dict({"Hyperparameters": hps.keys(), "Values": hps.values()})
+
+                dash_table_element = dbc.Table.from_dataframe(hps_df, borderless=True)
+
                 return self._plots.show_general_confusion_matrix(
                     cm, labels, text_mat, algo, split
-                )
+                ), dash_table_element
             else:
-                return dash.no_update
+                return dash.no_update, dash.no_update
 
         @self.app.callback(
             Output("features_table", "children"),
