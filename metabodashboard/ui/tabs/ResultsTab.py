@@ -775,6 +775,7 @@ class ResultsTab(MetaTab):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["features_table"].copy()
                 df = df.sort_values(by="importance_usage", ascending=False)
+                df = df.round(4)
                 return dbc.Table.from_dataframe(df.iloc[:10, :], borderless=True)
             else:
                 return dash.no_update

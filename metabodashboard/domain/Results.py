@@ -179,9 +179,12 @@ class Results:
                     liste_val.append(values[idx])
             if liste_val:
                 # mean on all the splits, even if feature not used
-                count[n].append(np.sum(liste_val) / len(
-                    self.splits_number))  # np.mean(liste_val) : for mean on number on time its used
+                mean_val = np.mean(liste_val)
+                std = np.std(liste_val)
+                count[n].append(mean_val)
+                count[n].append(std)
             else:
+                count[n].append(0)
                 count[n].append(0)
         return count
 
@@ -282,6 +285,7 @@ class Results:
             features,
             times_used_all_splits,
             importance_or_usage_or_,
+            std
         ) = self._aggregate_features_info()
         # print("--> aggregating done, importances : {}".format(importance_or_usage_or_))
 
@@ -289,10 +293,12 @@ class Results:
             "features": features,
             "times_used": times_used_all_splits,
             "importance_usage": importance_or_usage_or_,
+            "std": std
         }
         df = pd.DataFrame(data=d)
         df["times_used"] = pd.to_numeric(df["times_used"])
         df["importance_usage"] = pd.to_numeric(df["importance_usage"])
+        df["std"] = pd.to_numeric(df["std"])
         df = df.sort_values(by=["importance_usage"], ascending=False)
         return df
 
@@ -535,7 +541,8 @@ class Results:
         features = [f for f in count_f.keys()]
         times_used_all_splits = [count_f[f][0] for f in count_f.keys()]
         importance_or_usage_or_ = [count_f[f][1] for f in count_f.keys()]
-        return features, times_used_all_splits, importance_or_usage_or_
+        std = [count_f[f][2] for f in count_f.keys()]
+        return features, times_used_all_splits, importance_or_usage_or_, std
 
     def produce_coocurence_matrix(self):
 
