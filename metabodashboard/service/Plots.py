@@ -328,14 +328,15 @@ class Plots:
 
         return fig
 
-    def show_heatmap_features_usage(self, df):
+    def show_heatmap_features_usage(self, df, importance_threshold):
         fig = go.Figure()
         fig.add_trace(
             go.Heatmap(
                 z=df.values, x=df.columns, y=df.index, opacity=1, colorscale="blues"
             )
         )
-        fig.update_layout(title="Mean importance of features (>0.01) for all splits")
+        importance_threshold = round(importance_threshold, 3)
+        fig.update_layout(title=f"Mean importance of features (>{importance_threshold}) for all splits")
         return fig
 
     def show_barplot_comparaison_algo(self, algos, train_acc, train_std, test_acc, test_std):

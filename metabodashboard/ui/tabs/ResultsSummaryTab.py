@@ -1,21 +1,8 @@
-import glob
-import json
-import os
-import time
 from collections import Counter
 
 import dash_bootstrap_components as dbc
 import numpy as np
-import pandas as pd
 from dash import html, dcc, Output, Input, State, dash, Dash
-import plotly.graph_objs as go
-import pickle as pkl
-from matplotlib import pyplot as plt
-from sklearn import tree
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.tree import DecisionTreeClassifier
 
 from .MetaTab import MetaTab
 from ...service import Plots
@@ -68,7 +55,7 @@ class ResultsSummaryTab(MetaTab):
                 )
             ],
         )
-        _nonRandomHeatmapUsedFeatures = html.Div(
+        _heatmapUsedFeatures = html.Div(
             className="umap_plot_and_title",
             children=[
                 html.Div(
@@ -78,48 +65,27 @@ class ResultsSummaryTab(MetaTab):
                         dbc.Button(
                             "[?]",
                             className="text-muted btn-secondary popover_btn",
-                            id="help_nonrandomHeatmapFeatures",
+                            id="help_heatmapFeatures",
                         ),
                         dbc.Popover(
                             children=[dbc.PopoverBody("Blablabla wout wout")],
-                            id="pop_help_nonrandomHeatmapFeatures",
+                            id="pop_help_heatmapFeatures",
                             is_open=False,
-                            target="help_nonrandomHeatmapFeatures",
+                            target="help_hHeatmapFeatures",
                         ),
                     ],
                 ),
                 dcc.Loading(
-                    dcc.Graph(id="nonRandomHeatmapFeatures", config=CONFIG),
+                    dcc.Graph(id="heatmapFeatures", config=CONFIG),
                     type="dot",
                     color="#13BD00",
                 ),
-            ],
-        )
-        _randomHeatmapUsedFeatures = html.Div(
-            className="umap_plot_and_title",
-            children=[
-                html.Div(
-                    className="title_and_help",
-                    children=[
-                        html.H6("Features Usage"),
-                        dbc.Button(
-                            "[?]",
-                            className="text-muted btn-secondary popover_btn",
-                            id="help_randomheatmapFeatures",
-                        ),
-                        dbc.Popover(
-                            children=[dbc.PopoverBody("Blablabla wout wout")],
-                            id="pop_help_randomheatmapFeatures",
-                            is_open=False,
-                            target="help_randomheatmapFeatures",
-                        ),
-                    ],
-                ),
-                dcc.Loading(
-                    dcc.Graph(id="randomHeatmapFeatures", config=CONFIG),
-                    type="dot",
-                    color="#13BD00",
-                ),
+                dcc.Slider(-3, -1, 0.1,
+                           id='slider_heatmapFeatures',
+                           marks={i: '{}'.format(10 ** i) for i in range(-3, 0, 1)},
+                           value=-2,
+                           updatemode='drag',
+                           ),
             ],
         )
 
@@ -189,13 +155,12 @@ class ResultsSummaryTab(MetaTab):
                 html.Div(
                     className="fig_group",
                     children=[
-                        _nonRandomHeatmapUsedFeatures,
-                        _randomHeatmapUsedFeatures,
+                        _barplotComparaisonAlgo
                     ],
                 ),
                 html.Div(className="fig_group", children=[
                     _heatmapSamplesAlwaysWrong,
-                    _barplotComparaisonAlgo
+                    _heatmapUsedFeatures
                 ]),
             ],
         )
@@ -224,14 +189,18 @@ class ResultsSummaryTab(MetaTab):
 
         @self.app.callback(
             [
-                Output("randomHeatmapFeatures", "figure"),
-                Output("nonRandomHeatmapFeatures", "figure"),
+                Output("heatmapFeatures", "figure"),
             ],
-            [Input("load_results_button", "n_clicks")],
-            State("design_dropdown_summary", "value"),
+            [Input("load_results_button", "n_clicks"),
+             Input("slider_heatmapFeatures", "value")],
+            [State("design_dropdown_summary", "value"),
+             ],
         )
-        def show_heatmap_features_usage(n_clicks, design):
+        def show_heatmap_features_usage(n_clicks, log_importance_threshold, design):
             if n_clicks >= 1:
+
+                importance_threshold = 10 ** log_importance_threshold
+
                 algos = list(self.r[design].keys())
                 global_df = None
                 for a in algos:
@@ -262,17 +231,11 @@ class ResultsSummaryTab(MetaTab):
                 global_df = global_df.set_index("features")
                 global_df = global_df.fillna(0)
 
-                random_df = pd.DataFrame()
-                non_random_df = pd.DataFrame()
-                for algo in global_df.columns:
-                    if "random" in algo.lower():
-                        random_df[algo] = global_df[algo]
-                    else:
-                        non_random_df[algo] = global_df[algo]
-                random_fig = self._plots.show_heatmap_features_usage(random_df)
-                non_random_fig = self._plots.show_heatmap_features_usage(non_random_df)
+                global_df = global_df.loc[global_df.max(axis=1) >= importance_threshold]
 
-                return random_fig, non_random_fig
+                hm_fig = self._plots.show_heatmap_features_usage(global_df, importance_threshold)
+
+                return [hm_fig]
             else:
                 return dash.no_update
 
