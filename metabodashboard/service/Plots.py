@@ -160,13 +160,8 @@ class Plots:
                 "To show the global accuracies plot, the dataframe needs to have a 'color' column"
             )
 
-        fig = px.line(
-            df,
-            x="splits",
-            y="accuracies",
-            color="color",
-            title="Accuracies on train and test sets for each split of " + algo,
-        )
+        fig = px.bar(df, x="splits", y="accuracies", color="color", barmode="group")
+
         fig.update_yaxes(range=[0, 1.1])
         fig.update_layout(
             {

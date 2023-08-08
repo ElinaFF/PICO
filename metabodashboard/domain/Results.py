@@ -447,12 +447,14 @@ class Results:
         as well as the class for each sample
         allows ploting the stripchart in Plots
         """
-        important_features = list(feature_df["features"])[:10]
-        df = data.loc[:, important_features]
-        # print(df)
-        # print(len(self.results["classes"]))
-        df["targets"] = self.results["classes"]
-        return df
+        number_of_used_features = len(feature_df[feature_df["importance_usage"] > 0])
+        strip_charts = []
+        for ind in [5, 10, 40, 100, number_of_used_features]:
+            important_features = list(feature_df["features"])[:ind]
+            df = data.loc[:, important_features]
+            df["targets"] = self.results["classes"]
+            strip_charts.append(df)
+        return strip_charts
 
     def produce_always_wrong_samples(
             self,
