@@ -357,3 +357,66 @@ def transform_params_to_cross_validation_dict(params: List[Tuple[str, str]], par
     if error:
         raise ValueError(error)
     return cross_validation_params
+
+
+def get_slider_sector(number: int) -> float:
+    if number < 5:
+        sector_length = 5
+        sector_offset = 0
+        sector_number = 0
+    elif number < 10:
+        sector_length = 5
+        sector_offset = 5
+        sector_number = 1
+    elif number < 40:
+        sector_length = 30
+        sector_offset = 10
+        sector_number = 2
+    elif number < 100:
+        sector_length = 60
+        sector_offset = 40
+        sector_number = 3
+    else:
+        return 4.5
+    return sector_number + (number - sector_offset) / sector_length
+
+
+def get_marks_with_custom_slider_value(custom_value: int) -> dict:
+    custom_mark_value = get_slider_sector(custom_value)
+    custom_mark_value += 0.0001
+
+    marks = {
+        str(1): "5",
+        str(2): "10",
+        str(3): "40",
+        str(4): "100",
+        str(5): "All",
+        str(custom_mark_value): {'label': str(custom_value) + ' (used)', 'style': {"top": "-3em"}},
+    }
+    return marks
+
+def get_stripchart_marks_with_custom_slider_value(custom_value: int) -> dict:
+    custom_mark_value = get_slider_sector(custom_value)
+    custom_mark_value += 0.0001
+
+    marks = {
+        str(1): "5",
+        str(2): "10",
+        str(3): "40",
+        str(4): "100",
+        str(custom_mark_value): {'label': str(custom_value) + ' (used)', 'style': {"top": "-3em"}},
+    }
+    return marks
+
+
+
+def get_index_from_marks(number: float, marks: dict) -> int:
+    USED_INDEX = 4
+    ALL_INDEX = 5
+
+    if number == ALL_INDEX:
+        return ALL_INDEX
+
+    if number not in range(5):
+        return USED_INDEX
+    return int(number - 1)

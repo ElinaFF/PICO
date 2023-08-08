@@ -134,9 +134,9 @@ class ResultsTab(MetaTab):
                 dcc.Slider(
                     min=0,
                     max=5,
-                    step=1,
+                    step=None,
                     value=0,
-                    marks={0: "5", 1: "10", 2: "40", 3: "100", 4: "Used", 5: "All"},
+                    marks={1: "5", 2: "10", 3: "40", 4: "100", 5: "All"},
                     id="pca_slider",
                 ),
             ],
@@ -170,11 +170,11 @@ class ResultsTab(MetaTab):
                 dcc.Slider(
                     min=0,
                     max=5,
-                    step=1,
-                    value=0,
-                    marks={0: "5", 1: "10", 2: "40", 3: "100", 4: "Used", 5: "All"},
+                    step=None,
+                    value=1,
+                    marks={"1": "5", "2": "10", "3": "40", "4": "100", "5": "All"},
                     id="umap_slider",
-                ),
+                )
             ],
         )
 
@@ -426,6 +426,14 @@ class ResultsTab(MetaTab):
                     type="dot",
                     color="#13BD00",
                 ),
+                dcc.Slider(
+                    min=0,
+                    max=3,
+                    step=None,
+                    value=0,
+                    marks={0: "5", 1: "10", 2: "50", 3: "100"},
+                    id="strip_chart_slider",
+                )
             ],
         )
 
@@ -603,18 +611,40 @@ class ResultsTab(MetaTab):
                 return updated_stylesheet
 
         @self.app.callback(
-            Output("PCA", "figure"),
-            [Input("load_ML_results_button", "n_clicks"), Input("pca_slider", "value")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            [Output("pca_slider", "marks"),
+             Output("umap_slider", "marks"),
+             Output("strip_chart_slider", "marks")],
+            Input("load_ML_results_button", "n_clicks"),
+            [State("ml_dropdown", "value"), State("design_dropdown", "value")]
         )
-        def show_pca(n_clicks, pca_value, algo, design_name):
+        def update_sliders_with_used(n_clicks, algo, design_name):
+            if n_clicks >= 1:
+                feature_df = self.r[design_name][algo].results["features_table"]
+                number_of_used_feature = len(feature_df[feature_df["times_used"] > 0])
+                marks = Utils.get_marks_with_custom_slider_value(custom_value=number_of_used_feature)
+                strip_chart_marks = Utils.get_stripchart_marks_with_custom_slider_value(custom_value=number_of_used_feature)
+                print("marks")
+                print(marks)
+                print(strip_chart_marks)
+                return marks, marks, strip_chart_marks
+            return dash.no_update, dash.no_update, dash.no_update
+
+        @self.app.callback(
+            [Output("PCA", "figure")],
+            [Input("load_ML_results_button", "n_clicks"), Input("pca_slider", "value")],
+            [State("ml_dropdown", "value"), State("design_dropdown", "value"), State("pca_slider", "marks")]
+        )
+        def show_pca(n_clicks, pca_value, algo, design_name, marks):
             """
             pca_value : represent the number of feature selected by the slider, but is given as indexes
             """
             if n_clicks >= 1:
                 data_list, labels_list = self.r[design_name][algo].results["pca_data"]
                 classes = self.r[design_name][algo].results["classes"]
-                return self._plots.show_PCA(data_list[pca_value], labels_list[pca_value], classes, pca_value, algo)
+
+                index = Utils.get_index_from_marks(pca_value, marks)
+
+                return [self._plots.show_PCA(data_list[index], labels_list[index], classes, index, algo)]
             else:
                 return dash.no_update
 
@@ -624,16 +654,17 @@ class ResultsTab(MetaTab):
                 Input("load_ML_results_button", "n_clicks"),
                 Input("umap_slider", "value"),
             ],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            [State("ml_dropdown", "value"), State("design_dropdown", "value"), State("umap_slider", "marks")],
         )
-        def show_umap(n_clicks, slider_value, algo, design_name):
+        def show_umap(n_clicks, slider_value, algo, design_name, marks):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["umap_data"]
                 classes = self.r[design_name][algo].results["classes"]
-                # print(slider_value)
-                # print(df[0])
+
+                index = Utils.get_index_from_marks(slider_value, marks)
+
                 return self._plots.show_umap(
-                    df[slider_value], classes, algo, slider_value
+                    df[index], classes, algo, index
                 )
             else:
                 return dash.no_update
@@ -813,13 +844,17 @@ class ResultsTab(MetaTab):
 
         @self.app.callback(
             Output("features_stripChart", "figure"),
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            [Input("load_ML_results_button", "n_clicks"), Input("strip_chart_slider", "value")],
+            [State("ml_dropdown", "value"), State("design_dropdown", "value"), State("strip_chart_slider", "marks")],
         )
-        def show_stripChart_features(n_click, algo, design_name):
+        def show_stripChart_features(n_click, slider_value, algo, design_name, marks):
             if n_click >= 1:
-                df = self.r[design_name][algo].results["features_stripchart"]
-                return self._plots.show_metabolite_levels(df, algo)
+                try:
+                    real_value = Utils.get_index_from_marks(slider_value, marks)
+                    strip_chart_data = self.r[design_name][algo].results["features_stripchart"][real_value]
+                    return self._plots.show_metabolite_levels(strip_chart_data, algo)
+                except IndexError:
+                    return dash.no_update
             else:
                 return dash.no_update
 
