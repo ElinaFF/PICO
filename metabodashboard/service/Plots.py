@@ -64,7 +64,7 @@ class Plots:
     #     )
     #     return fig
 
-    def show_umap(self, umap_data, classes, algo, slider_value):
+    def show_umap(self, umap_data, classes, algo, slider_value, sample_ids: list):
         val = [5, 10, 40, 100, "used", "all"]
         fig = px.scatter(
             umap_data,
@@ -73,6 +73,7 @@ class Plots:
             color=classes,
             color_continuous_scale=self.colors,
             title="",
+            hover_name=sample_ids,
         )
 
         fig.update_layout(
@@ -87,7 +88,7 @@ class Plots:
         )
         return fig
 
-    def show_PCA(self, pca_data, pca_labels, classes, slider_value, algo):
+    def show_PCA(self, pca_data, pca_labels, classes, slider_value, algo, sample_ids: list):
         val = [5, 10, 40, 100, "used", "all"]
         fig = px.scatter(
             pca_data,
@@ -96,6 +97,8 @@ class Plots:
             y=1,
             color=classes,
             color_continuous_scale=self.colors,
+            title="",
+            hover_name=sample_ids,
         )
         fig.update_layout(
             {
@@ -245,7 +248,7 @@ class Plots:
         """
         return
 
-    def show_metabolite_levels(self, features_data, algo):
+    def show_metabolite_levels(self, features_data, algo, sample_name: list):
         """
         Plot in stripchart (boxplot with point and no box)
         (with a dropdown to select the metabolite, max of N? metabolite)
@@ -258,7 +261,8 @@ class Plots:
                 newdf = pd.DataFrame({
                     "features_name": [c] * len(df["targets"]),
                     "intensity": list(df[c]),
-                    "targets": list(df["targets"])
+                    "targets": list(df["targets"]),
+                    "sample_name": sample_name,
                 })
                 df_dup = pd.concat([df_dup, newdf], ignore_index=True)
 
@@ -300,6 +304,7 @@ class Plots:
                                                                           # feature,
                                                                           algo
                                                                           ),
+            hover_name="sample_name",
         )
 
         fig.update_layout(
@@ -343,7 +348,7 @@ class Plots:
         fig.update_layout(barmode='group')
         return fig
 
-    def show_2d(self, data, classes, algo):
+    def show_2d(self, data, classes, sample_names):
         return px.scatter(
             data,
             x=data.columns[0],
@@ -351,9 +356,10 @@ class Plots:
             color=classes,
             color_continuous_scale=self.colors,
             title="",
+            hover_name=sample_names,
         )
 
-    def show_3d(self, data, classes, algo):
+    def show_3d(self, data, classes, sample_names):
         return px.scatter_3d(
             data,
             x=data.columns[0],
@@ -362,6 +368,7 @@ class Plots:
             color=classes,
             color_continuous_scale=self.colors,
             title="",
+            hover_name=sample_names,
         )
 
     @staticmethod

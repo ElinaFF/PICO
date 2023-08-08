@@ -306,7 +306,7 @@ class MetaboExperiment:
 
         for _, experimental_design in self.experimental_designs.items():
             for _, result in experimental_design.get_results().items():
-                result.compute_remaining_results_on_all_splits()
+                result.compute_remaining_results_on_all_splits(params[0][8])
             experimental_design.set_is_done(True)
 
     def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test,
