@@ -623,9 +623,6 @@ class ResultsTab(MetaTab):
                 number_of_used_feature = len(feature_df[feature_df["times_used"] > 0])
                 marks = Utils.get_marks_with_custom_slider_value(custom_value=number_of_used_feature)
                 strip_chart_marks = Utils.get_stripchart_marks_with_custom_slider_value(custom_value=number_of_used_feature)
-                print("marks")
-                print(marks)
-                print(strip_chart_marks)
                 return marks, marks, strip_chart_marks
             return dash.no_update, dash.no_update, dash.no_update
 
