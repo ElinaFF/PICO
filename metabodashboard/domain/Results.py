@@ -133,7 +133,7 @@ class Results:
         self.update_tmp(scaled_data, y_train_true, y_test_true, classes)
 
 
-    def compute_remaining_results_on_all_splits(self):
+    def compute_remaining_results_on_all_splits(self, samples_id: list):
 
         self.results["info_expe"] = self._produce_info_expe(
             self.tmp["y_train_true"], self.tmp["y_test_true"]
@@ -157,6 +157,7 @@ class Results:
             self.results["features_table"], self.tmp["scaled_data"]
         )
         self.results["coocurence_matrix"] = self.produce_coocurence_matrix()
+        self.results["samples_id"] = samples_id
             
 
     def set_feature_names(self, x: pd.DataFrame):

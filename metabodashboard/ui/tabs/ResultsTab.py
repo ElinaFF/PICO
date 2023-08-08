@@ -641,7 +641,8 @@ class ResultsTab(MetaTab):
 
                 index = Utils.get_index_from_marks(pca_value, marks)
 
-                return [self._plots.show_PCA(data_list[index], labels_list[index], classes, index, algo)]
+                return [self._plots.show_PCA(data_list[index], labels_list[index], classes, index, algo,
+                                             self.r[design_name][algo].results["samples_id"])]
             else:
                 return dash.no_update
 
@@ -661,7 +662,7 @@ class ResultsTab(MetaTab):
                 index = Utils.get_index_from_marks(slider_value, marks)
 
                 return self._plots.show_umap(
-                    df[index], classes, algo, index
+                    df[index], classes, algo, index, self.r[design_name][algo].results["samples_id"]
                 )
             else:
                 return dash.no_update
@@ -677,7 +678,7 @@ class ResultsTab(MetaTab):
                     self.r[design_name][algo].results["features_2d_and_3d"].iloc[:, :-1]
                 )
                 classes = self.r[design_name][algo].results["classes"]
-                return self._plots.show_2d(df, classes, algo)
+                return self._plots.show_2d(df, classes, self.r[design_name][algo].results["samples_id"])
             else:
                 return dash.no_update
 
@@ -690,7 +691,7 @@ class ResultsTab(MetaTab):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["features_2d_and_3d"]
                 classes = self.r[design_name][algo].results["classes"]
-                return self._plots.show_3d(df, classes, algo)
+                return self._plots.show_3d(df, classes, self.r[design_name][algo].results["samples_id"])
             else:
                 return dash.no_update
 
@@ -849,7 +850,8 @@ class ResultsTab(MetaTab):
                 try:
                     real_value = Utils.get_index_from_marks(slider_value, marks)
                     strip_chart_data = self.r[design_name][algo].results["features_stripchart"][real_value]
-                    return self._plots.show_metabolite_levels(strip_chart_data, algo)
+                    return self._plots.show_metabolite_levels(strip_chart_data, algo,
+                                                              self.r[design_name][algo].results["samples_id"])
                 except IndexError:
                     return dash.no_update
             else:
