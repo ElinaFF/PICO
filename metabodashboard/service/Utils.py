@@ -3,7 +3,7 @@ import hashlib
 import importlib
 import os
 import pickle
-from typing import List, Dict, Iterable, Any, Union
+from typing import Iterable, Union
 import re
 
 import pickle as pkl
@@ -420,3 +420,66 @@ def get_index_from_marks(number: float, marks: dict) -> int:
     if number not in range(5):
         return USED_INDEX
     return int(number - 1)
+
+
+def get_closest_integer_steps(slider_size):
+    max_number_of_steps = 5
+
+    if slider_size <= 0:
+        return []
+    step = slider_size // max_number_of_steps
+    steps = [step * i for i in range(0, max_number_of_steps + 1)]
+    if slider_size % max_number_of_steps != 0:
+        # steps.pop(-1)
+        steps.append(slider_size)
+    return [int(i) for i in steps if i <= slider_size]
+
+
+def remove_random_samples_from_class(X: pd.Series, y: list[str], balance_correction: int,
+                                     classes_repartition: dict, seed: int = 42) \
+        -> tuple[pd.Series, list]:
+
+    samples_ids_and_targets = pd.DataFrame({"id": X, "final_classes": y})
+
+    balance_correction = balance_correction / 100
+
+    if len(classes_repartition) > 2:
+        raise ValueError("Balance correction is not supported for multiclassification")
+
+    class_A_name, class_B_name = tuple(classes_repartition.keys())
+
+    total_number_of_samples = classes_repartition[class_A_name] + classes_repartition[class_B_name]
+
+    class_A_repartition = classes_repartition[class_A_name] / total_number_of_samples
+    class_B_repartition = classes_repartition[class_B_name] / total_number_of_samples
+
+    if class_B_repartition > class_A_repartition:
+        class_A_name, class_B_name = class_B_name, class_A_name
+        class_A_repartition, class_B_repartition = class_B_repartition, class_A_repartition
+
+    class_A_lines = samples_ids_and_targets[samples_ids_and_targets["final_classes"] == class_A_name]
+
+    class_A_number_of_samples = len(class_A_lines)
+    class_B_number_of_samples = len(samples_ids_and_targets[samples_ids_and_targets["final_classes"] ==
+                                                            class_B_name])
+
+    # PROOF OF THE FORMULA
+    # new_proportion_A = trimmed_classe_A_samples / (trimmed_classe_A_samples + class_B_samples)
+    # proportion_A - correction = trimmed_classe_A_samples / (trimmed_classe_A_samples + class_B_samples)
+    # (proportion_A - correction) * (trimmed_classe_A_samples + class_B_samples) = trimmed_classe_A_samples
+    # proportion_A * trimmed_classe_A_samples - correction * trimmed_classe_A_samples + proportion_A * class_B_samples - correction * class_B_samples = trimmed_classe_A_samples
+    # proportion_A * class_B_samples - correction * class_B_samples = trimmed_classe_A_samples - proportion_A * trimmed_classe_A_samples + correction * trimmed_classe_A_samples
+    # proportion_A * class_B_samples - correction * class_B_samples = trimmed_classe_A_samples * (1 - proportion_A + correction)
+    # trimmed_classe_A_samples = class_B_samples * (proportion_A - correction) / (1 - proportion_A + correction)
+
+    new_class_A_number_of_samples = class_B_number_of_samples * (class_A_repartition - balance_correction) / \
+                                    (1 - class_A_repartition + balance_correction)
+
+    number_of_samples_to_remove = class_A_number_of_samples - new_class_A_number_of_samples
+
+    np.random.seed(seed)
+    ids_to_remove = np.random.choice(class_A_lines.index, int(number_of_samples_to_remove), replace=False)
+
+    samples_ids_and_targets = samples_ids_and_targets.drop(ids_to_remove)
+
+    return samples_ids_and_targets["id"], samples_ids_and_targets["final_classes"].tolist()

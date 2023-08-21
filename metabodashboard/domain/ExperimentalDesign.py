@@ -1,4 +1,4 @@
-from typing import Generator, Tuple, Dict, List
+from typing import Generator, Tuple, Dict, Optional
 
 from . import SplitGroup, MetaData
 from .Results import *
@@ -6,13 +6,14 @@ from .Results import *
 
 class ExperimentalDesign:
     def __init__(self, classes_design: dict):
-        self._classes_design = classes_design
-        self._name = ""
+        self._classes_design: dict = classes_design
+        self._name: str = ""
         self._compute_name()
-        self._split_group = None
-        self._selected_models_name = None
-        self.results = {}
-        self._is_done = False
+        self._split_group: Optional[SplitGroup] = None
+        self._selected_models_name: Optional[list] = None
+        self.results: dict = {}
+        self._is_done: bool = False
+        self._balance_correction: int = 0
 
     def get_is_done(self) -> bool:
         return self._is_done
@@ -20,12 +21,20 @@ class ExperimentalDesign:
     def set_is_done(self, is_done: bool) -> None:
         self._is_done = is_done
 
+    def get_balance_correction(self) -> int:
+        return self._balance_correction
+
+    def set_balance_correction(self, balance_correction: int) -> None:
+        if balance_correction < 0:
+            raise ValueError("Balance correction cannot be negative")
+        self._balance_correction = balance_correction
+
     def set_split_parameter_and_compute_splits(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData,
                                                pairing_column: str) -> None:
-        print("entered function set_split_parameter_and_compute_splits of ExperimentalDesign.py")
-        self._split_group = SplitGroup(metadata, self.get_selected_targets_name(),
-                                       train_test_proportion, number_of_splits, self._classes_design, pairing_column)
-        print("self._split_group is supposed to be defined")
+        classes_repartition = metadata.get_classes_repartition_based_on_design(self._classes_design)
+        self._split_group = SplitGroup(metadata, self.get_selected_targets_name(), train_test_proportion,
+                                       number_of_splits, self._classes_design, pairing_column, self._balance_correction,
+                                       classes_repartition)
 
     def get_name(self) -> str:
         return self._name

@@ -1,5 +1,6 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
+import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from . import MetaData
@@ -8,15 +9,19 @@ import numpy as np
 
 
 class SplitGroup:
-    def __init__(self, metadata: MetaData, selected_targets: List[str], train_test_proportion: float, number_of_splits: int,
-                 classes_design: dict, pairing_column: str):
+    def __init__(self, metadata: MetaData, selected_targets: List[str], train_test_proportion: float,
+                 number_of_splits: int, classes_design: dict, pairing_column: str, balance_correction: int = 0,
+                 classes_repartition: Optional[dict] = None):
         self._metadata = metadata
         self._number_of_split = number_of_splits
         self._classes_design = classes_design
         self._splits = []
-        self._compute_splits(train_test_proportion, number_of_splits, pairing_column, selected_targets)
+        self._compute_splits(train_test_proportion, number_of_splits, pairing_column, selected_targets,
+                             balance_correction, classes_repartition)
 
-    def _compute_splits(self, train_test_proportion: float, number_of_splits: int, pairing_column: str, selected_targets: List[str]):
+    def _compute_splits(self, train_test_proportion: float, number_of_splits: int, pairing_column: str,
+                        selected_targets: List[str], balance_correction: int = 0,
+                        classes_repartition: Optional[dict] = None):
         """
         selected_targets : the selection of classes done with the interface or the automate.py (the names of the
         selected classes/targets)
@@ -71,7 +76,7 @@ class SplitGroup:
                                                                                         test_size=train_test_proportion,
                                                                                         random_state=split_index)
                 # retrieve the ids corresponding the to entities in train
-                X_train = np.concatenate([list(groups[i]) for i in X_train_temp])
+                X_train = pd.Series(np.concatenate([list(groups[i]) for i in X_train_temp]))
                 # retrieve targets corresponding to ids and then convert to labels
                 targets = df.loc[X_train][self._metadata.get_target_column()]
                 y_train = Utils.load_classes_from_targets(self._classes_design, targets)
@@ -81,6 +86,12 @@ class SplitGroup:
                 # retrieve targets corresponding to ids and then convert to labels
                 targets = df.loc[X_test][self._metadata.get_target_column()]
                 y_test = Utils.load_classes_from_targets(self._classes_design, targets)
+
+            if balance_correction > 0:
+                X_train, y_train = Utils.remove_random_samples_from_class(X_train,
+                                                                          y_train,
+                                                                          balance_correction,
+                                                                          classes_repartition)
 
             print("_compute_split step #4 done")
             self._splits.append([X_train.tolist(), X_test.tolist(), y_train, y_test])
@@ -111,23 +122,6 @@ class SplitGroup:
                 filtered_id.append(row[id_column])
                 filtered_target.append(row[target_column])
         return filtered_id, filtered_target
-
-#TODO : function to delete
-    def restore_filtered_samples_from_pairing_group(self, X_train: List[str], X_test: List[str], pairing_column: str,
-                                                    classes_design: dict) -> List[List[str]]:
-        """
-        Function retrieve metadata informations.
-        Then restore the samples for the X_train, y_train combo and then the X_test, y_test combo
-        """
-        metadata_dataframe = self._metadata.get_metadata()
-        id_column = self._metadata.get_id_column()
-        target_column = self._metadata.get_target_column()
-
-        (restored_X_train, restored_y_train) = Utils.restore_ids_and_targets_from_pairing_groups(X_train, metadata_dataframe, id_column,
-                                                                                                 pairing_column, target_column, classes_design)
-        (restored_X_test, restored_y_test) = Utils.restore_ids_and_targets_from_pairing_groups(X_test, metadata_dataframe, id_column,
-                                                                                               pairing_column, target_column, classes_design)
-        return [restored_X_train, restored_X_test, restored_y_train, restored_y_test]
 
     def get_selected_targets_and_ids(self, selected_targets: List[str], samples_id: List[str],
                                      targets: List[str]) -> Tuple[Tuple[str], Tuple[str]]:

@@ -222,5 +222,15 @@ class MetaboController:
 
     def set_cv_algorithm_configuration(self, cv_algorithm_configuration: list):
         self._metabo_experiment.set_cv_algorithm_configuration(cv_algorithm_configuration)
+
     def get_samples_id(self):
         return self._metabo_experiment.get_samples_id()
+
+    def get_classes_repartition_for_all_experiment(self) -> dict:
+        return self._metabo_experiment.get_classes_repartition_for_all_experiment()
+
+    def get_balance_correction_for_all_experiment(self) -> dict:
+        return self._metabo_experiment.get_balance_correction_for_all_experiment()
+
+    def set_balance_correction_for_experiment(self, experimental_design_name: str, balance_correction: int) -> None:
+        self._metabo_experiment.set_balance_correction_for_experiment(experimental_design_name, balance_correction)

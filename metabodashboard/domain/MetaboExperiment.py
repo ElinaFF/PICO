@@ -484,4 +484,22 @@ class MetaboExperiment:
     def get_samples_id(self):
         return self._metadata.get_samples_id()
 
-# TODO: print current algo when training
+    def get_classes_repartition_for_all_experiment(self) -> dict:
+        classes_repartition = {}
+        for experimental_design_name in self.experimental_designs:
+            class_design = self.experimental_designs[experimental_design_name].get_classes_design()
+            classes_repartition[experimental_design_name] = \
+                self._metadata.get_classes_repartition_based_on_design(class_design)
+        return classes_repartition
+
+    def get_balance_correction_for_all_experiment(self) -> dict:
+        balance_correction = {}
+        for experimental_design_name in self.experimental_designs:
+            balance_correction[experimental_design_name] = \
+                self.experimental_designs[experimental_design_name].get_balance_correction()
+        return balance_correction
+
+    def set_balance_correction_for_experiment(self, experimental_design_name: str, balance_correction: int) -> None:
+        if experimental_design_name not in self.experimental_designs:
+            raise ValueError("Experimental design name not found")
+        self.experimental_designs[experimental_design_name].set_balance_correction(balance_correction)

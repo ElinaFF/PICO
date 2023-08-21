@@ -10,6 +10,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
+np.random.seed(42)
+random.seed(42)
+
 if __name__ != "__main__":
     from ..metabodashboard.conf.SupportedModels import LEARN_CONFIG
 
@@ -19,7 +22,7 @@ def _get_samples_id(size: int) -> List[str]:
 
 
 def _get_random_data(size: int, number_of_columns: int):
-    np.random.seed(42)
+
     data = np.random.rand(size, number_of_columns)
     column = ["feature-" + str(index) for index in range(number_of_columns)]
     return pd.DataFrame(data, columns=column)
@@ -293,3 +296,5 @@ FEATURE_IMPORTANCE_TABLE = pd.DataFrame(
 NUMBER_OF_PROCESSES = 2
 IMPORTANCE_ATTRIBUTE = "feature_importances_"
 SEED = 42
+
+PARTIAL_CLASSES_REPARTITION = {'sick': 38, 'healthy': 34}

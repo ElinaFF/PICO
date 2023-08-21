@@ -1,7 +1,7 @@
 import base64
 import io
 import os.path
-from typing import List, Tuple, Union
+from typing import List, Tuple, Dict
 
 import pandas as pd
 
@@ -156,5 +156,15 @@ class MetaData:
         self.add_final_targets_col_to_dataframe()
         # Define the name of the column of targets as final_targets
         self.set_target_column("final_targets")
+
+    def get_classes_repartition_based_on_design(self, classes_design: Dict[str, List[str]]) -> Dict[str, int]:
+        target_repartition = self._dataframe["final_targets"].value_counts().to_dict()
+        classes_repartition = {}
+        for class_name in classes_design:
+            classes_repartition[class_name] = sum(
+                [target_repartition[target] for target in classes_design[class_name]]
+            )
+
+        return classes_repartition
 
 # TODO: join sampleId and target in same pickle file
