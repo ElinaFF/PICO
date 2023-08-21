@@ -9,7 +9,7 @@ from ..TestsUtility import (
     SELECTED_TARGETS,
     FILTERED_TARGETS,
     FILTERED_SAMPLES_ID,
-    ALL_TARGETS,
+    ALL_TARGETS, CLASSES_DESIGN, PARTIAL_CLASSES_DESIGN, PARTIAL_CLASSES_REPARTITION,
 )
 from ...metabodashboard.domain.MetaData import MetaData
 
@@ -63,3 +63,12 @@ def test_givenSelectedTarget_whenGetSelectedTargetsANDIds_thenIdsAndTargetAreCor
         tuple(FILTERED_TARGETS),
         tuple(FILTERED_SAMPLES_ID),
     )
+
+
+def test_givenSelectedTarget_whenGetClassBalance_thenClassBalanceIsCorrect(
+    input_meta_data,
+):
+    input_meta_data.set_target_columns([TARGETS_COLUMN])
+    input_meta_data.set_id_column(SAMPLES_ID_COLUMN)
+    assert input_meta_data.get_classes_repartition_based_on_design(PARTIAL_CLASSES_DESIGN) == \
+           PARTIAL_CLASSES_REPARTITION

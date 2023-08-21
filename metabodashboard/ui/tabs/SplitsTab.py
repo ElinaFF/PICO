@@ -1,6 +1,8 @@
+import math
+
 import dash_bootstrap_components as dbc
 import pandas
-from dash import html, Output, Input, dash, State, dcc, callback_context
+from dash import html, Output, Input, dash, State, dcc, callback_context, MATCH, ALL
 from dash.dcc import send_file
 
 from .MetaTab import MetaTab
@@ -10,6 +12,8 @@ from ...service import Utils, Plots
 EXP_NAME = []
 SPLIT_NUMBER_VALUES = {i: str(i) for i in range(0, 101, 10)}
 SPLIT_NUMBER_VALUES.update({1: "1"})
+
+NUMBER_OF_STEP_IN_CLASS_BALANCE = 5
 
 
 class SplitsTab(MetaTab):
@@ -145,12 +149,12 @@ class SplitsTab(MetaTab):
                         {"label": "Normalized", "value": "normalized"},
                         {"label": "Not Progenesis", "value": "nap"},
                     ],
-                    #if self.metabo_controller.is_data_raw() is None
-                    #else (
+                    # if self.metabo_controller.is_data_raw() is None
+                    # else (
                     #    "raw"
                     #    if not self.metabo_controller.is_data_raw()
                     #    else "normalized"
-                    #),
+                    # ),
                     labelCheckedStyle={"color": "#13BD00"},
                 ),
                 html.Div(id="error_data_normalization", style={"color": "red"}),
@@ -184,7 +188,7 @@ class SplitsTab(MetaTab):
         _file = html.Div(
             className="title_and_form",
             children=[
-                html.H4(id="CreateSplits_paths_title", children="A) Files"),
+                html.H4(id="CreateSplits_paths_title", children="Files"),
                 dbc.Form(
                     children=[
                         dbc.Col(
@@ -208,10 +212,10 @@ class SplitsTab(MetaTab):
                         dbc.Checklist(
                             id="in_target_col_name",
                             value=[],
-                            #options=Utils.format_list_for_checklist(
+                            # options=Utils.format_list_for_checklist(
                             #    self.metabo_controller.get_metadata_columns()
-                            #),
-                            #value=[], #if self.metabo_controller.get_target_column() is None else [self.metabo_controller.get_target_column()],
+                            # ),
+                            # value=[], #if self.metabo_controller.get_target_column() is None else [self.metabo_controller.get_target_column()],
                             inline=True,
                         ),
                     ],
@@ -302,7 +306,7 @@ class SplitsTab(MetaTab):
         _experimentalDesigns = html.Div(
             className="title_and_form",
             children=[
-                html.H4(id="Exp_desg_title", children="B) Define Experimental designs"),
+                html.H4(id="Exp_desg_title", children="Define Experimental designs"),
                 dbc.Form(
                     children=[
                         dbc.Col(
@@ -326,25 +330,40 @@ class SplitsTab(MetaTab):
             ],
         )
 
+        __samplePairing = html.Div(
+            children=[
+                dbc.FormText("Select the column you want to group."),
+                dbc.Label("Column(s)"),
+                html.Div(
+                    id="pairing_columns",
+                    children=[
+                        dcc.Dropdown(
+                            self.metabo_controller.get_metadata_columns(),
+                            id="pairing_group_column",
+                        )
+                    ],
+                ),
+            ]
+        )
+
+        __classBalancing = html.Div(
+            children=[
+                html.H4(id="class_balancing_title", children="Class balancing"),
+                html.Div(id="class_balancing_options", children=[]),
+                html.Div(id="class_balancing_values_nutshell", children=[]),
+            ]
+        )
+
         _dataFusion = html.Div(
             className="title_and_form",
             children=[
-                html.H4(id="sep_samples_title", children="D) Sample pairing"),
+                html.H4(id="sep_samples_title", children="Sample pairing"),
                 dbc.Form(
                     children=[
                         dbc.Col(
                             [
-                                dbc.FormText("Select the column you want to group."),
-                                dbc.Label("Column(s)"),
-                                html.Div(
-                                    id="pairing_columns",
-                                    children=[
-                                        dcc.Dropdown(
-                                            self.metabo_controller.get_metadata_columns(),
-                                            id="pairing_group_column",
-                                        )
-                                    ],
-                                ),
+                                __samplePairing,
+                                __classBalancing
                             ]
                         )
                     ]
@@ -397,7 +416,7 @@ class SplitsTab(MetaTab):
         _splitDefinition = html.Div(
             className="title_and_form",
             children=[
-                html.H4(id="Define_split_title", children="C) Define splits"),
+                html.H4(id="Define_split_title", children="Define splits"),
                 dbc.Form(
                     children=[
                         dbc.Col(children=[__sampleProportion, __trainTestSplitGraph]),
@@ -506,7 +525,7 @@ class SplitsTab(MetaTab):
         _otherProcessing = html.Div(
             className="title_and_form",
             children=[
-                html.H4(id="preprocess_title", children="E) Other Preprocessing"),
+                html.H4(id="preprocess_title", children="Other Preprocessing"),
                 dbc.Form(
                     children=[
                         dbc.Col(
@@ -606,10 +625,10 @@ class SplitsTab(MetaTab):
         @self.app.callback(
             Output("train_test_split_graph", "figure"),
             [
-             Input("in_nbr_splits", "value"),
-             Input("in_percent_samples_in_test", "value"),
-             Input("upload_datatable_output", "children"),
-             Input("upload_metadata_output", "children"),
+                Input("in_nbr_splits", "value"),
+                Input("in_percent_samples_in_test", "value"),
+                Input("upload_datatable_output", "children"),
+                Input("upload_metadata_output", "children"),
             ],
         )
         def update_train_test_split_graph(slider_value, percent_test, fm, fd):
@@ -661,7 +680,7 @@ class SplitsTab(MetaTab):
                 disabled_options.append(copied_option)
 
             if value is not None:
-                if value == "nap": # Not a Progenesis file
+                if value == "nap":  # Not a Progenesis file
                     self.metabo_controller.set_raw_use_for_data(False)
                     return {"display": "block"}, {"display": "block"}, disabled_options, None
 
@@ -893,27 +912,27 @@ class SplitsTab(MetaTab):
 
         @self.app.callback(
             [Output("class1_name", "value"),
-                Output("possible_groups_for_class1", "value"),
-                Output("class2_name", "value"),
-                Output("possible_groups_for_class2", "value"),
-                Output("setted_classes_container", "children"),
-                Output("setted_classes_container", "style"),
-                Output("error_classification_type", "children")],
+             Output("possible_groups_for_class1", "value"),
+             Output("class2_name", "value"),
+             Output("possible_groups_for_class2", "value"),
+             Output("setted_classes_container", "children"),
+             Output("setted_classes_container", "style"),
+             Output("error_classification_type", "children")],
             [Input("btn_add_design_exp", "n_clicks"),
-                Input("remove_experimental_design_button", "n_clicks"),
-                Input("in_target_col_name", "value"),
-                Input("info_progenesis_loaded", "children"),
-                Input("custom_big_tabs", "active_tab")],
+             Input("remove_experimental_design_button", "n_clicks"),
+             Input("in_target_col_name", "value"),
+             Input("info_progenesis_loaded", "children"),
+             Input("custom_big_tabs", "active_tab")],
             [State("class1_name", "value"),
-                State("possible_groups_for_class1", "value"),
-                State("class2_name", "value"),
-                State("possible_groups_for_class2", "value")],
+             State("possible_groups_for_class1", "value"),
+             State("class2_name", "value"),
+             State("possible_groups_for_class2", "value")],
         )
         def add_n_reset_classes_exp_design(n_add, n_remove, target_col, children, active_tab, c1, g1, c2, g2):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
             if (triggered_id == "remove_experimental_design_button" or triggered_id == "in_target_col_name"
-                or triggered_id == "info_progenesis_loaded"):
+                    or triggered_id == "info_progenesis_loaded"):
                 self.metabo_controller.reset_experimental_designs()
             elif triggered_id == "btn_add_design_exp":
                 try:
@@ -923,7 +942,7 @@ class SplitsTab(MetaTab):
                     return (dash.no_update, dash.no_update, dash.no_update, dash.no_update,
                             dash.no_update, dash.no_update, str(ve))
 
-            return ("", 0, "", 0, self._get_wrapped_experimental_designs(), {"display": "block", "padding": "1em"},"")
+            return ("", 0, "", 0, self._get_wrapped_experimental_designs(), {"display": "block", "padding": "1em"}, "")
 
         @self.app.callback(
             Output("collapse_preprocessing", "is_open"),
@@ -1020,6 +1039,93 @@ class SplitsTab(MetaTab):
                 )
             else:
                 return (dash.no_update,) * 7
+
+        @self.app.callback(
+            Output("class_balancing_options", "children"),
+            [Input("btn_add_design_exp", "n_clicks"),
+             Input("remove_experimental_design_button", "n_clicks")],
+        )
+        def add_class_balancing_options(n_clicks_add, n_clicks_remove):
+            """
+            Add a class balancing option to the list of class balancing options.
+            """
+            global_classes_repartition = None
+            if n_clicks_add >= 1:
+                global_classes_repartition = self.metabo_controller.get_classes_repartition_for_all_experiment()
+
+            if global_classes_repartition is None:
+                return dash.no_update
+
+            sliders = []
+            for classes_name, classes_repartition in global_classes_repartition.items():
+                if len(classes_repartition) > 2:
+                    raise NotImplementedError("Only two classes are supported for now.")
+
+                keys = list(classes_repartition.keys())
+                total = sum(classes_repartition.values())
+                class_a_repartition = math.floor(classes_repartition[keys[0]] / total * 100)
+                class_b_repartition = math.ceil(classes_repartition[keys[1]] / total * 100)
+
+                if class_a_repartition == class_b_repartition:
+                    sliders.append(
+                        html.Div(
+                            [
+                                html.H5(f"{keys[0]} versus {keys[1]}"),
+                                html.P("The classes are already balanced."),
+                            ]
+                        )
+                    )
+                    continue
+
+                if class_a_repartition < class_b_repartition:
+                    class_a_repartition, class_b_repartition = class_b_repartition, class_a_repartition
+                    keys[0], keys[1] = keys[1], keys[0]
+
+                difference_to_balance = class_a_repartition - 50
+
+                steps = Utils.get_closest_integer_steps(difference_to_balance)
+
+                marks = {}
+                for step in steps:
+                    marks[step] = f"{class_a_repartition - step}:{class_b_repartition + step}"
+
+                sliders.append(
+                    html.Div(
+                        [
+                            html.H5(f"{keys[0]} versus {keys[1]}"),
+                            html.P(f"The classes are not balanced, you can use the slider to balance them."),
+
+                            dcc.Slider(
+                                id={
+                                    "type": "class_balancing_slider",
+                                    "index": classes_name,
+                                },
+                                min=0,
+                                max=difference_to_balance,
+                                step=1,
+                                value=0,
+                                marks=marks
+                            ),
+                        ]
+                    )
+                )
+
+            return sliders
+
+        @self.app.callback(
+            Output({"type": "class_balancing_slider", "index": MATCH}, "value"),
+            Input({"type": "class_balancing_slider", "index": MATCH}, "value"),
+            [State({"type": "class_balancing_slider", "index": MATCH}, "id")],
+        )
+        def update_class_balancing_slider(value, id):
+            """
+            Update the class balancing slider.
+            """
+            if value is None:
+                return dash.no_update
+
+            self.metabo_controller.set_balance_correction_for_experiment(id["index"], value)
+            return value
 
     def _get_wrapped_experimental_designs(self):
         children_container = [html.Div("Experimental design")]
