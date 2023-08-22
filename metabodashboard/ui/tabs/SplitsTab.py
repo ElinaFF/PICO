@@ -306,7 +306,7 @@ class SplitsTab(MetaTab):
         _experimentalDesigns = html.Div(
             className="title_and_form",
             children=[
-                html.H4(id="Exp_desg_title", children="Define Experimental designs"),
+                html.H4(id="Exp_desg_title", children="Define Classification designs"),
                 dbc.Form(
                     children=[
                         dbc.Col(
@@ -314,7 +314,7 @@ class SplitsTab(MetaTab):
                                 dbc.FormText("Link each sample to its target/class."),
                                 __typeGroupLink,
                                 html.Br(),
-                                dbc.FormText("Experimental Designs."),
+                                dbc.FormText("Classification Designs."),
                                 dbc.Card(
                                     id="setted_classes_container",
                                     children=self._get_wrapped_experimental_designs(),
@@ -1019,7 +1019,7 @@ class SplitsTab(MetaTab):
                 elif not self.metabo_controller.metadata_is_set():
                     metadata_error = "You must upload a metadata file before splitting it."
                 elif not self.metabo_controller.get_all_experimental_designs_names():
-                    experimental_design_error = "You must add at least one experimental design before " \
+                    experimental_design_error = "You must add at least one classification design before " \
                                                 "splitting the data."
 
                 if train_test_proportion_error != "" \
@@ -1128,7 +1128,7 @@ class SplitsTab(MetaTab):
             return value
 
     def _get_wrapped_experimental_designs(self):
-        children_container = [html.Div("Experimental design")]
+        children_container = [html.Div("Classification design")]
         all_experimental_designs = (
             self.metabo_controller.get_all_experimental_designs_names()
         )
@@ -1142,7 +1142,7 @@ class SplitsTab(MetaTab):
                 ),
                 style={"display": "none"},
             )
-            return html.Div([html.P("No experimental design setted yet."), button])
+            return html.Div([html.P("No classification design setted yet."), button])
 
         for _, full_name in all_experimental_designs:
             children_container.append(

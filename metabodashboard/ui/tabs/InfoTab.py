@@ -85,7 +85,7 @@ class InfoTab(MetaTab):
                     [
                         html.P(
                             "The entire section of Results is based on the perspective of analysing the features selected "
-                            "by the algorithms. For one experimental design of classes, multiple algorithms can be run. "
+                            "by the algorithms. For one classification design of classes, multiple algorithms can be run. "
                             "Then, the results and performances of each algorithm can be explored one by one to ensure that "
                             "the prediction and therefore the selection of the features is valid. At the end, there is a "
                             "section that aggregates the results of all the algorithms in several figures to compare which "
@@ -162,12 +162,12 @@ class InfoTab(MetaTab):
                         ),
                         html.P(
                             "Otherwise, you can use the same parameters with new data and/or metadata (Partial restore) "
-                            "but the sample column name, target column name and experimental designs won't be "
+                            "but the sample column name, target column name and classification designs won't be "
                             "restored."
                         ),
                         html.P(
                             "If you only want to see the results, it will be available (Load results) but metadata and data "
-                            "matrix will be reset, as well as the experimental designs."
+                            "matrix will be reset, as well as the classification designs."
                         ),
                         html.Div(
                             children=[

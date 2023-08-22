@@ -43,7 +43,7 @@ class ResultsTab(MetaTab):
                         html.Div(
                             className="dropdowns",
                             children=[
-                                html.H6("Experimental Design : "),
+                                html.H6("Classification Design : "),
                                 dbc.Select(
                                     id="design_dropdown",
                                     className="form_select",

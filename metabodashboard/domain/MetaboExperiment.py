@@ -177,7 +177,7 @@ class MetaboExperiment:
     def set_selected_models(self, selected_models: list):
         if self.experimental_designs == {}:
             raise ValueError(
-                "You must define at least one experimental design before selecting models."
+                "You must define at least one classification design before selecting models."
             )
         self._selected_models = selected_models
         for _, experimental_design in self.experimental_designs.items():
@@ -251,7 +251,7 @@ class MetaboExperiment:
             raise RuntimeError("CV folds not set")
         if self.experimental_designs == {}:
             raise RuntimeError(
-                "You must define at least one experimental design before learning."
+                "You must define at least one classification design before learning."
             )
 
     def learn(self):
@@ -262,7 +262,7 @@ class MetaboExperiment:
         self._data_matrix.load_data()
         params = []
         for _, experimental_design in self.experimental_designs.items():
-            print("-> Experimental design : ", _)
+            print("-> Classification design : ", _)
             selected_targets_name = experimental_design.get_selected_targets_name()
             (selected_targets, selected_ids,) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
             classes = Utils.load_classes_from_targets(
@@ -501,5 +501,5 @@ class MetaboExperiment:
 
     def set_balance_correction_for_experiment(self, experimental_design_name: str, balance_correction: int) -> None:
         if experimental_design_name not in self.experimental_designs:
-            raise ValueError("Experimental design name not found")
+            raise ValueError("Classification design name not found")
         self.experimental_designs[experimental_design_name].set_balance_correction(balance_correction)
