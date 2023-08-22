@@ -172,19 +172,20 @@ class Results:
         """
         count = Counter(names)
         for n in count.keys():
-            count[n] = [0]
+            count[n] = [0]  # original value should equal number of splits, replace by list
             liste_val = []
             for idx, j in enumerate(names):
                 if n == j and values[idx] > 0:
-                    count[n][0] += 1
-                    liste_val.append(values[idx])
+                    count[n][0] += 1  # update value of count by the number of times the feature is used
+                    liste_val.append(values[idx])  # append only value of importance if feature is used (>0)
             if liste_val:
-                # mean on all the splits, even if feature not used
+                # mean and std only on values of feature > 0 (so only on times the feature was used)
                 mean_val = np.mean(liste_val)
                 std = np.std(liste_val)
                 count[n].append(mean_val)
                 count[n].append(std)
             else:
+                # if the feature was never used, 0 as mean and std
                 count[n].append(0)
                 count[n].append(0)
         return count
