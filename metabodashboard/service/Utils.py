@@ -435,9 +435,9 @@ def get_closest_integer_steps(slider_size):
     return [int(i) for i in steps if i <= slider_size]
 
 
-def remove_random_samples_from_class(X: pd.Series, y: list[str], balance_correction: int,
+def remove_random_samples_from_class(X: pd.Series, y: List[str], balance_correction: int,
                                      classes_repartition: dict, seed: int = 42) \
-        -> tuple[pd.Series, list]:
+        -> Tuple[pd.Series, list]:
 
     samples_ids_and_targets = pd.DataFrame({"id": X, "final_classes": y})
 

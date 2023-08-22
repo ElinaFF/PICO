@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Tuple, Optional, Iterable, Union
+from typing import Tuple, Iterable, Union
 
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
@@ -29,7 +29,7 @@ class DataMatrix:
         path: str,
         data=None,
         from_base64: bool = True,
-    ) -> Optional[pd.DataFrame]:
+    ) -> Union[pd.DataFrame, None]:
         if self._use_raw is None:
             raise RuntimeError("Need to set raw use before loading data")
         data_df, metadata_df = self._load_and_format(
@@ -80,7 +80,7 @@ class DataMatrix:
 
     def _load_and_format(
         self, path, data=None, is_raw=False, from_base64=True
-    ) -> Tuple[pd.DataFrame, Optional[pd.DataFrame]]:
+    ) -> Tuple[pd.DataFrame, Union[pd.DataFrame, None]]:
         """
         load the table from a path and process it to make it more easy to manipulate
         """

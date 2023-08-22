@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Union
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -11,7 +11,7 @@ import numpy as np
 class SplitGroup:
     def __init__(self, metadata: MetaData, selected_targets: List[str], train_test_proportion: float,
                  number_of_splits: int, classes_design: dict, pairing_column: str, balance_correction: int = 0,
-                 classes_repartition: Optional[dict] = None):
+                 classes_repartition: Union[dict, None] = None):
         self._metadata = metadata
         self._number_of_split = number_of_splits
         self._classes_design = classes_design
@@ -21,7 +21,7 @@ class SplitGroup:
 
     def _compute_splits(self, train_test_proportion: float, number_of_splits: int, pairing_column: str,
                         selected_targets: List[str], balance_correction: int = 0,
-                        classes_repartition: Optional[dict] = None):
+                        classes_repartition: Union[dict, None] = None):
         """
         selected_targets : the selection of classes done with the interface or the automate.py (the names of the
         selected classes/targets)

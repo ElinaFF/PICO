@@ -1,4 +1,4 @@
-from typing import Generator, Tuple, Dict, Optional
+from typing import Generator, Tuple, Dict, Union
 
 from . import SplitGroup, MetaData
 from .Results import *
@@ -9,8 +9,8 @@ class ExperimentalDesign:
         self._classes_design: dict = classes_design
         self._name: str = ""
         self._compute_name()
-        self._split_group: Optional[SplitGroup] = None
-        self._selected_models_name: Optional[list] = None
+        self._split_group: Union[SplitGroup, None] = None
+        self._selected_models_name: Union[list, None] = None
         self.results: dict = {}
         self._is_done: bool = False
         self._balance_correction: int = 0
