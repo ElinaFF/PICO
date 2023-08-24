@@ -88,6 +88,31 @@ class Plots:
         )
         return fig
 
+    def show_3D_umap(self, umap_data, classes, algo, slider_value, sample_ids: list):
+        val = [5, 10, 40, 100, "used", "all"]
+        fig = px.scatter_3d(
+            umap_data,
+            x=0,
+            y=1,
+            z=2,
+            color=classes,
+            color_continuous_scale=self.colors,
+            title="",
+            hover_name=sample_ids,
+        )
+
+        fig.update_layout(
+            {
+                "plot_bgcolor": "rgba(0, 0, 0, 0)",
+                "paper_bgcolor": "rgba(0, 0, 0, 0)",
+            },
+            title="UMAP applied on top "
+                  + str(val[slider_value])
+                  + " features selected by "
+                  + algo,
+        )
+        return fig
+
     def show_PCA(self, pca_data, pca_labels, classes, slider_value, algo, sample_ids: list):
         val = [5, 10, 40, 100, "used", "all"]
         fig = px.scatter(
@@ -95,6 +120,31 @@ class Plots:
             labels=pca_labels,
             x=0,
             y=1,
+            color=classes,
+            color_continuous_scale=self.colors,
+            title="",
+            hover_name=sample_ids,
+        )
+        fig.update_layout(
+            {
+                "plot_bgcolor": "rgba(0, 0, 0, 0)",
+                "paper_bgcolor": "rgba(0, 0, 0, 0)",
+            },
+            title="PCA applied on top "
+                  + str(val[slider_value])
+                  + " features selected by "
+                  + algo,
+        )
+        return fig
+
+    def show_3D_PCA(self, pca_data, pca_labels, classes, slider_value, algo, sample_ids: list):
+        val = [5, 10, 40, 100, "used", "all"]
+        fig = px.scatter_3d(
+            pca_data,
+            labels=pca_labels,
+            x=0,
+            y=1,
+            z=2,
             color=classes,
             color_continuous_scale=self.colors,
             title="",
