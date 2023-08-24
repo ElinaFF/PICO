@@ -144,8 +144,14 @@ class Results:
         self.results["umap_data"] = self._produce_UMAP(
             self.tmp["scaled_data"], self.results["features_table"]
         )
+        self.results["3d_umap_data"] = self._produce_UMAP(
+            self.tmp["scaled_data"], self.results["features_table"], n_components=3
+        )
         self.results["pca_data"] = self._produce_PCA(
             self.tmp["scaled_data"], self.results["features_table"]
+        )
+        self.results["3d_pca_data"] = self._produce_PCA(
+            self.tmp["scaled_data"], self.results["features_table"], n_components=3
         )
         self.results["metrics_table"] = self.produce_metrics_table()
         self.results[
@@ -196,14 +202,14 @@ class Results:
             y_test_true, y_test_pred, labels=labels, normalize="true"
         )
 
-    def _produce_UMAP(self, X: pd.DataFrame, features_df: pd.DataFrame):
+    def _produce_UMAP(self, X: pd.DataFrame, features_df: pd.DataFrame, n_components: int = 2):
         nbr_feat = [5, 10, 40, 100]
         umaps = []
         for nbr in nbr_feat:
             selected_feat = features_df["features"][:nbr]
             selected_x = X.loc[:, selected_feat]
             selected_x = selected_x.to_numpy()
-            umap_data = umap.UMAP(n_components=2, init="random", random_state=13)
+            umap_data = umap.UMAP(n_components=n_components, init="random", random_state=13)
             umaps.append(umap_data.fit_transform(selected_x))
 
         # Do the umap for all used metrics
@@ -212,16 +218,16 @@ class Results:
             selected_feat = features_df["features"][:3]
         selected_x = X.loc[:, selected_feat]
         selected_x = selected_x.to_numpy()
-        umap_data = umap.UMAP(n_components=2, init="random", random_state=13)
+        umap_data = umap.UMAP(n_components=n_components, init="random", random_state=13)
         umaps.append(umap_data.fit_transform(selected_x))
 
         # Redo the umap but on all the data
         selected_x = X.to_numpy()
-        umap_data = umap.UMAP(n_components=2, init="random", random_state=13)
+        umap_data = umap.UMAP(n_components=n_components, init="random", random_state=13)
         umaps.append(umap_data.fit_transform(selected_x))
         return umaps
 
-    def _produce_PCA(self, X: pd.DataFrame, features_df: pd.DataFrame):
+    def _produce_PCA(self, X: pd.DataFrame, features_df: pd.DataFrame, n_components: int = 2):
         nbr_feat = [5, 10, 40, 100]
         pcas = []
         labels = []
@@ -231,7 +237,7 @@ class Results:
             x = X.loc[:, selected_feat]
             x = x.to_numpy()
 
-            pca = PCA(n_components=2)
+            pca = PCA(n_components=n_components)
             pcas.append(pca.fit_transform(x))
             labels.append(
                 {str(i): f"PC {i + 1} ({var:.1f}%)" for i, var in enumerate(pca.explained_variance_ratio_ * 100)})
@@ -242,13 +248,13 @@ class Results:
             selected_feat = features_df["features"][:3]
 
         x = X.loc[:, selected_feat]
-        pca = PCA(n_components=2)
+        pca = PCA(n_components=n_components)
         pcas.append(pca.fit_transform(x))
         labels.append({str(i): f"PC {i + 1} ({var:.1f}%)" for i, var in enumerate(pca.explained_variance_ratio_ * 100)})
 
         # Redo the PCA but on all the data
         x = X.to_numpy()
-        pca = PCA(n_components=2)
+        pca = PCA(n_components=n_components)
         pcas.append(pca.fit_transform(x))
         labels.append({str(i): f"PC {i + 1} ({var:.1f}%)" for i, var in enumerate(pca.explained_variance_ratio_ * 100)})
 

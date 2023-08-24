@@ -114,18 +114,17 @@ class ResultsTab(MetaTab):
                     className="title_and_help",
                     children=[
                         html.H6("PCA", id="PCA_title"),
-                        dbc.Button(
-                            "[?]",
-                            className="popover_btn text-muted btn-secondary",
-                            id="help_pcaPlot",
-                        ),
-                        dbc.Popover(
-                            children=[dbc.PopoverBody("Blablabla wout wout")],
-                            id="pop_help_pcaPlot",
-                            is_open=False,
-                            target="help_pcaPlot",
+                        dcc.RadioItems(
+                            id='pca_dimensions',
+                            options=[
+                                {'label': '2D', 'value': '2d'},
+                                {'label': '3D', 'value': '3d'},
+                            ],
+                            value='2d',
+                            labelStyle={'display': 'inline-block', 'margin': 'auto', 'padding': '5px'}
                         ),
                     ],
+                    style={"display": "flex", "justify-content": "space-between"},
                 ),
                 # Should we put the title on the plot?
                 dcc.Loading(
@@ -149,18 +148,17 @@ class ResultsTab(MetaTab):
                     className="title_and_help",
                     children=[
                         html.H6("Umap"),
-                        dbc.Button(
-                            "[?]",
-                            className="text-muted btn-secondary popover_btn",
-                            id="help_umapPlot",
-                        ),
-                        dbc.Popover(
-                            children=[dbc.PopoverBody("Blablabla wout wout")],
-                            id="pop_help_umapPlot",
-                            is_open=False,
-                            target="help_umapPlot",
+                        dcc.RadioItems(
+                            id='umap_dimensions',
+                            options=[
+                                {'label': '2D', 'value': '2d'},
+                                {'label': '3D', 'value': '3d'},
+                            ],
+                            value='2d',
+                            labelStyle={'display': 'inline-block', 'margin': 'auto', 'padding': '5px'}
                         ),
                     ],
+                    style={"display": "flex", "justify-content": "space-between"},
                 ),
                 dcc.Loading(
                     dcc.Graph(id="umap_overview", config=CONFIG),
@@ -371,7 +369,7 @@ class ResultsTab(MetaTab):
                 html.Div(dg.DashInteractiveGraphviz(
                     id="DTTT_graph"
                 ),
-                style={"letter-spacing": "0"}),
+                    style={"letter-spacing": "0"}),
             ]
         )
 
@@ -622,27 +620,41 @@ class ResultsTab(MetaTab):
                 feature_df = self.r[design_name][algo].results["features_table"]
                 number_of_used_feature = len(feature_df[feature_df["times_used"] > 0])
                 marks = Utils.get_marks_with_custom_slider_value(custom_value=number_of_used_feature)
-                strip_chart_marks = Utils.get_stripchart_marks_with_custom_slider_value(custom_value=number_of_used_feature)
+                strip_chart_marks = Utils.get_stripchart_marks_with_custom_slider_value(
+                    custom_value=number_of_used_feature)
                 return marks, marks, strip_chart_marks
             return dash.no_update, dash.no_update, dash.no_update
 
         @self.app.callback(
             [Output("PCA", "figure")],
-            [Input("load_ML_results_button", "n_clicks"), Input("pca_slider", "value")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value"), State("pca_slider", "marks")]
+            [Input("load_ML_results_button", "n_clicks"),
+             Input("pca_slider", "value"),
+             Input("pca_dimensions", "value")],
+            [State("ml_dropdown", "value"),
+             State("design_dropdown", "value"),
+             State("pca_slider", "marks")],
         )
-        def show_pca(n_clicks, pca_value, algo, design_name, marks):
+        def show_pca(n_clicks, pca_value, dimensions, algo, design_name, marks):
             """
             pca_value : represent the number of feature selected by the slider, but is given as indexes
             """
             if n_clicks >= 1:
-                data_list, labels_list = self.r[design_name][algo].results["pca_data"]
                 classes = self.r[design_name][algo].results["classes"]
 
                 index = Utils.get_index_from_marks(pca_value, marks)
 
-                return [self._plots.show_PCA(data_list[index], labels_list[index], classes, index, algo,
-                                             self.r[design_name][algo].results["samples_id"])]
+                if dimensions == "2d":
+                    data_list, labels_list = self.r[design_name][algo].results["pca_data"]
+                    return [self._plots.show_PCA(data_list[index], labels_list[index], classes, index, algo,
+                                                    self.r[design_name][algo].results["samples_id"])]
+                elif dimensions == "3d":
+                    data_list, labels_list = self.r[design_name][algo].results["3d_pca_data"]
+                    return [self._plots.show_3D_PCA(data_list[index], labels_list[index], classes, index, algo,
+                                                    self.r[design_name][algo].results["samples_id"])]
+                else:
+                    raise ValueError("The value of the radio button pca_dimensions is not supported by the result file "
+                                     "version.")
+
             else:
                 return dash.no_update
 
@@ -651,19 +663,30 @@ class ResultsTab(MetaTab):
             [
                 Input("load_ML_results_button", "n_clicks"),
                 Input("umap_slider", "value"),
+                Input("umap_dimensions", "value"),
             ],
             [State("ml_dropdown", "value"), State("design_dropdown", "value"), State("umap_slider", "marks")],
         )
-        def show_umap(n_clicks, slider_value, algo, design_name, marks):
+        def show_umap(n_clicks, slider_value, dimensions, algo, design_name, marks):
             if n_clicks >= 1:
-                df = self.r[design_name][algo].results["umap_data"]
                 classes = self.r[design_name][algo].results["classes"]
 
                 index = Utils.get_index_from_marks(slider_value, marks)
 
-                return self._plots.show_umap(
-                    df[index], classes, algo, index, self.r[design_name][algo].results["samples_id"]
-                )
+                if dimensions == "2d":
+                    df = self.r[design_name][algo].results["umap_data"]
+                    return self._plots.show_umap(
+                        df[index], classes, algo, index, self.r[design_name][algo].results["samples_id"]
+                    )
+                elif dimensions == "3d":
+                    df = self.r[design_name][algo].results["3d_umap_data"]
+                    return self._plots.show_3D_umap(
+                        df[index], classes, algo, index, self.r[design_name][algo].results["samples_id"]
+                    )
+                else:
+                    raise ValueError("The value of the radio button umap_dimensions is not supported by the result "
+                                     "file version.")
+
             else:
                 return dash.no_update
 
