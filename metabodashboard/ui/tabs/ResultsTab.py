@@ -117,11 +117,12 @@ class ResultsTab(MetaTab):
                         dcc.RadioItems(
                             id='pca_dimensions',
                             options=[
-                                {'label': '2D', 'value': '2d'},
-                                {'label': '3D', 'value': '3d'},
+                                {'label': ' 2D', 'value': '2d'},
+                                {'label': ' 3D', 'value': '3d'},
                             ],
                             value='2d',
-                            labelStyle={'display': 'inline-block', 'margin': 'auto', 'padding': '5px'}
+                            labelStyle={'margin': 'auto', 'padding': '5px'},
+                            inline=True
                         ),
                     ],
                     style={"display": "flex", "justify-content": "space-between"},
@@ -151,11 +152,14 @@ class ResultsTab(MetaTab):
                         dcc.RadioItems(
                             id='umap_dimensions',
                             options=[
-                                {'label': '2D', 'value': '2d'},
-                                {'label': '3D', 'value': '3d'},
+                                {'label': ' 2D', 'value': '2d'},
+                                {'label': ' 3D', 'value': '3d'},
                             ],
                             value='2d',
-                            labelStyle={'display': 'inline-block', 'margin': 'auto', 'padding': '5px'}
+                            # add space between radio and label
+                            labelStyle={'margin': 'auto', 'padding': '5px'},
+                            inline=True
+
                         ),
                     ],
                     style={"display": "flex", "justify-content": "space-between"},
