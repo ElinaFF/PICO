@@ -98,7 +98,7 @@ class SplitGroup:
                 targets = df.loc[X_test][self._metadata.get_target_column()]
                 y_test = Utils.load_classes_from_targets(self._classes_design, targets)
 
-                testing_data = np.array(zip(X_test, y_test))
+                testing_data = np.array(list(zip(X_test, y_test)))
                 rng.shuffle(testing_data)
                 X_test, y_test = zip(*testing_data)
 
