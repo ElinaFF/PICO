@@ -7,8 +7,8 @@ dash-core-components==2.0.0
 dash-html-components==2.0.0
 dash-renderer
 dash-table==5.0.0
-numpy==1.23
-pandas
+numpy==1.23.2
+pandas==2.0.3
 plotly
 scikit-learn
 umap-learn
