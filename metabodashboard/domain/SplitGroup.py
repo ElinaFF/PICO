@@ -66,8 +66,6 @@ class SplitGroup:
                 # 4- retrieve the paired samples corresponding to the one in train or test set
             else:
                 # define the ids column as the index of the dataframe, so it can be extracted with groupby().groups
-                print("df_filter")
-                print(df_filter)
                 df = df_filter.set_index(self._metadata.get_id_column())
                 # groups is a dictionary with 'keys' as the pairing value and 'values' as the index of the lines corresponding to the pairing
                 groups = df.groupby(pairing_column).groups
@@ -76,14 +74,22 @@ class SplitGroup:
                                                                                         test_size=train_test_proportion,
                                                                                         random_state=split_index)
                 # retrieve the ids corresponding the to entities in train
-                X_train = pd.Series(np.concatenate([list(groups[i]) for i in X_train_temp]))
+                X_train = []
+                for representative in X_train_temp:
+                    represented_pairing_value = df_filter.loc[representative][pairing_column]
+                    X_train.extend(groups[represented_pairing_value])
                 # retrieve targets corresponding to ids and then convert to labels
+                X_train = pd.Series(X_train)
                 targets = df.loc[X_train][self._metadata.get_target_column()]
                 y_train = Utils.load_classes_from_targets(self._classes_design, targets)
 
                 # retrieve the ids corresponding the to entities in test
-                X_test = np.concatenate([list(groups[i]) for i in X_test_temp])
+                X_test = []
+                for representative in X_test_temp:
+                    represented_pairing_value = df_filter.loc[representative][pairing_column]
+                    X_test.extend(groups[represented_pairing_value])
                 # retrieve targets corresponding to ids and then convert to labels
+                X_test = pd.Series(X_test)
                 targets = df.loc[X_test][self._metadata.get_target_column()]
                 y_test = Utils.load_classes_from_targets(self._classes_design, targets)
 
