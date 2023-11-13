@@ -58,13 +58,14 @@ class SplitGroup:
         # 3- procede with the train-test division on the selected samples
         print("start _compute_split step #3")
         for split_index in range(number_of_splits):
-
             if pairing_column == "":
                 X_train, X_test, y_train, y_test = train_test_split(ids, labels, test_size=train_test_proportion,
                                                                     random_state=split_index)
 
                 # 4- retrieve the paired samples corresponding to the one in train or test set
             else:
+                # random shuffle initialisation for second shuffle of samples
+                rng = np.random.default_rng(seed=split_index)
                 # define the ids column as the index of the dataframe, so it can be extracted with groupby().groups
                 df = df_filter.set_index(self._metadata.get_id_column())
                 # groups is a dictionary with 'keys' as the pairing value and 'values' as the index of the lines corresponding to the pairing
@@ -83,6 +84,10 @@ class SplitGroup:
                 targets = df.loc[X_train][self._metadata.get_target_column()]
                 y_train = Utils.load_classes_from_targets(self._classes_design, targets)
 
+                training_data = list(zip(X_train, y_train))
+                rng.shuffle(training_data)
+                X_train, y_train = zip(*training_data)
+
                 # retrieve the ids corresponding the to entities in test
                 X_test = []
                 for representative in X_test_temp:
@@ -93,14 +98,22 @@ class SplitGroup:
                 targets = df.loc[X_test][self._metadata.get_target_column()]
                 y_test = Utils.load_classes_from_targets(self._classes_design, targets)
 
+                testing_data = list(zip(X_test, y_test))
+                rng.shuffle(testing_data)
+                X_test, y_test = zip(*testing_data)
+
             if balance_correction > 0:
                 X_train, y_train = Utils.remove_random_samples_from_class(X_train,
                                                                           y_train,
                                                                           balance_correction,
                                                                           classes_repartition)
-
+            X_train = list(X_train)
+            y_train = list(y_train)
+            X_test = list(X_test)
+            y_test = list(y_test)
+            
             print("_compute_split step #4 done")
-            self._splits.append([X_train.tolist(), X_test.tolist(), y_train, y_test])
+            self._splits.append([X_train, X_test, y_train, y_test])
 
     def load_split_with_index(self, split_index: int) -> list:
         return self._splits[split_index]
