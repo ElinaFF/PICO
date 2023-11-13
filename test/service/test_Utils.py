@@ -8,6 +8,9 @@ from sklearn.tree import DecisionTreeClassifier
 
 from ...metabodashboard.service import Utils
 
+from ..TestsUtility import (CLASSES_DESIGN, TARGETS, CLASSES,
+                            PARTIAL_CLASSES_DESIGN, FILTERED_CLASSES, FILTERED_TARGETS)
+
 
 def test_givenUtils_whenGetFilePath_thenReturnFilePath():
     assert Utils.DUMP_EXPE_PATH == os.path.join(
@@ -84,3 +87,16 @@ def test_givenListAsString_whenConvertStringToList_thenListIsReturned():
         ["a", "b", "c"],
         [15.35, 0.35, 15],
     ]
+
+
+def test_givenTargets_whenLoadCalssesFromTargets_thenClassesAreReturned():
+    assert Utils.load_classes_from_targets(CLASSES_DESIGN, TARGETS) == CLASSES
+
+
+def test_givenPartialTargets_whenLoadCalssesFromTargets_thenPartialClassesAreReturned():
+    assert Utils.load_classes_from_targets(PARTIAL_CLASSES_DESIGN, FILTERED_TARGETS) == FILTERED_CLASSES
+
+
+def test_givenTargetsAndPartialDesign_whenLoadCalssesFromTargets_thenThrowValueError():
+    with pytest.raises(ValueError):
+        Utils.load_classes_from_targets(PARTIAL_CLASSES_DESIGN, TARGETS)

@@ -3,7 +3,7 @@ import hashlib
 import importlib
 import os
 import pickle
-from typing import Iterable, Union
+from typing import Union
 import re
 
 import pickle as pkl
@@ -166,13 +166,15 @@ def reverse_dict(dictionnary: dict) -> dict:
     return reversed_dict
 
 
-def load_classes_from_targets(classes_design: dict, targets: Iterable[str]) -> List[str]:
+def load_classes_from_targets(classes_design: dict, targets: Tuple[str]) -> List[str]:
     reverse_classes_design = reverse_dict(classes_design)
     classes = []
     for target in targets:
         if target not in reverse_classes_design:
             raise ValueError("Target {} not found in classes_design".format(target))
         classes.append(reverse_classes_design[target])
+    if len(classes) != len(targets):
+        raise ValueError("Some targets were not found in classes_design")
     return classes
 
 
