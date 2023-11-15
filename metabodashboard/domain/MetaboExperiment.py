@@ -304,10 +304,13 @@ class MetaboExperiment:
                                                                        y_train, y_train_pred, y_test, y_test_pred,
                                                                        split_index, X_train.index, X_test.index)
 
-        for _, experimental_design in self.experimental_designs.items():
-            for _, result in experimental_design.get_results().items():
-                result.compute_remaining_results_on_all_splits(params[0][8])
-            experimental_design.set_is_done(True)
+        for param in params:
+            experimental_design_name = param[1]
+            results = self.experimental_designs[experimental_design_name].get_results()
+            for _, result in results.items():
+                result.compute_remaining_results_on_all_splits(param[8])
+            self.experimental_designs[experimental_design_name].set_is_done(True)
+
 
     def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test,
                      cv_algorithm_constructor, cv_algorithm_config, selected_ids, classes):
