@@ -1,10 +1,10 @@
-from multiprocessing import Pool, cpu_count, get_context
+from contextlib import contextmanager
+from multiprocessing import Pool, cpu_count
 from typing import Generator, Tuple, List, Dict, Union
 
-import numpy as np
 import sklearn
 
-from . import ExperimentalDesign, Results
+from . import ExperimentalDesign
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
 from .MetaboExperimentDTO import MetaboExperimentDTO
@@ -34,7 +34,7 @@ class MetaboExperiment:
         self._cv_folds = 5
         self._activate_multithreading = True
 
-        self.experimental_designs = {}
+        self.experimental_designs: Dict[str, ExperimentalDesign] = {}
 
         self._supported_models = self._model_factory.create_supported_models()
         self._custom_models = {}
@@ -283,14 +283,23 @@ class MetaboExperiment:
         self.run_learning(params)
         self._data_matrix.unload_data()
 
+    @contextmanager
+    def __create_pool(self, num_workers: int) -> Generator[Pool, None, None]:
+        pool = Pool(num_workers)
+        try:
+            yield pool
+        finally:
+            pool.close()
+            pool.join()
+
     def run_learning(self, params: List[tuple]):
 
         # launch the run_on_model function with the params
         if self._activate_multithreading:
             print("-> Multithreading activated (", len(params), " models to run) ...")
-            # ctx = get_context("spawn")
-            pool = Pool(cpu_count())
-            result_params = pool.starmap(self.run_on_model, params)
+            number_of_workers = cpu_count() - 1
+            with self.__create_pool(number_of_workers) as pool:
+                result_params = pool.starmap(self.run_on_model, params)
         else:
             result_params = [self.run_on_model(*param) for param in params]
 
@@ -304,12 +313,14 @@ class MetaboExperiment:
                                                                        y_train, y_train_pred, y_test, y_test_pred,
                                                                        split_index, X_train.index, X_test.index)
 
-        for param in params:
-            experimental_design_name = param[1]
-            results = self.experimental_designs[experimental_design_name].get_results()
-            for _, result in results.items():
-                result.compute_remaining_results_on_all_splits(param[8])
-            self.experimental_designs[experimental_design_name].set_is_done(True)
+        for experimental_design_name, experimental_design in self.experimental_designs.items():
+            results = experimental_design.get_results()
+            _, selected_sample_id = self._metadata.get_selected_targets_and_ids(
+                experimental_design.get_selected_targets_name())
+            for model_name, result in results.items():
+                print(f"-> Compute remaining results for {model_name} of {experimental_design_name} design")
+                result.compute_remaining_results_on_all_splits(selected_sample_id)
+            experimental_design.set_is_done(True)
 
 
     def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test,
