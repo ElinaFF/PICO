@@ -211,7 +211,7 @@ class Results:
             selected_feat = features_df["features"][:nbr]
             selected_x = X.loc[:, selected_feat]
             selected_x = selected_x.to_numpy()
-            umap_data = umap.UMAP(n_components=n_components, init="random", random_state=13)
+            umap_data = umap.UMAP(n_components=n_components, init="random", random_state=13, n_jobs=1)
             umaps.append(umap_data.fit_transform(selected_x))
 
         # Do the umap for all used metrics
@@ -220,12 +220,12 @@ class Results:
             selected_feat = features_df["features"][:3]
         selected_x = X.loc[:, selected_feat]
         selected_x = selected_x.to_numpy()
-        umap_data = umap.UMAP(n_components=n_components, init="random", random_state=13)
+        umap_data = umap.UMAP(n_components=n_components, init="random", random_state=13, n_jobs=1)
         umaps.append(umap_data.fit_transform(selected_x))
 
         # Redo the umap but on all the data
         selected_x = X.to_numpy()
-        umap_data = umap.UMAP(n_components=n_components, init="random", random_state=13)
+        umap_data = umap.UMAP(n_components=n_components, init="random", random_state=13, n_jobs=1)
         umaps.append(umap_data.fit_transform(selected_x))
         return umaps
 
