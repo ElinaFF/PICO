@@ -134,6 +134,8 @@ class Results:
 
 
     def compute_remaining_results_on_all_splits(self, samples_id: list):
+        if len(samples_id) != len(self.tmp["classes"]):
+            raise ValueError("samples_id and classes should have the same length")
 
         self.results["info_expe"] = self._produce_info_expe(
             self.tmp["y_train_true"], self.tmp["y_test_true"]

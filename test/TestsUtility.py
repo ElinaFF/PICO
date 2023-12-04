@@ -154,13 +154,14 @@ TRAIN_TEST_PROPORTION = 0.25
 
 SAMPLES_ID = _get_samples_id(ROW_NUMBER)
 TARGETS, CLASSES = _get_targets_and_classes(ROW_NUMBER, CLASSES_DESIGN)
-SELECTED_TARGETS = ["sick", "healthy"]
-ALL_TARGETS = ["sick", "ill", "healthy"]
-FILTERED_TARGETS = [target for target in TARGETS if target in SELECTED_TARGETS]
+SELECTED_TARGETS_NAME = ["sick", "healthy"]
+ALL_TARGETS_NAMES = ["sick", "ill", "healthy"]
+FILTERED_TARGETS = [target for target in TARGETS if target in SELECTED_TARGETS_NAME]
 FILTERED_SAMPLES_ID = [
-    id for id, target in zip(SAMPLES_ID, TARGETS) if target in SELECTED_TARGETS
+    id for id, target in zip(SAMPLES_ID, TARGETS) if target in SELECTED_TARGETS_NAME
 ]
 FILTERED_TARGETS_AND_IDS = (tuple(FILTERED_TARGETS), tuple(FILTERED_SAMPLES_ID))
+FILTERED_CLASSES = [CLASSES[i] for i in range(len(TARGETS)) if TARGETS[i] in SELECTED_TARGETS_NAME]
 DATA = _get_random_data(ROW_NUMBER, COLUMNS_NUMBER)
 SCALED_DATA = pd.DataFrame(StandardScaler().fit_transform(DATA), columns=DATA.columns)
 

@@ -12,7 +12,7 @@ from ..TestsUtility import (
     EXPERIMENT_NAME,
     EXPERIMENT_FULL_NAME,
     SPLITS,
-    SELECTED_TARGETS,
+    SELECTED_TARGETS_NAME,
     PARTIAL_CLASSES_DESIGN,
 )
 
@@ -89,6 +89,6 @@ def test_givenAnExperimentalDesign_whenGetSelectedTargetsName_thenTheSelectedTar
     input_experimental_design_with_partial,
 ):
     assert (
-        input_experimental_design_with_partial.get_selected_targets_name()
-        == SELECTED_TARGETS
+            input_experimental_design_with_partial.get_selected_targets_name()
+            == SELECTED_TARGETS_NAME
     )

@@ -17,7 +17,7 @@ DATAMATRIX_PATH = "DataMatrix.csv"
 
 def main():
     start_time = datetime.now()
-    print("Starting the MetaboDashboard at : ",start_time)
+    print("Starting the MetaboDashboard at : ", start_time)
     metabo_controller = MetaboController()
     metabo_controller.set_raw_use_for_data(False)
     metabo_controller.set_data_matrix_remove_rt(True)
@@ -28,30 +28,27 @@ def main():
     print("Metadata and DataMatrix are set_from_path")
 
     metabo_controller.set_id_column("Sample")
-    metabo_controller.set_target_columns(["study", "TX"])
+    metabo_controller.set_target_columns(["diet"])
     metabo_controller.set_pairing_group_column("subject")
-    metabo_controller.add_experimental_design({"NorthA": ["ALI__A", "MED__A"], "Med": ["ALI__B", "MED__B"]})
-    metabo_controller.add_experimental_design({"AliA": ["ALI__A"], "AliB": ["ALI__B"]})
-    metabo_controller.add_experimental_design({"MedA": ["MED__A"], "MedB": ["MED__B"]})
-    metabo_controller.add_experimental_design({"AliA": ["ALI__A"], "MedA": ["MED__A"]})
-    print("Classification designs added")
+    metabo_controller.add_experimental_design({"NA": ["NA"], "MED": ["MED", "MED/w"]})
+    print("Classification design added")
 
     metabo_controller.set_train_test_proportion(0.2)
-    metabo_controller.set_number_of_splits(30)
+    metabo_controller.set_number_of_splits(2)
     metabo_controller.create_splits()
     metabo_controller.set_selected_models(["DecisionTree", "RandomForest", "SCM", "RandomSCM"])
 
     print("Learning starts...")
     metabo_controller.set_cv_folds(5)
     metabo_controller.learn()
-    print("learning step finished at : ", datetime.now())
+    print("finished")
     #
-    #print(metabo_controller.get_all_results())
-    pickle.dump(metabo_controller.get_all_results(), open("rez_by_script_1.p", "wb"))
+    save = metabo_controller.generate_save()
+    pickle.dump(save, open("save.mtxp", "wb"))
     print("saved in file")
 
     end_time = datetime.now()
-    print("Total duration: {}".format(end_time - start_time))
+    print("Duration: {}".format(end_time - start_time))
     #
     # r = pkl.load(open("big_results.p", "rb"))
     #
