@@ -82,7 +82,7 @@ class MetaData:
             if from_base64:
                 data = io.BytesIO(data)
             # Assume that the user uploaded an excel file
-            df = pd.read_excel(data)
+            df = pd.read_excel(data, na_filter=False)
         else:
             raise TypeError(
                 "The input file is not of the right type, must be excel or csv."
