@@ -15,7 +15,3 @@ RUN pip install -U numpy
 RUN pip install -r requirements.txt
 
 CMD ["python", "main.py"]
-
-#RUN pip install gunicorn
-#
-#CMD [ "gunicorn", "-b 0.0.0.0:80", "main:server"]
