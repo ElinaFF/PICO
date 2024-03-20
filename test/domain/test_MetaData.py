@@ -6,10 +6,10 @@ from ..TestsUtility import (
     TARGETS_COLUMN,
     SAMPLES_ID,
     TARGETS,
-    SELECTED_TARGETS,
+    SELECTED_TARGETS_NAME,
     FILTERED_TARGETS,
     FILTERED_SAMPLES_ID,
-    ALL_TARGETS, CLASSES_DESIGN, PARTIAL_CLASSES_DESIGN, PARTIAL_CLASSES_REPARTITION,
+    ALL_TARGETS_NAMES, CLASSES_DESIGN, PARTIAL_CLASSES_DESIGN, PARTIAL_CLASSES_REPARTITION,
 )
 from ...metabodashboard.domain.MetaData import MetaData
 
@@ -45,12 +45,12 @@ def test_givenTargetColumn_whenGetSelectedTargets_thenTargetsAreCorrect(
     input_meta_data,
 ):
     input_meta_data.set_target_columns([TARGETS_COLUMN])
-    assert input_meta_data.get_selected_targets(SELECTED_TARGETS) == FILTERED_TARGETS
+    assert input_meta_data.get_selected_targets(SELECTED_TARGETS_NAME) == FILTERED_TARGETS
 
 
 def test_givenAllTargets_whenGetSelectedTargets_thenTargetsAreCorrect(input_meta_data):
     input_meta_data.set_target_columns([TARGETS_COLUMN])
-    assert input_meta_data.get_selected_targets(ALL_TARGETS) == TARGETS
+    assert input_meta_data.get_selected_targets(ALL_TARGETS_NAMES) == TARGETS
 
 
 def test_givenSelectedTarget_whenGetSelectedTargetsANDIds_thenIdsAndTargetAreCorrect(
@@ -59,7 +59,7 @@ def test_givenSelectedTarget_whenGetSelectedTargetsANDIds_thenIdsAndTargetAreCor
     input_meta_data.set_target_columns([TARGETS_COLUMN])
     input_meta_data.set_id_column(SAMPLES_ID_COLUMN)
 
-    assert input_meta_data.get_selected_targets_and_ids(SELECTED_TARGETS) == (
+    assert input_meta_data.get_selected_targets_and_ids(SELECTED_TARGETS_NAME) == (
         tuple(FILTERED_TARGETS),
         tuple(FILTERED_SAMPLES_ID),
     )

@@ -1,3 +1,4 @@
+import numpy as np
 from pyscm.scm import SetCoveringMachineClassifier
 from randomscm.randomscm import RandomScmClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -7,32 +8,41 @@ LEARN_CONFIG = {
     "DecisionTree": {
         "function": DecisionTreeClassifier,
         "ParamGrid": {
-            "max_depth": [1, 2, 3, 4, 5, 10],
-            "min_samples_split": [2, 4, 6, 8, 10],
+            "max_depth": np.linspace(1, 10, dtype=int),
+            "min_samples_split": np.linspace(0.01, 1, 10),
+            "max_features": ["auto", "sqrt", "log2"],
         },
         "importance_attribute": "feature_importances_",
     },
     "RandomForest": {
         "function": RandomForestClassifier,
-        "ParamGrid": {"n_estimators": [5, 10, 30, 70, 100, 200, 500]},
+        "ParamGrid": {
+            "n_estimators": np.linspace(20, 80, dtype=int),
+            "max_depth": np.linspace(1, 5, dtype=int),
+            "min_samples_split": np.linspace(0.01, 1, 10),
+            "max_features": ["auto", "sqrt", "log2"],
+            "max_samples": np.linspace(0.2, 1, 10),
+        },
         "importance_attribute": "feature_importances_",
     },
     "SCM": {
         "function": SetCoveringMachineClassifier,
         "ParamGrid": {
-            "p": [0.5, 1.0, 2.0],
-            "max_rules": [1, 2, 3, 4, 5],
+            "p": np.linspace(0.01, 3, 10),
+            "max_rules": np.linspace(1, 60, 10, dtype=int),
             "model_type": ["conjunction", "disjunction"],
+            "max_features": ["auto", "sqrt", "log2"],
         },
         "importance_attribute": "feature_importances_",
     },
     "RandomSCM": {
         "function": RandomScmClassifier,
         "ParamGrid": {
-            "p_options": [[0.5, 1.0, 2.0]],
-            "max_rules": [1, 5, 10],
-            "n_estimators": [5, 15, 45, 85, 150, 350],
+            "p": np.linspace(0.01, 3, 10),
+            "n_estimators": np.linspace(20, 80, 10, dtype=int),
             "model_type": ["conjunction", "disjunction"],
+            "max_features": ["auto", "sqrt", "log2"],
+            "max_samples": np.linspace(0.2, 1, 10),
         },
         "importance_attribute": "feature_importances_",
     },
