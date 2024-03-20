@@ -127,6 +127,9 @@ class MetaboExperiment:
         self._pairing_group_column = pairing_group_column
 
     def get_experimental_designs(self) -> Dict[str, ExperimentalDesign]:
+        """
+        Retrieve all experimental designs for an experience
+        """
         return self.experimental_designs
 
     def _raise_if_classes_design_is_not_valid(self, classes_design: dict) -> None:
@@ -144,6 +147,10 @@ class MetaboExperiment:
             raise ValueError("Duplicate class name is not allowed")
 
     def add_experimental_design(self, classes_design: dict):
+        """
+        add an experimental design to the experience, creates an object ExperimentalDesign each time
+        classes_design: which target.s against which for the prediction, and the names (classes) of the groups of target.s
+        """
         self._raise_if_classes_design_is_not_valid(classes_design)
         experimental_design = ExperimentalDesign(classes_design)
         self.experimental_designs[experimental_design.get_name()] = experimental_design
@@ -191,6 +198,9 @@ class MetaboExperiment:
         return self._selected_models
 
     def get_metadata_columns(self) -> list:
+        """
+        Retrieve the names of the columns in the metadata matrix
+        """
         if self._metadata is None:
             raise RuntimeError("Metadata is not set.")
         return self._metadata.get_columns()
@@ -201,6 +211,9 @@ class MetaboExperiment:
         self._metadata.set_id_column(id_column)
 
     def get_unique_targets(self) -> list:
+        """
+        Retrieve a list of unique targets by applying a "set()" function to the complete list of targets.
+        """
         try:
             return self._metadata.get_unique_targets()
         except RuntimeError:

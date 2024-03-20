@@ -95,12 +95,19 @@ class MetaData:
         return self._dataframe
 
     def get_columns(self) -> List[str]:
+        """
+        Retrieve the names of the columns in the metadata matrix as a list
+        """
         if self._dataframe is None:
             print("MetaData get_columns self._dataframe is None")
             return []
         return self._dataframe.columns.tolist()
 
     def get_unique_targets(self) -> List[str]:
+        """
+        Retrieve a list of unique targets by applying a "set()" function to the complete list of targets.
+        eg: [0, 1, 1, 0, 0, 0, 1, 0, 2] will return [0, 1, 2]
+        """
         targets = self.get_targets()
         return list(set(targets))
 

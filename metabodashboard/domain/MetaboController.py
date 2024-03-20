@@ -13,6 +13,9 @@ DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
 
 
 class MetaboController:
+    """
+    Bottleneck class to interface between backend and frontend
+    """
     def __init__(self, metabo_experiment: MetaboExperiment = None):
         if metabo_experiment is None:
             self._metabo_experiment = MetaboExperiment()
@@ -20,27 +23,55 @@ class MetaboController:
             self._metabo_experiment = metabo_experiment
 
     def set_metadata(self, filename: str, data=None, from_base64=True) -> None:
+        """
+        Set the metadata informations for the experiment
+        filename: the filename of metadata
+        data: matrix of information contained in the file
+        from_base64: specify encoding
+        """
         self._metabo_experiment.set_metadata_with_dataframe(filename=filename, data=data, from_base64=from_base64)
 
     def set_data_matrix_from_path(self, path_data_matrix, data=None, from_base64=True):
+        """
+        Set the data from file for the experiment
+        path_data_matrix: filename or path of the file
+        data: matrix of data
+        from_base64: specify encoding
+        """
         return self._metabo_experiment.set_data_matrix(path_data_matrix, data=data, from_base64=from_base64)
 
     def get_metadata_columns(self) -> list:
+        """
+        Retrieve the names of the columns in the metadata matrix
+        """
         return self._metabo_experiment.get_metadata_columns()
 
     def get_unique_targets(self) -> list:
+        """
+        Retrieve a list of unique targets by applying a "set()" function to the complete list of targets.
+        """
         return self._metabo_experiment.get_unique_targets()
 
     def add_experimental_design(self, classes_design: dict):
+        """
+        add an experimental design to the experience
+        classes_design: which target.s against which for the prediction, and the names (classes) of the groups of target.s
+        """
         self._metabo_experiment.add_experimental_design(classes_design)
 
     def get_experimental_designs(self):
+        """
+        Retrieve all experimental designs for an experience.
+        """
         return self._metabo_experiment.get_experimental_designs()
 
     def all_experimental_designs_names(self) -> Generator[Tuple[str, str], None, None]:
         return self._metabo_experiment.all_experimental_designs_names()
 
     def get_all_experimental_designs_names(self) -> List[Tuple[str, str]]:
+        """
+        Retrieve a list of experimental designs names for an experience.
+        """
         return list(self._metabo_experiment.all_experimental_designs_names())
 
     def reset_experimental_designs(self):
