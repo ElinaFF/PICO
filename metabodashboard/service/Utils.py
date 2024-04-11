@@ -265,6 +265,9 @@ def is_metadata_the_same(metadata: str, metabo_experiment_dto) -> bool:
 
 
 def get_model_from_import(imports_list: list, model_name: str) -> sklearn:
+    """
+    Import a "custom" model from sklearn
+    """
     last_import = importlib.import_module("." + imports_list[0], package="sklearn")
 
     for next_import in imports_list[1:]:

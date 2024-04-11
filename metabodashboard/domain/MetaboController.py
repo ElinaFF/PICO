@@ -66,6 +66,9 @@ class MetaboController:
         return self._metabo_experiment.get_experimental_designs()
 
     def all_experimental_designs_names(self) -> Generator[Tuple[str, str], None, None]:
+        """
+        Retrieve all experimental designs names for an experience.
+        """
         return self._metabo_experiment.all_experimental_designs_names()
 
     def get_all_experimental_designs_names(self) -> List[Tuple[str, str]]:
@@ -75,53 +78,78 @@ class MetaboController:
         return list(self._metabo_experiment.all_experimental_designs_names())
 
     def reset_experimental_designs(self):
+        """
+        Delete all existing experimental designs.
+        """
         self._metabo_experiment.reset_experimental_designs()
 
     def remove_experimental_design(self, name: str):
+        """
+        !!! --- NOT USED --- !!!
+        Remove an experimental design
+        """
         self._metabo_experiment.remove_experimental_design(name)
 
     def get_samples_id_from_splits(self, nbr_split_list, design):
+        """
+        !!! --- NOT USED --- !!!
+        Retrieve sample identification in each split from file
+        nbr_split_list: nbr of splits
+        design:
+        """
         samples_list = []
         for s in nbr_split_list:
-            with open(
-                os.path.join(DUMP_PATH, design + "_split_{}.p".format(s)), "rb"
-            ) as split_file:
-                samples_list.append(
-                    pickle.load(split_file)[:2]
-                )  # append list of X_train & X_test samples names
+            with open(os.path.join(DUMP_PATH, design + "_split_{}.p".format(s)), "rb") as split_file:
+                samples_list.append(pickle.load(split_file)[:2])  # append list of X_train & X_test samples names
         return samples_list
 
     def set_id_column(self, id_column: str):
+        """
+        Set the id_column attribute of the MetaData object
+        It is the column in the metadata used to have a unique id for each line/item/sample
+        id_column: string of the name of the column
+        """
         self._metabo_experiment.set_id_column(id_column)
 
     def set_selected_models(self, selected_models: list):
+        """
+        Set the self._selected_models attribute of MetaboExperiment with the list given in argument
+        and for each Experimental Design object initialize basics of Results instances
+        selected_models: list of models to run during the experiment
+        """
         self._metabo_experiment.set_selected_models(selected_models)
 
-    def learn(self):
+    def learn(self):  # TODO: Come back to put this function in the diagram, suspect its to big for now
         self._metabo_experiment.learn()
 
     def get_results(self, design_name: str, algo: str):
-        return (
-            self._metabo_experiment.experimental_designs[design_name]
-            .results[algo]
-            .results
-        )
+        """
+        Retrieve the results of a specific algorithm for a specific experimental design
+        design_name: experimental design's name
+        algo: specific algo for which we want the results
+        """
+        return self._metabo_experiment.experimental_designs[design_name].results[algo].results
 
     def get_all_results(self):
+        """
+        Retrieve, for each experimental design that is done, the results dict corresponding
+        """
         return self._metabo_experiment.get_all_updated_results()
 
-    def add_custom_model(
-            self,
-            model_name: str,
-            needed_imports: str,
-            params_grid: dict,
-            importance_attribute: str
-    ):
-        self._metabo_experiment.add_custom_model(
-            model_name, needed_imports, params_grid, importance_attribute
-        )
+    def add_custom_model(self, model_name: str, needed_imports: str, params_grid: dict, importance_attribute: str):
+        """
+        Add the information needed to run a custom model
+        model_name: the name of the model
+        needed_imports: the modules needed to run this model
+        params_grid: the hyperparameters grid with which hyperparameters to test and for which values
+        importance_attribute: the attribute of the model to use to measure the importance of features
+        """
+        self._metabo_experiment.add_custom_model(model_name, needed_imports, params_grid, importance_attribute)
 
     def get_all_algos_names(self) -> list:
+        """
+        Retrieve the list of names from default (supported) models and custom models
+        """
         ret = self._metabo_experiment.get_all_algos_names()
         print(f"get_all_algos_names: {ret}")
         return ret

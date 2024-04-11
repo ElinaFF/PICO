@@ -119,6 +119,9 @@ class SplitGroup:
         return self._splits[split_index]
 
     def get_number_of_splits(self):
+        """
+        Return the attribute of number of split
+        """
         return self._number_of_split
 
     def filter_sample_with_pairing_group(self, pairing_column: str) -> Tuple[List[str], List[str]]:

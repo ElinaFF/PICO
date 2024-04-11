@@ -112,10 +112,13 @@ class MetaData:
         return list(set(targets))
 
     def set_id_column(self, id_column: str) -> None:
+        """
+        Set the id_column attribute of the MetaData object
+        It is the column in the metadata used to have a unique id for each line/item/sample
+        id_column: string of the name of the column
+        """
         if id_column not in self.get_columns():
-            raise ValueError(
-                f"'{id_column}' is not a column of the metadata. The columns are: {self.get_columns()}"
-            )
+            raise ValueError(f"'{id_column}' is not a column of the metadata. The columns are: {self.get_columns()}")
         self._id_column = id_column
 
     def set_target_column(self, target_column: List[str]) -> None:

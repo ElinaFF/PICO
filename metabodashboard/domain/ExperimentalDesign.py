@@ -16,6 +16,9 @@ class ExperimentalDesign:
         self._balance_correction: int = 0
 
     def get_is_done(self) -> bool:
+        """
+        Return the attribute is_done which is trigered when the learning is done
+        """
         return self._is_done
 
     def set_is_done(self, is_done: bool) -> None:
@@ -49,6 +52,11 @@ class ExperimentalDesign:
         return self._classes_design
 
     def set_selected_models_name(self, selected_models_name: list) -> None:
+        """
+        Set the attribute self._selected_models_name
+        and create the attribute dict of results with initialized instances of the class Results
+        selected_models_name: list of names of models to run on data
+        """
         if self._split_group is None:
             raise ValueError("Trying to set models before setting splits parameters")
         self._selected_models_name = selected_models_name
@@ -57,16 +65,20 @@ class ExperimentalDesign:
             self.results[n] = Results(self._split_group.get_number_of_splits())
 
     def get_results(self) -> Dict[str, Results]:
+        """
+        Return the results dict (attribute) corresponding to this instance of Experimental Design
+        """
         if self.results == {}:
-            raise RuntimeError(
-                "The name of the selected models has to be set before accessing results."
-            )
+            raise RuntimeError("The name of the selected models has to be set before accessing results.")
         return self.results
 
     def _compute_name(self) -> None:
         self._name = "_vs_".join(self._classes_design)
 
     def get_number_of_splits(self) -> int:
+        """
+        Retrieve the number of splits from SplitGroup instance
+        """
         return self._split_group.get_number_of_splits()
 
     def all_splits(self) -> Generator[Tuple[int, list], None, None]:

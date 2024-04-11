@@ -156,36 +156,44 @@ class MetaboExperiment:
         self.experimental_designs[experimental_design.get_name()] = experimental_design
 
     def remove_experimental_design(self, name: str):
+        """
+        Remove an experimental design, but not used
+        """
         self.experimental_designs.pop(name)
 
-    def add_custom_model(
-            self,
-            model_name: str,
-            needed_imports: str,
-            params_grid: dict,
-            importance_attribute: str,
-    ):
+    def add_custom_model(self, model_name: str, needed_imports: str, params_grid: dict, importance_attribute: str):
+        """
+        Add the information needed to run a custom model
+        model_name: the name of the model
+        needed_imports: the modules needed to run this model
+        params_grid: the hyperparameters grid with which hyperparameters to test and for which values
+        importance_attribute: the attribute of the model to use to measure the importance of features
+        """
         model_index = model_name.strip()
         model_index = "Custom" + model_index
-        # check if model name already exists, if yes, get the next available index
+
         index = 1
         model_index = model_index + "0"
+        # Check if model name already exists, if yes, get the next available index
+        # This system make the addition of identical algorithm with different hyperparameters grid possible
         while model_index in self._custom_models:
             model_index = model_index[:-1]
             model_index = model_index + str(index)
             index += 1
-        self._custom_models[model_index] = self._model_factory.create_custom_model(
-            model_name, needed_imports, params_grid, importance_attribute
-        )
+        self._custom_models[model_index] = self._model_factory.create_custom_model(model_name, needed_imports,
+                                                                                   params_grid, importance_attribute)
 
     def get_custom_models(self) -> dict:
         return self._custom_models
 
     def set_selected_models(self, selected_models: list):
+        """
+        Set the self._selected_models attribute with the list given in argument
+        and for each Experimental Design object initialize basics of Results instances
+        selected_models: list of models to run during the experiment
+        """
         if self.experimental_designs == {}:
-            raise ValueError(
-                "You must define at least one classification design before selecting models."
-            )
+            raise ValueError("You must define at least one classification design before selecting models.")
         self._selected_models = selected_models
         for _, experimental_design in self.experimental_designs.items():
             experimental_design.set_selected_models_name(selected_models)
@@ -206,6 +214,11 @@ class MetaboExperiment:
         return self._metadata.get_columns()
 
     def set_id_column(self, id_column: str):
+        """
+        Set the id_column attribute of the MetaData object
+        It is the column in the metadata used to have a unique id for each line/item/sample
+        id_column: string of the name of the column
+        """
         if self._metadata is None:
             raise RuntimeError("Metadata is not set.")
         self._metadata.set_id_column(id_column)
@@ -241,10 +254,16 @@ class MetaboExperiment:
             raise RuntimeError(error_message + "missing metadata")
 
     def all_experimental_designs_names(self) -> Generator[Tuple[str, str], None, None]:
+        """
+        Retrieve all experimental designs names for an experience.
+        """
         for name, experimental_design in self.experimental_designs.items():
             yield name, experimental_design.get_full_name()
 
     def reset_experimental_designs(self):
+        """
+        Delete all existing experimental designs.
+        """
         self.experimental_designs = {}
 
     def _raise_if_value_for_learning_not_setted(self):
@@ -373,6 +392,9 @@ class MetaboExperiment:
         return self.experimental_designs[classes_design].get_results()[algo_name]
 
     def get_all_updated_results(self) -> dict:
+        """
+        Retrieve, for each experimental design that is done, the results dict corresponding
+        """
         results = {}
         for name in self.experimental_designs:
             if self.experimental_designs[name].get_is_done():
@@ -380,6 +402,9 @@ class MetaboExperiment:
         return results
 
     def get_all_algos_names(self) -> list:
+        """
+        Concatenate the list of names from default (supported) models and custom models
+        """
         return list(self._supported_models.keys()) + list(self._custom_models.keys())
 
     def set_cv_type(self, cv_type: str):

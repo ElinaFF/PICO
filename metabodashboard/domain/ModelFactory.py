@@ -24,13 +24,11 @@ class ModelFactory:
             )
         return supported_models
 
-    def create_custom_model(
-            self,
-            model_name: str,
-            needed_imports: str,
-            params_grid: dict,
-            importance_attribute: str = Utils.DEFAULT_IMPORTANCE_ATTRIBUTE
-    ) -> MetaboModel:
+    def create_custom_model(self, model_name: str, needed_imports: str, params_grid: dict,
+                            importance_attribute: str = Utils.DEFAULT_IMPORTANCE_ATTRIBUTE) -> MetaboModel:
+        """
+        Create a custom model (not included by default) for the MeDIC to use
+        """
         imports_list = needed_imports.split(".")
         model = Utils.get_model_from_import(imports_list, model_name)
         return MetaboModel(model, params_grid, importance_attribute)
