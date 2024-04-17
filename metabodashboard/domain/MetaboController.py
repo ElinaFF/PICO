@@ -155,42 +155,50 @@ class MetaboController:
         return ret
 
     def set_cv_type(self, cv_type: str):
+        """
+        Set the type of Cross-Validation (cv) for the experiment
+        """
         self._metabo_experiment.set_cv_type(cv_type)
 
     def get_cv_types(self) -> List[str]:
+        """
+        Retrieve the dict of possible cross-validation types supported by the MeDIC
+        """
         return self._metabo_experiment.get_cv_types()
 
     def get_selected_cv_type(self) -> str:
+        """
+        Return the type of CV selected for this experiment
+        """
         return self._metabo_experiment.get_selected_cv_type()
 
     def generate_save(self) -> MetaboExperimentDTO:
+        """
+        Return an object MetaboExperimentDTO
+        (which is a holder of some MetaboExperiment attributes)
+        """
         return self._metabo_experiment.generate_save()
 
     def is_save_safe(self, saved_metabo_experiment_dto: MetaboExperimentDTO) -> bool:
+        """
+        Verify that the hash from the saved MetaboExperimentDTO is the same from the current object
+        """
         return self._metabo_experiment.is_save_safe(saved_metabo_experiment_dto)
 
     def full_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
+        """
+        Restore an experiment from a saving (always? from file)
+        """
         self._metabo_experiment.full_restore(saved_metabo_experiment_dto)
 
-    def partial_restore(
-            self,
-            saved_metabo_experiment_dto: MetaboExperimentDTO,
-            filename_data: str,
-            filename_metadata: str,
-            data=None,
-            from_base64_data: bool = True,
-            metadata=None,
-            from_base64_metadata=True,
-    ):
-        self._metabo_experiment.partial_restore(
-            saved_metabo_experiment_dto,
-            filename_data,
-            filename_metadata,
-            data,
-            from_base64_data,
-            metadata,
-            from_base64_metadata,
-        )
+    def partial_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO, filename_data: str, filename_metadata: str,
+                        data=None, from_base64_data: bool = True, metadata=None, from_base64_metadata=True,):
+        """
+        Restore only the parameters of an experiment
+        It allows the use of identical parameters for different sets of data and metadata
+        """
+        self._metabo_experiment.partial_restore(saved_metabo_experiment_dto, filename_data, filename_metadata, data,
+                                                from_base64_data, metadata, from_base64_metadata,)
 
     def load_results(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
         self._metabo_experiment.load_results(saved_metabo_experiment_dto)

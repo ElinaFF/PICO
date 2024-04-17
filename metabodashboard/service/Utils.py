@@ -215,6 +215,9 @@ def are_files_corresponding_to_dto(
 
 
 def reset_file(file_path: str):
+    """
+    Reset the content of a file ?
+    """
     open(file_path, "w+b").close()
 
 

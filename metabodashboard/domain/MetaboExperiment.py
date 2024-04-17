@@ -408,11 +408,17 @@ class MetaboExperiment:
         return list(self._supported_models.keys()) + list(self._custom_models.keys())
 
     def set_cv_type(self, cv_type: str):
+        """
+        Set the type of Cross-Validation (cv) for the experiment
+        """
         if cv_type not in self._cv_algorithms:
             raise ValueError("CV type '" + cv_type + "' is not supported.")
         self._selected_cv_type = cv_type
 
     def get_selected_cv_type(self) -> str:
+        """
+        Return the type of CV selected for this experiment
+        """
         return self._selected_cv_type
 
     def get_cv_algorithm_constructor(self) -> sklearn.model_selection:
@@ -430,19 +436,33 @@ class MetaboExperiment:
                 config_index += 1
 
     def get_cv_types(self) -> List[str]:
+        """
+        Retrieve the dict of possible cross-validation types supported by the MeDIC
+        """
         return list(self._cv_algorithms.keys())
 
     def generate_save(self) -> MetaboExperimentDTO:
+        """
+        Create an object MetaboExperimentDTO
+        (which is a holder of some MetaboExperiment attributes)
+        """
         return MetaboExperimentDTO(self)
 
     def full_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
+        """
+        Restore an experiment from a saving (always? from file)
+        Data and parameters
+        """
         self._metadata = saved_metabo_experiment_dto.metadata
         self._data_matrix = saved_metabo_experiment_dto.data_matrix
         self._static_restore_for_partial(saved_metabo_experiment_dto)
 
-    def _static_restore_for_partial(
-            self, saved_metabo_experiment_dto: MetaboExperimentDTO
-    ):
+    def _static_restore_for_partial(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
+        """
+        ??? STATIC vs partial_restore ???
+        Restore attributes from a MetaboExperimentDTO object
+        a "Partial" restore means it only brings back parameters and no data
+        """
         self._number_of_splits = saved_metabo_experiment_dto.number_of_splits
         self._train_test_proportion = saved_metabo_experiment_dto.train_test_proportion
         self.experimental_designs = saved_metabo_experiment_dto.experimental_designs
@@ -450,28 +470,16 @@ class MetaboExperiment:
         self._selected_models = saved_metabo_experiment_dto.selected_models
         self._selected_cv_type = saved_metabo_experiment_dto.selected_cv_type
 
-    def partial_restore(
-            self,
-            saved_metabo_experiment_dto: MetaboExperimentDTO,
-            filename_data: str,
-            filename_metadata: str,
-            data=None,
-            from_base64_data: bool = True,
-            metadata=None,
-            from_base64_metadata=True,
-    ):
+    def partial_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO, filename_data: str, filename_metadata: str,
+                        data=None, from_base64_data: bool = True, metadata=None, from_base64_metadata=True,):
+        """
+        ??? STATIC vs partial_restore ???
+        Do a partial restore of an experiment
+        """
         self._data_matrix.set_raw_use(saved_metabo_experiment_dto.data_matrix.is_raw())
-        self._data_matrix.set_remove_rt(
-            saved_metabo_experiment_dto.data_matrix.get_remove_rt()
-        )
-        self.set_data_matrix(
-            filename_data,
-            data=data,
-            from_base64=from_base64_data,
-        )
-        self.set_metadata_with_dataframe(
-            filename_metadata, data=metadata, from_base64=from_base64_metadata
-        )
+        self._data_matrix.set_remove_rt(saved_metabo_experiment_dto.data_matrix.get_remove_rt())
+        self.set_data_matrix(filename_data, data=data, from_base64=from_base64_data,)
+        self.set_metadata_with_dataframe(filename_metadata, data=metadata, from_base64=from_base64_metadata)
         self._static_restore_for_partial(saved_metabo_experiment_dto)
 
     def load_results(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
@@ -480,11 +488,11 @@ class MetaboExperiment:
         self._static_restore_for_partial(saved_metabo_experiment_dto)
 
     def is_save_safe(self, saved_metabo_experiment_dto: MetaboExperimentDTO) -> bool:
-        return (
-                self._metadata.get_hash() == saved_metabo_experiment_dto.metadata.get_hash()
-                and self._data_matrix.get_hash()
-                == saved_metabo_experiment_dto.data_matrix.get_hash()
-        )
+        """
+        Verify that the hash from the saved MetaboExperimentDTO is the same from the current object
+        """
+        return (self._metadata.get_hash() == saved_metabo_experiment_dto.metadata.get_hash()
+                and self._data_matrix.get_hash() == saved_metabo_experiment_dto.data_matrix.get_hash())
 
     def is_the_data_matrix_corresponding(self, data: str) -> bool:
         return self._data_matrix.get_hash() == Utils.compute_hash(data)

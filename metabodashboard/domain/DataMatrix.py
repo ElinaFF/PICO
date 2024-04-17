@@ -22,19 +22,19 @@ class DataMatrix:
         self._remove_rt = True
 
     def reset_file(self):
+        """
+        Reset ? the content of the DUMP_DATA_MATRIX_PATH file
+        """
         Utils.reset_file(DUMP_DATA_MATRIX_PATH)
 
-    def read_format_and_store_data(
-        self,
-        path: str,
-        data=None,
-        from_base64: bool = True,
-    ) -> Union[pd.DataFrame, None]:
+    def read_format_and_store_data(self, path: str, data=None, from_base64: bool = True,) -> Union[pd.DataFrame, None]:
+        """
+        As the name states,
+        Read a file of data, format what needs to be, and store it/return it
+        """
         if self._use_raw is None:
             raise RuntimeError("Need to set raw use before loading data")
-        data_df, metadata_df = self._load_and_format(
-            path, data=data, is_raw=self._use_raw, from_base64=from_base64
-        )
+        data_df, metadata_df = self._load_and_format(path, data=data, is_raw=self._use_raw, from_base64=from_base64)
 
         if self._remove_rt:
             features_to_drop = []
@@ -78,15 +78,11 @@ class DataMatrix:
             df = self.data
         return pd.DataFrame(self._scaler.transform(df), columns=self.data.columns)
 
-    def _load_and_format(
-        self, path, data=None, is_raw=False, from_base64=True
-    ) -> Tuple[pd.DataFrame, Union[pd.DataFrame, None]]:
+    def _load_and_format(self, path, data=None, is_raw=False, from_base64=True) -> Tuple[pd.DataFrame, Union[pd.DataFrame, None]]:
         """
         load the table from a path and process it to make it more easy to manipulate
         """
-        formater = DataFormat(
-            path, data=data, use_raw=is_raw, from_base64_str=from_base64
-        )
+        formater = DataFormat(path, data=data, use_raw=is_raw, from_base64_str=from_base64)
         datatable_compoundsInfo, datatable, labels, sample_names = formater.convert()
         if labels is None or sample_names is None:
             return datatable, None
@@ -117,9 +113,16 @@ class DataMatrix:
         self.data = None
 
     def set_raw_use(self, use_raw: bool):
+        """
+        Set the bool value of whether to use the raw data from a progenesis matrix or the normalized data
+        """
         self._use_raw = use_raw
 
     def set_remove_rt(self, remove_rt: bool):
+        """
+        Set the bool value of whether to remove the features detected before 1minRT (Retention Time)
+        (Those features are usually noise and should not be considered as actual metabolites/features)
+        """
         self._remove_rt = remove_rt
 
     def get_remove_rt(self) -> bool:
