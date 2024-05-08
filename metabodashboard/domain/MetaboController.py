@@ -201,27 +201,51 @@ class MetaboController:
                                                 from_base64_data, metadata, from_base64_metadata,)
 
     def load_results(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
+        """
+        Init a new experiment (new metadata and data_matrix) and load saved results
+        """
         self._metabo_experiment.load_results(saved_metabo_experiment_dto)
 
     def get_target_column(self) -> str:
+        """
+        Retrieve the _target_column attribute of metadata
+        """
         return self._metabo_experiment.get_target_column()
 
     def get_id_column(self) -> str:
+        """
+        Retrieve the _id_column attribute of metadata
+        """
         return self._metabo_experiment.get_id_column()
 
     def set_number_of_splits(self, number_of_splits: int):
+        """
+        Set the value of the MetaboExpe attribute _number_of_splits
+        """
         self._metabo_experiment.set_number_of_splits(number_of_splits)
 
     def get_number_of_splits(self) -> int:
+        """
+        Retrieve the value of the attribute _number_of_splits
+        """
         return self._metabo_experiment.get_number_of_splits()
 
     def set_train_test_proportion(self, train_test_proportion: float):
+        """
+        Set the value of the MetaboExpe attribute _train_test_proportion
+        """
         self._metabo_experiment.set_train_test_proportion(train_test_proportion)
 
     def get_train_test_proportion(self) -> float:
+        """
+        Retrieve the value of the attribute _train_test_proportion
+        """
         return self._metabo_experiment.get_train_test_proportion()
 
     def create_splits(self):
+        """
+
+        """
         self._metabo_experiment.create_splits()
 
     def get_selected_models(self) -> List[str]:

@@ -184,6 +184,9 @@ def get_binary(list_to_convert: List[str], classes: List[str]) -> List[int]:
 
 
 def compute_hash(data: str) -> str:
+    """
+    Compute a hash for a data string
+    """
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 

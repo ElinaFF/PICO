@@ -56,6 +56,10 @@ class MetaData:
         return None
 
     def read_format_and_store_metadata(self, path, data=None, from_base64=True):
+        """
+        Read the file to get a dataframe and compute a hash on it
+        Store de obtained metadata dataframe in the attribute
+        """
         df = self._load_and_format(path, data=data, from_base64=from_base64)
         if data is not None:
             self._hash = compute_hash(data)
@@ -65,6 +69,9 @@ class MetaData:
         return self._hash
 
     def _load_and_format(self, filename, data=None, from_base64=True) -> pd.DataFrame:
+        """
+        Read the file and decode it to put it in the pd.Dataframe format
+        """
         if from_base64:
             data_type, data_string = data.split(",")
             data = base64.b64decode(data_string)
@@ -84,9 +91,7 @@ class MetaData:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(data, na_filter=False)
         else:
-            raise TypeError(
-                "The input file is not of the right type, must be excel or csv."
-            )
+            raise TypeError("The input file is not of the right type, must be excel or csv.")
         return df
 
     def get_metadata(self) -> pd.DataFrame:
@@ -122,14 +127,23 @@ class MetaData:
         self._id_column = id_column
 
     def set_target_column(self, target_column: List[str]) -> None:
+        """
+        Define which of the metadata columns is the targets column
+        """
         if target_column not in self.get_columns():
             raise ValueError(f"'{target_column}' is not a column of the metadata. The columns are: {self.get_columns()}")
         self._target_column = target_column
 
     def get_target_column(self) -> List[str]:
+        """
+        Provide the _target_column attribute
+        """
         return self._target_column
 
     def get_id_column(self) -> str:
+        """
+        Provide the _id_column attribute
+        """
         return self._id_column
 
     def get_targets(self) -> List[str]:
@@ -161,6 +175,10 @@ class MetaData:
         return self._dataframe is not None
 
     def set_target_columns(self, target_cols: List[str]) -> None:
+        """
+        Create the new targets and add them to the metadata dataframe
+        """
+        # Create the new targets from the given metadata informations (NAME__NAME)
         self.set_final_targets_values(target_cols)
         # Add the values of the final (new) targets to the dataframe of metadata (in memory)
         self.add_final_targets_col_to_dataframe()

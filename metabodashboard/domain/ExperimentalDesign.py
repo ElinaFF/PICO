@@ -32,8 +32,11 @@ class ExperimentalDesign:
             raise ValueError("Balance correction cannot be negative")
         self._balance_correction = balance_correction
 
-    def set_split_parameter_and_compute_splits(self, train_test_proportion: float, number_of_splits: int, metadata: MetaData,
-                                               pairing_column: str) -> None:
+    def set_split_parameter_and_compute_splits(self, train_test_proportion: float, number_of_splits: int,
+                                               metadata: MetaData, pairing_column: str) -> None:
+        """
+
+        """
         classes_repartition = metadata.get_classes_repartition_based_on_design(self._classes_design)
         self._split_group = SplitGroup(metadata, self.get_selected_targets_name(), train_test_proportion,
                                        number_of_splits, self._classes_design, pairing_column, self._balance_correction,

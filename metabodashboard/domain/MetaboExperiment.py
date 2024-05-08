@@ -43,6 +43,9 @@ class MetaboExperiment:
         self._selected_cv_type = list(self._cv_algorithms.keys())[0]
 
     def init_metadata(self):
+        """
+        Create an instance of MetaData for the attribute of metadata
+        """
         self._metadata = MetaData()
 
     def get_metadata(self) -> MetaData:
@@ -58,9 +61,16 @@ class MetaboExperiment:
         self._metadata.add_final_targets_col_to_dataframe()
 
     def init_data_matrix(self):
+        """
+        Create an instance of DataMatrix for the attribute of data_matrix
+        """
         self._data_matrix = DataMatrix()
 
     def set_metadata_with_dataframe(self, filename, data=None, from_base64=True):
+        """
+        Create an instance of MetaData and then fill it by reading and storing the content
+        of the metadata file provided
+        """
         self.init_metadata()
         self._metadata.read_format_and_store_metadata(filename, data=data, from_base64=from_base64)
 
@@ -68,6 +78,7 @@ class MetaboExperiment:
         """
         set metadata from progenesis data file while handling progenesis data file
         it creates a "fake" metadata structure from the retrieved id and classes of progenesis
+        And formats it with the targets column
         """
         self._data_matrix.reset_file()
         # self._data_matrix handles itself to store data, and it also creates a "fake" metadata dataframe to keep
@@ -88,18 +99,33 @@ class MetaboExperiment:
         return self._data_matrix
 
     def get_train_test_proportion(self) -> float:
+        """
+        Retrieve the value of the attribute _train_test_proportion
+        """
         return self._train_test_proportion
 
     def get_number_of_splits(self) -> int:
+        """
+        Retrieve the value of the attribute _number_of_splits
+        """
         return self._number_of_splits
 
     def set_number_of_splits(self, number_of_splits: int):
+        """
+        Set the value of the MetaboExpe attribute _number_of_splits
+        """
         self._number_of_splits = number_of_splits
 
     def set_train_test_proportion(self, train_test_proportion: float):
+        """
+        Set the value of the MetaboExpe attribute _train_test_proportion
+        """
         self._train_test_proportion = train_test_proportion
 
     def create_splits(self):
+        """
+
+        """
         if self._number_of_splits is None:
             raise ValueError("Number of splits not set")
         if self._train_test_proportion is None:
@@ -109,12 +135,9 @@ class MetaboExperiment:
         if self._metadata is None:
             raise ValueError("Metadata not set")
         for _, experimental_design in self.experimental_designs.items():
-            experimental_design.set_split_parameter_and_compute_splits(
-                self._train_test_proportion,
-                self._number_of_splits,
-                self._metadata,
-                self._pairing_group_column,
-            )
+            experimental_design.set_split_parameter_and_compute_splits(self._train_test_proportion,
+                                                                       self._number_of_splits, self._metadata,
+                                                                       self._pairing_group_column)
 
     def get_pairing_group_column(self) -> str:
         return self._pairing_group_column
@@ -483,6 +506,9 @@ class MetaboExperiment:
         self._static_restore_for_partial(saved_metabo_experiment_dto)
 
     def load_results(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
+        """
+        Init a new experiment (new metadata and data_matrix) and load saved results
+        """
         self.init_metadata()
         self.init_data_matrix()
         self._static_restore_for_partial(saved_metabo_experiment_dto)
@@ -501,9 +527,15 @@ class MetaboExperiment:
         return self._metadata.get_hash() == Utils.compute_hash(metadata)
 
     def get_target_column(self) -> str:
+        """
+        Retrieve the _target_column attribute of metadata
+        """
         return self._metadata.get_target_column()
 
     def get_id_column(self) -> str:
+        """
+        Retrieve the _id_column attribute of metadata
+        """
         return self._metadata.get_id_column()
 
     def is_progenesis_data(self) -> bool:

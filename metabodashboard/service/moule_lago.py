@@ -2,7 +2,7 @@ class lago:
     def __init__(self, methodfit, methodpredict, method):
         pass
 
-    def fit(self, algo):
+    def lago_fit(self, algo):
         return algo.lago
 
 

@@ -53,6 +53,8 @@ class DataMatrix:
 
         if metadata_df is not None:
             return metadata_df
+        # The event of having metadata_df=None is handled in the set_data_matrix function that calls this function
+        # So no need to add an "else" here
 
     def get_hash(self) -> str:
         """
@@ -61,6 +63,9 @@ class DataMatrix:
         return self._hash
 
     def is_raw(self) -> Union[bool, None]:
+        """
+        return the bool indicating to use either raw or normalized data
+        """
         return self._use_raw
 
     def get_scaled_data(self, selected_ids: Iterable = None) -> pd.DataFrame:
