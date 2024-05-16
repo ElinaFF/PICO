@@ -95,6 +95,9 @@ class MetaData:
         return df
 
     def get_metadata(self) -> pd.DataFrame:
+        """
+        Getter for the metadata DataFrame
+        """
         if self._dataframe is None:
             raise RuntimeError("Try to access the metadata before setting it.")
         return self._dataframe
@@ -186,13 +189,14 @@ class MetaData:
         self.set_target_column("final_targets")
 
     def get_classes_repartition_based_on_design(self, classes_design: Dict[str, List[str]]) -> Dict[str, int]:
+        """
+        Retrieve the number of target for each class
+        Which can be used to display the ratio of each classes in the experiment/design
+        """
         target_repartition = self._dataframe["final_targets"].value_counts().to_dict()
         classes_repartition = {}
         for class_name in classes_design:
-            classes_repartition[class_name] = sum(
-                [target_repartition[target] for target in classes_design[class_name]]
-            )
-
+            classes_repartition[class_name] = sum([target_repartition[target] for target in classes_design[class_name]])
         return classes_repartition
 
 # TODO: join sampleId and target in same pickle file

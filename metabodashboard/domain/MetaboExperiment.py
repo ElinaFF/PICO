@@ -124,7 +124,8 @@ class MetaboExperiment:
 
     def create_splits(self):
         """
-
+        Check that Experiment parameters are set and then : create an instance of SplitGroup for each Experimental Design
+        (The init of SplitGroup triggers the _compute_splits function)
         """
         if self._number_of_splits is None:
             raise ValueError("Number of splits not set")
@@ -140,13 +141,17 @@ class MetaboExperiment:
                                                                        self._pairing_group_column)
 
     def get_pairing_group_column(self) -> str:
+        """
+        Retrieve the name of the column to use for pairing the samples
+        """
         return self._pairing_group_column
 
     def set_pairing_group_column(self, pairing_group_column: str):
+        """
+        Set the value of the MetaboExpe attribute _pairing_group_column
+        """
         if pairing_group_column not in self._metadata.get_columns():
-            raise RuntimeError(
-                "Column {} is not in the metadata".format(pairing_group_column)
-            )
+            raise RuntimeError("Column {} is not in the metadata".format(pairing_group_column))
         self._pairing_group_column = pairing_group_column
 
     def get_experimental_designs(self) -> Dict[str, ExperimentalDesign]:
@@ -226,6 +231,9 @@ class MetaboExperiment:
             experimental_design.set_selected_models_name(self._selected_models)
 
     def get_selected_models(self) -> list:
+        """
+        Retrieve the name of the selected models to use for the experiment
+        """
         return self._selected_models
 
     def get_metadata_columns(self) -> list:
@@ -539,6 +547,9 @@ class MetaboExperiment:
         return self._metadata.get_id_column()
 
     def is_progenesis_data(self) -> bool:
+        """
+        Return the bool indicating if the data given is of the progenesis format
+        """
         return self._is_progenesis_data
 
     def is_data_raw(self) -> Union[bool, None]:

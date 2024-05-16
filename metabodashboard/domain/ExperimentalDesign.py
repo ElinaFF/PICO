@@ -35,7 +35,9 @@ class ExperimentalDesign:
     def set_split_parameter_and_compute_splits(self, train_test_proportion: float, number_of_splits: int,
                                                metadata: MetaData, pairing_column: str) -> None:
         """
-
+        Retrieve the classes repartition which is needed to create an instance of SplitGroup
+        Create an instance of SplitGroup in the attribute _split_group
+        (The init of SplitGroup triggers the _compute_splits function)
         """
         classes_repartition = metadata.get_classes_repartition_based_on_design(self._classes_design)
         self._split_group = SplitGroup(metadata, self.get_selected_targets_name(), train_test_proportion,

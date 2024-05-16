@@ -152,6 +152,7 @@ def get_group_to_class(classes):
 
 def reverse_dict(dictionnary: dict) -> dict:
     """
+    Create a reverse dict to easily retrieve the label associate to a target.
     example
     input dict is in shape {label1 : [target1, target2], label2 : [target3, target4]}
     output dict would be {target1 : label1, target2 : label1, target3 : label2, target4 : label2}
@@ -167,6 +168,14 @@ def reverse_dict(dictionnary: dict) -> dict:
 
 
 def load_classes_from_targets(classes_design: dict, targets: Tuple[str]) -> List[str]:
+    """
+    Create a list of labels to be predicted according to the class design, kind of a "traduction" of targets.
+    example
+    Argument 'targets' is (target3, target1, target4, target4, target2, target1)
+    classes_design would be something like {label1 : [target1, target2], label2 : [target3, target4]}
+    reverse_classes_design would be {target1 : label1, target2 : label1, target3 : label2, target4 : label2}
+    'classes' that is returned would be [label2, label1, label2, label2, label1, label1]
+    """
     reverse_classes_design = reverse_dict(classes_design)
     classes = []
     for target in targets:
@@ -447,23 +456,24 @@ def get_closest_integer_steps(slider_size):
 
 
 def remove_random_samples_from_class(X: pd.Series, y: List[str], balance_correction: int,
-                                     classes_repartition: dict, seed: int = 42) \
-        -> Tuple[pd.Series, list]:
+                                     classes_repartition: dict, seed: int = 42)-> Tuple[pd.Series, list]:
+    """
+    Function to adjust proportion between classes, to make it more balanced, or as balanced as possible
+    Supposed to be provided by user (how much to adjust)
+    """
 
     samples_ids_and_targets = pd.DataFrame({"id": X, "final_classes": y})
-
     balance_correction = balance_correction / 100
 
     if len(classes_repartition) > 2:
         raise ValueError("Balance correction is not supported for multiclassification")
 
     class_A_name, class_B_name = tuple(classes_repartition.keys())
-
     total_number_of_samples = classes_repartition[class_A_name] + classes_repartition[class_B_name]
-
     class_A_repartition = classes_repartition[class_A_name] / total_number_of_samples
     class_B_repartition = classes_repartition[class_B_name] / total_number_of_samples
 
+    # Naming trick to ensure that the "A" class is always the one with the higher number of examples
     if class_B_repartition > class_A_repartition:
         class_A_name, class_B_name = class_B_name, class_A_name
         class_A_repartition, class_B_repartition = class_B_repartition, class_A_repartition
@@ -471,10 +481,9 @@ def remove_random_samples_from_class(X: pd.Series, y: List[str], balance_correct
     class_A_lines = samples_ids_and_targets[samples_ids_and_targets["final_classes"] == class_A_name]
 
     class_A_number_of_samples = len(class_A_lines)
-    class_B_number_of_samples = len(samples_ids_and_targets[samples_ids_and_targets["final_classes"] ==
-                                                            class_B_name])
+    class_B_number_of_samples = len(samples_ids_and_targets[samples_ids_and_targets["final_classes"] == class_B_name])
 
-    # PROOF OF THE FORMULA
+    # --- PROOF OF THE FORMULA ---
     # new_proportion_A = trimmed_classe_A_samples / (trimmed_classe_A_samples + class_B_samples)
     # proportion_A - correction = trimmed_classe_A_samples / (trimmed_classe_A_samples + class_B_samples)
     # (proportion_A - correction) * (trimmed_classe_A_samples + class_B_samples) = trimmed_classe_A_samples
@@ -485,12 +494,12 @@ def remove_random_samples_from_class(X: pd.Series, y: List[str], balance_correct
 
     new_class_A_number_of_samples = class_B_number_of_samples * (class_A_repartition - balance_correction) / \
                                     (1 - class_A_repartition + balance_correction)
-
+    # Considering class A is always bigger than or equal to class B, to get a more balanced repartition,
+    # "new_class_A_number_of_samples" should be a smaller number than "class_A_number_of_samples"
     number_of_samples_to_remove = class_A_number_of_samples - new_class_A_number_of_samples
 
     np.random.seed(seed)
     ids_to_remove = np.random.choice(class_A_lines.index, int(number_of_samples_to_remove), replace=False)
-
     samples_ids_and_targets = samples_ids_and_targets.drop(ids_to_remove)
 
     return samples_ids_and_targets["id"], samples_ids_and_targets["final_classes"].tolist()

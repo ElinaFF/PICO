@@ -244,20 +244,33 @@ class MetaboController:
 
     def create_splits(self):
         """
-
+        Check that Experiment parameters are set and then : create an instance of SplitGroup for each Experimental Design
+        (The init of SplitGroup triggers the _compute_splits function)
         """
         self._metabo_experiment.create_splits()
 
     def get_selected_models(self) -> List[str]:
+        """
+        Retrieve the name of the selected models to use for the experiment
+        """
         return self._metabo_experiment.get_selected_models()
 
     def is_progenesis_data(self) -> bool:
+        """
+        Return the bool indicating if the data given is of the progenesis format
+        """
         return self._metabo_experiment.is_progenesis_data()
 
     def get_pairing_group_column(self) -> str:
+        """
+        Retrieve the name of the column to use for pairing the samples
+        """
         return self._metabo_experiment.get_pairing_group_column()
 
     def set_pairing_group_column(self, pairing_group_column: str):
+        """
+        Set the value of the MetaboExpe attribute _pairing_group_column
+        """
         self._metabo_experiment.set_pairing_group_column(pairing_group_column)
 
     def is_data_raw(self) -> Union[bool, None]:

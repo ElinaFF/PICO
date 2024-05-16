@@ -23,6 +23,9 @@ class SplitGroup:
                         selected_targets: List[str], balance_correction: int = 0,
                         classes_repartition: Union[dict, None] = None):
         """
+        Create the desired number of split for the experiment. It includes/hadles the train-test repartition, the class
+        balancing, the pairing of samples, the classes design, etc.
+
         selected_targets : the selection of classes done with the interface or the automate.py (the names of the
         selected classes/targets)
         We consider selected_targets that has targets coming from multiple column, that they are separated
@@ -71,6 +74,7 @@ class SplitGroup:
                 # groups is a dictionary with 'keys' as the pairing value and 'values' as the index of the lines corresponding to the pairing
                 groups = df.groupby(pairing_column).groups
                 # apply the train-test division on the pairing values / the entity
+                # TODO : careful check if labels is in the right order with the data
                 X_train_temp, X_test_temp, y_train_temp, y_test_temp = train_test_split(df_entity.index, labels,
                                                                                         test_size=train_test_proportion,
                                                                                         random_state=split_index)
