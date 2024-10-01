@@ -274,21 +274,42 @@ class MetaboController:
         self._metabo_experiment.set_pairing_group_column(pairing_group_column)
 
     def is_data_raw(self) -> Union[bool, None]:
+        """
+        return the bool indicating to use either raw or normalized data
+        """
         return self._metabo_experiment.is_data_raw()
 
     def set_raw_use_for_data(self, use_raw_data: bool):
+        """
+        Set the bool value of whether to use the raw data from a progenesis matrix or the normalized data
+        """
         self._metabo_experiment.set_raw_use_for_data(use_raw_data)
 
     def get_data_matrix_remove_rt(self) -> bool:
+        """
+        return the value of the _remove_rt attribute
+        (if true, remove the features detected before 1 minute of Retention Time)
+        """
         return self._metabo_experiment.get_data_matrix_remove_rt()
 
     def set_data_matrix_remove_rt(self, remove_rt: bool):
+        """
+        set the value of the _remove_rt attribute
+        (if true, remove the features detected before 1 minute of Retention Time)
+        """
         self._metabo_experiment.set_data_matrix_remove_rt(remove_rt)
 
     def get_cv_folds(self) -> int:
+        """
+        Return the attribute of MetaboExperiment of the number of Cross Validation folds
+        Default is 5
+        """
         return self._metabo_experiment.get_cv_folds()
 
     def set_cv_folds(self, cv_folds: int):
+        """
+        Set the number of Cross Validation folds, must be >=2
+        """
         self._metabo_experiment.set_cv_folds(cv_folds)
 
     def update_experimental_designs_with_selected_models(self):

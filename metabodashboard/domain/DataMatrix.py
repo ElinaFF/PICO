@@ -131,6 +131,10 @@ class DataMatrix:
         self._remove_rt = remove_rt
 
     def get_remove_rt(self) -> bool:
+        """
+        return the value of the _remove_rt attribute
+        (if true, remove the features detected before 1 minute of Retention Time)
+        """
         return self._remove_rt
 
     def data_is_set(self) -> bool:

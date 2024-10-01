@@ -59,7 +59,7 @@ class ExperimentalDesign:
     def set_selected_models_name(self, selected_models_name: list) -> None:
         """
         Set the attribute self._selected_models_name
-        and create the attribute dict of results with initialized instances of the class Results
+        and create the attribute self.results with initialized instances of the class Results for each algorithm
         selected_models_name: list of names of models to run on data
         """
         if self._split_group is None:

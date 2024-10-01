@@ -227,6 +227,9 @@ class MetaboExperiment:
             experimental_design.set_selected_models_name(selected_models)
 
     def update_experimental_designs_with_selected_models(self):
+        """
+
+        """
         for _, experimental_design in self.experimental_designs.items():
             experimental_design.set_selected_models_name(self._selected_models)
 
@@ -553,21 +556,41 @@ class MetaboExperiment:
         return self._is_progenesis_data
 
     def is_data_raw(self) -> Union[bool, None]:
+        """
+        return the bool indicating to use either raw or normalized data
+        """
         return self._data_matrix.is_raw()
 
     def set_raw_use_for_data(self, use_raw: bool):
+        """
+        Set the bool value of whether to use the raw data from a progenesis matrix or the normalized data
+        """
         self._data_matrix.set_raw_use(use_raw)
 
     def get_data_matrix_remove_rt(self) -> bool:
+        """
+        return the value of the _remove_rt attribute
+        (if true, remove the features detected before 1 minute of Retention Time)
+        """
         return self._data_matrix.get_remove_rt()
 
     def set_data_matrix_remove_rt(self, remove_rt: bool):
+        """
+        set the value of the _remove_rt attribute
+        (if true, remove the features detected before 1 minute of Retention Time)
+        """
         self._data_matrix.set_remove_rt(remove_rt)
 
     def get_cv_folds(self) -> int:
+        """
+        Return the number of Cross Validation folds
+        """
         return self._cv_folds
 
     def set_cv_folds(self, cv_folds: int):
+        """
+        Set the number of Cross Validation folds
+        """
         if cv_folds < 2:
             raise ValueError("CV folds must be greater than or equal to 2.")
         self._cv_folds = cv_folds
