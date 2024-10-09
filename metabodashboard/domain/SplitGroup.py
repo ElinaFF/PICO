@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from . import MetaData
-from ..service import Utils
+from ..service import Utils, init_logger
 import numpy as np
 
 
@@ -12,6 +12,7 @@ class SplitGroup:
     def __init__(self, metadata: MetaData, selected_targets: List[str], train_test_proportion: float,
                  number_of_splits: int, classes_design: dict, pairing_column: str, balance_correction: int = 0,
                  classes_repartition: Union[dict, None] = None):
+        self._logger = init_logger()
         self._metadata = metadata
         self._number_of_split = number_of_splits
         self._classes_design = classes_design
@@ -38,7 +39,7 @@ class SplitGroup:
         df_filter = self._metadata.get_metadata()
         # keep only the lines for which the value in the final_targets column is in selected_targets
         df_filter = df_filter[df_filter[self._metadata.get_target_column()].isin(selected_targets)]
-        print("_compute_split step #1 done")
+        self._logger.info("_compute_split step #1 done")
 
         # 2 - select only one sample per entity
         if pairing_column != "":
@@ -50,16 +51,16 @@ class SplitGroup:
             df_entity = df_entity.groupby(pairing_column).nth(0)
         else:
             df_entity = df_filter
-        print("_compute_split step #2 done")
+        self._logger.info("_compute_split step #2 done")
 
         # 2.5 - extract ids and targets, transform targets to labels
         ids = df_entity[self._metadata.get_id_column()]
         targets = df_entity[self._metadata.get_target_column()]
         labels = Utils.load_classes_from_targets(self._classes_design, targets)
-        print("_compute_split step #2.5 done")
+        self._logger.info("_compute_split step #2.5 done")
 
         # 3- procede with the train-test division on the selected samples
-        print("start _compute_split step #3")
+        self._logger.info("start _compute_split step #3")
         for split_index in range(number_of_splits):
             if pairing_column == "":
                 X_train, X_test, y_train, y_test = train_test_split(ids, labels, test_size=train_test_proportion,
@@ -116,7 +117,7 @@ class SplitGroup:
             X_test = list(X_test)
             y_test = list(y_test)
             
-            print("_compute_split step #4 done")
+            self._logger.info("_compute_split step #4 done")
             self._splits.append([X_train, X_test, y_train, y_test])
 
     def load_split_with_index(self, split_index: int) -> list:

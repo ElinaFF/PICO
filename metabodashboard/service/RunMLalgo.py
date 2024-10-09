@@ -2,10 +2,12 @@ import importlib, os
 from sklearn.model_selection import GridSearchCV
 from sklearn import tree, ensemble
 import pickle as pkl
+from .LoggerConfig import init_logger
 
 
 class runAlgo:
     def __init__(self, algo_name, cv_folds, params, algo_import=""):
+        self._logger = init_logger()
         self.name = algo_name  # Name of the algorithm, ex: DecisionTreeClassifier
         self.imp = algo_import  # modules imports to get the algo
         if self.imp != "":
@@ -24,7 +26,7 @@ class runAlgo:
         :param options_dict: Dictionary containing the split options to run an algo on a split's dataset
         :return: Nothing, saves results to file
         """
-        print("entrée dans fonction learn")
+        self._logger.info("entrée dans fonction learn")
         Xtrain = options_dict[0]
         Xtest = options_dict[1]
         ytrain = options_dict[2]
@@ -57,7 +59,7 @@ class runAlgo:
         return a
 
     def _gridSearch(self, params, folds, Xtrain, Xtest, ytrain):
-        print("starting the gridsearch")
+        self._logger.info("starting the gridsearch")
         algo = self.algo()
         self.gs = GridSearchCV(algo, params, cv=folds)
         self.gs.fit(Xtrain, ytrain)
@@ -76,7 +78,7 @@ class runAlgo:
         train_targets,
         test_targets,
     ):
-        print("saving to file")
+        self._logger.info("saving to file")
         # Save to file.
         with open(
             os.path.join(

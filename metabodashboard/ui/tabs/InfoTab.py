@@ -1,12 +1,17 @@
 import dash
 import dash_bootstrap_components as dbc
-from dash import html, dcc, Output, Input, State, callback_context
+from dash import html, dcc, Output, Input, State, callback_context, Dash
 
 from .MetaTab import MetaTab
-from ...service import decode_pickle_from_base64, Utils
+from ...service import decode_pickle_from_base64, Utils, init_logger, log_exceptions
+from ...domain import MetaboController
 
 
 class InfoTab(MetaTab):
+    def __init__(self, app: Dash, metabo_controller: MetaboController):
+        super().__init__(app, metabo_controller)
+        self._logger = init_logger()
+        
     def getLayout(self) -> dbc.Tab:
         _docLink = dbc.Card(
             className="cards_info",
@@ -301,6 +306,7 @@ class InfoTab(MetaTab):
             [Input("upload_datatable_modal", "contents")],
             [State("load_expe", "contents")],
         )
+        @log_exceptions(self._logger)
         def set_data_matrix_in_modal(contents, dto_contents):
             if contents is not None:
                 metabo_experiment_dto = decode_pickle_from_base64(dto_contents)
@@ -322,6 +328,7 @@ class InfoTab(MetaTab):
             [Input("upload_metadata_modal", "contents")],
             [State("load_expe", "contents")],
         )
+        @log_exceptions(self._logger)
         def set_metadata_in_modal(contents, dto_contents):
             if contents is not None:
                 metabo_experiment_dto = decode_pickle_from_base64(dto_contents)
@@ -355,6 +362,7 @@ class InfoTab(MetaTab):
                 State("upload_metadata_modal", "filename"),
             ],
         )
+        @log_exceptions(self._logger)
         def toggle_modal(
             close,
             load_anyway,

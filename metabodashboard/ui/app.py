@@ -8,7 +8,19 @@ from ..service import Utils
 from .tabs import *
 from ..domain import MetaboController
 
+from metabodashboard.service import set_log_filename, init_logger
+import threading
 
+# Code for the logging
+thread_name = threading.current_thread().name
+if threading.current_thread() is threading.main_thread():
+    logger = set_log_filename()
+    logger.debug(f"Starting MeDIC (thread '{thread_name}')")
+else:
+    logger = init_logger()
+    logger.debug(f"New thread '{thread_name}')")
+    
+# Launch dash app
 app = dash.Dash(
     __name__,
     external_stylesheets=[dbc.themes.LUX],

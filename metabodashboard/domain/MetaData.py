@@ -6,6 +6,7 @@ from typing import List, Tuple, Dict
 import pandas as pd
 
 from ..service import compute_hash
+from ..service import init_logger
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "metadata"))
@@ -17,6 +18,7 @@ DUMP_TARGETS_PATH = os.path.join(DUMP_PATH, "targets.p")
 
 class MetaData:
     def __init__(self, metadata_dataframe: pd.DataFrame = None):
+        self._logger = init_logger()
         self._dataframe = metadata_dataframe
 
         self._id_column = None
@@ -107,7 +109,7 @@ class MetaData:
         Retrieve the names of the columns in the metadata matrix as a list
         """
         if self._dataframe is None:
-            print("MetaData get_columns self._dataframe is None")
+            self._logger.info("MetaData get_columns self._dataframe is None")
             return []
         return self._dataframe.columns.tolist()
 
@@ -156,7 +158,7 @@ class MetaData:
         or "__".join() of the multiple target column selected
         """
         if self._target_column is None:
-            print("WARNING: accessing targets before setting the column")
+            self._logger.warning("Accessing targets before setting the column")
             return []
         return self._dataframe.loc[:, self._target_column]
 
@@ -170,7 +172,7 @@ class MetaData:
 
     def get_samples_id(self) -> List[str]:
         if self._id_column is None:
-            print("WARNING: accessing samples id before setting the column")
+            self._logger.warning("Accessing samples id before setting the column")
             return []
         return self._dataframe[self._id_column].tolist()
 

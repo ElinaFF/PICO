@@ -11,7 +11,7 @@ from sklearn import tree
 
 from .MetaTab import MetaTab
 from ...domain import MetaboController
-from ...service import Plots, Utils
+from ...service import Plots, Utils, init_logger, log_exceptions
 
 PATH_TO_BIGRESULTS = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..", "..", "big_results.p")
@@ -30,6 +30,7 @@ CONFIG = {
 class ResultsTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
+        self._logger = init_logger()
         # self.r = pkl.load(open(PATH_TO_BIGRESULTS, "rb"))
         self.r = self.metabo_controller.get_all_results()
         self._plots = Plots("blues")
@@ -518,6 +519,7 @@ class ResultsTab(MetaTab):
             [Output("design_dropdown", "options"), Output("design_dropdown", "value")],
             [Input("custom_big_tabs", "active_tab")],
         )
+        @log_exceptions(self._logger)
         def update_results_dropdown_design(active):
             if active == "tab-3":
                 self.r = self.metabo_controller.get_all_results()
@@ -536,6 +538,7 @@ class ResultsTab(MetaTab):
             [Input("design_dropdown", "value")],
             [State("custom_big_tabs", "active_tab")],
         )
+        @log_exceptions(self._logger)
         def update_results_dropdown_algo(design, active):
             if active == "tab-3":
                 a = list(self.r[design].keys())
@@ -548,6 +551,7 @@ class ResultsTab(MetaTab):
             [Input("sub_tabs", "active_tab")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
+        @log_exceptions(self._logger)
         def update_nbr_splits_dropdown(active, algo, design):
             if active == "tab-1":
                 a = list(self.r[design][algo].splits_number)
@@ -583,6 +587,7 @@ class ResultsTab(MetaTab):
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")]
         )
+        @log_exceptions(self._logger)
         def show_cooc_matrix(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 counter, mean_importance, number_of_split, cardinality = self.r[design_name][algo].results[
@@ -600,14 +605,14 @@ class ResultsTab(MetaTab):
 
         @self.app.callback(Output('cooc_matrix_graph', 'stylesheet'),
                            [Input('cooc_matrix_graph', 'selectedNodeData')])
+        @log_exceptions(self._logger)
         def update_stylesheet(nodes):
             default_stylesheet = self._plots.get_default_stylesheet_for_cooc_graph()
             if nodes is None:
                 return default_stylesheet
             else:
                 updated_stylesheet = default_stylesheet.copy()
-                print("nodes")
-                print(nodes)
+                self._logger.info(f"nodes:\n{nodes}")
                 for node in nodes:
                     updated_stylesheet.append(self._plots.format_style_for_selected_node(node))
                 return updated_stylesheet
@@ -619,6 +624,7 @@ class ResultsTab(MetaTab):
             Input("load_ML_results_button", "n_clicks"),
             [State("ml_dropdown", "value"), State("design_dropdown", "value")]
         )
+        @log_exceptions(self._logger)
         def update_sliders_with_used(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 feature_df = self.r[design_name][algo].results["features_table"]
@@ -638,6 +644,7 @@ class ResultsTab(MetaTab):
              State("design_dropdown", "value"),
              State("pca_slider", "marks")],
         )
+        @log_exceptions(self._logger)
         def show_pca(n_clicks, pca_value, dimensions, algo, design_name, marks):
             """
             pca_value : represent the number of feature selected by the slider, but is given as indexes
@@ -671,6 +678,7 @@ class ResultsTab(MetaTab):
             ],
             [State("ml_dropdown", "value"), State("design_dropdown", "value"), State("umap_slider", "marks")],
         )
+        @log_exceptions(self._logger)
         def show_umap(n_clicks, slider_value, dimensions, algo, design_name, marks):
             if n_clicks >= 1:
                 classes = self.r[design_name][algo].results["classes"]
@@ -699,6 +707,7 @@ class ResultsTab(MetaTab):
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
+        @log_exceptions(self._logger)
         def show_2d(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 df = (
@@ -714,6 +723,7 @@ class ResultsTab(MetaTab):
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
+        @log_exceptions(self._logger)
         def show_3d(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["features_2d_and_3d"]
@@ -727,6 +737,7 @@ class ResultsTab(MetaTab):
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
+        @log_exceptions(self._logger)
         def get_experiment_statistics(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["info_expe"]
@@ -742,6 +753,7 @@ class ResultsTab(MetaTab):
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
+        @log_exceptions(self._logger)
         def generates_accuracyPlot_global(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["accuracies_table"]
@@ -754,6 +766,7 @@ class ResultsTab(MetaTab):
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
+        @log_exceptions(self._logger)
         def show_metrics(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["metrics_table"]
@@ -798,6 +811,7 @@ class ResultsTab(MetaTab):
                 State("splits_dropdown", "value"),
             ],
         )
+        @log_exceptions(self._logger)
         def compute_split_conf_matrix(n_clicks, algo, design_name, split):
             if n_clicks >= 1:
 
@@ -827,6 +841,7 @@ class ResultsTab(MetaTab):
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
+        @log_exceptions(self._logger)
         def show_features(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 df = self.r[design_name][algo].results["features_table"].copy()
@@ -842,6 +857,7 @@ class ResultsTab(MetaTab):
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
             prevent_initial_call=True,
         )
+        @log_exceptions(self._logger)
         def export_download_features_table(n_click, algo, design_name):
             if n_click >= 1:
                 df = self.r[design_name][algo].results["features_table"]
@@ -872,6 +888,7 @@ class ResultsTab(MetaTab):
             [Input("load_ML_results_button", "n_clicks"), Input("strip_chart_slider", "value")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value"), State("strip_chart_slider", "marks")],
         )
+        @log_exceptions(self._logger)
         def show_stripChart_features(n_click, slider_value, algo, design_name, marks):
             if n_click >= 1:
                 try:
@@ -889,6 +906,7 @@ class ResultsTab(MetaTab):
             [Input("load_ML_results_button", "n_clicks")],
             [State("ml_dropdown", "value"), State("design_dropdown", "value")],
         )
+        @log_exceptions(self._logger)
         def disable_DTTT(n_clicks, algo, design_name):
             if n_clicks >= 1:
                 if algo == "DecisionTree":

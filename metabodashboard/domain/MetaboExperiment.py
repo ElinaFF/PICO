@@ -11,6 +11,7 @@ from .MetaboExperimentDTO import MetaboExperimentDTO
 from .ModelFactory import ModelFactory
 from ..conf.SupportedCV import CV_ALGORITHMS
 from ..service import Utils
+from ..service import init_logger
 
 X_TRAIN_INDEX = 0
 X_TEST_INDEX = 1
@@ -41,6 +42,8 @@ class MetaboExperiment:
         self._selected_models = []
         self._cv_algorithms = CV_ALGORITHMS
         self._selected_cv_type = list(self._cv_algorithms.keys())[0]
+        
+        self._logger = init_logger(__name__)
 
     def init_metadata(self):
         """
@@ -328,7 +331,7 @@ class MetaboExperiment:
         self._data_matrix.load_data()
         params = []
         for _, experimental_design in self.experimental_designs.items():
-            print("-> Classification design : ", _)
+            self._logger.info("-> Classification design : ")
             selected_targets_name = experimental_design.get_selected_targets_name()
             (selected_targets, selected_ids,) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
             classes = Utils.load_classes_from_targets(
@@ -362,7 +365,8 @@ class MetaboExperiment:
 
         # launch the run_on_model function with the params
         if self._activate_multithreading:
-            print("-> Multithreading activated (", len(params), " models to run) ...")
+            self._logger.info(f"-> Multithreading activated ({len(params)} models to run) ...")
+
             number_of_workers = cpu_count() - 1
             with self.__create_pool(number_of_workers) as pool:
                 result_params = pool.starmap(self.run_on_model, params)
@@ -384,15 +388,15 @@ class MetaboExperiment:
             _, selected_sample_id = self._metadata.get_selected_targets_and_ids(
                 experimental_design.get_selected_targets_name())
             for model_name, result in results.items():
-                print(f"-> Compute remaining results for {model_name} of {experimental_design_name} design")
+                self._logger.info(f"-> Compute remaining results for {model_name} of {experimental_design_name} design")
                 result.compute_remaining_results_on_all_splits(selected_sample_id)
             experimental_design.set_is_done(True)
 
 
     def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test,
                      cv_algorithm_constructor, cv_algorithm_config, selected_ids, classes):
-        print("-> Split : ", split_index)
-        print("-> Model : ", model_name)
+        self._logger.info(f"-> Split : {split_index}")
+        self._logger.info(f"-> Model : {model_name}")
 
         metabo_model = self.get_model_from_name(model_name)
         best_model = metabo_model.train(

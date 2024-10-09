@@ -7,6 +7,7 @@ import pandas as pd
 from . import MetaboExperiment
 from .MetaboExperimentDTO import MetaboExperimentDTO
 from .Results import *
+from ..service import init_logger
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
@@ -17,6 +18,7 @@ class MetaboController:
     Bottleneck class to interface between backend and frontend
     """
     def __init__(self, metabo_experiment: MetaboExperiment = None):
+        self._logger = init_logger()
         if metabo_experiment is None:
             self._metabo_experiment = MetaboExperiment()
         else:
@@ -151,7 +153,7 @@ class MetaboController:
         Retrieve the list of names from default (supported) models and custom models
         """
         ret = self._metabo_experiment.get_all_algos_names()
-        print(f"get_all_algos_names: {ret}")
+        self._logger.info(f"get_all_algos_names: {ret}")
         return ret
 
     def set_cv_type(self, cv_type: str):

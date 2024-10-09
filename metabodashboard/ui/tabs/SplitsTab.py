@@ -7,7 +7,7 @@ from dash.dcc import send_file
 
 from .MetaTab import MetaTab
 from ...domain import MetaboController
-from ...service import Utils, Plots
+from ...service import Utils, Plots, init_logger, log_exceptions
 
 EXP_NAME = []
 SPLIT_NUMBER_VALUES = {i: str(i) for i in range(0, 101, 10)}
@@ -19,6 +19,7 @@ NUMBER_OF_STEP_IN_CLASS_BALANCE = 5
 class SplitsTab(MetaTab):
     def __init__(self, app: dash.Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
+        self._logger = init_logger()
 
     def getLayout(self) -> dbc.Tab:
         _introductionNotice = html.Div(
@@ -631,6 +632,7 @@ class SplitsTab(MetaTab):
                 Input("upload_metadata_output", "children"),
             ],
         )
+        @log_exceptions(self._logger)
         def update_train_test_split_graph(slider_value, percent_test, fm, fd):
             if percent_test is None:
                 return dash.no_update
@@ -647,6 +649,7 @@ class SplitsTab(MetaTab):
         @self.app.callback(
             Output("in_use_raw", "value"), [Input("custom_big_tabs", "active_tab")]
         )
+        @log_exceptions(self._logger)
         def update_use_raw(active_tab):
             if active_tab == "tab-1":
                 use_raw = self.metabo_controller.is_data_raw()
@@ -668,6 +671,7 @@ class SplitsTab(MetaTab):
              Output("in_remove_rt", "value")],
             [Input("in_use_raw", "value"), Input("custom_big_tabs", "active_tab")],
         )
+        @log_exceptions(self._logger)
         def normalization_selection(value, active_tab):
             options = [
                 {"label": "True", "value": True},
@@ -709,6 +713,7 @@ class SplitsTab(MetaTab):
              Input("upload_metadata", "contents")],
             [State("upload_datatable", "filename")],
         )
+        @log_exceptions(self._logger)
         def upload_data(list_of_contents, _, list_of_names):
             if callback_context.triggered[0]["prop_id"] == "upload_metadata.contents":
                 return "", dash.no_update, dash.no_update
@@ -756,10 +761,10 @@ class SplitsTab(MetaTab):
             ],
             [State("upload_metadata", "filename")],
         )
+        @log_exceptions(self._logger)
         def get_metadata_cols_names_to_choose_from(list_of_contents, active_tab, list_of_names):
             triggered_item = callback_context.triggered[0]["prop_id"].split(".")[0]
-            print("triggered_item")
-            print(triggered_item)
+            self._logger.info(f"triggered_item: [{triggered_item}]")
             if active_tab == "tab-1":
                 if triggered_item == "upload_metadata":
                     try:
@@ -783,6 +788,7 @@ class SplitsTab(MetaTab):
             Output("warning_select_false", "children"),
             [Input("in_remove_rt", "value")],
         )
+        @log_exceptions(self._logger)
         def remove_features_from_datamatrix(value):
             if value is not None:
                 self.metabo_controller.set_data_matrix_remove_rt(bool(value))
@@ -798,6 +804,7 @@ class SplitsTab(MetaTab):
             Output("define_classes_desgn_exp", "children"),
             [Input("in_classification_type", "value")],
         )
+        @log_exceptions(self._logger)
         def define_classes_for_experiment_design(t):
             """
             if the classification type is binary (0), certain options will be available
@@ -887,6 +894,7 @@ class SplitsTab(MetaTab):
                 Input("custom_big_tabs", "active_tab"),
             ],
         )
+        @log_exceptions(self._logger)
         def update_possible_classes_exp_design(target_col, children, active_tab):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
             if active_tab == "tab-1":
@@ -928,6 +936,7 @@ class SplitsTab(MetaTab):
              State("class2_name", "value"),
              State("possible_groups_for_class2", "value")],
         )
+        @log_exceptions(self._logger)
         def add_n_reset_classes_exp_design(n_add, n_remove, target_col, children, active_tab, c1, g1, c2, g2):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
@@ -937,7 +946,7 @@ class SplitsTab(MetaTab):
             elif triggered_id == "btn_add_design_exp":
                 try:
                     self.metabo_controller.add_experimental_design({c1: g1, c2: g2})
-                    print("bip bip : ", self.metabo_controller._metabo_experiment.experimental_designs)
+                    self._logger.info(f"bip bip : {self.metabo_controller._metabo_experiment.experimental_designs}")
                 except ValueError as ve:
                     return (dash.no_update, dash.no_update, dash.no_update, dash.no_update,
                             dash.no_update, dash.no_update, str(ve))
@@ -958,6 +967,7 @@ class SplitsTab(MetaTab):
             Output("in_ID_col_name", "value"),
             [Input("in_ID_col_name", "value"), Input("custom_big_tabs", "active_tab")],
         )
+        @log_exceptions(self._logger)
         def update_ID_col_name(new_value, active_tab):
             if active_tab == "tab-1":
                 if new_value not in [None, ""]:
@@ -972,6 +982,7 @@ class SplitsTab(MetaTab):
                 Input("custom_big_tabs", "active_tab"),
             ],
         )
+        @log_exceptions(self._logger)
         def update_pairing_group_column(new_value, active_tab):
             if active_tab == "tab-1":
                 if new_value not in [None, ""]:
@@ -993,6 +1004,7 @@ class SplitsTab(MetaTab):
             [State("in_percent_samples_in_test", "value"),
              State("in_nbr_splits", "value")],
         )
+        @log_exceptions(self._logger)
         def saving_params_of_splits_batch(n, train_test_proportion, nbr_splits):
             """
             Create the file (json) which will contains all info about the split creation / data experiment.
@@ -1030,7 +1042,7 @@ class SplitsTab(MetaTab):
                 self.metabo_controller.set_number_of_splits(nbr_splits)
                 self.metabo_controller.create_splits()
                 Utils.dump_metabo_expe(self.metabo_controller.generate_save())
-                print("bip bip 3 : ", self.metabo_controller._metabo_experiment.experimental_designs)
+                self._logger.info(f"bip bip 3 : {self.metabo_controller._metabo_experiment.experimental_designs}")
 
                 return (
                     "The parameters file is created, the splits's creation should start shortly...",
@@ -1045,6 +1057,7 @@ class SplitsTab(MetaTab):
             [Input("btn_add_design_exp", "n_clicks"),
              Input("remove_experimental_design_button", "n_clicks")],
         )
+        @log_exceptions(self._logger)
         def add_class_balancing_options(n_clicks_add, n_clicks_remove):
             """
             Add a class balancing option to the list of class balancing options.
@@ -1117,6 +1130,7 @@ class SplitsTab(MetaTab):
             Input({"type": "class_balancing_slider", "index": MATCH}, "value"),
             [State({"type": "class_balancing_slider", "index": MATCH}, "id")],
         )
+        @log_exceptions(self._logger)
         def update_class_balancing_slider(value, id):
             """
             Update the class balancing slider.

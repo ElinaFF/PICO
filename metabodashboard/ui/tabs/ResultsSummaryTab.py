@@ -5,7 +5,7 @@ import numpy as np
 from dash import html, dcc, Output, Input, State, dash, Dash
 
 from .MetaTab import MetaTab
-from ...service import Plots
+from ...service import Plots, init_logger, log_exceptions
 from ...domain import MetaboController
 
 CONFIG = {
@@ -21,6 +21,7 @@ CONFIG = {
 class ResultsSummaryTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: MetaboController):
         super().__init__(app, metabo_controller)
+        self._logger = init_logger()
         self.r = self.metabo_controller.get_all_results()
         self._plots = Plots("blues")
 
@@ -176,6 +177,7 @@ class ResultsSummaryTab(MetaTab):
             ],
             [Input("custom_big_tabs", "active_tab")],
         )
+        @log_exceptions(self._logger)
         def update_results_dropdown_design(active):
             if active == "tab-4":
                 try:
@@ -196,6 +198,7 @@ class ResultsSummaryTab(MetaTab):
             [State("design_dropdown_summary", "value"),
              ],
         )
+        @log_exceptions(self._logger)
         def show_heatmap_features_usage(n_clicks, log_importance_threshold, design):
             if n_clicks >= 1:
 
@@ -205,7 +208,7 @@ class ResultsSummaryTab(MetaTab):
                 global_df = None
                 for a in algos:
                     if global_df is None:
-                        print("glob df is none")
+                        self._logger.info("glob df is none")
                         global_df = self.r[design][a].results["features_table"]
                         global_df = global_df.loc[
                             :, ("features", "importance_usage")
@@ -214,7 +217,7 @@ class ResultsSummaryTab(MetaTab):
                             columns={"importance_usage": a}, inplace=True
                         )  # rename column to identify algorithm
                     else:
-                        print("glob df not none, algo :", a)
+                        self._logger.info(f"glob df not none, algo : {a}")
                         df = self.r[design][a].results[
                             "features_table"
                         ]  # retrieve features table of algo a
@@ -244,6 +247,7 @@ class ResultsSummaryTab(MetaTab):
             [Input("load_results_button", "n_clicks")],
             State("design_dropdown_summary", "value"),
         )
+        @log_exceptions(self._logger)
         def show_heatmap_samples_always_wrong(n_clicks, design):
             if n_clicks >= 1:
                 algos = list(self.r[design].keys())
@@ -298,6 +302,7 @@ class ResultsSummaryTab(MetaTab):
             [Input("load_results_button", "n_clicks")],
             State("design_dropdown_summary", "value"),
         )
+        @log_exceptions(self._logger)
         def show_barplot_compare_accuracy_algo(n_clicks, design_name):
             if n_clicks >= 1:
                 algos = list(self.r[design_name].keys())

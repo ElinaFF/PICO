@@ -6,10 +6,15 @@ import pandas as pd
 from dash import html, State, Input, Output, dash, dcc, callback_context, ALL
 
 from .MetaTab import MetaTab
-from ...service import Utils
+from ...service import Utils, init_logger, log_exceptions
+from ...domain import MetaboController
 
 
 class MLTab(MetaTab):
+    def __init__(self, app: dash.Dash, metabo_controller: MetaboController):
+        super().__init__(app, metabo_controller)
+        self._logger = init_logger()
+
     def getLayout(self) -> dbc.Tab:
         __splitConfigFile = html.Div(
             [
@@ -194,6 +199,7 @@ class MLTab(MetaTab):
         @self.app.callback(
             Output("in_nbr_CV_folds", "value"), [Input("custom_big_tabs", "active_tab")]
         )
+        @log_exceptions(self._logger)
         def update_nbr_CV_folds(active_tab):
             if active_tab == "tab-2":
                 return self.metabo_controller.get_cv_folds()
@@ -234,12 +240,13 @@ class MLTab(MetaTab):
                 State("importance_attributes_dropdown_menu", "value")
             ]
         )
+        @log_exceptions(self._logger)
         def add_refresh_available_sklearn_algorithms(
                 n, value, active_tab, import_algo, name_algo, table_param, importance_attribute
         ):
             triggered_by = callback_context.triggered[0]["prop_id"].split(".")[0]
             if triggered_by == "custom_big_tabs":
-                print("Triggered by tab")
+                self._logger.info("Triggered by tab")
                 if active_tab == "tab-2":
                     self.metabo_controller.update_experimental_designs_with_selected_models()
 
@@ -276,11 +283,11 @@ class MLTab(MetaTab):
                     name_algo, import_algo, grid_search_params, importance_attribute
                 )
             if triggered_by == "in_algo_ML":
-                print("Triggered by dropdown")
+                self._logger.info("Triggered by dropdown")
                 try:
                     self.metabo_controller.set_selected_models(value)
                 except ValueError as ve:
-                    print("Error: ", ve)
+                    self._logger.error(f"{ve}")
                     return (
                         Utils.format_list_for_checklist(
                             self.metabo_controller.get_all_algos_names()
@@ -307,10 +314,10 @@ class MLTab(MetaTab):
             ],
             [Input("start_learning_button", "n_clicks")],
         )
+        @log_exceptions(self._logger)
         def start_machine_learning(n):
             if n >= 1:
-                print("in")
-                print(self.metabo_controller.get_selected_models())
+                self._logger.info(f"in\n{self.metabo_controller.get_selected_models()}")
                 self.metabo_controller.learn()
 
                 Utils.dump_metabo_expe(self.metabo_controller.generate_save())
@@ -326,6 +333,7 @@ class MLTab(MetaTab):
              Input("custom_big_tabs", "active_tab"),
              Input({"type": "cv_params", "index": ALL}, "value")],
         )
+        @log_exceptions(self._logger)
         def set_cv_type(cv_value, tab, input_params):
             if callback_context.triggered[0]["prop_id"] == "radio_cv_types.value":
                 params_form = []
@@ -376,14 +384,15 @@ class MLTab(MetaTab):
             [State("import_new_algo", "value"),
              State("name_new_algo", "value")],
         )
+        @log_exceptions(self._logger)
         def get_attribute_algo(n_attribute, n_manual, import_new, new_algo_name):
             triggered_by = callback_context.triggered[0]["prop_id"].split(".")[0]
-            print("triggered by: ", triggered_by)
+            self._logger.info(f"triggered by: [{triggered_by}]")
             if n_manual > 0 or n_attribute > 0:
                 try:
                     model = Utils.get_model_from_import([import_new], new_algo_name)
                 except Exception as e:
-                    print("Error: ", e)
+                    self._logger.error(f"{e}")
                     return "Import failed: " + str(e), {"color": "red"}, "", ""
                 importance_attributes = [param_name for param_name, _ in
                                          Utils.get_model_parameters_after_training(model)]
@@ -413,7 +422,7 @@ class MLTab(MetaTab):
                         return f"{model.__name__} found", {
                             "color": "green"}, default_text, Utils.format_list_for_checklist(importance_attributes)
                     except Exception as e:
-                        print(e)
+                        self._logger.info(f"{e}")
                         return "Import failed: " + str(e), {"color": "red"}, "", ""
                 elif triggered_by == "manual_config_button":
                     return "", None, [html.P("The following configuration must be in JSON format",

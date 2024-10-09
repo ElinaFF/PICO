@@ -1,6 +1,7 @@
 # ignore pychache
-*/__pycache__/*
-*/.pytest_cache/*
+__pycache__/
+.pytest_cache/
+dumps/
 
 # ignore .p and .mtxp files
 *.p
