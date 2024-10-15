@@ -1,17 +1,20 @@
 FROM python:3.11
 
-RUN pip install --upgrade pip
+RUN pip install -U pip
 
-RUN useradd -m worker
-USER worker
-WORKDIR /home/worker
-ENV PATH="/home/worker/.local/bin:${PATH}"
+RUN useradd -m medic
+USER medic
+WORKDIR /home/medic/app
 
-RUN pip install --user pipenv
+# This is needed by pip
+ENV PATH="/home/medic/.local/bin:$PATH"
 
+# Install requirements now
+COPY --chown=medic:medic requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application and install medic
 COPY --chown=worker:worker . ./
+RUN pip install --no-cache-dir .
 
-RUN pip install -U numpy
-RUN pip install -r requirements.txt
-
-CMD ["python", "main.py"]
+CMD ["medic", "ui", "-p", "5000"]

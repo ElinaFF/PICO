@@ -11,7 +11,7 @@ from ..TestsUtility import (
     FILTERED_SAMPLES_ID,
     ALL_TARGETS_NAMES, CLASSES_DESIGN, PARTIAL_CLASSES_DESIGN, PARTIAL_CLASSES_REPARTITION,
 )
-from ...metabodashboard.domain.MetaData import MetaData
+from ...medic.domain.MetaData import MetaData
 
 
 @pytest.fixture

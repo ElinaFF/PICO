@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
-from ...metabodashboard.service import Utils
+from ...medic.service import Utils
 
 from ..TestsUtility import (CLASSES_DESIGN, TARGETS, CLASSES,
                             PARTIAL_CLASSES_DESIGN, FILTERED_CLASSES, FILTERED_TARGETS)

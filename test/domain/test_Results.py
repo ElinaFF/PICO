@@ -1,7 +1,7 @@
 import pytest
 from sklearn.tree import DecisionTreeClassifier
 
-from ...metabodashboard.domain import Results
+from ...medic.domain import Results
 from ..TestsUtility import NUMBER_OF_SPLITS, RESULTS, SAMPLES_ID, CLASSES, CLASSES_DESIGN, IMPORTANCE_ATTRIBUTE, \
     DATAMATRIX_DATAFRAME
 

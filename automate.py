@@ -5,7 +5,7 @@ import pandas as pd
 import pickle as pkl
 import umap
 
-from metabodashboard.domain import MetaboController
+from medic.domain import MetaboController
 import dash_bootstrap_components as dbc
 import plotly.express as px
 from collections import Counter
