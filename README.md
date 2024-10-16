@@ -16,3 +16,11 @@ It explains how to use MeDIC but also how it works.
 
 ## Disclaimer
 MeDIC is still in development. If you encounter any issue or have any suggestion, feel free to contact us at [elina.francovic-fontaine.1@ulaval.ca](mailto:elina.francovic-fontaine.1@ulaval.ca). Or you can leave an issue [here](https://github.com/ElinaFF/MetaboDashboard/issues) with the tag "bug".
+
+## Trigger a release
+
+Let's say you want to update to version `1.3.2`. 
+   1.  Set the version in `medic/__init__.py` 
+   2.  Create a tag with git using the same version number `git tag -a 1.3.2 -m "medic 1.3.2`
+   3.  Push the tag with `git push origin 1.3.2`
+   4.  GitHub action ([publish.yaml](./.github/workflows/publish.yml)) will then build and publish to PyPI

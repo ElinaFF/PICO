@@ -1,0 +1,20 @@
+name: Publish a release to PyPI
+
+on:
+  push:
+    tags:        
+      - '[0-9]+.[0-9]+.[0-9]+' # e.g. 0.1.4
+
+jobs:
+  publish:
+    name: Upload a release to PyPI
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Hatch
+      uses: pypa/hatch@install
+    - name: Build the package
+      run: hatch build
+    - name: Publish the release
+      run: hatch publish --user ${{secrets.HATCH_INDEX_USER}} --auth ${{secrets.HATCH_INDEX_AUTH}}
