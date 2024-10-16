@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "medic-ml-pandagab"
+name = "medic-ml"
 authors = [
   { name="Elina Francovic-Fontaine", email="elina.francovic-fontaine.1@ulaval.ca" },
 ]

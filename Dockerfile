@@ -1,5 +1,7 @@
 FROM python:3.11
 
+EXPOSE 5000/tcp
+
 RUN pip install -U pip
 
 RUN useradd -m medic
