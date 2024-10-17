@@ -5,7 +5,7 @@ import pandas as pd
 import pickle as pkl
 import umap
 
-from metabodashboard.domain import MetaboController
+from medic.domain import MetaboController
 import dash_bootstrap_components as dbc
 import plotly.express as px
 from collections import Counter
@@ -17,7 +17,7 @@ DATAMATRIX_PATH = "DataMatrix.csv"
 
 def main():
     start_time = datetime.now()
-    print("Starting the MetaboDashboard at : ", start_time)
+    print("Starting MeDIC at : ", start_time)
     metabo_controller = MetaboController()
     metabo_controller.set_raw_use_for_data(False)
     metabo_controller.set_data_matrix_remove_rt(True)

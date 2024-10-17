@@ -23,11 +23,11 @@ def log_exceptions(logger):
         return wrapper
     return decorator
 
-def set_log_filename(filename: str="MetaboDashBoard.log", add_date: bool=True, level=logging.DEBUG):
+def set_log_filename(filename: str="medic.log", add_date: bool=True, level=logging.DEBUG):
     """Sets th elog filename with an optional date suffix.
 
     Args:
-        filename (str, optional): The base filename for the log. Defaults to "MetaboDashBoard.log".
+        filename (str, optional): The base filename for the log. Defaults to "medic.log".
         add_date (bool, optional): If True, adds the current date to the filename. Defaults to True.
     """
     global log_filename
@@ -55,7 +55,7 @@ def set_log_filename(filename: str="MetaboDashBoard.log", add_date: bool=True, l
     return init_logger(level=level)
         
 def init_logger(module_name: str=None, level=logging.DEBUG):
-    """"MetaboDashBoard.log"
+    """"medic.log"
 
     Args:
         module_name (str, optional): The name of the module for the logger. Defaults to "".

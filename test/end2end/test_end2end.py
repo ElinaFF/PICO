@@ -1,7 +1,7 @@
 import pytest
 
-from ...metabodashboard.domain import MetaboController
-from ...metabodashboard.service import Utils
+from ...medic.domain import MetaboController
+from ...medic.service import Utils
 from ..TestsUtility import (
     ENCODED_DATAMATRIX_DATAFRAME,
     SAMPLES_ID_COLUMN,

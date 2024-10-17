@@ -209,7 +209,7 @@ class Loader:
 # Check if MeDIC's files are already here
 def check_if_minimum_file_requirement_exist():
     logging.info("Checking if the github repository is already downloaded")
-    return os.path.exists("metabodashboard") and os.path.exists("requirements.txt")
+    return os.path.exists("medic") and os.path.exists("requirements.txt")
 
 
 # Check if Git is already installed
@@ -435,7 +435,7 @@ def install_from_github_on_os():
 
     subprocess.check_call(
         "git clone -q "
-        f"https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard "
+        f"https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MeDIC "
         f"temporary_installation_folder",
         shell=True,
         stdout=subprocess.DEVNULL,
@@ -450,7 +450,7 @@ def pull_from_github():
     loader = Loader(desc="Updating project...").start()
     if check_if_git_folder_exist():
         subprocess.check_call(
-            f"git pull -q https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MetaboDashboard",
+            f"git pull -q https://{RO_TEMP_TOKEN + '@'}github.com/ElinaFF/MeDIC",
             shell=True,
             stdout=subprocess.DEVNULL,
         )

@@ -15,4 +15,28 @@ It explains how to use MeDIC but also how it works.
  - [Vincent Vilain](https://github.com/VincentVilain)
 
 ## Disclaimer
-MeDIC is still in development. If you encounter any issue or have any suggestion, feel free to contact us at [elina.francovic-fontaine.1@ulaval.ca](mailto:elina.francovic-fontaine.1@ulaval.ca). Or you can leave an issue [here](https://github.com/ElinaFF/MetaboDashboard/issues) with the tag "bug".
+MeDIC is still in development. If you encounter any issue or have any suggestion, feel free to contact us at [elina.francovic-fontaine.1@ulaval.ca](mailto:elina.francovic-fontaine.1@ulaval.ca). Or you can leave an issue [here](https://github.com/ElinaFF/MeDIC/issues) with the tag "bug".
+
+## Development
+
+### Setup
+
+Clone the project with :
+```shell
+git clone https://github.com/ElinaFF/MeDIC.git
+```
+
+It is recommanded to setup a virtual environment. When it's done, use your isolated python and install `medic` package locally and in editable mode with :
+```shell
+python -m pip install -e ".[dev]"
+```
+
+### Trigger a release
+
+Let's say you want to update to version `1.3.2`.
+   1.  Set the version in `medic/__init__.py` 
+   2.  Commit the new version change with `git add medic/__init__.py` and `git commit -m "Bump to version 1.3.2"`
+   3.  Push the commit with `git push`
+   4.  Create a tag with git using the same version number `git tag -a 1.3.2 -m "medic 1.3.2`
+   5.  Push the tag with `git push origin 1.3.2`
+   6.  GitHub action ([publish.yaml](./.github/workflows/publish.yml)) will then build and publish to PyPI

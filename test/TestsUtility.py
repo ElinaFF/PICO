@@ -14,7 +14,7 @@ np.random.seed(42)
 random.seed(42)
 
 if __name__ != "__main__":
-    from ..metabodashboard.conf.SupportedModels import LEARN_CONFIG
+    from ..medic.conf.SupportedModels import LEARN_CONFIG
 
 
 def _get_samples_id(size: int) -> List[str]:
