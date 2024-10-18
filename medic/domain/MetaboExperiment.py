@@ -37,7 +37,7 @@ class MetaboExperiment:
 
         self.experimental_designs: Dict[str, ExperimentalDesign] = {}
 
-        self._supported_models = self._model_factory.create_supported_models()
+        self._supported_models = self._model_factory.create_supported_models("GS")
         self._custom_models = {}
         self._selected_models = []
         self._cv_algorithms = CV_ALGORITHMS
@@ -450,7 +450,13 @@ class MetaboExperiment:
         Set the type of Cross-Validation (cv) for the experiment
         """
         if cv_type not in self._cv_algorithms:
-            raise ValueError("CV type '" + cv_type + "' is not supported.")
+            raise ValueError("CV type '" + cv_type + "' is not supported. Choices are : "+self._cv_algorithms)
+
+        if cv_type == "GridSearchCV":
+            self._supported_models = self._model_factory.create_supported_models("GS")
+        elif cv_type == "RandomizedSearchCV":
+            self._supported_models = self._model_factory.create_supported_models("RS")
+
         self._selected_cv_type = cv_type
 
     def get_selected_cv_type(self) -> str:
