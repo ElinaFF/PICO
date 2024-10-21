@@ -9,7 +9,7 @@ authors = [
 ]
 description = "Metabolomic Dashboard for Interpretable Classification"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.8,<3.13"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -28,7 +28,7 @@ dependencies = [
     "umap-learn",
     "matplotlib",
     "coloredlogs",
-    "scikit-learn",
+    "scikit-learn>1.4",
     "dash",
     "dash-bio",
     "dash-table",
@@ -38,8 +38,8 @@ dependencies = [
     "dash-html-components",
     "dash-bootstrap-components",
     "dash_interactive_graphviz",
-    "pyscm-ml",
-    "randomscm",
+    "pyscm-ml>=1.1.2",
+    "randomscm>=0.1.2",
 ]
 
 [project.optional-dependencies]
