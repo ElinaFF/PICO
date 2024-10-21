@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
-from ...medic.service import Utils
+from medic.service import Utils
 
 from ..TestsUtility import (CLASSES_DESIGN, TARGETS, CLASSES,
                             PARTIAL_CLASSES_DESIGN, FILTERED_CLASSES, FILTERED_TARGETS)
@@ -57,17 +57,20 @@ def test_given_PCA_when_getting_model_parameters_then_return_attributes():
 
 
 def test_given_DecisionTreeClassifier_when_getting_model_parameters_then_return_attributes():
-    assert Utils.get_model_parameters(DecisionTreeClassifier) == [('criterion', 'str'),
-                                                                  ('splitter', 'str'),
-                                                                  ('max_depth', 'NoneType'),
-                                                                  ('min_samples_split', 'int'),
-                                                                  ('min_samples_leaf', 'int'),
-                                                                  ('min_weight_fraction_leaf', 'float'),
-                                                                  ('max_features', 'NoneType'),
-                                                                  ('max_leaf_nodes', 'NoneType'),
-                                                                  ('min_impurity_decrease', 'float'),
-                                                                  ('class_weight', 'NoneType'),
-                                                                  ('ccp_alpha', 'float')]
+    assert Utils.get_model_parameters(DecisionTreeClassifier) == [
+        ('criterion', 'str'),
+        ('splitter', 'str'),
+        ('max_depth', 'NoneType'),
+        ('min_samples_split', 'int'),
+        ('min_samples_leaf', 'int'),
+        ('min_weight_fraction_leaf', 'float'),
+        ('max_features', 'NoneType'),
+        ('max_leaf_nodes', 'NoneType'),
+        ('min_impurity_decrease', 'float'),
+        ('class_weight', 'NoneType'),
+        ('ccp_alpha', 'float'),
+        ('monotonic_cst', 'NoneType')
+    ]
 
 
 def test_givenDT_whenGetParametersAfterTraining_thenReturnParameters():
