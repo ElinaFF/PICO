@@ -1,7 +1,8 @@
 import pytest
 from sklearn.svm import SVC
+import itertools
 
-from ...medic.domain import ModelFactory
+from medic.domain import ModelFactory
 from ..TestsUtility import SUPPORTED_MODEL
 
 
@@ -23,6 +24,19 @@ def test_givenAModelFactory_whenCreateSupportedModel_thenTheSupportedModelsAreCo
             assert key in metabomodel.grid_search_param
             for param in value:
                 assert param in metabomodel.grid_search_param[key]
+
+
+def test_supported_models():
+    # Iterate over all possible input values and validate the model
+    for name, options in SUPPORTED_MODEL.items():
+        params = list(itertools.product(*options["ParamGrid"].values()))
+        if name == "RandomForest":
+            continue
+        for param in params:
+            # Instantiate a classifier, it could break here
+            clf = options["function"](**dict(zip(options["ParamGrid"].keys(), param)))
+            if hasattr(clf, '_parameter_contraints'):
+                clf._validate_params()
 
 
 def test_givenAModelFactory_whenCreateCustomModel_thenTheCustomModelIsCorrect_2(
