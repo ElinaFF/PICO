@@ -1,34 +1,30 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# This workflow will install medic and run tests on MacOS, Ubuntu and Windows for python 3.9 and 3.12. 
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Tests
+name: MeDIC installation and tests
 
 on:
-  push:
-    branches: [ main, dev ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main ]
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+  test:
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python: [ 3.9, 3.12 ]
+        os:  [ macos-latest, ubuntu-latest, windows-latest ]
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python }}
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.python }}
     - name: Install medic with dev dependencies
       run: |
         pip install --upgrade pip
         pip install ".[dev]"
     - name: Test with pytest
       run: |
-        python -m pytest -xv
+        python -m pytest -sv
