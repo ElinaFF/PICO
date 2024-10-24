@@ -14,7 +14,7 @@ np.random.seed(42)
 random.seed(42)
 
 if __name__ != "__main__":
-    from medic.conf.SupportedModels import LEARN_CONFIG
+    from medic.conf.SupportedModels import LEARN_CONFIG_GS
 
 
 def _get_samples_id(size: int) -> List[str]:
@@ -282,7 +282,7 @@ FOLDS = 5
 PARAMETER_GRID = {"criterion": ["gini", "entropy"], "max_depth": [1, 2, 3, 4, 5, 10]}
 
 if __name__ != "__main__":
-    SUPPORTED_MODEL = LEARN_CONFIG
+    SUPPORTED_MODEL = LEARN_CONFIG_GS
 
 FEATURE_IMPORTANCE_TABLE = pd.DataFrame(
     {
