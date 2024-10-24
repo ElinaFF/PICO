@@ -8,20 +8,18 @@ LEARN_CONFIG_GS = {
     "DecisionTree": {
         "function": DecisionTreeClassifier,
         "ParamGrid": {
-            "max_depth": np.linspace(1, 10, dtype=int),
-            "min_samples_split": np.linspace(0.01, 1, 10),
-            "max_features": ["auto", "sqrt", "log2"],
+            "max_depth": [1, 2, 3, 4, 5, 6],
+            "min_samples_split": [2, 4, 6, 8, 10],
+            "max_features": ["sqrt", "log2"],
         },
         "importance_attribute": "feature_importances_",
     },
     "RandomForest": {
         "function": RandomForestClassifier,
         "ParamGrid": {
-            "n_estimators": np.linspace(20, 80, dtype=int),
-            "max_depth": np.linspace(1, 5, dtype=int),
-            "min_samples_split": np.linspace(0.01, 1, 10),
-            "max_features": ["auto", "sqrt", "log2"],
-            "max_samples": np.linspace(0.2, 1, 10),
+            "n_estimators": [5, 10, 30, 70, 100, 200, 500],
+            "max_depth": [1, 2, 3, 4, 5],
+            "min_samples_split": [2, 4, 6, 8, 10],
         },
         "importance_attribute": "feature_importances_",
     },
