@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('agg')
+
 from dash import html
 from dash.dependencies import Input, Output
 import dash
