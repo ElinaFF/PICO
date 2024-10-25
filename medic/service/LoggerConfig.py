@@ -1,18 +1,19 @@
 import logging
-import coloredlogs
+import coloredlogs # type: ignore
 from datetime import datetime
 import inspect
 import os
 import threading
 import traceback
 from functools import wraps
+from typing import Callable
 
-log_filename = None  # Global variable for log filename
+log_filename: str|None = None  # Global variable for log filename
 
-def log_exceptions(logger):
-    def decorator(func):
+def log_exceptions(logger: logging.Logger) -> Callable:
+    def decorator(func: Callable):
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs) -> Callable:
             try:
                 return func(*args, **kwargs)
             except Exception as e:
@@ -23,9 +24,9 @@ def log_exceptions(logger):
         return wrapper
     return decorator
 
-def set_log_filename(filename: str="medic.log", add_date: bool=True, level=logging.DEBUG):
-    """Sets th elog filename with an optional date suffix.
 
+def set_log_filename(filename: str="medic.log", add_date: bool=True, level=logging.DEBUG) -> logging.Logger:
+    """Sets the log filename with an optional date suffix.
     Args:
         filename (str, optional): The base filename for the log. Defaults to "medic.log".
         add_date (bool, optional): If True, adds the current date to the filename. Defaults to True.
@@ -33,32 +34,69 @@ def set_log_filename(filename: str="medic.log", add_date: bool=True, level=loggi
     global log_filename
 
     if add_date:
-        date_str = datetime.now().strftime("%Y-%m-%d")
+        date_suffix = datetime.now().strftime("%Y-%m-%d")
+        
         if filename.lower().endswith(".log"):
-            log_filename = filename.replace(".log", f"_{date_str}.log")
+            log_filename = filename.replace(".log", f"_{date_suffix}.log")
         else:
-            log_filename = f"{filename}_{date_str}.log"
+            log_filename = f"{filename}_{date_suffix}.log"
     else:
         log_filename = filename
         
-    # Ensure the Logs directory exists
+    # Log file in ~/.medic/logs directory
     logs_directory = get_logs_directory()
-    log_filename = os.path.join(logs_directory, log_filename)
-    
-     # Add "-----------------------" in the log file to start the current session
+    log_filename = os.path.join(logs_directory, log_filename)      
+
+    # Add "-----------------------" in the log file to start the current session
     with open(log_filename, 'a') as log_file:
         if threading.current_thread() is threading.main_thread():
             log_file.write(f"\n{'----- New start (' + threading.current_thread().name + ') ':-<80}\n")
         else:
             log_file.write(f"      New thread ({threading.current_thread().name})\n")
+
+    # Root logger
+    root_logger = logging.getLogger()
+    root_logger.handlers = []  # Clear existing handlers
+    root_logger.setLevel(logging.WARNING)  # Only show WARNING level and above
+    root_logger.propagate = False
+
+    # Terminal (console) handler
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.WARNING)
+
+    # File handler
+    file_handler = logging.FileHandler(log_filename)
+    file_handler.setLevel(logging.DEBUG)  # Ensure DEBUG level for detailed logs
+
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+
+    root_logger.addHandler(console_handler)
+    root_logger.addHandler(file_handler)
+
+    # Ensure colored logs for terminal
+    coloredlogs.install(level=logging.WARNING, logger=root_logger, stream=console_handler.stream)
+
+    # werkzeug logs
+    werkzeug_logger = logging.getLogger('werkzeug')
+    werkzeug_logger.setLevel(logging.INFO)  # Log level to INFO for console
     
-    return init_logger(level=level)
-        
-def init_logger(module_name: str=None, level=logging.DEBUG):
+    # Add logs for werkzeug in terminal
+    werkzeug_console_handler = logging.StreamHandler()
+    werkzeug_console_handler.setLevel(logging.INFO)
+    werkzeug_console_handler.setFormatter(formatter)
+    werkzeug_logger.addHandler(werkzeug_console_handler)
+    werkzeug_logger.propagate = False
+
+    return  init_logger()
+
+
+def init_logger(module_name: str|None=None, level=logging.DEBUG) -> logging.Logger:
     """"medic.log"
 
     Args:
-        module_name (str, optional): The name of the module for the logger. Defaults to "".
+        module_name (str | None, optional): The name of the module for the logger. Defaults to None.
         level (int, optional): The logging level. Defaults to logging.DEBUG.
             Levels (from high to low): logging.CRITICAL logging.ERROR
                                        logging.WARNING logging.INFO logging.DEBUG
@@ -66,51 +104,57 @@ def init_logger(module_name: str=None, level=logging.DEBUG):
     Returns:
         logging.Logger: The configured logger instance
     """
+    
     global log_filename
-    if log_filename is None:
-        raise ValueError("The log filename must be initialized app.")
+                   
+    def get_module_name() -> str | None:
+        cur_frame = inspect.currentframe()
+        if not cur_frame:
+            return None
+        frame = cur_frame.f_back
+        if not frame:
+            return None
+        module = inspect.getmodule(frame)
+        if not module:
+            return None
+        return module.__name__
 
-    # Get the calling module's name
     if module_name is None:
-        frame = inspect.currentframe().f_back
-        module_name = inspect.getmodule(frame).__name__
-
-    # Create a logger
+        module_name = get_module_name() or "medic"
+            
     logger = logging.getLogger(module_name)
     logger.setLevel(level)
-
-     # Clear existing handlers to ensure the logger is re-configured each time
-    logger.handlers = []
+    logger.propagate = False
     
-    # Create a handler to write logs to a file
-    file_handler = logging.FileHandler(log_filename)
-    file_handler.setLevel(logging.DEBUG)
+    if not logger.handlers:
+        # Terminal (console) handler
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(level)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levellevel)s - %(message)s')
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)        
+        
+        # File handler
+        if log_filename is not None:
+            file_handler = logging.FileHandler(log_filename)
+            file_handler.setLevel(level)
+            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            file_handler.setFormatter(formatter)
+            
+            logger.addHandler(file_handler)
 
-    # Create a handler to write logs to the console
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
-    
-    # Configure colored logs for the console
-    coloredlogs.install(level=level, logger=logger, stream=console_handler.stream)
-    # coloredlogs.install(fmt='%(asctime)s,%(msecs)03d %(hostname)s %(name)s[%(process)d] %(levelname)s %(message)s')
+        # Ensure colored logs for terminal
+        coloredlogs.install(level=level, logger=logger, stream=console_handler.stream)
 
-    # Create a formatter and add it to the handlers
-    file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(file_formatter)
-
-    # Add the handlers to the logger
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
-    
     return logger
 
-def get_logs_directory():
+
+def get_logs_directory() -> str:
     """
-    Returns the path to the 'Logs' directory within the 'Documents' directory if it exists,
-    otherwise within the user's home directory.
+    Returns the path to '~/.medic/logs' directory.
     """
-    home_directory = os.path.expanduser("~")
-    logs_directory = os.path.join(home_directory, ".medic", "logs")
+    home_directory: str = os.path.expanduser("~")
+    logs_directory: str = os.path.join(home_directory, ".medic", "logs")
     
     if not os.path.exists(logs_directory):
         os.makedirs(logs_directory)
@@ -119,4 +163,3 @@ def get_logs_directory():
         logs_directory = os.getcwd()
     
     return logs_directory
-
