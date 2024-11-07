@@ -18,7 +18,7 @@ from sklearn.metrics import (
     balanced_accuracy_score,
 )
 
-from ..service import Utils
+from ..service import Utils, init_logger
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
@@ -34,6 +34,7 @@ class Results:
     """
 
     def __init__(self, splits_number: int):
+        self._logger = init_logger()
         self.splits_number = [str(s) for s in range(splits_number)]
         self.results = {s: {} for s in self.splits_number}
         self.f_names = []
@@ -106,6 +107,7 @@ class Results:
         self.results[split_number]["train_roc_auc"] = roc_auc_score(
             binary_y_train_true, binary_y_train_pred
         )
+        self._logger.debug(f"self.results[{split_number=}][\"test_roc_auc\"] = ({binary_y_test_true=}, {binary_y_test_pred=})")
         self.results[split_number]["test_roc_auc"] = roc_auc_score(
             binary_y_test_true, binary_y_test_pred
         )

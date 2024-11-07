@@ -125,10 +125,11 @@ class MetaboExperiment:
         """
         self._train_test_proportion = train_test_proportion
 
-    def create_splits(self):
+    def create_splits(self, test_split_seed: int|None=None) -> None:
         """
         Check that Experiment parameters are set and then : create an instance of SplitGroup for each Experimental Design
-        (The init of SplitGroup triggers the _compute_splits function)
+        (The init of SplitGroup triggers the _compute_splits function).
+        If test_split_seed is provided, then only this test split seed is computed.
         """
         if self._number_of_splits is None:
             raise ValueError("Number of splits not set")
@@ -141,7 +142,7 @@ class MetaboExperiment:
         for _, experimental_design in self.experimental_designs.items():
             experimental_design.set_split_parameter_and_compute_splits(self._train_test_proportion,
                                                                        self._number_of_splits, self._metadata,
-                                                                       self._pairing_group_column)
+                                                                       self._pairing_group_column, test_split_seed)
 
     def get_pairing_group_column(self) -> str:
         """
