@@ -76,7 +76,7 @@ LEARN_CONFIG_RS = {
         "function": RandomScmClassifier,
         "ParamGrid": {
             "p": np.arange(0.01, 10, step=0.1),
-            "n_estimators": np.arange(5, 200, step=10, dtype=int)
+            "n_estimators": np.arange(5, 200, step=10, dtype=int),
             "model_type": ["conjunction", "disjunction"],
         },
         "importance_attribute": "feature_importances_",
