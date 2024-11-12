@@ -1,5 +1,3 @@
-from contextlib import contextmanager
-from multiprocessing import Pool, cpu_count
 from typing import Generator, Tuple, List, Dict, Union
 
 import sklearn
@@ -352,36 +350,36 @@ class MetaboExperiment:
         self.run_learning(params)
         self._data_matrix.unload_data()
 
-    @contextmanager
-    def __create_pool(self, num_workers: int) -> Generator[Pool, None, None]:
-        pool = Pool(num_workers)
-        try:
-            yield pool
-        finally:
-            pool.close()
-            pool.join()
 
     def run_learning(self, params: List[tuple]):
 
         # launch the run_on_model function with the params
-        if self._activate_multithreading:
-            self._logger.info(f"-> Multithreading activated ({len(params)} models to run) ...")
+        result_params = [self.run_on_model(*param) for param in params]
 
-            number_of_workers = cpu_count() - 1
-            with self.__create_pool(number_of_workers) as pool:
-                result_params = pool.starmap(self.run_on_model, params)
-        else:
-            result_params = [self.run_on_model(*param) for param in params]
-
-        for experimental_design_name, model_name, best_model, scaled_data, importance_attribute, classes, y_train, \
-                y_train_pred, y_test, y_test_pred, split_index, X_train, X_test in result_params:
+        for result_param in result_params:
+            (
+                experimental_design_name, 
+                model_name, 
+                best_model, 
+                scaled_data, 
+                importance_attribute, 
+                classes, 
+                y_train,
+                y_train_pred,
+                y_test,
+                y_test_pred,
+                split_index,
+                X_train,
+                X_test
+            ) = result_param
             results = self.experimental_designs[experimental_design_name].get_results()
             results[model_name].set_feature_names(X_train) # called multiple times but it's ok
             results[model_name].design_name = experimental_design_name
-            results[model_name].add_results_from_one_algo_on_one_split(best_model, scaled_data,
-                                                                       importance_attribute, classes,
-                                                                       y_train, y_train_pred, y_test, y_test_pred,
-                                                                       split_index, X_train.index, X_test.index)
+            results[model_name].add_results_from_one_algo_on_one_split(
+                best_model, scaled_data, importance_attribute, 
+                classes, y_train, y_train_pred, y_test, y_test_pred,
+                split_index, X_train.index, X_test.index
+            )
 
         for experimental_design_name, experimental_design in self.experimental_designs.items():
             results = experimental_design.get_results()
@@ -399,13 +397,16 @@ class MetaboExperiment:
         self._logger.info(f"-> Model : {model_name}")
 
         metabo_model = self.get_model_from_name(model_name)
+
+        # When set n_processes is set to -1, all processors are used.
+        n_processes = -1 if self._activate_multithreading else DEFAULT_NJOB
         best_model = metabo_model.train(
             self._cv_folds,
             x_train,
             split[y_TRAIN_INDEX],
             cv_algorithm_constructor,
             cv_algorithm_config,
-            DEFAULT_NJOB,
+            n_processes,
             seed=split_index
         )
         y_train_pred = best_model.predict(x_train)
