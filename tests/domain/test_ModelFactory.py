@@ -30,8 +30,6 @@ def test_supported_models():
     # Iterate over all possible input values and validate the model
     for name, options in SUPPORTED_MODEL.items():
         params = list(itertools.product(*options["ParamGrid"].values()))
-        if name == "RandomForest":
-            continue
         for param in params:
             # Instantiate a classifier, it could break here
             clf = options["function"](**dict(zip(options["ParamGrid"].keys(), param)))
