@@ -1,12 +1,17 @@
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
-CV_ALGORITHMS = {"GridSearchCV":
-    {
+CV_ALGORITHMS = {
+    "GridSearchCV": {
         "constructor": GridSearchCV,
         "params": []
-    }, "RandomizedSearchCV":
-    {
+    }, 
+    "RandomizedSearchCV": {
         "constructor": RandomizedSearchCV,
-        "params": [{"name": "n_iter", "value": 10, "type": "int", "constant": False}]
+        "params": [{
+            "name": "n_iter", 
+            "value": 10, 
+            "type": "int", 
+            "constant": False
+        }]
     }
 }
