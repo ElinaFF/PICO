@@ -450,7 +450,7 @@ class MetaboExperiment:
         Set the type of Cross-Validation (cv) for the experiment
         """
         if cv_type not in self._cv_algorithms:
-            raise ValueError("CV type '" + cv_type + "' is not supported. Choices are : "+self._cv_algorithms)
+            raise ValueError(f"CV type '{cv_type}' is not supported. Choices are : {list(self._cv_algorithms.keys())}")
 
         if cv_type == "GridSearchCV":
             self._supported_models = self._model_factory.create_supported_models("GS")
