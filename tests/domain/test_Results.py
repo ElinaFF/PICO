@@ -15,7 +15,7 @@ def input_results() -> Results:
     return Results(NUMBER_OF_SPLITS)
 
 
-def test_format_name_and_associated_values(input_results):
+def test_givenFeatures_whenFormatNameAndAssociatedValues_thenValid(input_results):
     # There can be 14k features times 25 splits
     # The values are 0 and over
     # Let's simulate random features name
