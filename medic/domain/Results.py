@@ -176,27 +176,21 @@ class Results:
 
     def format_name_and_associated_values(self, names, values):
         """
-        from a Counter dict, modify
+        Aggregate statistics for used features.
         """
-        count = Counter(names)
-        for n in count.keys():
-            count[n] = [0]  # original value should equal number of splits, replace by list
-            liste_val = []
-            for idx, j in enumerate(names):
-                if n == j and values[idx] > 0:
-                    count[n][0] += 1  # update value of count by the number of times the feature is used
-                    liste_val.append(values[idx])  # append only value of importance if feature is used (>0)
-            if liste_val:
-                # mean and std only on values of feature > 0 (so only on times the feature was used)
-                mean_val = np.mean(liste_val)
-                std = np.std(liste_val)
-                count[n].append(mean_val)
-                count[n].append(std)
-            else:
-                # if the feature was never used, 0 as mean and std
-                count[n].append(0)
-                count[n].append(0)
-        return count
+        df = pd.DataFrame({"name": names, "value": values})
+        # Replace 0 by Nans so we dont count them in the statistics
+        df = df.replace(0, value=np.nan)
+        df = df.groupby(by="name").agg(['count', 'mean', 'std']).reset_index()
+
+        # Replace Nans back to zeros
+        df = df.fillna(0)
+
+        # This will get a dictionnary where keys are names and values is a list of [count, mean, std]
+        aggregated_statistics = df.set_index("name").T.to_dict("list")
+
+        return aggregated_statistics
+
 
     def _produce_conf_matrix(self, y_test_true: list, y_test_pred: list):
         labels = list(set(y_test_true))
