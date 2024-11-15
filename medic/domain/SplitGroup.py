@@ -138,15 +138,11 @@ class SplitGroup:
             y_test = list(y_test)
             
             if not self._validate_split(y_train, y_test):
-                self._logger.info(f"_compute_split step #4 aborted for split #{split_index}. This split has been removed from the list of splits.")
-                continue # Remove this invalid split (just don't add it to the list of splits)
+                raise RuntimeError(f"_compute_split step #4 aborted for the invalid split #{split_index}.")
             
             self._logger.info(f"_compute_split step #4 done")
             self._splits.append([X_train, X_test, y_train, y_test])
             
-        if len(self._splits) == 0:
-            raise RuntimeError("No valid split has been generated. Abborting...")
-        
         self._number_of_split = len(self._splits) # Update the number of splits if some have been removed
         
         self._logger.info("end _compute_split step")
