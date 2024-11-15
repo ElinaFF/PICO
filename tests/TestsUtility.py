@@ -89,6 +89,7 @@ def _get_splits(
             classes,
             test_size=train_test_proportion,
             random_state=split_index,
+            stratify=classes
         )
         splits.append([X_train, X_test, y_train, y_test])
     return splits
