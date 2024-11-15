@@ -372,14 +372,18 @@ class MetaboController:
         self._metabo_experiment.set_balance_correction_for_experiment(experimental_design_name, balance_correction)
 
     def display_splits(self) -> None:
-        from collections import Counter
+        """
+        Display the classes repartition for each split of each experimental design.
 
-        for key,experimental_design in self.get_experimental_designs().items():
-            self._logger.debug(f"Experimental design '{key}':")
-            for split_index, split_group in experimental_design.all_splits():
-                self._logger.debug(f"Split index: {split_index}:")
-                train_classes: list = split_group[2]
-                test_classes: list = split_group[3]
-                
-                self._logger.debug(f"Train classes: {Counter(train_classes)}\n{train_classes}")
-                self._logger.debug(f"Test classes: {Counter(test_classes)}\n{test_classes}")
+        This can be used for debugging purposes from the automate.py script for example.
+
+        The output will be something like:
+            Experimental design 'first_design' details:
+                Data set repartition: 'B': 96 (84%) vs 'C': 18 (16%) (Balance corr=34%).
+                Classes 'B' vs 'C' repartition in splits (All | Train | Test):
+                Split #00: All=[34 (65%) vs 18 (35%)] | Train=[14 (52%) vs 13 (48%)] | Test=[20 (80%) vs 5 (20%)]
+                Split #01: All=[35 (66%) vs 18 (34%)] | Train=[15 (52%) vs 14 (48%)] | Test=[20 (83%) vs 4 (17%)]
+                ...
+        """
+        self._metabo_experiment.display_splits()
+ 

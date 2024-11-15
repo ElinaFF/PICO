@@ -43,17 +43,12 @@ class MetaboModel:
                 n_jobs=number_of_processes,
             )
         
-        spacer: str = f"\n{'-'*30}\n"
-        header: str = f"\n***** train.search.fit {cv_algorithms = }{spacer}"
-        message: str = f"{header}cv{folds:d} folds | X_train (2 first rows / {len(X_train)}):\n{X_train.head(2)}{spacer}{y_train = }\nLength = {len(y_train)}{spacer}"
         try:
-            self._logger.debug(f"{header} {cv_algorithms = } launched ...")
             search.fit(X_train, y_train)
         except Exception as e:
+            message: str = f"{cv_algorithms = } cv{folds:d} folds | X_train size {len(X_train)}) y_train length = {len(y_train)}"
             self._logger.error(message)
             raise
-        else:
-            self._logger.debug(message + "Completed")
         
         return search.best_estimator_
 

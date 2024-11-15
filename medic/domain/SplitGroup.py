@@ -83,7 +83,7 @@ class SplitGroup:
         for split_index in split_indexes:
             if pairing_column == "":
                 X_train, X_test, y_train, y_test = train_test_split(ids, labels, test_size=train_test_proportion,
-                                                                    random_state=split_index)
+                                                                    random_state=split_index, stratify=labels)
 
                 # 4- retrieve the paired samples corresponding to the one in train or test set
             else:
@@ -97,7 +97,8 @@ class SplitGroup:
                 # TODO : careful check if labels is in the right order with the data
                 X_train_temp, X_test_temp, y_train_temp, y_test_temp = train_test_split(df_entity.index, labels,
                                                                                         test_size=train_test_proportion,
-                                                                                        random_state=split_index)
+                                                                                        random_state=split_index,
+                                                                                        stratify=labels)
                 # retrieve the ids corresponding the to entities in train
                 X_train = []
                 for representative in X_train_temp:
@@ -195,9 +196,9 @@ class SplitGroup:
         if nb_test_classes < 2 or nb_train_classes < 2:
             error_msg: str = "At least 2 classes must be present in both train and test splits."
             if nb_test_classes < 2:
-                error_msg += f" Test set contains only the class '{y_test[0]}'."
+                error_msg += f" Test set contains only the class '{next(iter(set(y_test)))}'."
             if nb_train_classes < 2:
-                error_msg += f" Train set contains only the class '{y_train[0]}'."
+                error_msg += f" Train set contains only the class '{next(iter(set(y_train)))}'."
             
             self._logger.error(error_msg)
             return False

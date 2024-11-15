@@ -107,7 +107,9 @@ class Results:
         self.results[split_number]["train_roc_auc"] = roc_auc_score(
             binary_y_train_true, binary_y_train_pred
         )
-        self._logger.debug(f"self.results[{split_number=}][\"test_roc_auc\"] = ({binary_y_test_true=}, {binary_y_test_pred=})")
+        true_msg = " vs ".join([f"{id}: {cnt:02d}" for id, cnt in Counter(binary_y_train_true).items()])
+        pred_msg = " vs ".join([f"{id}: {cnt:02d}" for id, cnt in Counter(binary_y_test_pred).items()])
+        self._logger.debug(f"self.results[{split_number=}][\"test_roc_auc\"] bin y test = [true: ({true_msg}) | pred: ({pred_msg})]")
         self.results[split_number]["test_roc_auc"] = roc_auc_score(
             binary_y_test_true, binary_y_test_pred
         )

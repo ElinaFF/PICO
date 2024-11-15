@@ -366,8 +366,6 @@ class MetaboExperiment:
 
         # launch the run_on_model function with the params
         if self._activate_multithreading:
-            self._logger.info(f"-> Multithreading activated ({len(params)} models to run) ...")
-
             number_of_workers = cpu_count() - 1
             with self.__create_pool(number_of_workers) as pool:
                 result_params = pool.starmap(self.run_on_model, params)
@@ -634,3 +632,36 @@ class MetaboExperiment:
         if experimental_design_name not in self.experimental_designs:
             raise ValueError("Classification design name not found")
         self.experimental_designs[experimental_design_name].set_balance_correction(balance_correction)
+
+    def display_splits(self) -> None:
+        """
+        Display the classes repartition for each split of each experimental design.
+        See more détail in the MetaboController.display_splits() method description.
+        """
+        from collections import Counter
+
+        def display_classes_repartition(target_classes: list) -> str:
+            return ' vs '.join([f"{cnt} ({int(round(cnt*100 / len(target_classes))):02d}%)" for _, cnt in sorted(Counter(target_classes).items())])
+
+        for key,experimental_design in self.experimental_designs.items():
+            balance_corr: int = experimental_design.get_balance_correction()
+            experimental_classes_repartition: dict = self._metadata.get_classes_repartition_based_on_design(experimental_design.get_classes_design())
+            total_cnt: int = sum(value for value in experimental_classes_repartition.values())
+
+            debug_lines = []
+            for split_index, split_group in experimental_design.all_splits():
+                if split_index == 0:
+                    class_set = sorted(set(split_group[2]))
+                    debug_lines.append(f"Experimental design '{key}' details:")
+                    total_class_repartition: str = " vs ".join([f"'{cl}': {cnt:02d} ({int(round(cnt*100 / total_cnt)):02d}%)"
+                                                                for cl, cnt in sorted(experimental_classes_repartition.items())])
+                    debug_lines.append(f"Data set repartition: {total_class_repartition} (Balance corr={balance_corr}%).")
+                    debug_lines.append(f"Classes '{class_set[0]}' vs '{class_set[1]}' repartition in splits (All | Train | Test):")
+
+                all_cls_cnt: str = display_classes_repartition(split_group[2] + split_group[3])
+                train_cls_cnt: str = display_classes_repartition(split_group[2])
+                test_cls_cnt: str = display_classes_repartition(split_group[3])
+                debug_lines.append(f"Split #{split_index:02d}: All=[{all_cls_cnt}] | Train=[{train_cls_cnt}] | Test=[{test_cls_cnt}]")
+
+            debug_message = "\n\t".join(debug_lines)
+            self._logger.debug(debug_message)
