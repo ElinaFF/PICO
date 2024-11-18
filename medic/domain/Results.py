@@ -20,6 +20,7 @@ from sklearn.metrics import (
 
 from ..service import Utils
 from ..conf import parameters as cfg
+from ..service import Utils, init_logger
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
@@ -35,6 +36,7 @@ class Results:
     """
 
     def __init__(self, splits_number: int):
+        self._logger = init_logger()
         self.splits_number = [str(s) for s in range(splits_number)]
         self.results = {s: {} for s in self.splits_number}
         self.f_names = []

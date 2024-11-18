@@ -244,12 +244,21 @@ class MetaboController:
         """
         return self._metabo_experiment.get_train_test_proportion()
 
-    def create_splits(self):
+    def create_splits(self) -> None:
         """
         Check that Experiment parameters are set and then : create an instance of SplitGroup for each Experimental Design
         (The init of SplitGroup triggers the _compute_splits function)
+        If test_split_seed is provided, then only this test split seed is computed.
         """
         self._metabo_experiment.create_splits()
+
+    def create_test_split_from_seed(self, test_split_seed: int) -> None:
+        """
+        Check that Experiment parameters are set and then : create an instance of SplitGroup
+        having one test split from provided seed for each Experimental Design
+        (The init of SplitGroup triggers the _compute_splits function)
+        """
+        self._metabo_experiment.create_splits(test_split_seed)
 
     def get_selected_models(self) -> List[str]:
         """
@@ -361,3 +370,20 @@ class MetaboController:
 
     def set_balance_correction_for_experiment(self, experimental_design_name: str, balance_correction: int) -> None:
         self._metabo_experiment.set_balance_correction_for_experiment(experimental_design_name, balance_correction)
+
+    def display_splits(self) -> None:
+        """
+        Display the classes repartition for each split of each experimental design.
+
+        This can be used for debugging purposes from the automate.py script for example.
+
+        The output will be something like:
+            Experimental design 'first_design' details:
+                Data set repartition: 'B': 96 (84%) vs 'C': 18 (16%) (Balance corr=34%).
+                Classes 'B' vs 'C' repartition in splits (All | Train | Test):
+                Split #00: All=[34 (65%) vs 18 (35%)] | Train=[14 (52%) vs 13 (48%)] | Test=[20 (80%) vs 5 (20%)]
+                Split #01: All=[35 (66%) vs 18 (34%)] | Train=[15 (52%) vs 14 (48%)] | Test=[20 (83%) vs 4 (17%)]
+                ...
+        """
+        self._metabo_experiment.display_splits()
+ 

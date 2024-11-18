@@ -123,10 +123,11 @@ class MetaboExperiment:
         """
         self._train_test_proportion = train_test_proportion
 
-    def create_splits(self):
+    def create_splits(self, test_split_seed: int|None=None) -> None:
         """
         Check that Experiment parameters are set and then : create an instance of SplitGroup for each Experimental Design
-        (The init of SplitGroup triggers the _compute_splits function)
+        (The init of SplitGroup triggers the _compute_splits function).
+        If test_split_seed is provided, then only this test split seed is computed.
         """
         if self._number_of_splits is None:
             raise ValueError("Number of splits not set")
@@ -139,7 +140,7 @@ class MetaboExperiment:
         for _, experimental_design in self.experimental_designs.items():
             experimental_design.set_split_parameter_and_compute_splits(self._train_test_proportion,
                                                                        self._number_of_splits, self._metadata,
-                                                                       self._pairing_group_column)
+                                                                       self._pairing_group_column, test_split_seed)
 
     def get_pairing_group_column(self) -> str:
         """
@@ -634,3 +635,36 @@ class MetaboExperiment:
         if experimental_design_name not in self.experimental_designs:
             raise ValueError("Classification design name not found")
         self.experimental_designs[experimental_design_name].set_balance_correction(balance_correction)
+
+    def display_splits(self) -> None:
+        """
+        Display the classes repartition for each split of each experimental design.
+        See more détail in the MetaboController.display_splits() method description.
+        """
+        from collections import Counter
+
+        def display_classes_repartition(target_classes: list) -> str:
+            return ' vs '.join([f"{cnt} ({int(round(cnt*100 / len(target_classes))):02d}%)" for _, cnt in sorted(Counter(target_classes).items())])
+
+        for key,experimental_design in self.experimental_designs.items():
+            balance_corr: int = experimental_design.get_balance_correction()
+            experimental_classes_repartition: dict = self._metadata.get_classes_repartition_based_on_design(experimental_design.get_classes_design())
+            total_cnt: int = sum(value for value in experimental_classes_repartition.values())
+
+            debug_lines = []
+            for split_index, split_group in experimental_design.all_splits():
+                if split_index == 0:
+                    class_set = sorted(set(split_group[2]))
+                    debug_lines.append(f"Experimental design '{key}' details:")
+                    total_class_repartition: str = " vs ".join([f"'{cl}': {cnt:02d} ({int(round(cnt*100 / total_cnt)):02d}%)"
+                                                                for cl, cnt in sorted(experimental_classes_repartition.items())])
+                    debug_lines.append(f"Data set repartition: {total_class_repartition} (Balance corr={balance_corr}%).")
+                    debug_lines.append(f"Classes '{class_set[0]}' vs '{class_set[1]}' repartition in splits (All | Train | Test):")
+
+                all_cls_cnt: str = display_classes_repartition(split_group[2] + split_group[3])
+                train_cls_cnt: str = display_classes_repartition(split_group[2])
+                test_cls_cnt: str = display_classes_repartition(split_group[3])
+                debug_lines.append(f"Split #{split_index:02d}: All=[{all_cls_cnt}] | Train=[{train_cls_cnt}] | Test=[{test_cls_cnt}]")
+
+            debug_message = "\n\t".join(debug_lines)
+            self._logger.debug(debug_message)
