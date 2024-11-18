@@ -4,6 +4,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from dash import html
 
+from ..conf import parameters as cfg
+
 
 class Plots:
     def __init__(self, colors: str):
@@ -306,6 +308,11 @@ class Plots:
         """
         df_dup = pd.DataFrame(columns=["features_name", "intensity", "targets"])
         df = features_data
+
+        if df.shape[1] > cfg.max_used_features_to_show:
+            fig = generate_empty_figure("Features used is to large to be shown.")
+            return fig
+
         for c in df.columns:
             if c != "targets":
                 newdf = pd.DataFrame({
@@ -514,3 +521,25 @@ class Plots:
             dash_parameters.append(formatEdge(pair))
 
         return dash_parameters
+
+
+
+def generate_empty_figure(text):
+    # Create an empty figure
+    fig = go.Figure()
+
+    # Add annotation
+    fig.add_annotation(
+        text=text,
+        xref="paper", yref="paper",
+        x=0.5, y=0.5, showarrow=False,
+        font=dict(size=20)
+    )
+
+    # Update layout to remove axes and grid
+    fig.update_layout(
+        xaxis=dict(showgrid=False, zeroline=False, visible=False),
+        yaxis=dict(showgrid=False, zeroline=False, visible=False)
+    )
+
+    return fig
