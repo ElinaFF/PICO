@@ -19,6 +19,8 @@ from sklearn.metrics import (
 )
 
 from ..service import Utils
+from ..conf import parameters as cfg
+from ..service import Utils, init_logger
 
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
@@ -34,6 +36,7 @@ class Results:
     """
 
     def __init__(self, splits_number: int):
+        self._logger = init_logger()
         self.splits_number = [str(s) for s in range(splits_number)]
         self.results = {s: {} for s in self.splits_number}
         self.f_names = []
@@ -176,27 +179,21 @@ class Results:
 
     def format_name_and_associated_values(self, names, values):
         """
-        from a Counter dict, modify
+        Aggregate statistics for used features.
         """
-        count = Counter(names)
-        for n in count.keys():
-            count[n] = [0]  # original value should equal number of splits, replace by list
-            liste_val = []
-            for idx, j in enumerate(names):
-                if n == j and values[idx] > 0:
-                    count[n][0] += 1  # update value of count by the number of times the feature is used
-                    liste_val.append(values[idx])  # append only value of importance if feature is used (>0)
-            if liste_val:
-                # mean and std only on values of feature > 0 (so only on times the feature was used)
-                mean_val = np.mean(liste_val)
-                std = np.std(liste_val)
-                count[n].append(mean_val)
-                count[n].append(std)
-            else:
-                # if the feature was never used, 0 as mean and std
-                count[n].append(0)
-                count[n].append(0)
-        return count
+        df = pd.DataFrame({"name": names, "value": values})
+        # Replace 0 by Nans so we dont count them in the statistics
+        df = df.replace(0, value=np.nan)
+        df = df.groupby(by="name").agg(['count', 'mean', 'std']).reset_index()
+
+        # Replace Nans back to zeros
+        df = df.fillna(0)
+
+        # This will get a dictionnary where keys are names and values is a list of [count, mean, std]
+        aggregated_statistics = df.set_index("name").T.to_dict("list")
+
+        return aggregated_statistics
+
 
     def _produce_conf_matrix(self, y_test_true: list, y_test_pred: list):
         labels = list(set(y_test_true))
@@ -205,9 +202,9 @@ class Results:
         )
 
     def _produce_UMAP(self, X: pd.DataFrame, features_df: pd.DataFrame, n_components: int = 2):
-        nbr_feat = [5, 10, 40, 100]
+        features = cfg.features
         umaps = []
-        for nbr in nbr_feat:
+        for nbr in features:
             selected_feat = features_df["features"][:nbr]
             selected_x = X.loc[:, selected_feat]
             selected_x = selected_x.to_numpy()
@@ -230,7 +227,7 @@ class Results:
         return umaps
 
     def _produce_PCA(self, X: pd.DataFrame, features_df: pd.DataFrame, n_components: int = 2):
-        nbr_feat = [5, 10, 40, 100]
+        nbr_feat = cfg.features
         pcas = []
         labels = []
 
@@ -459,7 +456,8 @@ class Results:
         """
         number_of_used_features = len(feature_df[feature_df["importance_usage"] > 0])
         strip_charts = []
-        for ind in [5, 10, 40, 100, number_of_used_features]:
+        n_features = cfg.features + [number_of_used_features]
+        for ind in n_features:
             important_features = list(feature_df["features"])[:ind]
             df = data.loc[:, important_features]
             df["targets"] = self.results["classes"]

@@ -1,5 +1,3 @@
-from contextlib import contextmanager
-from multiprocessing import Pool, cpu_count
 from typing import Generator, Tuple, List, Dict, Union
 
 import sklearn
@@ -125,10 +123,11 @@ class MetaboExperiment:
         """
         self._train_test_proportion = train_test_proportion
 
-    def create_splits(self):
+    def create_splits(self, test_split_seed: int|None=None) -> None:
         """
         Check that Experiment parameters are set and then : create an instance of SplitGroup for each Experimental Design
-        (The init of SplitGroup triggers the _compute_splits function)
+        (The init of SplitGroup triggers the _compute_splits function).
+        If test_split_seed is provided, then only this test split seed is computed.
         """
         if self._number_of_splits is None:
             raise ValueError("Number of splits not set")
@@ -141,7 +140,7 @@ class MetaboExperiment:
         for _, experimental_design in self.experimental_designs.items():
             experimental_design.set_split_parameter_and_compute_splits(self._train_test_proportion,
                                                                        self._number_of_splits, self._metadata,
-                                                                       self._pairing_group_column)
+                                                                       self._pairing_group_column, test_split_seed)
 
     def get_pairing_group_column(self) -> str:
         """
@@ -352,36 +351,36 @@ class MetaboExperiment:
         self.run_learning(params)
         self._data_matrix.unload_data()
 
-    @contextmanager
-    def __create_pool(self, num_workers: int) -> Generator[Pool, None, None]:
-        pool = Pool(num_workers)
-        try:
-            yield pool
-        finally:
-            pool.close()
-            pool.join()
 
     def run_learning(self, params: List[tuple]):
 
         # launch the run_on_model function with the params
-        if self._activate_multithreading:
-            self._logger.info(f"-> Multithreading activated ({len(params)} models to run) ...")
+        result_params = [self.run_on_model(*param) for param in params]
 
-            number_of_workers = cpu_count() - 1
-            with self.__create_pool(number_of_workers) as pool:
-                result_params = pool.starmap(self.run_on_model, params)
-        else:
-            result_params = [self.run_on_model(*param) for param in params]
-
-        for experimental_design_name, model_name, best_model, scaled_data, importance_attribute, classes, y_train, \
-                y_train_pred, y_test, y_test_pred, split_index, X_train, X_test in result_params:
+        for result_param in result_params:
+            (
+                experimental_design_name, 
+                model_name, 
+                best_model, 
+                scaled_data, 
+                importance_attribute, 
+                classes, 
+                y_train,
+                y_train_pred,
+                y_test,
+                y_test_pred,
+                split_index,
+                X_train,
+                X_test
+            ) = result_param
             results = self.experimental_designs[experimental_design_name].get_results()
             results[model_name].set_feature_names(X_train) # called multiple times but it's ok
             results[model_name].design_name = experimental_design_name
-            results[model_name].add_results_from_one_algo_on_one_split(best_model, scaled_data,
-                                                                       importance_attribute, classes,
-                                                                       y_train, y_train_pred, y_test, y_test_pred,
-                                                                       split_index, X_train.index, X_test.index)
+            results[model_name].add_results_from_one_algo_on_one_split(
+                best_model, scaled_data, importance_attribute, 
+                classes, y_train, y_train_pred, y_test, y_test_pred,
+                split_index, X_train.index, X_test.index
+            )
 
         for experimental_design_name, experimental_design in self.experimental_designs.items():
             results = experimental_design.get_results()
@@ -399,13 +398,16 @@ class MetaboExperiment:
         self._logger.info(f"-> Model : {model_name}")
 
         metabo_model = self.get_model_from_name(model_name)
+
+        # When set n_processes is set to -1, all processors are used.
+        n_processes = -1 if self._activate_multithreading else DEFAULT_NJOB
         best_model = metabo_model.train(
             self._cv_folds,
             x_train,
             split[y_TRAIN_INDEX],
             cv_algorithm_constructor,
             cv_algorithm_config,
-            DEFAULT_NJOB,
+            n_processes,
             seed=split_index
         )
         y_train_pred = best_model.predict(x_train)
@@ -639,3 +641,36 @@ class MetaboExperiment:
         if experimental_design_name not in self.experimental_designs:
             raise ValueError("Classification design name not found")
         self.experimental_designs[experimental_design_name].set_balance_correction(balance_correction)
+
+    def display_splits(self) -> None:
+        """
+        Display the classes repartition for each split of each experimental design.
+        See more détail in the MetaboController.display_splits() method description.
+        """
+        from collections import Counter
+
+        def display_classes_repartition(target_classes: list) -> str:
+            return ' vs '.join([f"{cnt} ({int(round(cnt*100 / len(target_classes))):02d}%)" for _, cnt in sorted(Counter(target_classes).items())])
+
+        for key,experimental_design in self.experimental_designs.items():
+            balance_corr: int = experimental_design.get_balance_correction()
+            experimental_classes_repartition: dict = self._metadata.get_classes_repartition_based_on_design(experimental_design.get_classes_design())
+            total_cnt: int = sum(value for value in experimental_classes_repartition.values())
+
+            debug_lines = []
+            for split_index, split_group in experimental_design.all_splits():
+                if split_index == 0:
+                    class_set = sorted(set(split_group[2]))
+                    debug_lines.append(f"Experimental design '{key}' details:")
+                    total_class_repartition: str = " vs ".join([f"'{cl}': {cnt:02d} ({int(round(cnt*100 / total_cnt)):02d}%)"
+                                                                for cl, cnt in sorted(experimental_classes_repartition.items())])
+                    debug_lines.append(f"Data set repartition: {total_class_repartition} (Balance corr={balance_corr}%).")
+                    debug_lines.append(f"Classes '{class_set[0]}' vs '{class_set[1]}' repartition in splits (All | Train | Test):")
+
+                all_cls_cnt: str = display_classes_repartition(split_group[2] + split_group[3])
+                train_cls_cnt: str = display_classes_repartition(split_group[2])
+                test_cls_cnt: str = display_classes_repartition(split_group[3])
+                debug_lines.append(f"Split #{split_index:02d}: All=[{all_cls_cnt}] | Train=[{train_cls_cnt}] | Test=[{test_cls_cnt}]")
+
+            debug_message = "\n\t".join(debug_lines)
+            self._logger.debug(debug_message)

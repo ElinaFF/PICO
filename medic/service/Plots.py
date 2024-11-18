@@ -4,6 +4,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from dash import html
 
+from ..conf import parameters as cfg
+
 
 class Plots:
     def __init__(self, colors: str):
@@ -304,17 +306,21 @@ class Plots:
         (with a dropdown to select the metabolite, max of N? metabolite)
         And show the intensity of this metabolite/ this feature in each class (one box per class)
         """
-        df_dup = pd.DataFrame(columns=["features_name", "intensity", "targets"])
-        df = features_data
-        for c in df.columns:
+        if features_data.shape[1] > cfg.max_used_features_to_show:
+            fig = generate_empty_figure("Features used is to large to be shown.")
+            return fig
+
+        df_container = []
+        for c in features_data.columns:
             if c != "targets":
-                newdf = pd.DataFrame({
-                    "features_name": [c] * len(df["targets"]),
-                    "intensity": list(df[c]),
-                    "targets": list(df["targets"]),
+                df_container.append(pd.DataFrame({
+                    "features_name": [c] * len(features_data["targets"]),
+                    "intensity": list(features_data[c]),
+                    "targets": list(features_data["targets"]),
                     "sample_name": sample_name,
-                })
-                df_dup = pd.concat([df_dup, newdf], ignore_index=True)
+                }))
+        
+        df_aggregated = pd.concat(df_container, ignore_index=True)
 
         # ----> for violin plot
         # fig = go.Figure()
@@ -346,7 +352,7 @@ class Plots:
         # ---> end for violin plot
 
         fig = px.strip(
-            df_dup,
+            df_aggregated,
             x="features_name",
             y="intensity",
             color="targets",
@@ -514,3 +520,25 @@ class Plots:
             dash_parameters.append(formatEdge(pair))
 
         return dash_parameters
+
+
+
+def generate_empty_figure(text):
+    # Create an empty figure
+    fig = go.Figure()
+
+    # Add annotation
+    fig.add_annotation(
+        text=text,
+        xref="paper", yref="paper",
+        x=0.5, y=0.5, showarrow=False,
+        font=dict(size=20)
+    )
+
+    # Update layout to remove axes and grid
+    fig.update_layout(
+        xaxis=dict(showgrid=False, zeroline=False, visible=False),
+        yaxis=dict(showgrid=False, zeroline=False, visible=False)
+    )
+
+    return fig

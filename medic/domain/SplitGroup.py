@@ -11,27 +11,39 @@ import numpy as np
 class SplitGroup:
     def __init__(self, metadata: MetaData, selected_targets: List[str], train_test_proportion: float,
                  number_of_splits: int, classes_design: dict, pairing_column: str, balance_correction: int = 0,
-                 classes_repartition: Union[dict, None] = None):
+                 classes_repartition: Union[dict, None] = None,
+                 test_split_seed: Union[int,None] = None):
         self._logger = init_logger()
         self._metadata = metadata
         self._number_of_split = number_of_splits
         self._classes_design = classes_design
         self._splits = []
         self._compute_splits(train_test_proportion, number_of_splits, pairing_column, selected_targets,
-                             balance_correction, classes_repartition)
+                             balance_correction, classes_repartition, test_split_seed)
 
     def _compute_splits(self, train_test_proportion: float, number_of_splits: int, pairing_column: str,
                         selected_targets: List[str], balance_correction: int = 0,
-                        classes_repartition: Union[dict, None] = None):
+                        classes_repartition: Union[dict, None] = None,
+                        test_split_seed: Union[int,None] = None) -> None:
         """
         Create the desired number of split for the experiment. It includes/hadles the train-test repartition, the class
         balancing, the pairing of samples, the classes design, etc.
 
-        selected_targets : the selection of classes done with the interface or the automate.py (the names of the
-        selected classes/targets)
-        We consider selected_targets that has targets coming from multiple column, that they are separated
-        by "__" i.e. "ali__A", "med__B", etc.
+        Args:
+            train_test_proportion (float): Proportion of the dataset to include in the test split.
+            number_of_splits (int): total number of splits
+            pairing_column (str): Column to user of the pairing. When empty ("") not pairing is done.
+            selected_targets (List[str]): The selection of classes done with the interface or the automate.py (the names of the
+                selected classes/targets)
+                We consider selected_targets that has targets coming from multiple columns, that they are separated
+                by "__" i.e. "ali__A", "med__B", etc.
+            balance_correction (int, optional): balance correction to adjust proportion between classes.
+                Defaults to 0. (for no balancing)
+            classes_repartition (Union[dict, None], optional): . Defaults to None.
+            test_split_seed (int | None, optional): Split seed number. For test purpose only,
+                to be used from automate.py to test one specific split. Defaults to None.
         """
+        
         # TODO : this function would be a great place to implement class balancing / balance the dataset
 
         # 1 - filter out the samples with a target not included in the classification design
@@ -61,10 +73,17 @@ class SplitGroup:
 
         # 3- procede with the train-test division on the selected samples
         self._logger.info("start _compute_split step #3")
-        for split_index in range(number_of_splits):
+        
+        if test_split_seed is not None:
+            self._logger.debug(f"Testing split seed #{test_split_seed}")
+            split_indexes: list[int] = [test_split_seed] # Test only one split seed
+        else:
+            split_indexes = list(range(number_of_splits)) # All splits indexes
+            
+        for split_index in split_indexes:
             if pairing_column == "":
                 X_train, X_test, y_train, y_test = train_test_split(ids, labels, test_size=train_test_proportion,
-                                                                    random_state=split_index)
+                                                                    random_state=split_index, stratify=labels)
 
                 # 4- retrieve the paired samples corresponding to the one in train or test set
             else:
@@ -78,7 +97,8 @@ class SplitGroup:
                 # TODO : careful check if labels is in the right order with the data
                 X_train_temp, X_test_temp, y_train_temp, y_test_temp = train_test_split(df_entity.index, labels,
                                                                                         test_size=train_test_proportion,
-                                                                                        random_state=split_index)
+                                                                                        random_state=split_index,
+                                                                                        stratify=labels)
                 # retrieve the ids corresponding the to entities in train
                 X_train = []
                 for representative in X_train_temp:
@@ -117,8 +137,15 @@ class SplitGroup:
             X_test = list(X_test)
             y_test = list(y_test)
             
-            self._logger.info("_compute_split step #4 done")
+            if not self._validate_split(y_train, y_test):
+                raise RuntimeError(f"_compute_split step #4 aborted for the invalid split #{split_index}.")
+            
+            self._logger.info(f"_compute_split step #4 done")
             self._splits.append([X_train, X_test, y_train, y_test])
+            
+        self._number_of_split = len(self._splits) # Update the number of splits if some have been removed
+        
+        self._logger.info("end _compute_split step")
 
     def load_split_with_index(self, split_index: int) -> list:
         return self._splits[split_index]
@@ -156,3 +183,21 @@ class SplitGroup:
         Function just filters out the target/id that are not in the selected_targets list
         """
         return tuple(zip(*[(target, id) for target, id in zip(targets, samples_id) if target in selected_targets]))
+    
+    def _validate_split(self, y_train: list, y_test: list) -> bool:
+                    # Test and train validation: they must have at least 2 classes.
+        nb_test_classes: int = len(set(y_test))
+        nb_train_classes: int = len(set(y_train))
+        
+        if nb_test_classes < 2 or nb_train_classes < 2:
+            error_msg: str = "At least 2 classes must be present in both train and test splits."
+            if nb_test_classes < 2:
+                error_msg += f" Test set contains only the class '{next(iter(set(y_test)))}'."
+            if nb_train_classes < 2:
+                error_msg += f" Train set contains only the class '{next(iter(set(y_train)))}'."
+            
+            self._logger.error(error_msg)
+            return False
+
+        return True
+

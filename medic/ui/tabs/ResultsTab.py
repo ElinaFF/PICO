@@ -9,6 +9,8 @@ import dash_cytoscape as cyto
 from matplotlib import pyplot as plt
 from sklearn import tree
 
+from ...conf import parameters as cfg
+from . import utils
 from .MetaTab import MetaTab
 from ...domain import MetaboController
 from ...service import Plots, Utils, init_logger, log_exceptions
@@ -133,11 +135,9 @@ class ResultsTab(MetaTab):
                     dcc.Graph(id="PCA", config=CONFIG), type="dot", color="#13BD00"
                 ),
                 dcc.Slider(
-                    min=0,
-                    max=5,
                     step=None,
-                    value=0,
-                    marks={1: "5", 2: "10", 3: "40", 4: "100", 5: "All"},
+                    value=1,
+                    marks={**cfg.default_marks, **cfg.all_mark},
                     id="pca_slider",
                 ),
             ],
@@ -171,11 +171,9 @@ class ResultsTab(MetaTab):
                     color="#13BD00",
                 ),
                 dcc.Slider(
-                    min=0,
-                    max=5,
                     step=None,
                     value=1,
-                    marks={"1": "5", "2": "10", "3": "40", "4": "100", "5": "All"},
+                    marks={**cfg.default_marks, **cfg.all_mark},
                     id="umap_slider",
                 )
             ],
@@ -430,11 +428,9 @@ class ResultsTab(MetaTab):
                     color="#13BD00",
                 ),
                 dcc.Slider(
-                    min=0,
-                    max=3,
                     step=None,
-                    value=0,
-                    marks={0: "5", 1: "10", 2: "50", 3: "100"},
+                    value=1,
+                    marks=cfg.default_marks,
                     id="strip_chart_slider",
                 )
             ],
@@ -581,27 +577,40 @@ class ResultsTab(MetaTab):
         #         return dash.no_update
 
         @self.app.callback(
-            [Output("cooc_matrix_graph", "elements"),
-             Output("cooc_matrix_graph", "style"),
-             Output("cooc_matrix_graph_error", "children")],
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")]
+            [
+                Output("cooc_matrix_graph", "elements"),
+                Output("cooc_matrix_graph", "style"),
+                Output("cooc_matrix_graph_error", "children")
+            ],
+            [
+                Input("load_ML_results_button", "n_clicks")
+            ],
+            [
+                State("ml_dropdown", "value"), 
+                State("design_dropdown", "value")
+            ]
         )
         @log_exceptions(self._logger)
-        def show_cooc_matrix(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                counter, mean_importance, number_of_split, cardinality = self.r[design_name][algo].results[
-                    "coocurence_matrix"]
-                if counter is None:
-                    return dash.no_update, {'display': 'none'}, "Due to the high cardinality of the features, " \
-                                                                "the co-occurrence graph cannot be displayed. " \
-                                                                "The estimated cardinality is " + str(
-                        int(cardinality)) + \
-                                                                " and exceed the 1000 links limit."
-                parameters = self._plots.create_coocurence_graph(counter, mean_importance, number_of_split)
-                return parameters, {'display': 'block', "width": "100%", "height": "800px"}, ""
-            else:
-                return dash.no_update, dash.no_update, dash.no_update
+        def show_cooc_matrix(_, algo, design_name):
+            if algo == "None" or design_name == "None":
+                return [dash.no_update] * 3
+            
+            (
+                counter, 
+                mean_importance, 
+                number_of_split, 
+                cardinality
+            ) = self.r[design_name][algo].results["coocurence_matrix"]
+
+            if counter is None:
+                msg = "Due to the high cardinality of the features, " \
+                "the co-occurrence graph cannot be displayed. " \
+                "The estimated cardinality is " + str(int(cardinality)) + \
+                " and exceed the 1000 links limit."
+                return dash.no_update, {'display': 'none'}, msg
+                   
+            parameters = self._plots.create_coocurence_graph(counter, mean_importance, number_of_split)
+            return parameters, {'display': 'block', "width": "100%", "height": "800px"}, ""
 
         @self.app.callback(Output('cooc_matrix_graph', 'stylesheet'),
                            [Input('cooc_matrix_graph', 'selectedNodeData')])
@@ -618,193 +627,262 @@ class ResultsTab(MetaTab):
                 return updated_stylesheet
 
         @self.app.callback(
-            [Output("pca_slider", "marks"),
-             Output("umap_slider", "marks"),
-             Output("strip_chart_slider", "marks")],
-            Input("load_ML_results_button", "n_clicks"),
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")]
+            [
+                Output("pca_slider", "marks"),
+                Output("umap_slider", "marks"),
+                Output("strip_chart_slider", "marks"),
+                Output("pca_slider", "value"),
+                Output("umap_slider", "value"),
+                Output("strip_chart_slider", "value"),
+            ],
+            [
+                Input("load_ML_results_button", "n_clicks")
+            ],
+            [
+                State("ml_dropdown", "value"), State("design_dropdown", "value")
+            ]
         )
         @log_exceptions(self._logger)
-        def update_sliders_with_used(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                feature_df = self.r[design_name][algo].results["features_table"]
-                number_of_used_feature = len(feature_df[feature_df["times_used"] > 0])
-                marks = Utils.get_marks_with_custom_slider_value(custom_value=number_of_used_feature)
-                strip_chart_marks = Utils.get_stripchart_marks_with_custom_slider_value(
-                    custom_value=number_of_used_feature)
-                return marks, marks, strip_chart_marks
-            return dash.no_update, dash.no_update, dash.no_update
+        def update_sliders_with_used(_, algo, design_name):
+            """Update PCA, UMAP and Strip chart sliders marks and triggers each plots by updating there values"""
+            if algo == "None" or design_name == "None":
+                return [dash.no_update] * 6
+            
+            feature_df = self.r[design_name][algo].results["features_table"]
+            number_of_used_feature = len(feature_df[feature_df["times_used"] > 0])
+
+            marks_container = []
+            locations_container = []
+
+            marks, used_location = utils.update_marks(
+                custom_value=number_of_used_feature, 
+                add_all_value=True
+            )
+            pca_marks, umap_marks = marks, marks
+            pca_location, umap_location = used_location, used_location
+            marks_container.extend([pca_marks, umap_marks])
+            locations_container.extend([pca_location, umap_location])
+
+            strip_chart_marks, strip_location = utils.update_marks(
+                custom_value=number_of_used_feature, 
+                add_all_value=False
+            )
+            marks_container.append(strip_chart_marks)
+            locations_container.append(strip_location)
+
+            return (*marks_container, *locations_container)
+                    
 
         @self.app.callback(
-            [Output("PCA", "figure")],
-            [Input("load_ML_results_button", "n_clicks"),
-             Input("pca_slider", "value"),
-             Input("pca_dimensions", "value")],
-            [State("ml_dropdown", "value"),
-             State("design_dropdown", "value"),
-             State("pca_slider", "marks")],
+            [
+                Output("PCA", "figure")
+            ],
+            [
+                Input("pca_slider", "value"),
+                Input("pca_dimensions", "value")
+            ],
+            [
+                State("ml_dropdown", "value"),
+                State("design_dropdown", "value"),
+                State("pca_slider", "marks")
+            ],
+            prevent_initial_call=True
         )
         @log_exceptions(self._logger)
-        def show_pca(n_clicks, pca_value, dimensions, algo, design_name, marks):
+        def show_pca(pca_value, dimensions, algo, design_name, marks):
             """
             pca_value : represent the number of feature selected by the slider, but is given as indexes
             """
-            if n_clicks >= 1:
-                classes = self.r[design_name][algo].results["classes"]
-
-                index = Utils.get_index_from_marks(pca_value, marks)
-
-                if dimensions == "2d":
-                    data_list, labels_list = self.r[design_name][algo].results["pca_data"]
-                    return [self._plots.show_PCA(data_list[index], labels_list[index], classes, index, algo,
-                                                    self.r[design_name][algo].results["samples_id"])]
-                elif dimensions == "3d":
-                    data_list, labels_list = self.r[design_name][algo].results["3d_pca_data"]
-                    return [self._plots.show_3D_PCA(data_list[index], labels_list[index], classes, index, algo,
-                                                    self.r[design_name][algo].results["samples_id"])]
-                else:
-                    raise ValueError("The value of the radio button pca_dimensions is not supported by the result file "
-                                     "version.")
-
-            else:
+            if algo == "None" or design_name == "None":
                 return dash.no_update
 
+            classes = self.r[design_name][algo].results["classes"]
+
+            index = utils.get_index_from_marks(pca_value, marks)
+
+            if dimensions == "2d":
+                data_list, labels_list = self.r[design_name][algo].results["pca_data"]
+                fig = self._plots.show_PCA(
+                    data_list[index], labels_list[index], classes, index, algo,
+                    self.r[design_name][algo].results["samples_id"]
+                )
+            elif dimensions == "3d":
+                data_list, labels_list = self.r[design_name][algo].results["3d_pca_data"]
+                fig = self._plots.show_3D_PCA(
+                    data_list[index], labels_list[index], classes, index, algo,
+                    self.r[design_name][algo].results["samples_id"]
+                )
+            
+            return [fig]
+
         @self.app.callback(
-            Output("umap_overview", "figure"),
+            [
+                Output("umap_overview", "figure")
+            ],
             [
                 Input("load_ML_results_button", "n_clicks"),
                 Input("umap_slider", "value"),
                 Input("umap_dimensions", "value"),
             ],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value"), State("umap_slider", "marks")],
+            [
+                State("ml_dropdown", "value"), 
+                State("design_dropdown", "value"), 
+                State("umap_slider", "marks")
+            ],
         )
         @log_exceptions(self._logger)
-        def show_umap(n_clicks, slider_value, dimensions, algo, design_name, marks):
-            if n_clicks >= 1:
-                classes = self.r[design_name][algo].results["classes"]
-
-                index = Utils.get_index_from_marks(slider_value, marks)
-
-                if dimensions == "2d":
-                    df = self.r[design_name][algo].results["umap_data"]
-                    return self._plots.show_umap(
-                        df[index], classes, algo, index, self.r[design_name][algo].results["samples_id"]
-                    )
-                elif dimensions == "3d":
-                    df = self.r[design_name][algo].results["3d_umap_data"]
-                    return self._plots.show_3D_umap(
-                        df[index], classes, algo, index, self.r[design_name][algo].results["samples_id"]
-                    )
-                else:
-                    raise ValueError("The value of the radio button umap_dimensions is not supported by the result "
-                                     "file version.")
-
-            else:
+        def show_umap(_, slider_value, dimensions, algo, design_name, marks):
+            if algo == "None" or design_name == "None":
                 return dash.no_update
+            
+            classes = self.r[design_name][algo].results["classes"]
 
-        @self.app.callback(
-            Output("2d_overview", "figure"),
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
-        )
-        @log_exceptions(self._logger)
-        def show_2d(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                df = (
-                    self.r[design_name][algo].results["features_2d_and_3d"].iloc[:, :-1]
+            index = utils.get_index_from_marks(slider_value, marks)
+
+            if dimensions == "2d":
+                df = self.r[design_name][algo].results["umap_data"]
+                fig = self._plots.show_umap(
+                    df[index], classes, algo, index, 
+                    self.r[design_name][algo].results["samples_id"]
                 )
-                classes = self.r[design_name][algo].results["classes"]
-                return self._plots.show_2d(df, classes, self.r[design_name][algo].results["samples_id"])
-            else:
-                return dash.no_update
+            elif dimensions == "3d":
+                df = self.r[design_name][algo].results["3d_umap_data"]
+                fig = self._plots.show_3D_umap(
+                    df[index], classes, algo, index, 
+                    self.r[design_name][algo].results["samples_id"]
+                )
+            
+            return [fig]
+    
 
         @self.app.callback(
-            Output("3d_overview", "figure"),
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            [
+                Output("2d_overview", "figure")
+            ],
+            [
+                Input("load_ML_results_button", "n_clicks")
+            ],
+            [
+                State("ml_dropdown", "value"), 
+                State("design_dropdown", "value")
+            ],
         )
         @log_exceptions(self._logger)
-        def show_3d(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                df = self.r[design_name][algo].results["features_2d_and_3d"]
-                classes = self.r[design_name][algo].results["classes"]
-                return self._plots.show_3d(df, classes, self.r[design_name][algo].results["samples_id"])
-            else:
+        def show_2d(_, algo, design_name):
+            if algo == "None" or design_name == "None":
                 return dash.no_update
+            
+            df = (
+                self.r[design_name][algo].results["features_2d_and_3d"].iloc[:, :-1]
+            )
+            classes = self.r[design_name][algo].results["classes"]
+            fig = self._plots.show_2d(
+                df, classes, 
+                self.r[design_name][algo].results["samples_id"]
+            )
+            return [fig]
+            
 
         @self.app.callback(
-            Output("expe_table", "children"),
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            [
+                Output("3d_overview", "figure")
+            ],
+            [
+                Input("load_ML_results_button", "n_clicks")
+            ],
+            [
+                State("ml_dropdown", "value"), 
+                State("design_dropdown", "value")
+            ],
         )
         @log_exceptions(self._logger)
-        def get_experiment_statistics(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                df = self.r[design_name][algo].results["info_expe"]
-                table_body = self._plots.show_exp_info_all(df)
-                return dbc.Table(
-                    table_body, id="table_exp_info", borderless=True, hover=True
-                )  # dbc.Table.from_dataframe(df, borderless=True)
-            else:
+        def show_3d(_, algo, design_name):
+            if algo == "None" or design_name == "None":
                 return dash.no_update
+            
+            df = self.r[design_name][algo].results["features_2d_and_3d"]
+            classes = self.r[design_name][algo].results["classes"]
+            fig = self._plots.show_3d(
+                df, classes, 
+                self.r[design_name][algo].results["samples_id"]
+            )
+            return [fig]
 
         @self.app.callback(
-            Output("accuracy_overview", "figure"),
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            [
+                Output("expe_table", "children")
+            ],
+            [
+                Input("load_ML_results_button", "n_clicks")
+            ],
+            [
+                State("ml_dropdown", "value"), 
+                State("design_dropdown", "value")
+            ],
         )
         @log_exceptions(self._logger)
-        def generates_accuracyPlot_global(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                df = self.r[design_name][algo].results["accuracies_table"]
-                return self._plots.show_accuracy_all(df, algo)
-            else:
+        def get_experiment_statistics(_, algo, design_name):
+            if algo == "None" or design_name == "None":
                 return dash.no_update
+            
+            df = self.r[design_name][algo].results["info_expe"]
+            table_body = self._plots.show_exp_info_all(df)
+            table = dbc.Table(
+                table_body, id="table_exp_info", borderless=True, hover=True
+            ) # dbc.Table.from_dataframe(df, borderless=True)
+            return [table]
+
 
         @self.app.callback(
-            Output("metrics_score_table", "children"),
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            [
+                Output("accuracy_overview", "figure")
+            ],
+            [
+                Input("load_ML_results_button", "n_clicks")
+            ],
+            [
+                State("ml_dropdown", "value"), 
+                State("design_dropdown", "value")
+            ],
         )
         @log_exceptions(self._logger)
-        def show_metrics(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                df = self.r[design_name][algo].results["metrics_table"]
-                return dbc.Table.from_dataframe(df, borderless=True)
-            else:
+        def generates_accuracyPlot_global(_, algo, design_name):
+            if algo == "None" or design_name == "None":
                 return dash.no_update
-
-        # @self.app.callback(
-        #     Output("conf_matrix", "figure"),
-        #     [Input("load_ML_results_button", "n_clicks")],
-        #     [State("ml_dropdown", "value"),
-        #      State("design_dropdown", "value")]
-        # )
-        # def compute_conf_matrix(n_clicks, algo, design_name):
-        #     if n_clicks >= 1:
-        #         list_cm = []
-        #         for s in self.r[design_name][algo].splits_number:
-        #             cm = self.r[design_name][algo].results[s]["Confusion_matrix"]
-        #             list_cm.append(cm[1])
-        #
-        #         mean = np.mean(list_cm, axis=0)
-        #         std = np.std(list_cm, axis=0)
-        #
-        #         text_mat = []
-        #         for i, line in enumerate(mean):
-        #             text_mat.append([])
-        #             for j, col in enumerate(line):
-        #                 text_mat[i].append(str(col) + "(" + str(std[i][j]) + ")")
-        #
-        #         labels = cm[0]
-        #         return self._plots.show_general_confusion_matrix(mean, labels, text_mat)
-        #     else:
-        #         return dash.no_update
+            
+            df = self.r[design_name][algo].results["accuracies_table"]
+            fig = self._plots.show_accuracy_all(df, algo)
+            return [fig]
 
         @self.app.callback(
-            [Output("split_conf_matrix", "figure"),
-             Output("hyperparam_table", "children")],
-            [Input("update_specific_results_button", "n_clicks")],
+            [
+                Output("metrics_score_table", "children")
+            ],
+            [
+                Input("load_ML_results_button", "n_clicks")
+            ],
+            [
+                State("ml_dropdown", "value"), 
+                State("design_dropdown", "value")
+            ],
+        )
+        @log_exceptions(self._logger)
+        def show_metrics(_, algo, design_name):
+            if algo == "None" or design_name == "None":
+                return dash.no_update
+            
+            df = self.r[design_name][algo].results["metrics_table"]
+            table = dbc.Table.from_dataframe(df, borderless=True)
+            return [table]
+
+
+        @self.app.callback(
+            [
+                Output("split_conf_matrix", "figure"),
+                Output("hyperparam_table", "children")
+            ],
+            [
+                Input("update_specific_results_button", "n_clicks")],
             [
                 State("ml_dropdown", "value"),
                 State("design_dropdown", "value"),
@@ -812,44 +890,50 @@ class ResultsTab(MetaTab):
             ],
         )
         @log_exceptions(self._logger)
-        def compute_split_conf_matrix(n_clicks, algo, design_name, split):
-            if n_clicks >= 1:
-
-                cm = self.r[design_name][algo].results[split]["Confusion_matrix"][1]
-                labels = self.r[design_name][algo].results[split]["Confusion_matrix"][0]
-
-                text_mat = []
-                for i, line in enumerate(cm):
-                    text_mat.append([])
-                    for j, col in enumerate(line):
-                        text_mat[i].append(str(col))
-
-                hps = self.r[design_name][algo].results[split]["hyperparameters"]
-
-                hps_df = pd.DataFrame.from_dict({"Hyperparameters": hps.keys(), "Values": hps.values()})
-
-                dash_table_element = dbc.Table.from_dataframe(hps_df, borderless=True)
-
-                return self._plots.show_general_confusion_matrix(
-                    cm, labels, text_mat, algo, split
-                ), dash_table_element
-            else:
+        def compute_split_conf_matrix(_, algo, design_name, split):
+            if algo == "None" or design_name == "None":
                 return dash.no_update, dash.no_update
+            
+            cm = self.r[design_name][algo].results[split]["Confusion_matrix"][1]
+            labels = self.r[design_name][algo].results[split]["Confusion_matrix"][0]
+
+            text_mat = []
+            for i, line in enumerate(cm):
+                text_mat.append([])
+                for j, col in enumerate(line):
+                    text_mat[i].append(str(col))
+
+            hps = self.r[design_name][algo].results[split]["hyperparameters"]
+
+            hps_df = pd.DataFrame.from_dict({"Hyperparameters": hps.keys(), "Values": hps.values()})
+
+            dash_table_element = dbc.Table.from_dataframe(hps_df, borderless=True)
+            fig = self._plots.show_general_confusion_matrix(
+                cm, labels, text_mat, algo, split
+            )
+
+            return  fig, dash_table_element
+
 
         @self.app.callback(
             Output("features_table", "children"),
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            Input("load_ML_results_button", "n_clicks"),
+            [
+                State("ml_dropdown", "value"), 
+                State("design_dropdown", "value")
+            ],
         )
         @log_exceptions(self._logger)
-        def show_features(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                df = self.r[design_name][algo].results["features_table"].copy()
-                df = df.sort_values(by="importance_usage", ascending=False)
-                df = df.round(4)
-                return dbc.Table.from_dataframe(df.iloc[:10, :], borderless=True)
-            else:
+        def show_features(_, algo, design_name):
+            if algo == "None" or design_name == "None":
                 return dash.no_update
+            
+            df = self.r[design_name][algo].results["features_table"].copy()
+            df = df.sort_values(by="importance_usage", ascending=False)
+            df = df.round(4)
+
+            return dbc.Table.from_dataframe(df.iloc[:10, :], borderless=True)
+
 
         @self.app.callback(
             Output("download_dataframe_csv", "data"),
@@ -867,65 +951,72 @@ class ResultsTab(MetaTab):
             else:
                 return dash.no_update
 
-        # @self.app.callback(
-        #    [
-        #        Output("features_dropdown", "options"),
-        #        Output("features_dropdown", "value"),
-        #    ],
-        #    [Input("load_ML_results_button", "n_clicks")],
-        #    [State("ml_dropdown", "value"), State("design_dropdown", "value")],
-        # )
-        # def update_results_dropdown_features(n_click, algo, design_name):
-        #    if n_click >= 1:
-        #        df = self.r[design_name][algo].results["features_table"].iloc[:10, :]
-        #        features = list(df.iloc[:, 0])
-        #        return Utils.format_list_for_checklist(features), features[0]
-        #    else:
-        #        return dash.no_update
 
         @self.app.callback(
-            Output("features_stripChart", "figure"),
-            [Input("load_ML_results_button", "n_clicks"), Input("strip_chart_slider", "value")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value"), State("strip_chart_slider", "marks")],
+            [
+                Output("features_stripChart", "figure")
+            ],
+            [
+                Input("strip_chart_slider", "value")
+            ],
+            [
+                State("ml_dropdown", "value"), 
+                State("design_dropdown", "value"), 
+                State("strip_chart_slider", "marks")
+            ],
         )
         @log_exceptions(self._logger)
-        def show_stripChart_features(n_click, slider_value, algo, design_name, marks):
-            if n_click >= 1:
-                try:
-                    real_value = Utils.get_index_from_marks(slider_value, marks)
-                    strip_chart_data = self.r[design_name][algo].results["features_stripchart"][real_value]
-                    return self._plots.show_metabolite_levels(strip_chart_data, algo,
-                                                              self.r[design_name][algo].results["samples_id"])
-                except IndexError:
-                    return dash.no_update
-            else:
+        def show_stripChart_features(slider_value, algo, design_name, marks):
+            if algo == "None" or design_name == "None":
+                return dash.no_update
+
+            try:
+                real_value = utils.get_index_from_marks(slider_value, marks)
+                strip_chart_data = self.r[design_name][algo].results["features_stripchart"][real_value]
+                fig = self._plots.show_metabolite_levels(
+                    strip_chart_data, algo, 
+                    self.r[design_name][algo].results["samples_id"]
+                )
+                return [fig]
+            except IndexError:
                 return dash.no_update
 
         @self.app.callback(
-            [Output("DTTT", "disabled"), Output("DTTT_graph", "dot_source")],
-            [Input("load_ML_results_button", "n_clicks")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            [
+                Output("DTTT", "disabled"), 
+                Output("DTTT_graph", "dot_source")
+            ],
+            [
+                Input("load_ML_results_button", "n_clicks")
+            ],
+            [
+                State("ml_dropdown", "value"), 
+                State("design_dropdown", "value")
+            ],
         )
         @log_exceptions(self._logger)
-        def disable_DTTT(n_clicks, algo, design_name):
-            if n_clicks >= 1:
-                if algo == "DecisionTree":
-                    model = self.r[design_name][algo].results["best_model"]
-                    classes = list(set(self.r[design_name][algo].results["classes"]))
-                    plt.margins(0.05)
-                    df = self.r[design_name][algo].results["features_table"]
-                    df.sort_index(inplace=True)
-                    features_name = list(df["features"])
-                    dot_data = tree.export_graphviz(
-                        model,
-                        out_file=None,
-                        class_names=classes,
-                        feature_names=features_name,
-                        proportion=True,
-                        filled=True,
-                        rounded=True,
-                        special_characters=True,
-                    )
+        def disable_DTTT(_, algo, design_name):
+            if algo == "None" or design_name == "None":
+                return dash.no_update, dash.no_update
+            
+            if algo == "DecisionTree":
+                model = self.r[design_name][algo].results["best_model"]
+                classes = list(set(self.r[design_name][algo].results["classes"]))
+                plt.margins(0.05)
+                df = self.r[design_name][algo].results["features_table"]
+                df.sort_index(inplace=True)
+                features_name = list(df["features"])
+                dot_data = tree.export_graphviz(
+                    model,
+                    out_file=None,
+                    class_names=classes,
+                    feature_names=features_name,
+                    proportion=True,
+                    filled=True,
+                    rounded=True,
+                    special_characters=True,
+                )
 
-                    return False, dot_data
+                return False, dot_data
+            
             return True, ""
