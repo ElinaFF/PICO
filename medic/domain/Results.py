@@ -18,6 +18,8 @@ from sklearn.metrics import (
     balanced_accuracy_score,
 )
 
+from ..service import Utils
+from ..conf import parameters as cfg
 from ..service import Utils, init_logger
 
 ROOT_PATH = os.path.dirname(__file__)
@@ -200,9 +202,9 @@ class Results:
         )
 
     def _produce_UMAP(self, X: pd.DataFrame, features_df: pd.DataFrame, n_components: int = 2):
-        nbr_feat = [5, 10, 40, 100]
+        features = cfg.features
         umaps = []
-        for nbr in nbr_feat:
+        for nbr in features:
             selected_feat = features_df["features"][:nbr]
             selected_x = X.loc[:, selected_feat]
             selected_x = selected_x.to_numpy()
@@ -225,7 +227,7 @@ class Results:
         return umaps
 
     def _produce_PCA(self, X: pd.DataFrame, features_df: pd.DataFrame, n_components: int = 2):
-        nbr_feat = [5, 10, 40, 100]
+        nbr_feat = cfg.features
         pcas = []
         labels = []
 
@@ -454,7 +456,8 @@ class Results:
         """
         number_of_used_features = len(feature_df[feature_df["importance_usage"] > 0])
         strip_charts = []
-        for ind in [5, 10, 40, 100, number_of_used_features]:
+        n_features = cfg.features + [number_of_used_features]
+        for ind in n_features:
             important_features = list(feature_df["features"])[:ind]
             df = data.loc[:, important_features]
             df["targets"] = self.results["classes"]
