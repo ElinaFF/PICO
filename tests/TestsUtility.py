@@ -300,3 +300,4 @@ IMPORTANCE_ATTRIBUTE = "feature_importances_"
 SEED = 42
 
 PARTIAL_CLASSES_REPARTITION = {'sick': 38, 'healthy': 34}
+
