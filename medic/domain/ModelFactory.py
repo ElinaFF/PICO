@@ -5,7 +5,7 @@ from typing import List, Union
 import sklearn
 
 from .MetaboModel import MetaboModel
-from ..conf.SupportedModels import LEARN_CONFIG_GS, LEARN_CONFIG_RS
+from ..conf.SupportedModels import LEARN_CONFIG
 from ..service import Utils
 
 
@@ -22,15 +22,15 @@ class ModelFactory:
         supported_models = {}
 
         if CV_type == "GS":
-            LEARN_CONFIG = LEARN_CONFIG_GS
+            parameter_grid_value = "GridSearch"
         elif CV_type == "RS":
-            LEARN_CONFIG = LEARN_CONFIG_RS
+            parameter_grid_value = "RandomSearch"
         else:
-            raise ValueError("Supported values are 'GS' and 'RS', given value is "+CV_type)
+            raise ValueError(f"Supported values are 'GS' and 'RS', given value is {CV_type}")
 
         for model_name, model_configuration in LEARN_CONFIG.items():
             supported_models[model_name] = MetaboModel(
-                model_configuration["function"], model_configuration["ParamGrid"],
+                model_configuration["function"], model_configuration["ParamGrid"][parameter_grid_value],
                 model_configuration["importance_attribute"]
             )
         return supported_models
