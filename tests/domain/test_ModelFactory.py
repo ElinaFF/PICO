@@ -20,7 +20,7 @@ def test_givenAModelFactory_whenCreateSupportedModel_thenTheSupportedModelsAreCo
     for index, (name, metabomodel) in enumerate(models.items()):
         assert name == supported_model_names[index]
         assert metabomodel.model == SUPPORTED_MODEL[name]["function"]
-        for key, value in SUPPORTED_MODEL[name]["ParamGrid"].items():
+        for key, value in SUPPORTED_MODEL[name]["ParamGrid"]["GridSearch"].items():
             assert key in metabomodel.grid_search_param
             for param in value:
                 assert param in metabomodel.grid_search_param[key]
@@ -29,12 +29,10 @@ def test_givenAModelFactory_whenCreateSupportedModel_thenTheSupportedModelsAreCo
 def test_supported_models():
     # Iterate over all possible input values and validate the model
     for name, options in SUPPORTED_MODEL.items():
-        params = list(itertools.product(*options["ParamGrid"].values()))
-        if name == "RandomForest":
-            continue
+        params = list(itertools.product(*options["ParamGrid"]["GridSearch"].values()))
         for param in params:
             # Instantiate a classifier, it could break here
-            clf = options["function"](**dict(zip(options["ParamGrid"].keys(), param)))
+            clf = options["function"](**dict(zip(options["ParamGrid"]["GridSearch"].keys(), param)))
             if hasattr(clf, '_parameter_contraints'):
                 clf._validate_params()
 
