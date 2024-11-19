@@ -26,6 +26,7 @@ class MetaboExperiment:
         self._data_matrix = DataMatrix()
         self._is_progenesis_data = False
         self._metadata = MetaData()
+        self._progenesis_unique_ids = None
 
         self._number_of_splits = 25
         self._train_test_proportion = 0.2
@@ -93,6 +94,7 @@ class MetaboExperiment:
             self._metadata.set_id_column("sample_names")
             self._metadata.set_target_columns(["labels"])
             self._is_progenesis_data = True
+            self._progenesis_unique_ids = metadata_df["sample_names"].tolist()
         else:
             self._is_progenesis_data = False
 
@@ -259,6 +261,15 @@ class MetaboExperiment:
             raise RuntimeError("Metadata is not set.")
         self._metadata.set_id_column(id_column)
 
+    def validate_id_column(self) -> bool:
+        """Ensure all values in id column are in the metadata index column
+        """
+        if self._is_progenesis_data:
+            return self._metadata.validate_id_column(self._progenesis_unique_ids)
+        if self._metadata is None:
+            raise RuntimeError("Metadata is not set.")
+        return self._metadata.validate_id_column()      
+
     def get_unique_targets(self) -> list:
         """
         Retrieve a list of unique targets by applying a "set()" function to the complete list of targets.
@@ -328,6 +339,9 @@ class MetaboExperiment:
         cv_algorithm_config = self.get_cv_algorithm_configuration()
         self._check_experimental_design()
         self._data_matrix.load_data()
+        assert(self._data_matrix.data is not None)
+        if not self._data_matrix.data.index.isin(self._metadata.get_metadata()[self._metadata.get_id_column()]).all():
+            raise ValueError(f"'{self._metadata.get_id_column()}' seen not to be as valid name of the unique id column.")
         params = []
         for _, experimental_design in self.experimental_designs.items():
             self._logger.info("-> Classification design : ")
