@@ -113,6 +113,11 @@ class MetaboController:
         """
         self._metabo_experiment.set_id_column(id_column)
 
+    def validate_id_column(self) -> bool:
+        """Ensure all values in id column are in the metadata index column
+        """
+        return self._metabo_experiment.validate_id_column()
+
     def set_selected_models(self, selected_models: list):
         """
         Set the self._selected_models attribute of MetaboExperiment with the list given in argument

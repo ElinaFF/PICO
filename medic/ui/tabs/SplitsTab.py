@@ -314,6 +314,7 @@ class SplitsTab(MetaTab):
                             children=[
                                 dbc.FormText("Link each sample to its target/class."),
                                 __typeGroupLink,
+                                html.Div(id="error_link_each_sample_to_target", style={"color": "red"}),
                                 html.Br(),
                                 dbc.FormText("Classification Designs."),
                                 dbc.Card(
@@ -999,6 +1000,7 @@ class SplitsTab(MetaTab):
                 Output("error_upload_datatable", "children"),
                 Output("error_data_normalization", "children"),
                 Output("error_upload_metadata", "children"),
+                Output("error_link_each_sample_to_target", "children"),
                 Output("error_experimental_designs", "children"),
             ],
             [Input("split_dataset_button", "n_clicks")],
@@ -1024,6 +1026,7 @@ class SplitsTab(MetaTab):
                 normalization_error = ""
                 datatable_error = ""
                 metadata_error = ""
+                link_each_sample_to_target_error = ""
                 experimental_design_error = ""
                 if self.metabo_controller.is_data_raw() is None:
                     normalization_error = "Please select a normalization method."
@@ -1031,15 +1034,23 @@ class SplitsTab(MetaTab):
                     datatable_error = "You must upload a file before splitting it."
                 elif not self.metabo_controller.metadata_is_set():
                     metadata_error = "You must upload a metadata file before splitting it."
+                elif not self.metabo_controller.validate_id_column():
+                    id_column = self.metabo_controller.get_id_column()
+                    if id_column is None:
+                        link_each_sample_to_target_error = "You must provide a valid name of unique id column"
+                    else:                            
+                        link_each_sample_to_target_error = f"'{id_column}' is not a valid name of unique id column"
                 elif not self.metabo_controller.get_all_experimental_designs_names():
                     experimental_design_error = "You must add at least one classification design before " \
                                                 "splitting the data."
 
                 if train_test_proportion_error != "" \
                         or datatable_error != "" or normalization_error != "" \
-                        or metadata_error != "" or experimental_design_error != "":
+                        or metadata_error != "" or link_each_sample_to_target_error != "" \
+                        or experimental_design_error != "":
                     return dash.no_update, dash.no_update, train_test_proportion_error, \
-                        datatable_error, normalization_error, metadata_error, experimental_design_error
+                        datatable_error, normalization_error, metadata_error, \
+                        link_each_sample_to_target_error, experimental_design_error
                 self.metabo_controller.set_number_of_splits(nbr_splits)
                 self.metabo_controller.create_splits()
                 Utils.dump_metabo_expe(self.metabo_controller.generate_save())
@@ -1047,11 +1058,10 @@ class SplitsTab(MetaTab):
 
                 return (
                     "The parameters file is created, the splits's creation should start shortly...",
-                    send_file(Utils.get_metabo_experiment_path()),
-                    "", "", "", "", "",
+                    send_file(Utils.get_metabo_experiment_path()), *('',) * 6,
                 )
             else:
-                return (dash.no_update,) * 7
+                return (dash.no_update,) * 8
 
         @self.app.callback(
             Output("class_balancing_options", "children"),
