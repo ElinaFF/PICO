@@ -1000,7 +1000,6 @@ class SplitsTab(MetaTab):
                 Output("error_upload_datatable", "children"),
                 Output("error_data_normalization", "children"),
                 Output("error_upload_metadata", "children"),
-                Output("error_link_each_sample_to_target", "children"),
                 Output("error_experimental_designs", "children"),
             ],
             [Input("split_dataset_button", "n_clicks")],
@@ -1027,6 +1026,7 @@ class SplitsTab(MetaTab):
                 datatable_error = ""
                 metadata_error = ""
                 link_each_sample_to_target_error = ""
+                is_invalid_id_column = False
                 experimental_design_error = ""
                 if self.metabo_controller.is_data_raw() is None:
                     normalization_error = "Please select a normalization method."
@@ -1035,11 +1035,7 @@ class SplitsTab(MetaTab):
                 elif not self.metabo_controller.metadata_is_set():
                     metadata_error = "You must upload a metadata file before splitting it."
                 elif not self.metabo_controller.validate_id_column():
-                    id_column = self.metabo_controller.get_id_column()
-                    if id_column is None:
-                        link_each_sample_to_target_error = "You must provide a valid name of unique id column"
-                    else:                            
-                        link_each_sample_to_target_error = f"'{id_column}' is not a valid name of unique id column"
+                    is_invalid_id_column = True
                 elif not self.metabo_controller.get_all_experimental_designs_names():
                     experimental_design_error = "You must add at least one classification design before " \
                                                 "splitting the data."
@@ -1047,10 +1043,9 @@ class SplitsTab(MetaTab):
                 if train_test_proportion_error != "" \
                         or datatable_error != "" or normalization_error != "" \
                         or metadata_error != "" or link_each_sample_to_target_error != "" \
-                        or experimental_design_error != "":
+                        or experimental_design_error != "" or is_invalid_id_column:
                     return dash.no_update, dash.no_update, train_test_proportion_error, \
-                        datatable_error, normalization_error, metadata_error, \
-                        link_each_sample_to_target_error, experimental_design_error
+                        datatable_error, normalization_error, metadata_error, experimental_design_error
                 self.metabo_controller.set_number_of_splits(nbr_splits)
                 self.metabo_controller.create_splits()
                 Utils.dump_metabo_expe(self.metabo_controller.generate_save())
@@ -1058,10 +1053,10 @@ class SplitsTab(MetaTab):
 
                 return (
                     "The parameters file is created, the splits's creation should start shortly...",
-                    send_file(Utils.get_metabo_experiment_path()), *('',) * 6,
+                    send_file(Utils.get_metabo_experiment_path()), *('',) * 5,
                 )
             else:
-                return (dash.no_update,) * 8
+                return (dash.no_update,) * 7
 
         @self.app.callback(
             Output("class_balancing_options", "children"),
@@ -1151,6 +1146,27 @@ class SplitsTab(MetaTab):
 
             self.metabo_controller.set_balance_correction_for_experiment(id["index"], value)
             return value
+
+        @self.app.callback(
+            Output("error_link_each_sample_to_target", "children"),
+            [Input("in_ID_col_name", "value"),
+             Input("custom_big_tabs", "active_tab"),
+             Input("split_dataset_button", "n_clicks")],
+        )
+        @log_exceptions(self._logger)
+        def validate_id_column(value, active_tab, n_clicks) -> dash._callback.NoUpdate | str:
+            if active_tab != "tab-1":
+                return dash.no_update
+
+            if self.metabo_controller.validate_id_column():
+                return ""
+            
+            id_column = self.metabo_controller.get_id_column()
+            if id_column is None:
+                error_msg = dash.no_update if n_clicks < 1 else "You must provide a valid name of unique id column"
+            else:                            
+                error_msg = f"'{id_column}' is not a valid name of unique id column"
+            return error_msg
 
     def _get_wrapped_experimental_designs(self):
         children_container = [html.Div("Classification design")]
