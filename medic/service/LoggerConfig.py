@@ -7,6 +7,7 @@ import threading
 import traceback
 from functools import wraps
 from typing import Callable
+from .Utils import get_medic_subdir
 
 log_filename: str|None = None  # Global variable for log filename
 
@@ -42,9 +43,9 @@ def set_log_filename(filename: str="medic.log", add_date: bool=True, level=loggi
             log_filename = f"{filename}_{date_suffix}.log"
     else:
         log_filename = filename
-        
-    # Log file in ~/.medic/logs directory
-    logs_directory = get_logs_directory()
+
+    # Log file in ~/medic_files/logs directory
+    logs_directory = get_medic_subdir("logs")
     log_filename = os.path.join(logs_directory, log_filename)      
 
     # Add "-----------------------" in the log file to start the current session
@@ -147,19 +148,3 @@ def init_logger(module_name: str|None=None, level=logging.DEBUG) -> logging.Logg
         coloredlogs.install(level=level, logger=logger, stream=console_handler.stream)
 
     return logger
-
-
-def get_logs_directory() -> str:
-    """
-    Returns the path to '~/.medic/logs' directory.
-    """
-    home_directory: str = os.path.expanduser("~")
-    logs_directory: str = os.path.join(home_directory, ".medic", "logs")
-    
-    if not os.path.exists(logs_directory):
-        os.makedirs(logs_directory)
-        
-    if not os.path.exists(logs_directory):
-        logs_directory = os.getcwd()
-    
-    return logs_directory

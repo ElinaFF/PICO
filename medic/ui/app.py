@@ -78,7 +78,7 @@ app.layout = html.Div(
             children=[
                 dbc.Tabs(
                     id="custom_big_tabs",
-                    persistence=True,
+                    active_tab="tab-0",
                     className="global_tabs_container",
                     children=[
                         infoTab.getLayout(),

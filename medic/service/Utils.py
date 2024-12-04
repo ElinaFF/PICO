@@ -21,13 +21,64 @@ DUMP_EXPE_PATH = os.path.join(DUMP_PATH, "save.mtxp")
 DEFAULT_IMPORTANCE_ATTRIBUTE = "feature_importances_"
 
 
-def dump_metabo_expe(obj):
-    with open(DUMP_EXPE_PATH, "w+b") as expe_file:
+def dump_metabo_expe(obj, expe_file_path: str=DUMP_EXPE_PATH):
+    with open(expe_file_path, "w+b") as expe_file:
         pkl.dump(obj, expe_file)
 
-
-def get_metabo_experiment_path() -> str:
+        
+def get_dumped_metabo_experiment_path() -> str:
     return DUMP_EXPE_PATH
+
+
+def get_metabo_experiment_path(expe_filename: str="save", is_date: bool=True) -> str:
+    """Get the metabo experiment path.
+        - optionaly add the date (if is_date is True).
+        - add the ".mtxp" extension if expe_filename don't have one.
+
+    Args:
+        expe_filename (str, optional): filename to use as template. Defaults to "save".
+        is_date (bool, optional): True to add the date and time in the filename. Defaults to True.
+
+    Returns:
+        str: The full path to the filename
+    """
+    _, name_ext = os.path.splitext(expe_filename)
+    if not name_ext:
+        expe_filename = expe_filename + ".mtxp"
+    
+    saves_dir = get_medic_subdir("saves")
+    
+    new_filename = insert_datetime(expe_filename) if is_date else expe_filename
+    return os.path.join(saves_dir, new_filename)
+
+
+def get_medic_subdir(subdir_name: str) -> str:
+    """Returns the path to provided subdirectory of '~/medic_files/' main medic directory.
+
+    Args:
+        subdir_name (str): subdir to get (and create if it doesn't exist)
+
+    Returns:
+        str: the subdir full path
+    """
+    home_dir_path: str = os.path.expanduser("~")
+    subdir_path: str = os.path.join(home_dir_path, "medic_files", subdir_name)
+    
+    if not os.path.exists(subdir_path):
+        os.makedirs(subdir_path)
+        
+    if not os.path.exists(subdir_path):
+        subdir_path = os.getcwd()
+    
+    return subdir_path
+
+
+from datetime import datetime
+
+def insert_datetime(expe_filename: str) -> str:
+    current_datetime = datetime.now().strftime("_%Y%m%d_%H%M%S")
+    name_root, name_ext = os.path.splitext(expe_filename)
+    return name_root + current_datetime + name_ext
 
 
 def load_metabo_expe(path):

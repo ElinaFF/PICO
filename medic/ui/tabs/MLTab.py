@@ -4,6 +4,7 @@ import re
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import html, State, Input, Output, dash, dcc, callback_context, ALL
+from os.path import basename
 
 from .MetaTab import MetaTab
 from ...service import Utils, init_logger, log_exceptions
@@ -15,7 +16,7 @@ class MLTab(MetaTab):
         super().__init__(app, metabo_controller)
         self._logger = init_logger()
 
-    def getLayout(self) -> dbc.Tab:
+    def getLayout(self) -> dbc.Tab:       
         __splitConfigFile = html.Div(
             [
                 dbc.Label("Select CV search type", className="form_labels"),
@@ -183,15 +184,29 @@ class MLTab(MetaTab):
             ],
         )
 
+        _learn_completed_modal = dbc.Modal(
+            [
+                dbc.ModalHeader(dbc.ModalTitle("Learning completed")),
+                dbc.ModalBody(id="learn_completed_body", children="The learning is completed."),
+                dbc.ModalFooter(
+                    dbc.Button("Close", id="close-learn_completed_modal", className="ml-auto")
+                ),
+            ],
+            id="learn_completed_modal",
+            is_open=False,
+            centered=True
+        )
+
         return dbc.Tab(
             className="global_tab",
             label="Machine Learning",
             children=[
+                dcc.Store(id='learn-button-state', data=False),
+                dcc.Store(id='classification_design_filename-store', data=""),
                 html.Div(
                     className="fig_group",
-                    children=[_definitionLearningConfig, _definitionLearningAlgorithm],
+                    children=[_definitionLearningConfig, _definitionLearningAlgorithm, _learn_completed_modal],
                 ),
-                dcc.Download(id="download-save-file-ml"),
             ],
         )
 
@@ -309,8 +324,9 @@ class MLTab(MetaTab):
         @self.app.callback(
             [
                 Output("output_button_ml", "children"),
-                Output("download-save-file-ml", "data"),
                 Output("learn_loading_output", "children"),
+                Output("learn-button-state", "data"),
+                Output('classification_design_filename-store', 'data'),
             ],
             [Input("start_learning_button", "n_clicks")],
         )
@@ -320,11 +336,41 @@ class MLTab(MetaTab):
                 self._logger.info(f"in\n{self.metabo_controller.get_selected_models()}")
                 self.metabo_controller.learn()
 
-                Utils.dump_metabo_expe(self.metabo_controller.generate_save())
-
-                return "Done!", dcc.send_file(Utils.get_metabo_experiment_path()), ""
+                # Dump file to dump folder and to save folder (backup)
+                metabo_expe_filename = Utils.get_metabo_experiment_path("medic_ml")
+                metabo_expe_obj = self.metabo_controller.generate_save()
+                Utils.dump_metabo_expe(metabo_expe_obj) # Dump the classification design to the dump folder
+                Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save classification design.
+                del metabo_expe_obj
+                self._logger.info(f"The classification design file '{metabo_expe_filename}' has been saved.")
+                self._logger.info(f"bip bip 3 : {self.metabo_controller._metabo_experiment.experimental_designs}")
+                return "Done!", "", True, basename(metabo_expe_filename)
             else:
                 return dash.no_update
+
+        @self.app.callback(
+            Output("learn_completed_modal", "is_open"),
+            [Input("close-learn_completed_modal", "n_clicks"),
+            Input('learn-button-state', 'data')],
+            [State("learn_completed_modal", "is_open")]
+        )
+        def toggle_learn_completed_modal(close_clicks, learn_state, is_open):
+            if close_clicks or learn_state:
+                return not is_open
+            return is_open
+
+        @self.app.callback(
+        Output("learn_completed_body", "children"),
+        [Input('classification_design_filename-store', 'data')]
+        )
+        @log_exceptions(self._logger)
+        def update_modal_message(filename):
+            if filename:
+                return [
+                    html.P(f"The classification design file '{filename}' has been saved."),
+                    html.P("You can go to the 'Results' tabs."),
+                ]
+            return "Error!"
 
         @self.app.callback(
             [Output("radio_cv_types", "value"),
