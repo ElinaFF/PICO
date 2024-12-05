@@ -1,12 +1,13 @@
 import matplotlib
 matplotlib.use('agg')
 
-from dash import html
+from dash import html, dcc
 from dash.dependencies import Input, Output
 import dash
 import dash_bootstrap_components as dbc
+from flask import request, jsonify
 import os
-from ..service import Utils
+import signal
 
 from .tabs import *
 from ..domain import MetaboController
@@ -21,7 +22,7 @@ if threading.current_thread() is threading.main_thread():
 else:
     logger = init_logger()
     logger.debug(f"New thread '{threading.current_thread().name}')")
-    
+
 # Launch dash app
 app = dash.Dash(
     __name__,
@@ -43,7 +44,6 @@ resultsTab = ResultsTab(app, metabo_controller)
 resultsSummaryTab = ResultsSummaryTab(app, metabo_controller)
 interpretTab = InterpretTab(app, metabo_controller)
 
-
 app.layout = html.Div(
     id="page",
     children=[
@@ -51,6 +51,7 @@ app.layout = html.Div(
         html.Div(
             id="title_container",
             className="row",
+            style={"display": "flex", "justify-content": "space-between", "align-items": "center"},
             children=[
                 html.Div(
                     children=[
@@ -70,15 +71,27 @@ app.layout = html.Div(
                         ),
                     ],
                     id="title_bg",
-                )
+                ),
+                html.Div(  # Conteneur parent du bouton
+                    children=[
+                        html.Button("X", id="close-button", style={
+                            "color": "white", "background-color": "darkred",
+                            "border": "none", "border-radius": "50%", "width": "30px", "height": "30px",
+                            "font-size": "20px", "line-height": "20px", "text-align": "center", "padding": "0",
+                            "cursor": "pointer", "margin": "20px", "margin-top": "0px", "flex-shrink": "0"})
+                    ],
+                    style={"display": "flex", "justify-content": "flex-end", "align-items": "center", "flex": "1"}
+                ),
             ],
         ),
+        dcc.Location(id='url', refresh=True),
+        html.Div(id='clientside-container', style={"display": "none"}),
         html.Div(
             id="main-content",
             children=[
                 dbc.Tabs(
                     id="custom_big_tabs",
-                    persistence=True,
+                    active_tab="tab-0",
                     className="global_tabs_container",
                     children=[
                         infoTab.getLayout(),
@@ -95,3 +108,32 @@ app.layout = html.Div(
         ),
     ],
 )
+
+app.clientside_callback(
+    """
+    function(n_clicks) {
+        if (n_clicks > 0) {
+            window.close();
+            fetch('/shutdown', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => console.log(data));
+        }
+    }
+    """,
+    Output('clientside-container', 'children'),
+    Input('close-button', 'n_clicks')
+)
+
+@server.route('/shutdown', methods=['POST'])
+def shutdown():
+    try:
+        logger.info("Shutting down MeDIC server...")
+        shutdown_func = request.environ.get('werkzeug.server.shutdown')
+        if shutdown_func:
+            shutdown_func()
+        else:
+            os.kill(os.getpid(), signal.SIGINT)
+        return jsonify({'message': 'MeDIC server is shutting down...'})
+    except Exception as e:
+        logger.error(f"Error during shutdown: {e}")
+        return jsonify({'error': str(e)}), 500
