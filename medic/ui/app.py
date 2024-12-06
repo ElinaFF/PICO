@@ -114,12 +114,14 @@ app.clientside_callback(
     """
     function(n_clicks) {
         if (n_clicks > 0) {
-            window.close();
-            fetch('/shutdown', {method: 'POST'})
-                .then(response => response.json())
-                .then(data => console.log(data));
-            document.getElementById('message_close').innerHTML = 'Server stopped. Please close this web page.';
-            document.getElementById('message_close').style.display = 'block';
+            if (confirm("Do you want to close MeDIC application server?")) {
+                window.close();
+                fetch('/shutdown', {method: 'POST'})
+                    .then(response => response.json())
+                    .then(data => console.log(data));
+                document.getElementById('message_close').innerHTML = 'Server stopped. Please close this web page.';
+                document.getElementById('message_close').style.display = 'block';
+            }
         }
     }
     """,
