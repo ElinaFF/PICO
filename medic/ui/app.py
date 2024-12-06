@@ -82,6 +82,7 @@ app.layout = html.Div(
                     ],
                     style={"display": "flex", "justify-content": "flex-end", "align-items": "center", "flex": "1"}
                 ),
+                html.Div(id="message_close", style={"color": "white", "background-color": "darkred", "font-size": "24px", "display": "none"}),
             ],
         ),
         dcc.Location(id='url', refresh=True),
@@ -117,6 +118,8 @@ app.clientside_callback(
             fetch('/shutdown', {method: 'POST'})
                 .then(response => response.json())
                 .then(data => console.log(data));
+            document.getElementById('message_close').innerHTML = 'Server stopped. Please close this web page.';
+            document.getElementById('message_close').style.display = 'block';
         }
     }
     """,
