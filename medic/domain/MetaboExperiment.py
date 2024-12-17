@@ -26,7 +26,7 @@ class MetaboExperiment:
         self._data_matrix = DataMatrix()
         self._is_progenesis_data = False
         self._metadata = MetaData()
-        self._progenesis_unique_ids = None
+        self._unique_ids = None
 
         self._number_of_splits = 25
         self._train_test_proportion = 0.2
@@ -86,17 +86,14 @@ class MetaboExperiment:
         # self._data_matrix handles itself to store data, and it also creates a "fake" metadata dataframe to keep
         # the same metadata format as if it was given by a metadata file
         # it returns None if it is not a progenesis file
-        metadata_df = self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, from_base64=from_base64)
+        metadata_df, self._unique_ids = self._data_matrix.read_format_and_store_data(path_data_matrix, data=data, from_base64=from_base64)
 
         # format the metadata df (in case progenesis is given)
+        self._is_progenesis_data = metadata_df is not None
         if metadata_df is not None:
             self._metadata = MetaData(metadata_df)
             self._metadata.set_id_column("sample_names")
             self._metadata.set_target_columns(["labels"])
-            self._is_progenesis_data = True
-            self._progenesis_unique_ids = metadata_df["sample_names"].tolist()
-        else:
-            self._is_progenesis_data = False
 
     def get_data_matrix(self) -> DataMatrix:
         return self._data_matrix
@@ -264,11 +261,10 @@ class MetaboExperiment:
     def validate_id_column(self) -> bool:
         """Ensure all values in id column are in the metadata index column
         """
-        if self._is_progenesis_data:
-            return self._metadata.validate_id_column(self._progenesis_unique_ids)
-        if self._metadata is None:
+        if not self._is_progenesis_data and self._metadata is None:
             raise RuntimeError("Metadata is not set.")
-        return self._metadata.validate_id_column()      
+        assert(isinstance(self._unique_ids, list))
+        return self._metadata.validate_id_column(self._is_progenesis_data, self._unique_ids)
 
     def get_unique_targets(self) -> list:
         """
