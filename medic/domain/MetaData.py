@@ -131,7 +131,7 @@ class MetaData:
             raise ValueError(f"'{id_column}' is not a column of the metadata. The columns are: {self.get_columns()}")
         self._id_column = id_column
 
-    def validate_id_column(self, progenesis_unique_ids: List[str]|None=None) -> bool:
+    def validate_id_column(self, is_progenesis_data: bool, unique_ids: List[str]) -> bool:
         """Ensure all values in id column are in the metadata index column
         """
         df = self._dataframe
@@ -146,10 +146,10 @@ class MetaData:
             self._logger.error(f"Error: values in column '{self._id_column}' are not comparable")
             return False
         
-        if progenesis_unique_ids is not None:
-            return ids.isin(progenesis_unique_ids).all()
+        if is_progenesis_data:
+            return ids.isin(unique_ids).all()
         else:
-            return ids.isin(df.index).all()
+            return set(ids) == set(unique_ids)
 
     def set_target_column(self, target_column: List[str]) -> None:
         """
