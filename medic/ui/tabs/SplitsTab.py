@@ -1053,8 +1053,8 @@ class SplitsTab(MetaTab):
                 send_file(Utils.get_dumped_metabo_experiment_path())
                 
                 return (
-                    f"The parameters file '{basename(metabo_expe_filename)}' and the splits have been created." \
-                        " Please select the 'Machine Learning' tab to continue.",
+                    [html.P(f'The parameters file "{basename(metabo_expe_filename)}" and the splits have been created.', style={"color": "green"}),
+                     html.P('Please select the "Machine Learning" tab to continue.')],
                     "", "", "", "", "",
                 )
             else:

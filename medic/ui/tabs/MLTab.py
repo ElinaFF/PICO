@@ -342,7 +342,7 @@ class MLTab(MetaTab):
                 Utils.dump_metabo_expe(metabo_expe_obj) # Dump the classification design to the dump folder
                 Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save classification design.
                 del metabo_expe_obj
-                self._logger.info(f"The classification design file '{metabo_expe_filename}' has been saved.")
+                self._logger.info(f'The classification design file "{metabo_expe_filename}" has been saved.')
                 self._logger.info(f"bip bip 3 : {self.metabo_controller._metabo_experiment.experimental_designs}")
                 return "Done!", "", True, basename(metabo_expe_filename)
             else:
@@ -367,8 +367,8 @@ class MLTab(MetaTab):
         def update_modal_message(filename):
             if filename:
                 return [
-                    html.P(f"The classification design file '{filename}' has been saved."),
-                    html.P("You can go to the 'Results' tabs."),
+                    html.P(f'The classification design file "{filename}" has been saved.', style={'color': 'green'}),
+                    html.P('You can go to the "Results" tabs.'),
                 ]
             return "Error!"
 
