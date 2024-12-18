@@ -149,7 +149,7 @@ class MetaData:
         if is_progenesis_data:
             return ids.isin(unique_ids).all()
         else:
-            return set(ids) == set(unique_ids)
+            return set(ids) <= set(unique_ids)
 
     def set_target_column(self, target_column: List[str]) -> None:
         """
