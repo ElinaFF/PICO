@@ -686,6 +686,7 @@ class SplitsTab(MetaTab):
             if value is not None:
                 if value == "nap":  # Not a Progenesis file
                     self.metabo_controller.set_raw_use_for_data(False)
+                    self.metabo_controller.set_data_matrix_remove_rt(False)
                     return {"display": "block"}, {"display": "block"}, disabled_options, None
 
                 self.metabo_controller.set_raw_use_for_data(
