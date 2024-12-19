@@ -264,7 +264,8 @@ class MetaboExperiment:
         """
         if not self._is_progenesis_data and self._metadata is None:
             raise RuntimeError("Metadata is not set.")
-        assert(isinstance(self._unique_ids, list))
+        if self._unique_ids is None:
+            return False
         return self._metadata.validate_id_column(self._is_progenesis_data, self._unique_ids)
 
     def get_unique_targets(self) -> list:

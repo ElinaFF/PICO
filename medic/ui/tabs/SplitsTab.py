@@ -1041,7 +1041,7 @@ class SplitsTab(MetaTab):
                 if train_test_proportion_error != "" or datatable_error != "" or normalization_error != "" or metadata_error != "" \
                       or experimental_design_error != "" or is_invalid_id_column:
                   if is_invalid_id_column:
-                    invalid_id = [html.P(f'You must provide a valid name of unique id column', style={"color": "green"})]
+                    invalid_id = [html.P(f'You must provide a valid name of unique id column', style={"color": "red"})]
                   else:
                     invalid_id = dash.no_update
                     return invalid_id, train_test_proportion_error, datatable_error, normalization_error, metadata_error, experimental_design_error
