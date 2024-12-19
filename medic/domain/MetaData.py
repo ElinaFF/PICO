@@ -131,6 +131,31 @@ class MetaData:
             raise ValueError(f"'{id_column}' is not a column of the metadata. The columns are: {self.get_columns()}")
         self._id_column = id_column
 
+    def validate_id_column(self, is_progenesis_data: bool, unique_ids: List[str]) -> bool:
+        """
+        Ensure all values in the data index column (unique_ids) are in the the metadata id_column
+        """
+        df = self._dataframe
+        if self._dataframe is None:
+            return False
+        try:
+            ids = df[self._id_column]
+        except KeyError as e:
+            self._logger.error(f"Error: column '{self._id_column}' does not exist")
+            return False
+        except TypeError as e:
+            self._logger.error(f"Error: values in column '{self._id_column}' are not comparable")
+            return False
+        
+        if is_progenesis_data:
+            return ids.isin(unique_ids).all()
+        else:
+            # 'ids' represents the sample names in the metadata
+            # 'unique_ids' represents sample names in the data
+            # some experiments could have one metadata file for multiple data files, so we should check 
+            # if the unique_ids of the data file are all contained in the metadata file.
+            return set(ids) >= set(unique_ids)
+
     def set_target_column(self, target_column: List[str]) -> None:
         """
         Define which of the metadata columns is the targets column

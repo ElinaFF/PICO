@@ -27,7 +27,7 @@ class DataMatrix:
         """
         Utils.reset_file(DUMP_DATA_MATRIX_PATH)
 
-    def read_format_and_store_data(self, path: str, data=None, from_base64: bool = True,) -> Union[pd.DataFrame, None]:
+    def read_format_and_store_data(self, path: str, data=None, from_base64: bool = True,) -> tuple[pd.DataFrame|None, list[str]]:
         """
         As the name states,
         Read a file of data, format what needs to be, and store it/return it
@@ -51,8 +51,8 @@ class DataMatrix:
 
         self._scaler.fit(data_df)
 
-        if metadata_df is not None:
-            return metadata_df
+        unique_ids: list[str] = data_df.index.to_list() if metadata_df is None else metadata_df["sample_names"].tolist()
+        return metadata_df, unique_ids
         # The event of having metadata_df=None is handled in the set_data_matrix function that calls this function
         # So no need to add an "else" here
 
