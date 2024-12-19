@@ -259,7 +259,8 @@ class MetaboExperiment:
         self._metadata.set_id_column(id_column)
 
     def validate_id_column(self) -> bool:
-        """Ensure all values in id column are in the metadata index column
+        """
+        Ensure all values in the data index column (unique_ids) are in the the metadata id_column
         """
         if not self._is_progenesis_data and self._metadata is None:
             raise RuntimeError("Metadata is not set.")
