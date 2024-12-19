@@ -114,7 +114,8 @@ class MetaboController:
         self._metabo_experiment.set_id_column(id_column)
 
     def validate_id_column(self) -> bool:
-        """Ensure all values in id column are in the metadata index column
+        """
+        Ensure all values in the data index column (unique_ids) are in the the metadata id_column
         """
         return self._metabo_experiment.validate_id_column()
 

@@ -132,7 +132,8 @@ class MetaData:
         self._id_column = id_column
 
     def validate_id_column(self, is_progenesis_data: bool, unique_ids: List[str]) -> bool:
-        """Ensure all values in id column are in the metadata index column
+        """
+        Ensure all values in the data index column (unique_ids) are in the the metadata id_column
         """
         df = self._dataframe
         if self._dataframe is None:
@@ -149,7 +150,11 @@ class MetaData:
         if is_progenesis_data:
             return ids.isin(unique_ids).all()
         else:
-            return set(ids) <= set(unique_ids)
+            # 'ids' represents the sample names in the metadata
+            # 'unique_ids' represents sample names in the data
+            # some experiments could have one metadata file for multiple data files, so we should check 
+            # if the unique_ids of the data file are all contained in the metadata file.
+            return set(ids) >= set(unique_ids)
 
     def set_target_column(self, target_column: List[str]) -> None:
         """
