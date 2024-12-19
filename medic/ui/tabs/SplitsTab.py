@@ -1165,7 +1165,7 @@ class SplitsTab(MetaTab):
             if id_column is None:
                 error_msg = dash.no_update if n_clicks < 1 else "You must provide a valid name of unique id column"
             else:                            
-                error_msg = f"'{id_column}' is not a valid name of unique id column, id_column[:5]{id_column[:5]}"
+                error_msg = f"'{id_column}' is not a valid name of unique id column"
             return error_msg
 
     def _get_wrapped_experimental_designs(self):
