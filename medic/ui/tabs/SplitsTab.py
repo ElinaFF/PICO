@@ -1024,7 +1024,7 @@ class SplitsTab(MetaTab):
                 normalization_error = ""
                 datatable_error = ""
                 metadata_error = ""
-                is_invalid_id_column = False
+                invalid_id_error = ""
                 experimental_design_error = ""
                 if self.metabo_controller.is_data_raw() is None:
                     normalization_error = "Please select a normalization method."
@@ -1033,18 +1033,14 @@ class SplitsTab(MetaTab):
                 elif not self.metabo_controller.metadata_is_set():
                     metadata_error = "You must upload a metadata file before splitting it."
                 elif not self.metabo_controller.validate_id_column():
-                    is_invalid_id_column = True
+                    invalid_id_error = html.P(f'You must provide a valid name of unique id column', style={"color": "red"})
                 elif not self.metabo_controller.get_all_experimental_designs_names():
                     experimental_design_error = "You must add at least one classification design before " \
                                                 "splitting the data."
 
                 if train_test_proportion_error != "" or datatable_error != "" or normalization_error != "" or metadata_error != "" \
-                      or experimental_design_error != "" or is_invalid_id_column:
-                  if is_invalid_id_column:
-                    invalid_id = [html.P(f'You must provide a valid name of unique id column', style={"color": "red"})]
-                  else:
-                    invalid_id = dash.no_update
-                    return invalid_id, train_test_proportion_error, datatable_error, normalization_error, metadata_error, experimental_design_error
+                    or experimental_design_error != "" or invalid_id_error != "":
+                    return invalid_id_error, train_test_proportion_error, datatable_error, normalization_error, metadata_error, experimental_design_error
                 self.metabo_controller.set_number_of_splits(nbr_splits)
                 self.metabo_controller.create_splits()
                 
