@@ -4,6 +4,7 @@ import dash_bootstrap_components as dbc
 import pandas
 from dash import html, Output, Input, dash, State, dcc, callback_context, MATCH, ALL
 from dash.dcc import send_file
+from os.path import basename
 
 from .MetaTab import MetaTab
 from ...domain import MetaboController
@@ -619,7 +620,6 @@ class SplitsTab(MetaTab):
                 html.Div(
                     className="fig_group", children=[_otherProcessing, _generateFile]
                 ),
-                dcc.Download(id="download-save-file-split"),
             ],
         )
 
@@ -995,7 +995,6 @@ class SplitsTab(MetaTab):
         @self.app.callback(
             [
                 Output("output_button_split_file", "children"),
-                Output("download-save-file-split", "data"),
                 Output("error_percent_samples_in_test", "children"),
                 Output("error_upload_datatable", "children"),
                 Output("error_data_normalization", "children"),
@@ -1025,8 +1024,7 @@ class SplitsTab(MetaTab):
                 normalization_error = ""
                 datatable_error = ""
                 metadata_error = ""
-                link_each_sample_to_target_error = ""
-                is_invalid_id_column = False
+                invalid_id_error = ""
                 experimental_design_error = ""
                 if self.metabo_controller.is_data_raw() is None:
                     normalization_error = "Please select a normalization method."
@@ -1035,28 +1033,35 @@ class SplitsTab(MetaTab):
                 elif not self.metabo_controller.metadata_is_set():
                     metadata_error = "You must upload a metadata file before splitting it."
                 elif not self.metabo_controller.validate_id_column():
-                    is_invalid_id_column = True
+                    invalid_id_error = html.P(f'You must provide a valid name of unique id column', style={"color": "red"})
                 elif not self.metabo_controller.get_all_experimental_designs_names():
                     experimental_design_error = "You must add at least one classification design before " \
                                                 "splitting the data."
 
-                if train_test_proportion_error != "" \
-                        or datatable_error != "" or normalization_error != "" \
-                        or metadata_error != "" or link_each_sample_to_target_error != "" \
-                        or experimental_design_error != "" or is_invalid_id_column:
-                    return dash.no_update, dash.no_update, train_test_proportion_error, \
-                        datatable_error, normalization_error, metadata_error, experimental_design_error
+                if train_test_proportion_error != "" or datatable_error != "" or normalization_error != "" or metadata_error != "" \
+                    or experimental_design_error != "" or invalid_id_error != "":
+                    return invalid_id_error, train_test_proportion_error, datatable_error, normalization_error, metadata_error, experimental_design_error
                 self.metabo_controller.set_number_of_splits(nbr_splits)
                 self.metabo_controller.create_splits()
-                Utils.dump_metabo_expe(self.metabo_controller.generate_save())
-                self._logger.info(f"bip bip 3 : {self.metabo_controller._metabo_experiment.experimental_designs}")
+                
+                # Dump file to dump folder and to save folder (backup)
+                metabo_expe_filename = Utils.get_metabo_experiment_path("medic_splits") # Get save file path
+                metabo_expe_obj = self.metabo_controller.generate_save()
+                Utils.dump_metabo_expe(metabo_expe_obj) # Dump the classification design to the dump folder
+                Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save the classification design
+                del metabo_expe_obj
 
+                self._logger.info(f"{self.metabo_controller._metabo_experiment.experimental_designs}")
+                self._logger.info(f"Classification design splits file '{metabo_expe_filename}' saved.")
+                send_file(Utils.get_dumped_metabo_experiment_path())
+                
                 return (
-                    "The parameters file is created, the splits's creation should start shortly...",
-                    send_file(Utils.get_metabo_experiment_path()), *('',) * 5,
+                    [html.P(f'The parameters file "{basename(metabo_expe_filename)}" and the splits have been created.', style={"color": "green"}),
+                     html.P('Please select the "Machine Learning" tab to continue.')],
+                    "", "", "", "", "",
                 )
             else:
-                return (dash.no_update,) * 7
+                return (dash.no_update,) * 6
 
         @self.app.callback(
             Output("class_balancing_options", "children"),
