@@ -139,7 +139,8 @@ class MetaboExperiment:
         for _, experimental_design in self.experimental_designs.items():
             experimental_design.set_split_parameter_and_compute_splits(self._train_test_proportion,
                                                                        self._number_of_splits, self._metadata,
-                                                                       self._pairing_group_column, test_split_seed)
+                                                                       self._pairing_group_column, self._unique_ids, 
+                                                                       test_split_seed)
 
     def get_pairing_group_column(self) -> str:
         """

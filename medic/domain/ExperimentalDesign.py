@@ -33,7 +33,7 @@ class ExperimentalDesign:
         self._balance_correction = balance_correction
 
     def set_split_parameter_and_compute_splits(self, train_test_proportion: float, number_of_splits: int,
-                                               metadata: MetaData, pairing_column: str,
+                                               metadata: MetaData, pairing_column: str, uniq_sample_id: List[str],
                                                test_split_seed: int|None=None) -> None:
         """
         Retrieve the classes repartition which is needed to create an instance of SplitGroup
@@ -43,8 +43,8 @@ class ExperimentalDesign:
         """
         classes_repartition = metadata.get_classes_repartition_based_on_design(self._classes_design)
         self._split_group = SplitGroup(metadata, self.get_selected_targets_name(), train_test_proportion,
-                                       number_of_splits, self._classes_design, pairing_column, self._balance_correction,
-                                       classes_repartition, test_split_seed)
+                                       number_of_splits, self._classes_design, pairing_column, uniq_sample_id, 
+                                       self._balance_correction, classes_repartition, test_split_seed)
 
     def get_name(self) -> str:
         return self._name
