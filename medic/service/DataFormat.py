@@ -97,7 +97,7 @@ class DataFormat:
         ! careful : output only the datable and 3 empty strings because the function that calls it only needs datatable,
         but that might change
         """
-
+        # This return list fits the return when reading a Progenesis file
         return None, datatable, None, None
 
     def _read_Progenesis_data_table(self, datatable, header):

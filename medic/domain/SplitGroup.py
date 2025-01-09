@@ -10,7 +10,8 @@ import numpy as np
 
 class SplitGroup:
     def __init__(self, metadata: MetaData, selected_targets: List[str], train_test_proportion: float,
-                 number_of_splits: int, classes_design: dict, pairing_column: str, balance_correction: int = 0,
+                 number_of_splits: int, classes_design: dict, pairing_column: str, 
+                 uniq_sample_id: List[str], balance_correction: int = 0,
                  classes_repartition: Union[dict, None] = None,
                  test_split_seed: Union[int,None] = None):
         self._logger = init_logger()
@@ -19,10 +20,11 @@ class SplitGroup:
         self._classes_design = classes_design
         self._splits = []
         self._compute_splits(train_test_proportion, number_of_splits, pairing_column, selected_targets,
-                             balance_correction, classes_repartition, test_split_seed)
+                             uniq_sample_id, balance_correction, classes_repartition, test_split_seed)
 
     def _compute_splits(self, train_test_proportion: float, number_of_splits: int, pairing_column: str,
-                        selected_targets: List[str], balance_correction: int = 0,
+                        selected_targets: List[str],  uniq_sample_id: List[str], 
+                        balance_correction: int = 0,
                         classes_repartition: Union[dict, None] = None,
                         test_split_seed: Union[int,None] = None) -> None:
         """
@@ -44,13 +46,15 @@ class SplitGroup:
                 to be used from automate.py to test one specific split. Defaults to None.
         """
         
-        # TODO : this function would be a great place to implement class balancing / balance the dataset
-
-        # 1 - filter out the samples with a target not included in the classification design
+        # 1 - filter out the samples having a target not included in the classification design
         # retrieve metadata dataframe
         df_filter = self._metadata.get_metadata()
         # keep only the lines for which the value in the final_targets column is in selected_targets
         df_filter = df_filter[df_filter[self._metadata.get_target_column()].isin(selected_targets)]
+        # keep only the lines that correspond to samples in data file
+        # (handles the cases of a metadata file for multiple data files : where samples in 
+        # the metadata having corresponding targets are not in the provided data file)
+        df_filter = df_filter[df_filter[self._metadata.get_id_column()].isin(uniq_sample_id)]
         self._logger.info("_compute_split step #1 done")
 
         # 2 - select only one sample per entity

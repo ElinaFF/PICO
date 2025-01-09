@@ -34,6 +34,8 @@ class DataMatrix:
         """
         if self._use_raw is None:
             raise RuntimeError("Need to set raw use before loading data")
+        # metadata_df will be None in the case of a "general" file, and will contain something in case of
+        # Progenesis file (an artificial metadata dataframe is created in that case). 
         data_df, metadata_df = self._load_and_format(path, data=data, is_raw=self._use_raw, from_base64=from_base64)
 
         if self._remove_rt:
@@ -50,7 +52,8 @@ class DataMatrix:
             pickle.dump(data_df, data_matrix_file)
 
         self._scaler.fit(data_df)
-
+        
+        # unique_ids will contain sample names from the data file
         unique_ids: list[str] = data_df.index.to_list() if metadata_df is None else metadata_df["sample_names"].tolist()
         return metadata_df, unique_ids
         # The event of having metadata_df=None is handled in the set_data_matrix function that calls this function
@@ -90,7 +93,9 @@ class DataMatrix:
         formater = DataFormat(path, data=data, use_raw=is_raw, from_base64_str=from_base64)
         datatable_compoundsInfo, datatable, labels, sample_names = formater.convert()
         if labels is None or sample_names is None:
+            # This if triggers (for now) when a "general" file is read
             return datatable, None
+        # This return triggers when a Progenesis file is read
         return datatable, pd.DataFrame({"sample_names": sample_names, "labels": labels})
 
     def load_data(self):  # loadDataMatrix
@@ -139,3 +144,4 @@ class DataMatrix:
 
     def data_is_set(self) -> bool:
         return self._hash is not None
+  
