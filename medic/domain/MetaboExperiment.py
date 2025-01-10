@@ -633,8 +633,13 @@ class MetaboExperiment:
         self._activate_multithreading = activate_multithreading
 
     def get_samples_id(self):
-        return self._metadata.get_samples_id()
-
+        """
+        This used to return self._metadata.get_samples_id(), thus sourcing samples name from metadata file.
+        It has been adjusted to account for the situation of metadata containing more information
+        than the samples studied by the provided data file
+        """
+        return self._unique_ids
+    
     def get_classes_repartition_for_all_experiment(self) -> dict:
         classes_repartition = {}
         for experimental_design_name in self.experimental_designs:

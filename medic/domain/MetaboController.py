@@ -366,6 +366,9 @@ class MetaboController:
         self._metabo_experiment.set_cv_algorithm_configuration(cv_algorithm_configuration)
 
     def get_samples_id(self):
+        """
+        Samples name from data file
+        """
         return self._metabo_experiment.get_samples_id()
 
     def get_classes_repartition_for_all_experiment(self) -> dict:
