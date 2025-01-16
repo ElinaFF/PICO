@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from dash import html
 
 from ..conf import parameters as cfg
+from decimal import Decimal
 
 
 class Plots:
@@ -444,7 +445,7 @@ class Plots:
             for i in range(1, n + 1):
                 a = a * i
                 b = b * (k - i + 1)
-            return b / a
+            return Decimal(b) / Decimal(a)
 
         def f(i, j):
             return choose(m_element - i, j - i) * choose(i, k_test - (j - i)) / choose(m_element, k_test)
