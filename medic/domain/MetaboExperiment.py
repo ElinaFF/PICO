@@ -343,7 +343,7 @@ class MetaboExperiment:
             raise ValueError(f"'{self._metadata.get_id_column()}' seen not to be as valid name of the unique id column.")
         params = []
         for _, experimental_design in self.experimental_designs.items():
-            self._logger.info("-> Classification design : ")
+            self._logger.info("-> Classification design loop ")
             selected_targets_name = experimental_design.get_selected_targets_name()
             (selected_targets, selected_ids,) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
             classes = Utils.load_classes_from_targets(
@@ -366,7 +366,7 @@ class MetaboExperiment:
 
 
     def run_learning(self, params: List[tuple]):
-
+        self._logger.info("-> run_learning function beginning")
         # launch the run_on_model function with the params
         result_params = [self.run_on_model(*param) for param in params]
 
