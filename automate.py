@@ -12,8 +12,8 @@ import plotly.express as px
 from collections import Counter
 
 
-METADATA_PATH = "../medic_otherThanPackage/s_MTBLS28_combined.csv"
-DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_CombinedData_forML.csv"
+METADATA_PATH = "../medic_otherThanPackage/s_MTBLS28_merged.csv"
+DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_CombinedData2_forML.csv"
 
 
 def main():
@@ -28,13 +28,15 @@ def main():
     metabo_controller.set_metadata(METADATA_PATH, from_base64=False)
     print("Metadata and DataMatrix are set_from_path")
 
-    metabo_controller.set_id_column("Sample Name")
-    metabo_controller.set_target_columns(["Factor Value[Smoking]"])
-    metabo_controller.add_experimental_design({"c": ["Current Smoker"], "f": ["Former Smoker"]})
+    metabo_controller.set_id_column("Sample_Name")
+    metabo_controller.set_target_columns(["Factor Value[Smoking]"])  #, "Factor Value[Sample Type]"
+    metabo_controller.add_experimental_design({"Never": ["Never Smoker"], "Yes": ["Former Smoker", "Current Smoker"]})
+    #metabo_controller.add_experimental_design({"Case_Current": ["Current Smoker__Case"], "Case_Not": ["Former Smoker__Case", "Never Smoker__Case"]})
+    #metabo_controller.add_experimental_design({"CTRL_Current": ["Current Smoker__Control"], "CTRL_Not": ["Former Smoker__Control", "Never Smoker__Control"]})
     print("Classification design added")
 
     metabo_controller.set_train_test_proportion(0.2)
-    metabo_controller.set_number_of_splits(30)
+    metabo_controller.set_number_of_splits(10)
     metabo_controller.create_splits()
 
     metabo_expe_filename = Utils.get_metabo_experiment_path("medic_splits") # Get save file path
@@ -49,7 +51,7 @@ def main():
     metabo_controller.learn()
     print("finished")
     
-    metabo_expe_filename = Utils.get_metabo_experiment_path("medic_ML") # Get save file path
+    metabo_expe_filename = Utils.get_metabo_experiment_path("medic_ml") # Get save file path
     metabo_expe_obj = metabo_controller.generate_save()
     Utils.dump_metabo_expe(metabo_expe_obj) # Dump the classification design to the dump folder
     Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save the classification design
