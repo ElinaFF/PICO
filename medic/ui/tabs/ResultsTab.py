@@ -512,30 +512,80 @@ class ResultsTab(MetaTab):
             return is_open
 
         @self.app.callback(
-            [Output("design_dropdown", "options"), Output("design_dropdown", "value")],
-            [Input("custom_big_tabs", "active_tab")],
+            [
+                Output("design_dropdown", "options"), 
+                Output("design_dropdown", "value")
+            ],
+            [
+                Input("custom_big_tabs", "active_tab")
+            ],
+            [
+                State("design_dropdown", "options"),
+                State("ml_dropdown", "options")
+            ]
         )
         @log_exceptions(self._logger)
-        def update_results_dropdown_design(active):
+        def update_results_dropdown_design(active, current_expe_options, current_ml_options):
             if active == "tab-3":
                 self.r = self.metabo_controller.get_all_results()
                 experiment_designs = list(self.r.keys())
+
+                # We need to evaluate if there is a need to update the results
+
+                # 1. No design, no update
                 if len(experiment_designs) == 0:
                     return dash.no_update, dash.no_update
-                return (
-                    Utils.format_list_for_checklist(experiment_designs),
-                    experiment_designs[0],
-                )
+                # 2. No selection, we select the first design
+                elif current_expe_options[0]["label"] == "None":
+                    return (
+                        Utils.format_list_for_checklist(experiment_designs),
+                        experiment_designs[0],
+                    )
+                # 3. Current design not in our list of experiment designs (a new file), select the first design
+                elif current_expe_options[0]["label"] not in experiment_designs:
+                    return (
+                        Utils.format_list_for_checklist(experiment_designs),
+                        experiment_designs[0],
+                    )
+                # 4. The current design is in. Let's validate if the algo are the same. If they are not, we should update
+                else:
+                    ml_options = [d["value"] for d in current_ml_options]
+                    saved_ml_options = list(self.r[current_expe_options[0]["label"]].keys())
+                    # 4 a) The number of algos differs, we need to update
+                    if len(ml_options) != len(saved_ml_options):
+                        return (
+                            Utils.format_list_for_checklist(experiment_designs),
+                            experiment_designs[0],
+                        )
+                    # 4 b) one of the algos is not in the current result, we need to update
+                    for ml in ml_options:
+                        if ml not in saved_ml_options:
+                            # Update
+                            return (
+                                Utils.format_list_for_checklist(experiment_designs),
+                                experiment_designs[0],
+                            )
+
+                    # 4 c) None of a) b), then no update
+                    return dash.no_update, dash.no_update
             else:
                 return dash.no_update, dash.no_update
 
         @self.app.callback(
-            [Output("ml_dropdown", "options"), Output("ml_dropdown", "value")],
-            [Input("design_dropdown", "value")],
-            [State("custom_big_tabs", "active_tab")],
+            [
+                Output("ml_dropdown", "options"), 
+                Output("ml_dropdown", "value")
+            ],
+            [
+                Input("design_dropdown", "value")
+            ],
+            [
+                State("custom_big_tabs", "active_tab"),
+                State("ml_dropdown", "options")
+            ],
         )
         @log_exceptions(self._logger)
-        def update_results_dropdown_algo(design, active):
+        def update_results_dropdown_algo(design, active, current_options):
             if active == "tab-3":
                 a = list(self.r[design].keys())
                 return [{"label": i, "value": i} for i in a], a[0]
