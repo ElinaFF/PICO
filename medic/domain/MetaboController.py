@@ -395,4 +395,3 @@ class MetaboController:
                 ...
         """
         self._metabo_experiment.display_splits()
- 

@@ -29,14 +29,18 @@ def main():
     print("Metadata and DataMatrix are set_from_path")
 
     metabo_controller.set_id_column("Sample_Name")
-    metabo_controller.set_target_columns(["Factor Value[Smoking]"])  #, "Factor Value[Sample Type]"
-    metabo_controller.add_experimental_design({"Never": ["Never Smoker"], "Yes": ["Former Smoker", "Current Smoker"]})
-    #metabo_controller.add_experimental_design({"Case_Current": ["Current Smoker__Case"], "Case_Not": ["Former Smoker__Case", "Never Smoker__Case"]})
-    #metabo_controller.add_experimental_design({"CTRL_Current": ["Current Smoker__Control"], "CTRL_Not": ["Former Smoker__Control", "Never Smoker__Control"]})
+    metabo_controller.set_target_columns(["Factor Value[Sample Type]", "Factor Value[Smoking]"])
+    metabo_controller.add_experimental_design({"Case_Current": ["Case__Current Smoker"], "Ctrl_Current": ["Control__Current Smoker"]})
+    metabo_controller.add_experimental_design({"Case_Former": ["Case__Former Smoker"], "Ctrl_Former": ["Control__Former Smoker"]})
+    metabo_controller.add_experimental_design({"Case_Never": ["Case__Never Smoker"], "Ctrl_Never": ["Control__Never Smoker"]})
     print("Classification design added")
 
     metabo_controller.set_train_test_proportion(0.2)
-    metabo_controller.set_number_of_splits(10)
+    metabo_controller.set_number_of_splits(5)
+    ### Choosing balance correction value : see documentation for explanation
+    metabo_controller.set_balance_correction_for_experiment("Case_Current_vs_Ctrl_Current", 15)
+    metabo_controller.set_balance_correction_for_experiment("Case_Former_vs_Ctrl_Former", 0)
+    metabo_controller.set_balance_correction_for_experiment("Case_Never_vs_Ctrl_Never", 21)
     metabo_controller.create_splits()
 
     metabo_expe_filename = Utils.get_metabo_experiment_path("medic_splits") # Get save file path
