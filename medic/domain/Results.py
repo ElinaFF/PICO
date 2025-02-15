@@ -311,9 +311,8 @@ class Results:
 
     def produce_accuracy_plot_all(self):
         """
-        Fonction qui réccupère les résultats (accuracies) de chq split sur le train et le test pour en faire un dataframe.
-        Est donnée à la fonction de plotting correspondante (après que l'instance ait été complétée avec tous
-        les résultats de splits)
+        Retrieve balanced accuracies from every splits on train and test to make a dataframe
+        The return is used by corresponding ploting function
         """
         x_splits_num = []
         y_splits_acc = []
@@ -321,12 +320,12 @@ class Results:
         for s in self.splits_number:
             x_splits_num.append(str(s))  # c'est normal
             x_splits_num.append(str(s))
-            y_splits_acc.append(self.results[s]["train_accuracy"])
+            y_splits_acc.append(self.results[s]["balanced_train_accuracy"])
             traces.append("train")
-            y_splits_acc.append(self.results[s]["test_accuracy"])
+            y_splits_acc.append(self.results[s]["balanced_test_accuracy"])
             traces.append("test")
 
-        d = {"splits": x_splits_num, "accuracies": y_splits_acc, "color": traces}
+        d = {"splits": x_splits_num, "balanced accuracies": y_splits_acc, "color": traces}
         df = pd.DataFrame(data=d)
 
         return df
