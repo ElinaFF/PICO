@@ -17,6 +17,7 @@ LEARN_CONFIG = {
                 "max_depth": [2, 3, 4, 5, 6, 7],
                 "min_samples_split": [2, 4, 6, 8, 10],
                 "max_features": ["sqrt", "log2"],
+                "class_weight": ["balanced"]
             }
         },
         "importance_attribute": "feature_importances_",
