@@ -47,7 +47,7 @@ LEARN_CONFIG = {
                 "model_type": ["conjunction", "disjunction"],
             },
             "GridSearch" : {
-                "p": [0.01, 0.1, 1, 10], #np.linspace(0.01, 3, 10),
+                "p": np.logspace(-2, 2, base=10, num=9), #[0.01, 0.1, 1, 10], #np.linspace(0.01, 3, 10),
                 "max_rules": [1, 2, 3, 4, 5],
                 "model_type": ["conjunction", "disjunction"],
             }
