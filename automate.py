@@ -36,7 +36,7 @@ def main():
     print("Classification design added")
 
     metabo_controller.set_train_test_proportion(0.2)
-    metabo_controller.set_number_of_splits(5)
+    metabo_controller.set_number_of_splits(20)
     ### Choosing balance correction value : see documentation for explanation
     metabo_controller.set_balance_correction_for_experiment("Case_Current_vs_Ctrl_Current", 15)
     metabo_controller.set_balance_correction_for_experiment("Case_Former_vs_Ctrl_Former", 0)

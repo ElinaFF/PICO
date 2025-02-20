@@ -207,7 +207,7 @@ class Plots:
             raise RuntimeError(
                 "To show the global balanced accuracies plot, the dataframe needs to have a 'splits' column"
             )
-        if "accuracies" not in df.columns:
+        if "balanced accuracies" not in df.columns:
             raise RuntimeError(
                 "To show the global balanced accuracies plot, the dataframe needs to have a 'accuracies' column"
             )
