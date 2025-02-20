@@ -250,7 +250,7 @@ class ResultsTab(MetaTab):
                 html.Div(
                     className="title_and_help",
                     children=[
-                        html.H6("Accuracy plot"),
+                        html.H6("Balanced accuracy plot"),
                         dbc.Button(
                             "[?]",
                             className="text-muted btn-secondary popover_btn",

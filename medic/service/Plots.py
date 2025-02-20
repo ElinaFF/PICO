@@ -200,23 +200,23 @@ class Plots:
 
     def show_accuracy_all(self, df, algo):
         """
-        plot the accuracy for each split on train and test set
+        plot the balanced accuracy for each split on train and test set
         df : generated from Results.produce_accuracy_plot_all()
         """
         if "splits" not in df.columns:
             raise RuntimeError(
-                "To show the global accuracies plot, the dataframe needs to have a 'splits' column"
+                "To show the global balanced accuracies plot, the dataframe needs to have a 'splits' column"
             )
-        if "accuracies" not in df.columns:
+        if "balanced accuracies" not in df.columns:
             raise RuntimeError(
-                "To show the global accuracies plot, the dataframe needs to have a 'accuracies' column"
+                "To show the global balanced accuracies plot, the dataframe needs to have a 'accuracies' column"
             )
         if "color" not in df.columns:
             raise RuntimeError(
-                "To show the global accuracies plot, the dataframe needs to have a 'color' column"
+                "To show the global balanced accuracies plot, the dataframe needs to have a 'color' column"
             )
 
-        fig = px.bar(df, x="splits", y="accuracies", color="color", barmode="group")
+        fig = px.bar(df, x="splits", y="balanced accuracies", color="color", barmode="group")
 
         fig.update_yaxes(range=[0, 1.1])
         fig.update_layout(

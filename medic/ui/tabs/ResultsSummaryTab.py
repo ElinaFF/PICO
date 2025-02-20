@@ -304,6 +304,9 @@ class ResultsSummaryTab(MetaTab):
         )
         @log_exceptions(self._logger)
         def show_barplot_compare_accuracy_algo(n_clicks, design_name):
+            """
+            retrieve balanced accuracy values now
+            """
             if n_clicks >= 1:
                 algos = list(self.r[design_name].keys())
 
@@ -313,11 +316,11 @@ class ResultsSummaryTab(MetaTab):
                 test_std = []
                 for a in algos:
                     df = self.r[design_name][a].results["metrics_table"]
-                    train_m, train_s = df["train"][0].split("(")
+                    train_m, train_s = df["train"][1].split("(")
                     train_acc.append(float(train_m))
                     train_std.append(float(train_s.split(")")[0]))
 
-                    test_m, test_s = df["test"][0].split("(")
+                    test_m, test_s = df["test"][1].split("(")
                     test_acc.append(float(test_m))
                     test_std.append(float(test_s.split(")")[0]))
 
