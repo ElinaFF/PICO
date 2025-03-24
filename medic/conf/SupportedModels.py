@@ -42,12 +42,12 @@ LEARN_CONFIG = {
         "function": SetCoveringMachineClassifier,
         "ParamGrid": {
             "RandomSearch" : {
-                "p": np.arange(0.01, 10, step=0.1),
+                "p": np.logspace(-2, 2, base=10, num=30),
                 "max_rules": np.arange(1, 6, 1, dtype=int),
                 "model_type": ["conjunction", "disjunction"],
             },
             "GridSearch" : {
-                "p": np.logspace(-2, 2, base=10, num=9), #[0.01, 0.1, 1, 10], #np.linspace(0.01, 3, 10),
+                "p": np.logspace(-2, 2, base=10, num=7), #[0.01, 0.1, 1, 10],
                 "max_rules": [1, 2, 3, 4, 5],
                 "model_type": ["conjunction", "disjunction"],
             }
@@ -58,12 +58,12 @@ LEARN_CONFIG = {
         "function": RandomScmClassifier,
         "ParamGrid": {
             "RandomSearch" : {
-                "p": np.arange(0.01, 10, step=0.1),
+                "p": np.logspace(-2, 2, base=10, num=30),
                 "n_estimators": np.arange(5, 200, step=10, dtype=int),
                 "model_type": ["conjunction", "disjunction"],
             },
             "GridSearch" : {
-                "p": [0.01, 0.1, 1, 10], #np.linspace(0.01, 3, 10),
+                "p": np.logspace(-2, 2, base=10, num=5),
                 "n_estimators": [5, 10, 30, 50, 70, 100, 200],
                 "model_type": ["conjunction", "disjunction"],
             },
