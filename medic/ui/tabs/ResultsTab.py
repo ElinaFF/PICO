@@ -571,7 +571,7 @@ class ResultsTab(MetaTab):
                 return dash.no_update
 
         @self.app.callback(
-            Output("loading-output-1", "children"),
+            [Output("loading-output-1", "children")],
             [Input("custom_big_tabs", "active_tab")],
         )
         def input_triggers_spinner(value):
@@ -581,23 +581,26 @@ class ResultsTab(MetaTab):
         # --- Callbacks to Save Values (persist dropdown selection) ---
         @self.app.callback(
             Output('design_dropdown_store', 'data'),
-            Input('design_dropdown', 'value'),
+            Input('load_ML_results_button', 'n_clicks'),
+            State('design_dropdown', 'value'),
         )
-        def save_design_dropdown_value(value):
+        def save_design_dropdown_value(_, value):
             return value
 
         @self.app.callback(
             Output('ml_dropdown_store', 'data'),
-            Input('ml_dropdown', 'value'),
+            Input('load_ML_results_button', 'n_clicks'),
+            State('ml_dropdown', 'value'),
         )
-        def save_ml_dropdown_value(value):
+        def save_ml_dropdown_value(_, value):
             return value
 
         @self.app.callback(
             Output('splits_dropdown_store', 'data'),
-            Input('splits_dropdown', 'value'),
+            Input('update_specific_results_button', 'n_clicks'),
+            State('splits_dropdown', 'value'),
         )
-        def save_splits_dropdown_value(value):
+        def save_splits_dropdown_value(_, value):
             return value
 
         # @self.app.callback(

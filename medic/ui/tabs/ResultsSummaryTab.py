@@ -41,6 +41,7 @@ class ResultsSummaryTab(MetaTab):
                                     options=[{"label": "None", "value": "None"}],
                                     value="None",
                                 ),
+                                dcc.Store(id='design_dropdown_summary_store', storage_type='session'),
                             ],
                         ),
                         dbc.Button(
@@ -152,7 +153,6 @@ class ResultsSummaryTab(MetaTab):
             className="global_tab",
             label="Results aggregated",
             children=[
-                dcc.Store(id='design_dropdown_summary_store', storage_type='session'),
                 _resultsMenuDropdowns,
                 html.Div(
                     className="fig_group",
@@ -176,7 +176,7 @@ class ResultsSummaryTab(MetaTab):
                 Output("design_dropdown_summary", "options"),
                 Output("design_dropdown_summary", "value"),
             ],
-            [Input("custom_big_tabs", "active_tab")],
+            Input("custom_big_tabs", "active_tab"),
             State('design_dropdown_summary_store', 'data'),
         )
         @log_exceptions(self._logger)
@@ -195,9 +195,10 @@ class ResultsSummaryTab(MetaTab):
 
         @self.app.callback(
             Output('design_dropdown_summary_store', 'data'),
-            Input('design_dropdown_summary', 'value'),
+            Input('load_results_button', 'n_clicks'),
+            State('design_dropdown_summary', 'value')
         )
-        def save_design_dropdown_summary_value(value):
+        def save_design_dropdown_summary_value(_, value):
             return value
 
         @self.app.callback(
