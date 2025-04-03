@@ -638,6 +638,8 @@ class MetaboExperiment:
         It has been adjusted to account for the situation of metadata containing more information
         than the samples studied by the provided data file
         """
+        if self._unique_ids is None:
+            return []
         return self._unique_ids
     
     def get_classes_repartition_for_all_experiment(self) -> dict:
