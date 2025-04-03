@@ -497,7 +497,13 @@ class ResultsTab(MetaTab):
             className="global_tab",
             id="results_tab",
             label="Results",
-            children=[_resultsInfo, _mainPlotContent],
+            children=[
+                dcc.Store(id='design_dropdown_store', storage_type='session'),
+                dcc.Store(id='ml_dropdown_store', storage_type='session'),
+                dcc.Store(id='splits_dropdown_store', storage_type='session'),
+                _resultsInfo,
+                _mainPlotContent
+            ],
         )
 
     def _registerCallbacks(self) -> None:
@@ -514,14 +520,17 @@ class ResultsTab(MetaTab):
         @self.app.callback(
             [Output("design_dropdown", "options"), Output("design_dropdown", "value")],
             [Input("custom_big_tabs", "active_tab")],
+            State('design_dropdown_store', 'data'),
         )
         @log_exceptions(self._logger)
-        def update_results_dropdown_design(active):
+        def update_results_dropdown_design(active, stored_value):
             if active == "tab-3":
                 self.r = self.metabo_controller.get_all_results()
                 experiment_designs = list(self.r.keys())
                 if len(experiment_designs) == 0:
                     return dash.no_update, dash.no_update
+                if stored_value is not None and stored_value in experiment_designs:
+                    return Utils.format_list_for_checklist(experiment_designs), stored_value
                 return (
                     Utils.format_list_for_checklist(experiment_designs),
                     experiment_designs[0],
@@ -532,36 +541,67 @@ class ResultsTab(MetaTab):
         @self.app.callback(
             [Output("ml_dropdown", "options"), Output("ml_dropdown", "value")],
             [Input("design_dropdown", "value")],
-            [State("custom_big_tabs", "active_tab")],
+            [State("custom_big_tabs", "active_tab"), State('ml_dropdown_store', 'data')],
         )
         @log_exceptions(self._logger)
-        def update_results_dropdown_algo(design, active):
+        def update_results_dropdown_algo(design, active, stored_value):
             if active == "tab-3":
                 a = list(self.r[design].keys())
-                return [{"label": i, "value": i} for i in a], a[0]
+                if stored_value is not None and stored_value in a:
+                    return [{"label": i, "value": i} for i in a], stored_value
+                else:
+                    return [{"label": i, "value": i} for i in a], a[0]
             else:
                 return dash.no_update
 
         @self.app.callback(
             [Output("splits_dropdown", "options"), Output("splits_dropdown", "value")],
             [Input("sub_tabs", "active_tab")],
-            [State("ml_dropdown", "value"), State("design_dropdown", "value")],
+            [State("ml_dropdown", "value"), State("design_dropdown", "value"), State('splits_dropdown_store', 'data')],
         )
         @log_exceptions(self._logger)
-        def update_nbr_splits_dropdown(active, algo, design):
+        def update_nbr_splits_dropdown(active, algo, design, stored_value):
             if active == "tab-1":
                 a = list(self.r[design][algo].splits_number)
-                return [{"label": i, "value": i} for i in a], a[0]
+                if stored_value is not None and stored_value in a:
+                    return [{"label": i, "value": i} for i in a], stored_value
+                else:
+                    return [{"label": i, "value": i} for i in a], a[0]
             else:
                 return dash.no_update
 
         @self.app.callback(
-            Output("loading-output-1", "children"),
+            [Output("loading-output-1", "children")],
             [Input("custom_big_tabs", "active_tab")],
         )
         def input_triggers_spinner(value):
             time.sleep(1)
             return
+
+        # --- Callbacks to Save Values (persist dropdown selection) ---
+        @self.app.callback(
+            Output('design_dropdown_store', 'data'),
+            Input('load_ML_results_button', 'n_clicks'),
+            State('design_dropdown', 'value'),
+        )
+        def save_design_dropdown_value(_, value):
+            return value
+
+        @self.app.callback(
+            Output('ml_dropdown_store', 'data'),
+            Input('load_ML_results_button', 'n_clicks'),
+            State('ml_dropdown', 'value'),
+        )
+        def save_ml_dropdown_value(_, value):
+            return value
+
+        @self.app.callback(
+            Output('splits_dropdown_store', 'data'),
+            Input('update_specific_results_button', 'n_clicks'),
+            State('splits_dropdown', 'value'),
+        )
+        def save_splits_dropdown_value(_, value):
+            return value
 
         # @self.app.callback(
         #     Output("2features", "figure"),

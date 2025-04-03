@@ -41,6 +41,7 @@ class ResultsSummaryTab(MetaTab):
                                     options=[{"label": "None", "value": "None"}],
                                     value="None",
                                 ),
+                                dcc.Store(id='design_dropdown_summary_store', storage_type='session'),
                             ],
                         ),
                         dbc.Button(
@@ -175,19 +176,30 @@ class ResultsSummaryTab(MetaTab):
                 Output("design_dropdown_summary", "options"),
                 Output("design_dropdown_summary", "value"),
             ],
-            [Input("custom_big_tabs", "active_tab")],
+            Input("custom_big_tabs", "active_tab"),
+            State('design_dropdown_summary_store', 'data'),
         )
         @log_exceptions(self._logger)
-        def update_results_dropdown_design(active):
+        def update_results_dropdown_design(active, stored_value):
             if active == "tab-4":
                 try:
                     self.r = self.metabo_controller.get_all_results()
                     a = list(self.r.keys())
+                    if stored_value is not None and stored_value in a:
+                        return [{"label": i, "value": i} for i in a], stored_value
                     return [{"label": i, "value": i} for i in a], a[0]
                 except:  # TODO: wrong practice ???
-                    return dash.no_update
+                    return dash.no_update, dash.no_update
             else:
-                return dash.no_update
+                return dash.no_update, dash.no_update
+
+        @self.app.callback(
+            Output('design_dropdown_summary_store', 'data'),
+            Input('load_results_button', 'n_clicks'),
+            State('design_dropdown_summary', 'value')
+        )
+        def save_design_dropdown_summary_value(_, value):
+            return value
 
         @self.app.callback(
             [
