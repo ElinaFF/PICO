@@ -6,6 +6,7 @@ from dash import html
 
 from ..conf import parameters as cfg
 from decimal import Decimal
+import math
 
 
 class Plots:
@@ -440,12 +441,7 @@ class Plots:
                 return 0
             if k < 0:
                 return 0
-            a = 1
-            b = 1
-            for i in range(1, n + 1):
-                a = a * i
-                b = b * (k - i + 1)
-            return Decimal(b) / Decimal(a)
+            return math.comb(k,n)
 
         def f(i, j):
             return choose(m_element - i, j - i) * choose(i, k_test - (j - i)) / choose(m_element, k_test)
