@@ -630,11 +630,10 @@ class SplitsTab(MetaTab):
                 Input("in_nbr_splits", "value"),
                 Input("in_percent_samples_in_test", "value"),
                 Input("upload_datatable_output", "children"),
-                Input("upload_metadata_output", "children"),
             ],
         )
         @log_exceptions(self._logger)
-        def update_train_test_split_graph(slider_value, percent_test, fm, fd):
+        def update_train_test_split_graph(slider_value, percent_test):
             if percent_test is None:
                 return dash.no_update
             nbr_of_samples = len(self.metabo_controller.get_samples_id())
