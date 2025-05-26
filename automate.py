@@ -12,11 +12,14 @@ import plotly.express as px
 from collections import Counter
 
 
-#METADATA_PATH = "../medic_otherThanPackage/s_MTBLS28_merged.csv"
-#DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_CombinedData2_forML.csv"
+METADATA_PATH = "../medic_otherThanPackage/s_MTBLS28_merged.csv"
+DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_CombinedData2_forML.csv"
 
-METADATA_PATH = "../medic_otherThanPackage/s_MTBLS28_NEG.csv"
-DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_data_NEG_forML.csv"
+#METADATA_PATH = "../medic_otherThanPackage/s_MTBLS28_.csv"
+#DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_data_POS_forML.csv"
+
+#METADATA_PATH = "../medic_otherThanPackage/s_MTBLS28_NEG.csv"
+#DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_data_NEG_forML.csv"
 
 
 def main():
@@ -33,7 +36,7 @@ def main():
 
     metabo_controller.set_id_column("Sample_Name")
     metabo_controller.set_target_columns(["Factor Value[Sample Type]"])
-    metabo_controller.add_experimental_design({"NEG_Case": ["Case"], "Ctrl": ["Control"]})
+    metabo_controller.add_experimental_design({"Cases": ["Case"], "Ctrls": ["Control"]})
     #metabo_controller.set_target_columns(["Factor Value[Sample Type]", "Factor Value[Smoking]"])
     #metabo_controller.add_experimental_design({"NEG_Case_Current": ["Case__Current Smoker"], "Ctrl_Current": ["Control__Current Smoker"]})
     #metabo_controller.add_experimental_design({"NEG_Case_Former": ["Case__Former Smoker"], "Ctrl_Former": ["Control__Former Smoker"]})
@@ -41,10 +44,10 @@ def main():
     print("Classification design added")
 
     metabo_controller.set_train_test_proportion(0.2)
-    metabo_controller.set_number_of_splits(20)
+    metabo_controller.set_number_of_splits(30)
 
     ### Choosing balance correction value : see documentation for explanation
-    metabo_controller.set_balance_correction_for_experiment("NEG_Case_vs_Ctrl", 0)
+    metabo_controller.set_balance_correction_for_experiment("Cases_vs_Ctrls", 0)
     #metabo_controller.set_balance_correction_for_experiment("NEG_Case_Current_vs_Ctrl_Current", 15)
     #metabo_controller.set_balance_correction_for_experiment("NEG_Case_Former_vs_Ctrl_Former", 0)
     #metabo_controller.set_balance_correction_for_experiment("NEG_Case_Never_vs_Ctrl_Never", 21)
@@ -58,6 +61,8 @@ def main():
 
     metabo_controller.set_selected_models(["DecisionTree", "RandomForest", "SCM", "RandomSCM"])
     print("Learning starts...")
+    metabo_controller.set_cv_type("RandomizedSearchCV") # Otherwise default is GridSearchCV (if you want GridSearch you can either specifiy it here, or simply comment this line)
+    metabo_controller.set_cv_algorithm_configuration([10]) # needed if randomSearch is selected, list of values for required parameters of CV algorithm, randomSearch requires n_iter arg : the default here is 10
     metabo_controller.set_cv_folds(5)
     metabo_controller.learn()
     print("finished")
