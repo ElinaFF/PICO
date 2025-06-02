@@ -36,6 +36,17 @@ def SPLITS_setup_files(mtb_ctrl):
     """
     mtb_ctrl : MetaboController object
     """
+
+    # The UI has three options of file input : "Raw" (from progenesis), "Normalized" (from progenesis), Not Progenesis
+    # To input a data matrix not corresponding to progenesis format :
+    #    - set_raw_use_for_data(False)
+    #    - set_data_matrix_remove_rt(False)
+    # To input "Raw" :
+    #    - set_raw_use_for_data(True)
+    # To input "Normalized" :
+    #    - set_raw_use_for_data(False)
+    # The option of "set_data_matrix_remove_rt" should be True if Progenesis format, select False to your own risks
+    # If Not Progenesis, removing RT before 1min should part of preprocessing prior to using the MeDIC
     mtb_ctrl.set_raw_use_for_data(False)
     mtb_ctrl.set_data_matrix_remove_rt(False)
     mtb_ctrl.set_data_matrix_from_path(DATAMATRIX_PATH, from_base64=False)
@@ -50,7 +61,7 @@ def SPLITS_setup_classification_designs(mtb_ctrl):
     #mtb_ctrl.set_target_columns(["Factor Value[Sample Type]", "Factor Value[Smoking]"])
 
     # Designs are defined as dict with labels as keys and column names(if multiple link with "__") as values
-    mtb_ctrl.add_experimental_design({"Cases": ["Case"], "Ctrls": ["Control"]})
+    mtb_ctrl.add_experimental_design({"TotalCases": ["Case"], "TotalCtrls": ["Control"]})
     #mtb_ctrl.add_experimental_design({"NEG_Case_Current": ["Case__Current Smoker"], "Ctrl_Current": ["Control__Current Smoker"]})
     #mtb_ctrl.add_experimental_design({"NEG_Case_Former": ["Case__Former Smoker"], "Ctrl_Former": ["Control__Former Smoker"]})
     #mtb_ctrl.add_experimental_design({"NEG_Case_Never": ["Case__Never Smoker"], "Ctrl_Never": ["Control__Never Smoker"]})
@@ -67,7 +78,7 @@ def SPLITS_setup_splits_and_balancing(mtb_ctrl, proportion_splits , nbr_splits):
 
     # The balance correction is specific to a design, refer to a design by its name (LABEL1_vs_LABEL2)
     # Choosing balance correction value : see documentation for explanation
-    mtb_ctrl.set_balance_correction_for_experiment("Cases_vs_Ctrls", 0)
+    mtb_ctrl.set_balance_correction_for_experiment("TotalCases_vs_TotalCtrls", 0)
     #mtb_ctrl.set_balance_correction_for_experiment("NEG_Case_Current_vs_Ctrl_Current", 15)
     #mtb_ctrl.set_balance_correction_for_experiment("NEG_Case_Former_vs_Ctrl_Former", 0)
     #mtb_ctrl.set_balance_correction_for_experiment("NEG_Case_Never_vs_Ctrl_Never", 21)
@@ -89,7 +100,7 @@ def ML_setup_CV_and_algo(mtb_ctrl, cv_algo):
     
     # Needed if RandomizedSearchCV is chosen
     # list of values for required parameters of CV algorithm, randomSearch requires n_iter arg : the default here is 10
-    mtb_ctrl.set_cv_algorithm_configuration([8])
+    mtb_ctrl.set_cv_algorithm_configuration([20])
     
     mtb_ctrl.set_cv_folds(5)
     mtb_ctrl.learn()
@@ -122,7 +133,7 @@ def main():
 
     SPLITS_setup_files(metabo_controller)
     SPLITS_setup_classification_designs(metabo_controller)
-    SPLITS_setup_splits_and_balancing(metabo_controller, 0.2, 5)
+    SPLITS_setup_splits_and_balancing(metabo_controller, 0.2, 25)
     SAVE_setups_and_results(metabo_controller, "medic_splits")
     
     ML_setup_CV_and_algo(metabo_controller, "RandomizedSearchCV")
