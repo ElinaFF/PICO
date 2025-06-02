@@ -109,9 +109,10 @@ def ML_setup_CV_and_algo(mtb_ctrl, cv_algo):
 def SAVE_setups_and_results(mtb_ctrl, experiment_path):
     """
     mtb_ctrl : MetaboController object
-    experiment_path : either 
-                    -   'medic_splits' the save of only splits parameters, after the "splits tab"
-                    -   'medic_ml' the save of all parameters and results, after the "ml tab"
+    experiment_path :  
+        -   'medic_splits' the save of only splits parameters, after the "splits tab"
+        -   'medic_ml' the save of all parameters and results, after the "ml tab"
+        This argument should not take a different path from the two above, it risks breaking the code. 
     """
     metabo_expe_filename = Utils.get_metabo_experiment_path(experiment_path) # Get save file path
     metabo_expe_obj = mtb_ctrl.generate_save()
