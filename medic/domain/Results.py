@@ -269,8 +269,9 @@ class Results:
         tot = nbr_train + nbr_test
         ratio_test = round(nbr_test / tot * 100)
         ratio_train = 100 - ratio_test
-        nom_stats = ["Number of samples", "Train-test repartition"]
+        nom_stats = ["Number of samples", "Number of splits", "Train-test repartition"]
         valeurs_stats = [str(tot)]
+        valeurs_stats.append(len(self.splits_number))
         valeurs_stats.append(str(ratio_train) + "% - " + str(ratio_test) + "%")
         y = y_train_true + y_test_true
         c = Counter(y)
