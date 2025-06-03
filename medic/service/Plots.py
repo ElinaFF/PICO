@@ -241,13 +241,12 @@ class Plots:
             raise RuntimeError(
                 "To show the global accuracies plot, the dataframe needs to have a 'numbers' column"
             )
+        
+        r = []
+        for i in range(len(df.index)):
+            r.append(html.Tr([html.Td(df.iloc[i, 0]), html.Td(df.iloc[i, 1])]))
 
-        row1 = html.Tr([html.Td(df.iloc[0, 0]), html.Td(df.iloc[0, 1])])
-        row2 = html.Tr([html.Td(df.iloc[1, 0]), html.Td(df.iloc[1, 1])])
-        row3 = html.Tr([html.Td(df.iloc[2, 0]), html.Td(df.iloc[2, 1])])
-        row4 = html.Tr([html.Td(df.iloc[3, 0]), html.Td(df.iloc[3, 1])])
-        row5 = html.Tr([html.Td(df.iloc[4, 0]), html.Td(df.iloc[4, 1])])
-        table_body = [html.Tbody([row1, row2, row3, row4, row5])]
+        table_body = [html.Tbody(r)]
         return table_body
 
     def show_features_selection(self, df: pd.DataFrame, algo):
