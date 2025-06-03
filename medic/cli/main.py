@@ -50,7 +50,7 @@ def ui(
         args=(page_url, 5)
     )
     start_web_page_thread.start()
-    medic_app.run_server(debug=False, host='0.0.0.0', port=port)
+    medic_app.run(debug=False, host='0.0.0.0', port=port)
 
 
 @app.command()
