@@ -57,6 +57,34 @@ class ResultsSummaryTab(MetaTab):
                 )
             ],
         )
+        
+        __currentExperimentInfo = dbc.Card(
+            children=[
+                dbc.CardBody(
+                    children=[
+                        html.H6(
+                            "Current experiment info"
+                        ),  
+                        dcc.Loading(
+                            id="loading_expe_table_summary",
+                            children=html.Div(id="expe_table_summary", children=""),
+                            type="circle",
+                        ),
+                    ]
+                )
+            ],
+            className="w-25",
+        )
+
+        _resultsInfo = html.Div(
+            className="Results_info",
+            children=[
+                _resultsMenuDropdowns,
+                __currentExperimentInfo,
+            ],
+        )
+
+
         _heatmapUsedFeatures = html.Div(
             className="umap_plot_and_title",
             children=[
@@ -153,7 +181,7 @@ class ResultsSummaryTab(MetaTab):
             className="global_tab",
             label="Results aggregated",
             children=[
-                _resultsMenuDropdowns,
+                _resultsInfo,
                 html.Div(
                     className="fig_group",
                     children=[
@@ -200,6 +228,29 @@ class ResultsSummaryTab(MetaTab):
         )
         def save_design_dropdown_summary_value(_, value):
             return value
+        
+        @self.app.callback(
+            [
+                Output("expe_table_summary", "children")
+            ],
+            [
+                Input("load_results_button", "n_clicks")
+            ],
+            [
+                State("design_dropdown_summary", "value")
+            ],
+        )
+        @log_exceptions(self._logger)
+        def get_experiment_statistics(_, design_name):
+            if design_name == "None":
+                return dash.no_update
+            
+            df = self.r[design_name][list(self.r[design_name].keys())[0]].results["info_expe"]
+            table_body = self._plots.show_exp_info_all(df)
+            table = dbc.Table(
+                table_body, id="table_exp_info", borderless=True, hover=True
+            )
+            return [table]
 
         @self.app.callback(
             [
