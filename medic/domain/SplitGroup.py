@@ -45,7 +45,8 @@ class SplitGroup:
             test_split_seed (int | None, optional): Split seed number. For test purpose only,
                 to be used from automate.py to test one specific split. Defaults to None.
         """
-        
+        self._logger.info("_compute_split function beginning")
+
         # 1 - filter out the samples having a target not included in the classification design
         # retrieve metadata dataframe
         df_filter = self._metadata.get_metadata()
@@ -55,7 +56,6 @@ class SplitGroup:
         # (handles the cases of a metadata file for multiple data files : where samples in 
         # the metadata having corresponding targets are not in the provided data file)
         df_filter = df_filter[df_filter[self._metadata.get_id_column()].isin(uniq_sample_id)]
-        self._logger.info("_compute_split step #1 done")
 
         # 2 - select only one sample per entity
         if pairing_column != "":
@@ -67,17 +67,13 @@ class SplitGroup:
             df_entity = df_entity.groupby(pairing_column).nth(0)
         else:
             df_entity = df_filter
-        self._logger.info("_compute_split step #2 done")
 
         # 2.5 - extract ids and targets, transform targets to labels
         ids = df_entity[self._metadata.get_id_column()]
         targets = df_entity[self._metadata.get_target_column()]
         labels = Utils.load_classes_from_targets(self._classes_design, targets)
-        self._logger.info("_compute_split step #2.5 done")
 
-        # 3- procede with the train-test division on the selected samples
-        self._logger.info("start _compute_split step #3")
-        
+        # 3- procede with the train-test division on the selected samples        
         if test_split_seed is not None:
             self._logger.debug(f"Testing split seed #{test_split_seed}")
             split_indexes: list[int] = [test_split_seed] # Test only one split seed
@@ -144,12 +140,11 @@ class SplitGroup:
             if not self._validate_split(y_train, y_test):
                 raise RuntimeError(f"_compute_split step #4 aborted for the invalid split #{split_index}.")
             
-            self._logger.info(f"_compute_split step #4 done")
             self._splits.append([X_train, X_test, y_train, y_test])
             
         self._number_of_split = len(self._splits) # Update the number of splits if some have been removed
         
-        self._logger.info("end _compute_split step")
+        self._logger.info("_compute_split function done")
 
     def load_split_with_index(self, split_index: int) -> list:
         return self._splits[split_index]
