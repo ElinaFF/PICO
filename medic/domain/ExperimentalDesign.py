@@ -67,7 +67,6 @@ class ExperimentalDesign:
         if self._split_group is None:
             raise ValueError("Trying to set models before setting splits parameters")
         self._selected_models_name = selected_models_name
-        # TODO : un genre d'emballage de classe results pour pouvoir appeler juste un nom de classe
         for n in self._selected_models_name:
             self.results[n] = Results(self._split_group.get_number_of_splits())
 
