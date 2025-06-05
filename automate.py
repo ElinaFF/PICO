@@ -1,7 +1,8 @@
 from datetime import datetime
 from medic.domain import MetaboController
-from medic.service import Utils
+from medic.service import Utils, init_logger, log_exceptions
 
+logger = init_logger()
 
 ##############################
 #        Informations        #
@@ -93,14 +94,14 @@ def ML_setup_CV_and_algo(mtb_ctrl, cv_algo):
     mtb_ctrl.set_multithreading(True)
 
     # Available defaults : ["DecisionTree", "RandomForest", "SCM", "RandomSCM"]
-    mtb_ctrl.set_selected_models(["DecisionTree", "RandomForest", "SCM", "RandomSCM"])
+    mtb_ctrl.set_selected_models(["DecisionTree", "RandomForest"]) #, "SCM", "RandomSCM"
     
     # (if GridSearch you can simply comment the line)
     mtb_ctrl.set_cv_type(cv_algo)
     
     # Needed if RandomizedSearchCV is chosen
     # list of values for required parameters of CV algorithm, randomSearch requires n_iter arg : the default here is 10
-    mtb_ctrl.set_cv_algorithm_configuration([20])
+    mtb_ctrl.set_cv_algorithm_configuration([5])
     
     mtb_ctrl.set_cv_folds(5)
     mtb_ctrl.learn()
@@ -126,23 +127,22 @@ def SAVE_setups_and_results(mtb_ctrl, experiment_path):
 #        Main function        #
 ###############################
 
-
+@log_exceptions(logger)
 def main():
     start_time = datetime.now()
-    print("Starting MeDIC at : ", start_time)
+    logger.info(f"---> Starting at : {start_time}")
     metabo_controller = MetaboController()
 
     SPLITS_setup_files(metabo_controller)
     SPLITS_setup_classification_designs(metabo_controller)
-    SPLITS_setup_splits_and_balancing(metabo_controller, 0.2, 25)
+    SPLITS_setup_splits_and_balancing(metabo_controller, 0.2, 2)
     SAVE_setups_and_results(metabo_controller, "medic_splits")
     
     ML_setup_CV_and_algo(metabo_controller, "RandomizedSearchCV")
     SAVE_setups_and_results(metabo_controller, "medic_ml")
 
     end_time = datetime.now()
-    print("Duration: {}".format(end_time - start_time))
-   
+    logger.info(f"---> Duration of run : {end_time - start_time}")   
 
 if __name__ == "__main__":
     main()
