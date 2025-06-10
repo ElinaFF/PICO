@@ -947,7 +947,7 @@ class SplitsTab(MetaTab):
             elif triggered_id == "btn_add_design_exp":
                 try:
                     self.metabo_controller.add_experimental_design({c1: g1, c2: g2})
-                    self._logger.info(f"bip bip : {self.metabo_controller._metabo_experiment.experimental_designs}")
+                    self._logger.info(f"Classification designs : {self.metabo_controller._metabo_experiment.experimental_designs}")
                 except ValueError as ve:
                     return (dash.no_update, dash.no_update, dash.no_update, dash.no_update,
                             dash.no_update, dash.no_update, str(ve))

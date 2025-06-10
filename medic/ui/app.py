@@ -110,6 +110,7 @@ app.layout = html.Div(
     ],
 )
 
+
 app.clientside_callback(
     """
     function(n_clicks) {
