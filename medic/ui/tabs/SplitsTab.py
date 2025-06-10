@@ -629,7 +629,6 @@ class SplitsTab(MetaTab):
             [
                 Input("in_nbr_splits", "value"),
                 Input("in_percent_samples_in_test", "value"),
-                Input("upload_datatable_output", "children"),
             ],
         )
         @log_exceptions(self._logger)
