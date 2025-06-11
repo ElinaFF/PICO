@@ -41,7 +41,7 @@ infoTab = InfoTab(app, metabo_controller)
 splitsTab = SplitsTab(app, metabo_controller)
 mLTab = MLTab(app, metabo_controller)
 resultsTab = ResultsTab(app, metabo_controller)
-resultsSummaryTab = ResultsSummaryTab(app, metabo_controller)
+resultsAggregatedTab = ResultsAggregatedTab(app, metabo_controller)
 interpretTab = InterpretTab(app, metabo_controller)
 
 app.layout = html.Div(
@@ -101,7 +101,7 @@ app.layout = html.Div(
                         #dbc.Tab(label="Splits", disabled=True),
                         #dbc.Tab(label="Machine Learning", disabled=True),
                         resultsTab.getLayout(),
-                        resultsSummaryTab.getLayout()
+                        resultsAggregatedTab.getLayout()
                         # interpretTab.getLayout()
                     ],
                 )
