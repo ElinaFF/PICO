@@ -9,7 +9,7 @@ class MetaboExperimentDTO:
         self.number_of_splits = metabo_experiment.get_number_of_splits()
         self.train_test_proportion = metabo_experiment.get_train_test_proportion()
 
-        self.experimental_designs = metabo_experiment.get_experimental_designs()
+        self.classification_designs = metabo_experiment.get_classification_designs()
 
         self.custom_models = metabo_experiment.get_custom_models()
         self.selected_models = metabo_experiment.get_selected_models()

@@ -1,6 +1,6 @@
 from .SplitGroup import SplitGroup
 from .MetaData import MetaData
-from .ExperimentalDesign import ExperimentalDesign
+from .ClassificationDesign import ClassificationDesign
 from .MetaboExperiment import MetaboExperiment
 from .ModelFactory import ModelFactory
 from .Results import Results

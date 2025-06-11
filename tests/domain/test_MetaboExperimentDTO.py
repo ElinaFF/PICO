@@ -43,10 +43,10 @@ def test_givenMetaboXpDTO_whenGetTrainTestProportion_thenReturnMockedTrainTestPr
     assert metabo_experiment_dto.train_test_proportion == TRAIN_TEST_PROPORTION
 
 
-def test_givenMetaboXpDTO_whenGetExperimentDesigns_thenReturnMockedExperimentDesigns(
+def test_givenMetaboXpDTO_whenGetClassificationDesigns_thenReturnMockedClassificationDesigns(
     metabo_experiment_dto,
 ):
-    assert metabo_experiment_dto.experimental_designs == EXPERIMENT_DESIGNS
+    assert metabo_experiment_dto.classification_designs == EXPERIMENT_DESIGNS
 
 
 def test_givenMetaboXpDTO_whenGetCustomModels_thenReturnMockedCustomModels(

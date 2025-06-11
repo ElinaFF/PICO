@@ -1,0 +1,94 @@
+from unittest.mock import patch, mock_open
+
+import pytest as pytest
+
+from medic.domain import ClassificationDesign
+
+from ..TestsUtility import (
+    MOCKED_METADATA,
+    CLASSES_DESIGN,
+    TRAIN_TEST_PROPORTION,
+    NUMBER_OF_SPLITS,
+    EXPERIMENT_NAME,
+    EXPERIMENT_FULL_NAME,
+    SPLITS,
+    SELECTED_TARGETS_NAME,
+    PARTIAL_CLASSES_DESIGN,
+)
+
+
+@pytest.fixture
+def input_classification_design():
+    classification_design = ClassificationDesign(CLASSES_DESIGN)
+    return classification_design
+
+
+@pytest.fixture
+def input_classification_design_with_partial():
+    classification_design = ClassificationDesign(PARTIAL_CLASSES_DESIGN)
+    return classification_design
+
+
+def test_givenaClassificationDesign_whenGetNumberOfSplit_thenNumberOfSplitsIsCorrect(
+    input_classification_design,
+):
+    input_classification_design.set_split_parameter_and_compute_splits(
+        TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA, ""
+    )
+    assert input_classification_design.get_number_of_splits() == NUMBER_OF_SPLITS
+
+
+def test_givenaClassificationDesign_whenGetAllSplit_thenTheSplitsAreReproducible(
+    input_classification_design,
+):
+    input_classification_design.set_split_parameter_and_compute_splits(
+        TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA, ""
+    )
+    for split_index, (real_split_index, actual_split) in enumerate(
+        input_classification_design.all_splits()
+    ):
+        print("\n Split n{}".format(split_index))
+        assert split_index == real_split_index
+        real_X_train, real_X_test, real_y_train, real_y_test = actual_split
+        X_train, X_test, y_train, y_test = SPLITS[split_index]
+        assert list(real_X_train) == X_train
+        assert list(real_X_test) == X_test
+        assert list(real_y_train) == y_train
+        assert list(real_y_test) == y_test
+
+
+def test_givenaClassificationDesign_whenGetName_thenTheNameIsCorrect(
+    input_classification_design,
+):
+    assert input_classification_design.get_name() == EXPERIMENT_NAME
+
+
+def test_givenaClassificationDesign_whenGetFullName_thenTheFullNameIsCorrect(
+    input_classification_design,
+):
+    assert input_classification_design.get_full_name() == EXPERIMENT_FULL_NAME
+
+
+def test_givenaClassificationDesign_whenGetClassesDesign_thenClassesDesignIsCorrect(
+    input_classification_design,
+):
+    assert input_classification_design.get_classes_design() == CLASSES_DESIGN
+
+
+def test_givenaClassificationDesignWithNoSelectedModels_whenGetResults_thenRaiseRuntimeError(
+    input_classification_design,
+):
+    with pytest.raises(RuntimeError) as e_info:
+        input_classification_design.get_results()
+        assert "Trying to set models before setting splits parameters" in str(
+            e_info.value
+        )
+
+
+def test_givenaClassificationDesign_whenGetSelectedTargetsName_thenTheSelectedTargetsNameAreCorrect(
+    input_classification_design_with_partial,
+):
+    assert (
+            input_classification_design_with_partial.get_selected_targets_name()
+            == SELECTED_TARGETS_NAME
+    )

@@ -27,7 +27,7 @@ def input_controller():
 
 #     input_controller.set_id_column(SAMPLES_ID_COLUMN)
 #     input_controller.set_target_columns([TARGETS_COLUMN])
-#     input_controller.add_experimental_design(CLASSES_DESIGN)
+#     input_controller.add_classification_design(CLASSES_DESIGN)
 
 #     input_controller.set_train_test_proportion(0.2)
 #     input_controller.set_number_of_splits(2)
@@ -48,7 +48,7 @@ def input_controller():
 
 #     input_controller.set_id_column(SAMPLES_ID_COLUMN)
 #     input_controller.set_target_columns([TARGETS_COLUMN])
-#     input_controller.add_experimental_design(CLASSES_DESIGN)
+#     input_controller.add_classification_design(CLASSES_DESIGN)
 
 #     input_controller.set_train_test_proportion(0.2)
 #     input_controller.set_number_of_splits(2)

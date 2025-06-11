@@ -263,7 +263,7 @@ class MLTab(MetaTab):
             if triggered_by == "custom_big_tabs":
                 self._logger.info("Triggered by tab")
                 if active_tab == "tab-2":
-                    self.metabo_controller.update_experimental_designs_with_selected_models()
+                    self.metabo_controller.update_classification_designs_with_selected_models()
 
             if triggered_by == "add_n_refresh_sklearn_algo_button":
                 grid_search_params = {}
@@ -343,7 +343,7 @@ class MLTab(MetaTab):
                 Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save classification design.
                 del metabo_expe_obj
                 self._logger.info(f'The classification design file "{metabo_expe_filename}" has been saved.')
-                self._logger.info(f"bip bip 3 : {self.metabo_controller._metabo_experiment.experimental_designs}")
+                self._logger.info(f"bip bip 3 : {self.metabo_controller._metabo_experiment.classification_designs}")
                 return "Done!", "", True, basename(metabo_expe_filename)
             else:
                 return dash.no_update

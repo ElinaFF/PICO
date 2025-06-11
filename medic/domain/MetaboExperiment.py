@@ -2,7 +2,7 @@ from typing import Generator, Tuple, List, Dict, Union
 
 import sklearn
 
-from . import ExperimentalDesign
+from . import ClassificationDesign
 from . import MetaData, MetaboModel
 from .DataMatrix import DataMatrix
 from .MetaboExperimentDTO import MetaboExperimentDTO
@@ -34,7 +34,7 @@ class MetaboExperiment:
         self._cv_folds = 5
         self._activate_multithreading = True
 
-        self.experimental_designs: Dict[str, ExperimentalDesign] = {}
+        self.classification_designs: Dict[str, ClassificationDesign] = {}
 
         self._supported_models = self._model_factory.create_supported_models("GS")
         self._custom_models = {}
@@ -124,7 +124,7 @@ class MetaboExperiment:
 
     def create_splits(self, test_split_seed: int|None=None) -> None:
         """
-        Check that Experiment parameters are set and then : create an instance of SplitGroup for each Experimental Design
+        Check that Experiment parameters are set and then : create an instance of SplitGroup for each Classification Design
         (The init of SplitGroup triggers the _compute_splits function).
         If test_split_seed is provided, then only this test split seed is computed.
         """
@@ -136,8 +136,8 @@ class MetaboExperiment:
             raise ValueError("Pairing group column not set")
         if self._metadata is None:
             raise ValueError("Metadata not set")
-        for _, experimental_design in self.experimental_designs.items():
-            experimental_design.set_split_parameter_and_compute_splits(self._train_test_proportion,
+        for _, classification_design in self.classification_designs.items():
+            classification_design.set_split_parameter_and_compute_splits(self._train_test_proportion,
                                                                        self._number_of_splits, self._metadata,
                                                                        self._pairing_group_column, self._unique_ids, 
                                                                        test_split_seed)
@@ -156,11 +156,11 @@ class MetaboExperiment:
             raise RuntimeError("Column {} is not in the metadata".format(pairing_group_column))
         self._pairing_group_column = pairing_group_column
 
-    def get_experimental_designs(self) -> Dict[str, ExperimentalDesign]:
+    def get_classification_designs(self) -> Dict[str, ClassificationDesign]:
         """
-        Retrieve all experimental designs for an experience
+        Retrieve all Classification Designs for an experience
         """
-        return self.experimental_designs
+        return self.classification_designs
 
     def _raise_if_classes_design_is_not_valid(self, classes_design: dict) -> None:
         if "" in list(classes_design.keys()):
@@ -176,20 +176,20 @@ class MetaboExperiment:
         if len(set(items)) != len(items):
             raise ValueError("Duplicate class name is not allowed")
 
-    def add_experimental_design(self, classes_design: dict):
+    def add_classification_design(self, classes_design: dict):
         """
-        add an experimental design to the experience, creates an object ExperimentalDesign each time
+        add a Classification Design to the experience, creates an object ClassificationDesign each time
         classes_design: which target.s against which for the prediction, and the names (classes) of the groups of target.s
         """
         self._raise_if_classes_design_is_not_valid(classes_design)
-        experimental_design = ExperimentalDesign(classes_design)
-        self.experimental_designs[experimental_design.get_name()] = experimental_design
+        classification_design = ClassificationDesign(classes_design)
+        self.classification_designs[classification_design.get_name()] = classification_design
 
-    def remove_experimental_design(self, name: str):
+    def remove_classification_design(self, name: str):
         """
-        Remove an experimental design, but not used
+        Remove a Classification Design, but not used
         """
-        self.experimental_designs.pop(name)
+        self.classification_designs.pop(name)
 
     def add_custom_model(self, model_name: str, needed_imports: str, params_grid: dict, importance_attribute: str):
         """
@@ -219,21 +219,21 @@ class MetaboExperiment:
     def set_selected_models(self, selected_models: list):
         """
         Set the self._selected_models attribute with the list given in argument
-        and for each Experimental Design object initialize basics of Results instances
+        and for each Classification Design object initialize basics of Results instances
         selected_models: list of models to run during the experiment
         """
-        if self.experimental_designs == {}:
+        if self.classification_designs == {}:
             raise ValueError("You must define at least one classification design before selecting models.")
         self._selected_models = selected_models
-        for _, experimental_design in self.experimental_designs.items():
-            experimental_design.set_selected_models_name(selected_models)
+        for _, classification_design in self.classification_designs.items():
+            classification_design.set_selected_models_name(selected_models)
 
-    def update_experimental_designs_with_selected_models(self):
+    def update_classification_designs_with_selected_models(self):
         """
 
         """
-        for _, experimental_design in self.experimental_designs.items():
-            experimental_design.set_selected_models_name(self._selected_models)
+        for _, classification_design in self.classification_designs.items():
+            classification_design.set_selected_models_name(self._selected_models)
 
     def get_selected_models(self) -> list:
         """
@@ -290,7 +290,7 @@ class MetaboExperiment:
                 + "' has not been found neither in supported and custom lists."
             )
 
-    def _check_experimental_design(self):
+    def _check_classification_design(self):
         error_message = "Train test proportion, number of splits and metadata need to be set before start learning: "
         if self._number_of_splits is None:
             raise RuntimeError(error_message + "missing number of splits")
@@ -299,18 +299,18 @@ class MetaboExperiment:
         if self._metadata is None:
             raise RuntimeError(error_message + "missing metadata")
 
-    def all_experimental_designs_names(self) -> Generator[Tuple[str, str], None, None]:
+    def all_classification_designs_names(self) -> Generator[Tuple[str, str], None, None]:
         """
-        Retrieve all experimental designs names for an experience.
+        Retrieve all Classification Designs names for an experience.
         """
-        for name, experimental_design in self.experimental_designs.items():
-            yield name, experimental_design.get_full_name()
+        for name, classification_design in self.classification_designs.items():
+            yield name, classification_design.get_full_name()
 
-    def reset_experimental_designs(self):
+    def reset_classification_designs(self):
         """
-        Delete all existing experimental designs.
+        Delete all existing Classification Designs.
         """
-        self.experimental_designs = {}
+        self.classification_designs = {}
 
     def _raise_if_value_for_learning_not_setted(self):
         if self._data_matrix is None:
@@ -327,7 +327,7 @@ class MetaboExperiment:
             raise RuntimeError("Selected models not set")
         if self._cv_folds is None:
             raise RuntimeError("CV folds not set")
-        if self.experimental_designs == {}:
+        if self.classification_designs == {}:
             raise RuntimeError(
                 "You must define at least one classification design before learning."
             )
@@ -336,20 +336,20 @@ class MetaboExperiment:
         self._raise_if_value_for_learning_not_setted()
         cv_algorithm_constructor = self.get_cv_algorithm_constructor()
         cv_algorithm_config = self.get_cv_algorithm_configuration()
-        self._check_experimental_design()
+        self._check_classification_design()
         self._data_matrix.load_data()
         assert(self._data_matrix.data is not None)
         if not self._data_matrix.data.index.isin(self._metadata.get_metadata()[self._metadata.get_id_column()]).all():
             raise ValueError(f"'{self._metadata.get_id_column()}' seen not to be as valid name of the unique id column.")
         params = []
-        for _, experimental_design in self.experimental_designs.items():
+        for _, classification_design in self.classification_designs.items():
             self._logger.info("-> Classification design loop ")
-            selected_targets_name = experimental_design.get_selected_targets_name()
+            selected_targets_name = classification_design.get_selected_targets_name()
             (selected_targets, selected_ids,) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
             classes = Utils.load_classes_from_targets(
-                experimental_design.get_classes_design(), selected_targets
+                classification_design.get_classes_design(), selected_targets
             )
-            for split_index, split in experimental_design.all_splits():
+            for split_index, split in classification_design.all_splits():
                 for model_name in self._selected_models:
                     x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
                         split[X_TRAIN_INDEX]
@@ -358,7 +358,7 @@ class MetaboExperiment:
                         split[X_TEST_INDEX]
                     )
                     params.append(
-                        (model_name, experimental_design.get_name(), split_index, split, x_train, x_test,
+                        (model_name, classification_design.get_name(), split_index, split, x_train, x_test,
                          cv_algorithm_constructor, cv_algorithm_config, selected_ids, classes)
                     )
         self.run_learning(params)
@@ -372,7 +372,7 @@ class MetaboExperiment:
 
         for result_param in result_params:
             (
-                experimental_design_name, 
+                classification_design_name, 
                 model_name, 
                 best_model, 
                 scaled_data, 
@@ -386,26 +386,26 @@ class MetaboExperiment:
                 X_train,
                 X_test
             ) = result_param
-            results = self.experimental_designs[experimental_design_name].get_results()
+            results = self.classification_designs[classification_design_name].get_results()
             results[model_name].set_feature_names(X_train) # called multiple times but it's ok
-            results[model_name].design_name = experimental_design_name
+            results[model_name].design_name = classification_design_name
             results[model_name].add_results_from_one_algo_on_one_split(
                 best_model, scaled_data, importance_attribute, 
                 classes, y_train, y_train_pred, y_test, y_test_pred,
                 split_index, X_train.index, X_test.index
             )
 
-        for experimental_design_name, experimental_design in self.experimental_designs.items():
-            results = experimental_design.get_results()
+        for classification_design_name, classification_design in self.classification_designs.items():
+            results = classification_design.get_results()
             _, selected_sample_id = self._metadata.get_selected_targets_and_ids(
-                experimental_design.get_selected_targets_name())
+                classification_design.get_selected_targets_name())
             for model_name, result in results.items():
-                self._logger.info(f"-> Compute remaining results for {model_name} of {experimental_design_name} design")
+                self._logger.info(f"-> Compute remaining results for {model_name} of {classification_design_name} design")
                 result.compute_remaining_results_on_all_splits(selected_sample_id)
-            experimental_design.set_is_done(True)
+            classification_design.set_is_done(True)
 
 
-    def run_on_model(self, model_name, experimental_design_name, split_index, split, x_train, x_test,
+    def run_on_model(self, model_name, classification_design_name, split_index, split, x_train, x_test,
                      cv_algorithm_constructor, cv_algorithm_config, selected_ids, classes):
         self._logger.info(f"-> Split : {split_index}")
         self._logger.info(f"-> Model : {model_name}")
@@ -426,7 +426,7 @@ class MetaboExperiment:
         y_train_pred = best_model.predict(x_train)
         y_test_pred = best_model.predict(x_test)
         return (
-            experimental_design_name,
+            classification_design_name,
             model_name,
             best_model,
             self._data_matrix.get_scaled_data(selected_ids),
@@ -442,16 +442,16 @@ class MetaboExperiment:
         )
 
     def get_results(self, classes_design: str, algo_name) -> dict:
-        return self.experimental_designs[classes_design].get_results()[algo_name]
+        return self.classification_designs[classes_design].get_results()[algo_name]
 
     def get_all_updated_results(self) -> dict:
         """
-        Retrieve, for each experimental design that is done, the results dict corresponding
+        Retrieve, for each Classification Design that is done, the results dict corresponding
         """
         results = {}
-        for name in self.experimental_designs:
-            if self.experimental_designs[name].get_is_done():
-                results[name] = self.experimental_designs[name].get_results()
+        for name in self.classification_designs:
+            if self.classification_designs[name].get_is_done():
+                results[name] = self.classification_designs[name].get_results()
         return results
 
     def get_all_algos_names(self) -> list:
@@ -524,7 +524,7 @@ class MetaboExperiment:
         """
         self._number_of_splits = saved_metabo_experiment_dto.number_of_splits
         self._train_test_proportion = saved_metabo_experiment_dto.train_test_proportion
-        self.experimental_designs = saved_metabo_experiment_dto.experimental_designs
+        self.classification_designs = saved_metabo_experiment_dto.classification_designs
         self._custom_models = saved_metabo_experiment_dto.custom_models
         self._selected_models = saved_metabo_experiment_dto.selected_models
         self._selected_cv_type = saved_metabo_experiment_dto.selected_cv_type
@@ -644,27 +644,27 @@ class MetaboExperiment:
     
     def get_classes_repartition_for_all_experiment(self) -> dict:
         classes_repartition = {}
-        for experimental_design_name in self.experimental_designs:
-            class_design = self.experimental_designs[experimental_design_name].get_classes_design()
-            classes_repartition[experimental_design_name] = \
+        for classification_design_name in self.classification_designs:
+            class_design = self.classification_designs[classification_design_name].get_classes_design()
+            classes_repartition[classification_design_name] = \
                 self._metadata.get_classes_repartition_based_on_design(class_design)
         return classes_repartition
 
     def get_balance_correction_for_all_experiment(self) -> dict:
         balance_correction = {}
-        for experimental_design_name in self.experimental_designs:
-            balance_correction[experimental_design_name] = \
-                self.experimental_designs[experimental_design_name].get_balance_correction()
+        for classification_design_name in self.classification_designs:
+            balance_correction[classification_design_name] = \
+                self.classification_designs[classification_design_name].get_balance_correction()
         return balance_correction
 
-    def set_balance_correction_for_experiment(self, experimental_design_name: str, balance_correction: int) -> None:
-        if experimental_design_name not in self.experimental_designs:
+    def set_balance_correction_for_experiment(self, classification_design_name: str, balance_correction: int) -> None:
+        if classification_design_name not in self.classification_designs:
             raise ValueError("Classification design name not found")
-        self.experimental_designs[experimental_design_name].set_balance_correction(balance_correction)
+        self.classification_designs[classification_design_name].set_balance_correction(balance_correction)
 
     def display_splits(self) -> None:
         """
-        Display the classes repartition for each split of each experimental design.
+        Display the classes repartition for each split of each Classification Design.
         See more détail in the MetaboController.display_splits() method description.
         """
         from collections import Counter
@@ -672,16 +672,16 @@ class MetaboExperiment:
         def display_classes_repartition(target_classes: list) -> str:
             return ' vs '.join([f"{cnt} ({int(round(cnt*100 / len(target_classes))):02d}%)" for _, cnt in sorted(Counter(target_classes).items())])
 
-        for key,experimental_design in self.experimental_designs.items():
-            balance_corr: int = experimental_design.get_balance_correction()
-            experimental_classes_repartition: dict = self._metadata.get_classes_repartition_based_on_design(experimental_design.get_classes_design())
+        for key,classification_design in self.classification_designs.items():
+            balance_corr: int = classification_design.get_balance_correction()
+            experimental_classes_repartition: dict = self._metadata.get_classes_repartition_based_on_design(classification_design.get_classes_design())
             total_cnt: int = sum(value for value in experimental_classes_repartition.values())
 
             debug_lines = []
-            for split_index, split_group in experimental_design.all_splits():
+            for split_index, split_group in classification_design.all_splits():
                 if split_index == 0:
                     class_set = sorted(set(split_group[2]))
-                    debug_lines.append(f"Experimental design '{key}' details:")
+                    debug_lines.append(f"Classification Design '{key}' details:")
                     total_class_repartition: str = " vs ".join([f"'{cl}': {cnt:02d} ({int(round(cnt*100 / total_cnt)):02d}%)"
                                                                 for cl, cnt in sorted(experimental_classes_repartition.items())])
                     debug_lines.append(f"Data set repartition: {total_class_repartition} (Balance corr={balance_corr}%).")

@@ -305,7 +305,7 @@ class SplitsTab(MetaTab):
             body=True,
         )
 
-        _experimentalDesigns = html.Div(
+        _classificationDesigns = html.Div(
             className="title_and_form",
             children=[
                 html.H4(id="Exp_desg_title", children="Define Classification designs"),
@@ -320,10 +320,10 @@ class SplitsTab(MetaTab):
                                 dbc.FormText("Classification Designs."),
                                 dbc.Card(
                                     id="setted_classes_container",
-                                    children=self._get_wrapped_experimental_designs(),
+                                    children=self._get_wrapped_classification_designs(),
                                     style={"display": "block", "padding": "1em"},
                                 ),
-                                html.Div(id="error_experimental_designs", style={"color": "red"}),
+                                html.Div(id="error_classification_designs", style={"color": "red"}),
                                 dbc.FormText("Define labels and filter out samples."),
                                 __labelDefinition,
                             ]
@@ -611,7 +611,7 @@ class SplitsTab(MetaTab):
                     className="fig_group",
                     children=[
                         _file,
-                        _experimentalDesigns,
+                        _classificationDesigns,
                     ],
                 ),
                 html.Div(
@@ -730,7 +730,7 @@ class SplitsTab(MetaTab):
                         [html.P("Rows must have an equal number of columns")],
                         {"color": "red"},
                     )
-                self.metabo_controller.reset_experimental_designs()
+                self.metabo_controller.reset_classification_designs()
 
                 if self.metabo_controller.is_progenesis_data():
                     # trigger the update of possible targets
@@ -773,7 +773,7 @@ class SplitsTab(MetaTab):
                         return [], [], [], html.P(str(err)), {"color": "red"}
                     except Exception as e:
                         return [], [], [], html.P(str(e)), {"color": "red"}
-                    self.metabo_controller.reset_experimental_designs()
+                    self.metabo_controller.reset_classification_designs()
 
                     formatted_columns = Utils.format_list_for_checklist(self.metabo_controller.get_metadata_columns())
                     return (formatted_columns, formatted_columns, formatted_columns,
@@ -927,7 +927,7 @@ class SplitsTab(MetaTab):
              Output("setted_classes_container", "style"),
              Output("error_classification_type", "children")],
             [Input("btn_add_design_exp", "n_clicks"),
-             Input("remove_experimental_design_button", "n_clicks"),
+             Input("remove_classification_design_button", "n_clicks"),
              Input("in_target_col_name", "value"),
              Input("info_progenesis_loaded", "children"),
              Input("custom_big_tabs", "active_tab")],
@@ -940,18 +940,18 @@ class SplitsTab(MetaTab):
         def add_n_reset_classes_exp_design(n_add, n_remove, target_col, children, active_tab, c1, g1, c2, g2):
             triggered_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
-            if (triggered_id == "remove_experimental_design_button" or triggered_id == "in_target_col_name"
+            if (triggered_id == "remove_classification_design_button" or triggered_id == "in_target_col_name"
                     or triggered_id == "info_progenesis_loaded"):
-                self.metabo_controller.reset_experimental_designs()
+                self.metabo_controller.reset_classification_designs()
             elif triggered_id == "btn_add_design_exp":
                 try:
-                    self.metabo_controller.add_experimental_design({c1: g1, c2: g2})
-                    self._logger.info(f"Classification designs : {self.metabo_controller._metabo_experiment.experimental_designs}")
+                    self.metabo_controller.add_classification_design({c1: g1, c2: g2})
+                    self._logger.info(f"Classification designs : {self.metabo_controller._metabo_experiment.classification_designs}")
                 except ValueError as ve:
                     return (dash.no_update, dash.no_update, dash.no_update, dash.no_update,
                             dash.no_update, dash.no_update, str(ve))
 
-            return ("", 0, "", 0, self._get_wrapped_experimental_designs(), {"display": "block", "padding": "1em"}, "")
+            return ("", 0, "", 0, self._get_wrapped_classification_designs(), {"display": "block", "padding": "1em"}, "")
 
         @self.app.callback(
             Output("collapse_preprocessing", "is_open"),
@@ -997,7 +997,7 @@ class SplitsTab(MetaTab):
                 Output("error_upload_datatable", "children"),
                 Output("error_data_normalization", "children"),
                 Output("error_upload_metadata", "children"),
-                Output("error_experimental_designs", "children"),
+                Output("error_classification_designs", "children"),
             ],
             [Input("split_dataset_button", "n_clicks")],
             [State("in_percent_samples_in_test", "value"),
@@ -1023,7 +1023,7 @@ class SplitsTab(MetaTab):
                 datatable_error = ""
                 metadata_error = ""
                 invalid_id_error = ""
-                experimental_design_error = ""
+                classification_design_error = ""
                 if self.metabo_controller.is_data_raw() is None:
                     normalization_error = "Please select a normalization method."
                 elif not self.metabo_controller.data_is_set():
@@ -1032,13 +1032,13 @@ class SplitsTab(MetaTab):
                     metadata_error = "You must upload a metadata file before splitting it."
                 elif not self.metabo_controller.validate_id_column():
                     invalid_id_error = html.P(f'You must provide a valid name of unique id column', style={"color": "red"})
-                elif not self.metabo_controller.get_all_experimental_designs_names():
-                    experimental_design_error = "You must add at least one classification design before " \
+                elif not self.metabo_controller.get_all_classification_designs_names():
+                    classification_design_error = "You must add at least one classification design before " \
                                                 "splitting the data."
 
                 if train_test_proportion_error != "" or datatable_error != "" or normalization_error != "" or metadata_error != "" \
-                    or experimental_design_error != "" or invalid_id_error != "":
-                    return invalid_id_error, train_test_proportion_error, datatable_error, normalization_error, metadata_error, experimental_design_error
+                    or classification_design_error != "" or invalid_id_error != "":
+                    return invalid_id_error, train_test_proportion_error, datatable_error, normalization_error, metadata_error, classification_design_error
                 self.metabo_controller.set_number_of_splits(nbr_splits)
                 self.metabo_controller.create_splits()
                 
@@ -1049,7 +1049,7 @@ class SplitsTab(MetaTab):
                 Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save the classification design
                 del metabo_expe_obj
 
-                self._logger.info(f"{self.metabo_controller._metabo_experiment.experimental_designs}")
+                self._logger.info(f"{self.metabo_controller._metabo_experiment.classification_designs}")
                 self._logger.info(f"Classification design splits file '{metabo_expe_filename}' saved.")
                 send_file(Utils.get_dumped_metabo_experiment_path())
                 
@@ -1064,7 +1064,7 @@ class SplitsTab(MetaTab):
         @self.app.callback(
             Output("class_balancing_options", "children"),
             [Input("btn_add_design_exp", "n_clicks"),
-             Input("remove_experimental_design_button", "n_clicks")],
+             Input("remove_classification_design_button", "n_clicks")],
         )
         @log_exceptions(self._logger)
         def add_class_balancing_options(n_clicks_add, n_clicks_remove):
@@ -1171,24 +1171,24 @@ class SplitsTab(MetaTab):
                 error_msg = f"'{id_column}' is not a valid name of unique id column"
             return error_msg
 
-    def _get_wrapped_experimental_designs(self):
+    def _get_wrapped_classification_designs(self):
         children_container = [html.Div("Classification design")]
-        all_experimental_designs = (
-            self.metabo_controller.get_all_experimental_designs_names()
+        all_classification_designs = (
+            self.metabo_controller.get_all_classification_designs_names()
         )
 
-        if len(all_experimental_designs) == 0:
+        if len(all_classification_designs) == 0:
             button = html.Div(
                 dbc.Button(
                     "Reset",
                     className="custom_buttons",
-                    id="remove_experimental_design_button",
+                    id="remove_classification_design_button",
                 ),
                 style={"display": "none"},
             )
             return html.Div([html.P("No classification design setted yet."), button])
 
-        for _, full_name in all_experimental_designs:
+        for _, full_name in all_classification_designs:
             children_container.append(
                 html.Div(
                     children=["- " + full_name],
@@ -1203,7 +1203,7 @@ class SplitsTab(MetaTab):
             dbc.Button(
                 "Reset",
                 className="custom_buttons",
-                id="remove_experimental_design_button",
+                id="remove_classification_design_button",
             ),
             style={"textAlign": "right"},
         )

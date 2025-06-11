@@ -30,8 +30,8 @@ MAX_CARDINALITY_FOR_COOCURENCE = 1000
 
 class Results:
     """
-    Contains all results of an experimental design, is an attribute of class Experimental_design, and gives info to class "Plotter".
-    Has results of all algorithms for all splits on one experimental design (so almost only numbers/floats/ints).
+    Contains all results of a classification design, is an attribute of class Classification_design, and gives info to class "Plotter".
+    Has results of all algorithms for all splits on one classification design (so almost only numbers/floats/ints).
     Can be kept in RAM as it is not supposed to be too big, and prevents the reading/writing of models and splits files.
     """
 

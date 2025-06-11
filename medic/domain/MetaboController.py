@@ -54,43 +54,43 @@ class MetaboController:
         """
         return self._metabo_experiment.get_unique_targets()
 
-    def add_experimental_design(self, classes_design: dict):
+    def add_classification_design(self, classes_design: dict):
         """
-        add an experimental design to the experience
+        add an classification design to the experience
         classes_design: which target.s against which for the prediction, and the names (classes) of the groups of target.s
         """
-        self._metabo_experiment.add_experimental_design(classes_design)
+        self._metabo_experiment.add_classification_design(classes_design)
 
-    def get_experimental_designs(self):
+    def get_classification_designs(self):
         """
-        Retrieve all experimental designs for an experience.
+        Retrieve all classification designs for an experience.
         """
-        return self._metabo_experiment.get_experimental_designs()
+        return self._metabo_experiment.get_classification_designs()
 
-    def all_experimental_designs_names(self) -> Generator[Tuple[str, str], None, None]:
+    def all_classification_designs_names(self) -> Generator[Tuple[str, str], None, None]:
         """
-        Retrieve all experimental designs names for an experience.
+        Retrieve all classification designs names for an experience.
         """
-        return self._metabo_experiment.all_experimental_designs_names()
+        return self._metabo_experiment.all_classification_designs_names()
 
-    def get_all_experimental_designs_names(self) -> List[Tuple[str, str]]:
+    def get_all_classification_designs_names(self) -> List[Tuple[str, str]]:
         """
-        Retrieve a list of experimental designs names for an experience.
+        Retrieve a list of classification designs names for an experience.
         """
-        return list(self._metabo_experiment.all_experimental_designs_names())
+        return list(self._metabo_experiment.all_classification_designs_names())
 
-    def reset_experimental_designs(self):
+    def reset_classification_designs(self):
         """
-        Delete all existing experimental designs.
+        Delete all existing classification designs.
         """
-        self._metabo_experiment.reset_experimental_designs()
+        self._metabo_experiment.reset_classification_designs()
 
-    def remove_experimental_design(self, name: str):
+    def remove_classification_design(self, name: str):
         """
         !!! --- NOT USED --- !!!
-        Remove an experimental design
+        Remove an classification design
         """
-        self._metabo_experiment.remove_experimental_design(name)
+        self._metabo_experiment.remove_classification_design(name)
 
     def get_samples_id_from_splits(self, nbr_split_list, design):
         """
@@ -122,7 +122,7 @@ class MetaboController:
     def set_selected_models(self, selected_models: list):
         """
         Set the self._selected_models attribute of MetaboExperiment with the list given in argument
-        and for each Experimental Design object initialize basics of Results instances
+        and for each Classification Design object initialize basics of Results instances
         selected_models: list of models to run during the experiment
         """
         self._metabo_experiment.set_selected_models(selected_models)
@@ -132,15 +132,15 @@ class MetaboController:
 
     def get_results(self, design_name: str, algo: str):
         """
-        Retrieve the results of a specific algorithm for a specific experimental design
-        design_name: experimental design's name
+        Retrieve the results of a specific algorithm for a specific classification design
+        design_name: classification design's name
         algo: specific algo for which we want the results
         """
-        return self._metabo_experiment.experimental_designs[design_name].results[algo].results
+        return self._metabo_experiment.classification_designs[design_name].results[algo].results
 
     def get_all_results(self):
         """
-        Retrieve, for each experimental design that is done, the results dict corresponding
+        Retrieve, for each classification design that is done, the results dict corresponding
         """
         return self._metabo_experiment.get_all_updated_results()
 
@@ -252,7 +252,7 @@ class MetaboController:
 
     def create_splits(self) -> None:
         """
-        Check that Experiment parameters are set and then : create an instance of SplitGroup for each Experimental Design
+        Check that Experiment parameters are set and then : create an instance of SplitGroup for each classification Design
         (The init of SplitGroup triggers the _compute_splits function)
         If test_split_seed is provided, then only this test split seed is computed.
         """
@@ -261,7 +261,7 @@ class MetaboController:
     def create_test_split_from_seed(self, test_split_seed: int) -> None:
         """
         Check that Experiment parameters are set and then : create an instance of SplitGroup
-        having one test split from provided seed for each Experimental Design
+        having one test split from provided seed for each classification Design
         (The init of SplitGroup triggers the _compute_splits function)
         """
         self._metabo_experiment.create_splits(test_split_seed)
@@ -329,8 +329,8 @@ class MetaboController:
         """
         self._metabo_experiment.set_cv_folds(cv_folds)
 
-    def update_experimental_designs_with_selected_models(self):
-        self._metabo_experiment.update_experimental_designs_with_selected_models()
+    def update_classification_designs_with_selected_models(self):
+        self._metabo_experiment.update_classification_designs_with_selected_models()
 
     def is_the_data_matrix_corresponding(self, data: str) -> bool:
         return self._metabo_experiment.is_the_data_matrix_corresponding(data)
@@ -377,17 +377,17 @@ class MetaboController:
     def get_balance_correction_for_all_experiment(self) -> dict:
         return self._metabo_experiment.get_balance_correction_for_all_experiment()
 
-    def set_balance_correction_for_experiment(self, experimental_design_name: str, balance_correction: int) -> None:
-        self._metabo_experiment.set_balance_correction_for_experiment(experimental_design_name, balance_correction)
+    def set_balance_correction_for_experiment(self, classification_design_name: str, balance_correction: int) -> None:
+        self._metabo_experiment.set_balance_correction_for_experiment(classification_design_name, balance_correction)
 
     def display_splits(self) -> None:
         """
-        Display the classes repartition for each split of each experimental design.
+        Display the classes repartition for each split of each classification design.
 
         This can be used for debugging purposes from the automate.py script for example.
 
         The output will be something like:
-            Experimental design 'first_design' details:
+            classification design 'first_design' details:
                 Data set repartition: 'B': 96 (84%) vs 'C': 18 (16%) (Balance corr=34%).
                 Classes 'B' vs 'C' repartition in splits (All | Train | Test):
                 Split #00: All=[34 (65%) vs 18 (35%)] | Train=[14 (52%) vs 13 (48%)] | Test=[20 (80%) vs 5 (20%)]

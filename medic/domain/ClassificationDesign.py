@@ -4,7 +4,7 @@ from . import SplitGroup, MetaData
 from .Results import *
 
 
-class ExperimentalDesign:
+class ClassificationDesign:
     def __init__(self, classes_design: dict):
         self._classes_design: dict = classes_design
         self._name: str = ""
@@ -72,7 +72,7 @@ class ExperimentalDesign:
 
     def get_results(self) -> Dict[str, Results]:
         """
-        Return the results dict (attribute) corresponding to this instance of Experimental Design
+        Return the results dict (attribute) corresponding to this instance of Classification Design
         """
         if self.results == {}:
             raise RuntimeError("The name of the selected models has to be set before accessing results.")

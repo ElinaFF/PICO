@@ -45,7 +45,7 @@ def input_set_metabo_experiment():
 
     metabo_experiment.set_id_column(SAMPLES_ID_COLUMN)
     metabo_experiment.set_target_columns([TARGETS_COLUMN])
-    metabo_experiment.add_experimental_design(CLASSES_DESIGN)
+    metabo_experiment.add_classification_design(CLASSES_DESIGN)
 
     metabo_experiment.set_train_test_proportion(0.2)
     metabo_experiment.set_number_of_splits(2)
@@ -54,11 +54,11 @@ def input_set_metabo_experiment():
     return metabo_experiment
 
 
-def test_givenMetaboExperiment_whenAddExperimentalDesign_thenTheExperimentalDesignsAreCorrect(
+def test_givenMetaboExperiment_whenAddclassificationDesign_thenTheclassificationDesignsAreCorrect(
     input_metabo_experiment,
 ):
-    input_metabo_experiment.add_experimental_design(CLASSES_DESIGN)
-    assert list(input_metabo_experiment.get_experimental_designs().keys()) == [
+    input_metabo_experiment.add_classification_design(CLASSES_DESIGN)
+    assert list(input_metabo_experiment.get_classification_designs().keys()) == [
         EXPERIMENT_NAME
     ]
 
@@ -92,9 +92,9 @@ def test_givenMetaboExperiment_whenChangeCvTypeToIncorrect_thenRaiseValueError(
 #    assert input_metabo_experiment.get_data_matrix() == MOCKED_DATAMATRIX
 #    assert input_metabo_experiment.get_number_of_splits() == NUMBER_OF_SPLITS
 #    assert input_metabo_experiment.get_train_test_proportion() == TRAIN_TEST_PROPORTION
-#    assert input_metabo_experiment.get_experimental_designs() == EXPERIMENT_DESIGNS
+#    assert input_metabo_experiment.get_classification_designs() == EXPERIMENT_DESIGNS
 #    assert (
-#        input_metabo_experiment.get_experimental_designs()[
+#        input_metabo_experiment.get_classification_designs()[
 #            EXPERIMENT_NAME
 #        ].get_results()
 #        == EXP_RESULTS
@@ -121,9 +121,9 @@ def test_givenMetaboExperiment_whenPartialRestore_thenMetaboExperimentIsUpdated(
     assert input_metabo_experiment.get_metadata().get_metadata().equals(METADATA_DATAFRAME)
     assert input_metabo_experiment.get_number_of_splits() == NUMBER_OF_SPLITS
     assert input_metabo_experiment.get_train_test_proportion() == TRAIN_TEST_PROPORTION
-    assert input_metabo_experiment.get_experimental_designs() == EXPERIMENT_DESIGNS
+    assert input_metabo_experiment.get_classification_designs() == EXPERIMENT_DESIGNS
     assert (
-        input_metabo_experiment.get_experimental_designs()[
+        input_metabo_experiment.get_classification_designs()[
             EXPERIMENT_NAME
         ].get_results()
         == EXP_RESULTS
@@ -139,9 +139,9 @@ def test_givenMetaboExperiment_whenLoadResults_thenResultsAreLoaded(
     assert input_metabo_experiment.get_data_matrix().get_hash() is None
     assert input_metabo_experiment.get_number_of_splits() == NUMBER_OF_SPLITS
     assert input_metabo_experiment.get_train_test_proportion() == TRAIN_TEST_PROPORTION
-    assert input_metabo_experiment.get_experimental_designs() == EXPERIMENT_DESIGNS
+    assert input_metabo_experiment.get_classification_designs() == EXPERIMENT_DESIGNS
     assert (
-        input_metabo_experiment.get_experimental_designs()[
+        input_metabo_experiment.get_classification_designs()[
             EXPERIMENT_NAME
         ].get_results()
         == EXP_RESULTS
@@ -152,7 +152,7 @@ def test_givenMetaboExperiment_whenLoadResults_thenResultsAreLoaded(
 def test_givenAllParameter_whenGettingUpdatedResults_thenTheResultsAreCorrect(
     input_set_metabo_experiment,
 ):
-    input_set_metabo_experiment.get_experimental_designs()[EXPERIMENT_NAME].set_is_done(
+    input_set_metabo_experiment.get_classification_designs()[EXPERIMENT_NAME].set_is_done(
         True
     )
 
