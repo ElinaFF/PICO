@@ -6,7 +6,7 @@ from .Results import *
 
 class ClassificationDesign:
     def __init__(self, classes_design: dict):
-        self._classes_design: dict = classes_design
+        self._classes_design: dict = classes_design  # dict with labels as keys and classes as values
         self._name: str = ""
         self._compute_name()
         self._split_group: Union[SplitGroup, None] = None
@@ -79,6 +79,10 @@ class ClassificationDesign:
         return self.design_Results
 
     def _compute_name(self) -> None:
+        """
+        The name is made up of label1_vs_label2
+        Each label refering to a group of one or more classes from the data
+        """
         self._name = "_vs_".join(self._classes_design)
 
     def get_number_of_splits(self) -> int:
@@ -97,7 +101,7 @@ class ClassificationDesign:
 
     def get_selected_targets_name(self) -> list:
         """
-        get the _classes_design dict in input and reverse it to have the targets as key and their corresponding labels
-        as value. It is then easier to retrieve a label for a specific target
+        get the _classes_design dict in input and reverse it to have the classes as key and their corresponding labels
+        as value. It is then easier to retrieve a label for a specific class
         """
         return list(Utils.reverse_dict(self._classes_design).keys())

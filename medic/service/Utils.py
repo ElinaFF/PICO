@@ -220,11 +220,15 @@ def reverse_dict(dictionnary: dict) -> dict:
 
 def load_classes_from_targets(classes_design: dict, targets: Tuple[str]) -> List[str]:
     """
-    Create a list of labels to be predicted according to the class design, kind of a "traduction" of targets.
+    Create a list of targets to be predicted according to the class design, kind of a "traduction" of labels.
+    !!! There is some confusion between class/label/target, it results from their use as synonyms in general in
+    the litterature. We tried to established a distinction because we need 3 different terms to name 3 slightly different 
+    things. However, even for us it got mixed up during the development. Hence the sometime confusing naming of variables.
+    Always refer to the documentation for the proper meaning. !!!
     example
-    Argument 'targets' is (target3, target1, target4, target4, target2, target1)
-    classes_design would be something like {label1 : [target1, target2], label2 : [target3, target4]}
-    reverse_classes_design would be {target1 : label1, target2 : label1, target3 : label2, target4 : label2}
+    Argument 'targets' is (class3, class1, class4, class4, class2, class1)
+    classes_design would be something like {label1 : [class1, class2], label2 : [class3, class4]}
+    reverse_classes_design would be {class1 : label1, class2 : label1, class3 : label2, class4 : label2}
     'classes' that is returned would be [label2, label1, label2, label2, label1, label1]
     """
     reverse_classes_design = reverse_dict(classes_design)

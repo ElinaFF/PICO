@@ -61,7 +61,8 @@ def SPLITS_setup_classification_designs(mtb_ctrl):
     mtb_ctrl.set_target_columns(["Factor Value[Sample Type]"])
     #mtb_ctrl.set_target_columns(["Factor Value[Sample Type]", "Factor Value[Smoking]"])
 
-    # Designs are defined as dict with labels as keys and column names(if multiple link with "__") as values
+    # Designs are defined as dict with labels as keys and classes(if multiple link with "__") as values
+    # The classes should correspond to values found in the column(s) defined in mtb_ctrl.set_target_columns() function. 
     mtb_ctrl.add_classification_design({"TotalCases": ["Case"], "TotalCtrls": ["Control"]})
     #mtb_ctrl.add_classification_design({"NEG_Case_Current": ["Case__Current Smoker"], "Ctrl_Current": ["Control__Current Smoker"]})
     #mtb_ctrl.add_classification_design({"NEG_Case_Former": ["Case__Former Smoker"], "Ctrl_Former": ["Control__Former Smoker"]})
