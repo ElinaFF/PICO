@@ -11,7 +11,7 @@ class ClassificationDesign:
         self._compute_name()
         self._split_group: Union[SplitGroup, None] = None
         self._selected_models_name: Union[list, None] = None
-        self.results: dict = {}
+        self.design_Results: dict = {}
         self._is_done: bool = False
         self._balance_correction: int = 0
 
@@ -61,22 +61,22 @@ class ClassificationDesign:
     def set_selected_models_name(self, selected_models_name: list) -> None:
         """
         Set the attribute self._selected_models_name
-        and create the attribute self.results with initialized instances of the class Results for each algorithm
+        and create the attribute self.design_Results with initialized instances of the class Results for each algorithm
         selected_models_name: list of names of models to run on data
         """
         if self._split_group is None:
             raise ValueError("Trying to set models before setting splits parameters")
         self._selected_models_name = selected_models_name
         for n in self._selected_models_name:
-            self.results[n] = Results(self._split_group.get_number_of_splits())
+            self.design_Results[n] = Results(self._split_group.get_number_of_splits())
 
     def get_results(self) -> Dict[str, Results]:
         """
         Return the results dict (attribute) corresponding to this instance of Classification Design
         """
-        if self.results == {}:
+        if self.design_Results == {}:
             raise RuntimeError("The name of the selected models has to be set before accessing results.")
-        return self.results
+        return self.design_Results
 
     def _compute_name(self) -> None:
         self._name = "_vs_".join(self._classes_design)
