@@ -270,6 +270,9 @@ class SplitsTab(MetaTab):
                 html.Div(
                     [
                         dbc.Label("Labels"),
+                        dbc.FormText("It is good practice to define the control group as target 0 and the 'condition' group as target 1. "),
+                        dbc.FormText("To do so, add a 0 or a 1 at the beginning of corresponding labels (ex: 0GroupA or 0_GroupA). "),
+                        dbc.FormText("See more details in the documentation."),
                         html.Div(
                             className="fig_group_mini",
                             id="define_classes_desgn_exp",

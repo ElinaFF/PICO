@@ -83,7 +83,7 @@ class Results:
         self.results[split_number]["balanced_test_accuracy"] = balanced_accuracy_score(
             y_test_true, y_test_pred
         )
-        unique_classes = list(set(classes))
+        unique_classes = sorted(list(set(classes)))
         binary_y_train_true = Utils.get_binary(y_train_true, unique_classes)
         binary_y_train_pred = Utils.get_binary(y_train_pred, unique_classes)
         binary_y_test_true = Utils.get_binary(y_test_true, unique_classes)
