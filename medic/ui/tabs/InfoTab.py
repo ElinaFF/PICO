@@ -19,12 +19,12 @@ class InfoTab(MetaTab):
                 dbc.CardHeader("Documentation link"),
                 dbc.CardBody(
                     [
-                        "You can find the official documentation at this ",
+                        "You can find the official documentation ",
                         html.A(
                             href="https://elinaff.github.io/MeDIC/",
                             target="_blank",
                             rel="noreferrer noopener",
-                            children="link",
+                            children="here",
                         ),
                         ".",
                     ]
@@ -39,16 +39,16 @@ class InfoTab(MetaTab):
                 dbc.CardBody(
                     [
                         html.P(
-                            "In the Splits tab, you create a setting file with all info necessary to run a machine learning experiment. "
-                            "There is a hash mecanism in place to ensure that the locally saved data fits the experiment file "
-                            "that might be loaded in the futur. This mecanism can be compared to a lock and key mecanism where the key "
-                            "to check a file will only fit this particular file."
+                            "The Splits tab is where settings to run a machine learning experiment are decided and stored into a file. "
+                            "At this step, you can decide the classification designs that you wish to explore, the number of splits, the sample pairing, etc. "
+                            "In the case where you have 3 or more different classes (eg: healthy, sick, extremely sick or diet1, diet2, diet3, diet4), "
+                            "you will be able to combine them in two groups (designated by labels) to compare the different conditions in different ways. "
+                            "For example, can the algorithms discriminate between (diet1) vs (diet2, diet3 and diet4), or (diet1 and diet2) vs (diet3 and diet4) ?"
                         ),
                         html.P(
-                            "It is at this step that you can decide the (potential) multiple design experiment that you wish to explore. "
-                            "Indeed, in the case where you have 3 or more different labels (eg: healthy, sick, extremely sick or diet1, diet2, diet3, diet4), "
-                            "you will be able to combine them in two groups (two classes) to confront the different conditions in different ways. "
-                            "For example, can the algorithms differentiate/discriminate between diet1 vs all the others, or diet1 and diet2 vs diet3 and diet4, etc.",
+                            "There is a hash mecanism in place to ensure that the locally saved data fits an experiment file "
+                            "that might be loaded into the MeDIC in the future. It is computed and stored in the file of settings. This mecanism can be compared to a lock and key mecanism. The key "
+                            "to check a file will only fit this particular file. It ensures reproductibility reliability."
                         ),
                     ]
                 ),
@@ -62,9 +62,9 @@ class InfoTab(MetaTab):
                 dbc.CardBody(
                     [
                         html.P(
-                            "In this tab, you select the cross-validation parameters and the algorithms you wish to apply on your data."
+                            "In this tab, you select the cross-validation algorithm and its parameters and the machine learning algorithms you wish to apply on your data."
                             "The cross-validation step is usefull to optimize the algorithm : it runs several time the algorithm on small"
-                            "part of the dataset with different parameters, and will keep the best parameters/model which will be applied "
+                            "part of the dataset with different parameters, and will keep the best model which will be applied "
                             "to your real dataset and gives you the final results and analyses."
                         ),
                         html.P(
@@ -74,7 +74,7 @@ class InfoTab(MetaTab):
                             "analysis."
                         ),
                         html.P(
-                            "The possibility to add a completely custom algorithm will eventually also be available. But it will require "
+                            "The possibility to add a completely custom algorithm is also available. But it requires "
                             "modifications directly in the code files. It is meant for people with more programming abilities."
                         ),
                     ]
@@ -90,28 +90,17 @@ class InfoTab(MetaTab):
                     [
                         html.P(
                             "The entire section of Results is based on the perspective of analysing the features selected "
-                            "by the algorithms. For one classification design of classes, multiple algorithms can be run. "
+                            "by the algorithms. For one classification design, multiple algorithms can be run. "
                             "Then, the results and performances of each algorithm can be explored one by one to ensure that "
                             "the prediction and therefore the selection of the features is valid. At the end, there is a "
-                            "section that aggregates the results of all the algorithms in several figures to compare which "
-                            "features are selected by which algorithm and check for redundancies. The repeated use of a "
-                            "metabolite across different algorithm is a good indicator of the relevance of this molecule.",
+                            "section that aggregates the results of all the algorithms to check for redundancies. The repeated use of an "
+                            "ion(feature) across different algorithm is a good indicator of the relevance of this molecule.",
                             className="card-text",
                         ),
                     ]
                 ),
             ],
         )
-
-        # _interpretInfo = dbc.Card(className="cards_info", children=[
-        #     dbc.CardHeader("Model interpretation"),
-        #     dbc.CardBody(
-        #         [
-        #             html.P("Blablabla",
-        #                    className="card-text"),
-        #         ]
-        #     ),
-        # ])
 
         _loadExpe = dbc.Card(
             className="cards_info",
@@ -152,7 +141,7 @@ class InfoTab(MetaTab):
             children=[
                 dbc.ModalHeader(
                     style={"padding": "2rem 3rem"},
-                    children=[html.H6("Warning: Saved local files does not match")],
+                    children=[html.H6("Warning: Saved local files do not match")],
                 ),
                 dbc.ModalBody(
                     style={"padding": "2em"},

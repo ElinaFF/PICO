@@ -32,13 +32,10 @@ class SplitsTab(MetaTab):
                             [
                                 html.Div(
                                     "In this tab, you will create a setting file with all info necessary "
-                                    "to run a machine learning experiment. An * besides the name of the field means a value "
-                                    "is required, all other fields can be left untouched and will use default values."
+                                    "to run a machine learning experiment. The recommended order to proceed is : Files, Classification design, "
+                                    "Define Splits, Sample Pairing, Class Balancing, Generate file."
                                 ),
                             ]
-                            # This file will even contain a copy of the data "
-                            # "to avoid broken paths (after some times, files might be moved or deleted and the path pointing "
-                            # "to their location will then be not valid).
                         ),
                     ]
                 ),
