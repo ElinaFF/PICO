@@ -423,6 +423,7 @@ class SplitsTab(MetaTab):
             className="title_and_form",
             children=[
                 html.H4(id="Define_split_title", children="Define splits"),
+                dbc.FormText("Make sure you have provided a datamatrix before trying to find the appropriate number of splits."),
                 dbc.Form(
                     children=[
                         dbc.Col(children=[__sampleProportion, __trainTestSplitGraph]),
