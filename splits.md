@@ -52,7 +52,7 @@ Targets
 : An experiment with data from two different studies (studyA, studyB) and three diagnosis (High Symptoms, Low Symptoms and Controls). The metadata contains two columns of interest : Studies and Diagnosis, both of them selected as 'target columns' (meaning they will be used to define what targets will be predicted by the models).
 Potential classes are : studyA, studyB, High Symptoms, Low Symptoms and Controls
 
-Classification design 1 (StudyAHigh_vs_StudyALow)
+**Classification design 1 (StudyAHigh_vs_StudyALow)**
 - classes : studyA__High Symptoms and studyA__Low Symptoms
 - labels :
    - StudyAHigh for studyA__High Symptoms
@@ -61,7 +61,7 @@ Classification design 1 (StudyAHigh_vs_StudyALow)
    - 0 for StudyAHigh
    - 1 for StudyALow 
 
-Classification design 2 (1AllSymptoms_vs_0AllControls)
+**Classification design 2 (1AllSymptoms_vs_0AllControls)**
 - classes : studyA__High Symptoms, studyA__Low Symptoms, studyB__High Symptoms, studyB__Low Symptoms, studyA__Controls and studyB__Controls
 - labels (the '0' and '1' added at the beginning are optionnal, they are used to decide which label gets target 0 vs 1):
    - 1AllSymptoms for (studyA__High Symptoms & studyA__Low Symptoms & studyB__High Symptoms & studyB__Low Symptoms)
