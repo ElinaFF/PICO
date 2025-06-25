@@ -271,7 +271,7 @@ class ResultsAggregatedTab(MetaTab):
                 global_df = None
                 for a in algos:
                     if global_df is None:
-                        self._logger.info("glob df is none")
+                        self._logger.info("Global df is none")
                         global_df = self.r[design][a].results["features_table"]
                         global_df = global_df.loc[
                             :, ("features", "importance_usage")
@@ -280,7 +280,7 @@ class ResultsAggregatedTab(MetaTab):
                             columns={"importance_usage": a}, inplace=True
                         )  # rename column to identify algorithm
                     else:
-                        self._logger.info(f"glob df not none, algo : {a}")
+                        self._logger.info(f"Global df not none, algo : {a}")
                         df = self.r[design][a].results[
                             "features_table"
                         ]  # retrieve features table of algo a
