@@ -33,7 +33,7 @@ def test_givenaClassificationDesign_whenGetNumberOfSplit_thenNumberOfSplitsIsCor
     input_classification_design,
 ):
     input_classification_design.set_split_parameter_and_compute_splits(
-        TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA, ""
+        TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA, "", MOCKED_METADATA.get_samples_id.return_value
     )
     assert input_classification_design.get_number_of_splits() == NUMBER_OF_SPLITS
 
@@ -42,7 +42,7 @@ def test_givenaClassificationDesign_whenGetAllSplit_thenTheSplitsAreReproducible
     input_classification_design,
 ):
     input_classification_design.set_split_parameter_and_compute_splits(
-        TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA, ""
+        TRAIN_TEST_PROPORTION, NUMBER_OF_SPLITS, MOCKED_METADATA, "", MOCKED_METADATA.get_samples_id.return_value
     )
     for split_index, (real_split_index, actual_split) in enumerate(
         input_classification_design.all_splits()

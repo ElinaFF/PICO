@@ -28,6 +28,7 @@ def input_splits():
         NUMBER_OF_SPLITS,
         CLASSES_DESIGN,
         "",
+        SAMPLES_ID
     )
 
 
