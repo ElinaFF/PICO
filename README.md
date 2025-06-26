@@ -30,14 +30,3 @@ It is recommanded to setup a virtual environment. When it's done, use your isola
 ```shell
 python -m pip install -e ".[dev]"
 ```
-
-### Trigger a release
-
-Let's say you want to update to version `1.3.2`.
-   1.  Make sure the main branch is working fine, either run `pytest` locally or trigger a tests workflow manually.
-   1.  Set the version to `__version__ = "1.3.2"` in [medic/__init__.py](./medic/__init__.py) (you can edit a file from GitHub by clicking on the key `.` on your keyboard)
-   2.  Commit the new version change with `git add medic/__init__.py` and `git commit -m "Bump version`
-   3.  Push the commit with `git push`
-   4.  Go to https://github.com/ElinaFF/MeDIC/releases/new, choose a tag, create new tag with name `1.3.2`
-   5.  Document what have changed since the last release (you can try the `Generate release notes` button)
-   6.  Click `Publish release`!
