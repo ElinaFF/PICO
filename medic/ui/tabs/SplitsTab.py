@@ -16,6 +16,15 @@ SPLIT_NUMBER_VALUES.update({1: "1"})
 
 NUMBER_OF_STEP_IN_CLASS_BALANCE = 5
 
+CONFIG = {
+    "toImageButtonOptions": {
+        "format": "svg",  # one of png, svg, jpeg, webp
+        "height": None,
+        "width": None,
+        "scale": 1,  # Multiply title/legend/axis/canvas sizes by this factor
+    }
+}
+
 
 class SplitsTab(MetaTab):
     def __init__(self, app: dash.Dash, metabo_controller: MetaboController):
@@ -394,9 +403,11 @@ class SplitsTab(MetaTab):
         __trainTestSplitGraph = html.Div(
             [
                 dbc.Label("Train/Test split graph"),
-                dcc.Graph(
-                    id="train_test_split_graph",
-                ),
+                dcc.Loading(
+                    dcc.Graph(id="train_test_split_graph", config=CONFIG),
+                    type="dot",
+                    color="#13BD00",
+                ),                
                 dcc.Slider(
                     id='in_nbr_splits',
                     min=1,
@@ -420,7 +431,6 @@ class SplitsTab(MetaTab):
             className="title_and_form",
             children=[
                 html.H4(id="Define_split_title", children="Define splits"),
-                dbc.FormText("Make sure you have provided a datamatrix before trying to find the appropriate number of splits."),
                 dbc.Form(
                     children=[
                         dbc.Col(children=[__sampleProportion, __trainTestSplitGraph]),
@@ -630,6 +640,7 @@ class SplitsTab(MetaTab):
             [
                 Input("in_nbr_splits", "value"),
                 Input("in_percent_samples_in_test", "value"),
+                Input("upload_datatable_output", "children"),
             ],
         )
         @log_exceptions(self._logger)
