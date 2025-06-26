@@ -10,8 +10,9 @@ import math
 
 
 class Plots:
-    def __init__(self, colors: str):
+    def __init__(self, colors: str, render="svg"):
         self.colors = colors
+        self.render_mode = render
         self.__default_stylesheet_for_cooc = [
             {
                 "selector": "node",
@@ -41,32 +42,6 @@ class Plots:
             }
         ]
 
-    # TODO : faire la sauvegarde dans results des resultats de heatmap pour pouvoir sortir la figure
-    def show_algo_comparison_by_heatmap(self):
-        return
-
-    # def show_two_most_important_feature(self, data, classes, algo):
-    #     f1name = data.iloc[0, 0]
-    #     f2name = data.iloc[1, 0]
-    #     fig = px.scatter(
-    #         data,
-    #         x=f1name,
-    #         y=f2name,
-    #         color=classes,
-    #         color_continuous_scale=self.colors,
-    #         title="",
-    #     )
-    #
-    #     fig.update_layout(
-    #         {
-    #             "plot_bgcolor": "rgba(0, 0, 0, 0)",
-    #             "paper_bgcolor": "rgba(0, 0, 0, 0)",
-    #         },
-    #         title="Top 2"
-    #         + " features selected by "
-    #         + algo,
-    #     )
-    #     return fig
 
     def show_umap(self, umap_data, classes, algo, slider_value, sample_ids: list):
         val = [5, 10, 40, 100, "used", "all"]
@@ -78,6 +53,7 @@ class Plots:
             color_continuous_scale=self.colors,
             title="",
             hover_name=sample_ids,
+            render_mode=self.render_mode,
         )
 
         fig.update_layout(
@@ -106,15 +82,9 @@ class Plots:
         )
 
         fig.update_layout(
-            {
-                "plot_bgcolor": "rgba(0, 0, 0, 0)",
-                "paper_bgcolor": "rgba(0, 0, 0, 0)",
-            },
-            title="UMAP applied on top "
-                  + str(val[slider_value])
-                  + " features selected by "
-                  + algo,
-        )
+            title="UMAP applied on top " + str(val[slider_value]) + " features selected by "+ algo,
+            template='plotly_white',
+                  )
         return fig
 
     def show_PCA(self, pca_data, pca_labels, classes, slider_value, algo, sample_ids: list):
@@ -128,6 +98,7 @@ class Plots:
             color_continuous_scale=self.colors,
             title="",
             hover_name=sample_ids,
+            render_mode=self.render_mode,
         )
         fig.update_layout(
             {
@@ -155,10 +126,7 @@ class Plots:
             hover_name=sample_ids,
         )
         fig.update_layout(
-            {
-                "plot_bgcolor": "rgba(0, 0, 0, 0)",
-                "paper_bgcolor": "rgba(0, 0, 0, 0)",
-            },
+            template='plotly_white',
             title="PCA applied on top "
                   + str(val[slider_value])
                   + " features selected by "
@@ -167,18 +135,13 @@ class Plots:
         return fig
 
     def show_general_confusion_matrix(self, cm, labels, text, algo, split):
-        # labels = ["0", "1"]
-
         fig = go.Figure(
             data=go.Heatmap(
-                # labels=dict(x="Prediciton", y="Vérité", color="Nombre de prédictions"),
                 z=cm,
                 x=labels,
                 y=labels,
-                # text=text,
                 colorscale=self.colors,
-                showscale=False
-                # texttemplate="%{text}",
+                showscale=False,
             )
         )
         fig = fig.update_traces(text=text, texttemplate="%{text}", hovertemplate=None)
@@ -187,16 +150,6 @@ class Plots:
             xaxis_title="Prediciton",
             yaxis_title="Truth",
         )
-
-        # fig = px.imshow(
-        #         cm,
-        #         labels=dict(x="Prediciton", y="Vérité", color="Nombre de prédictions"),
-        #         x=list(set(labels)),
-        #         y=list(set(labels)),
-        #         color_continuous_scale=self.colors,
-        #         text_auto=True
-        # )
-        # fig.update_traces(text=text)
         return fig
 
     def show_accuracy_all(self, df, algo):
@@ -217,14 +170,12 @@ class Plots:
                 "To show the global balanced accuracies plot, the dataframe needs to have a 'color' column"
             )
 
-        fig = px.bar(df, x="splits", y="balanced accuracies", color="color", barmode="group")
+        fig = px.bar(df, x="splits", y="balanced accuracies", color="color", barmode="group", 
+                     )
 
         fig.update_yaxes(range=[0, 1.1])
         fig.update_layout(
-            {
-                "plot_bgcolor": "rgba(246, 247, 247, 0.4)",
-                "paper_bgcolor": "rgba(0, 0, 0, 0)",
-            }
+            template='plotly_white'
         )
         return fig
 
@@ -268,7 +219,6 @@ class Plots:
             raise RuntimeError(
                 "To show the global accuracies plot, the dataframe needs to have a 'importance_usage' column"
             )
-        # TODO : sort data by times_used or importance, and take only top 10-20 to display
 
         fig = go.Figure(
             data=[
@@ -319,35 +269,6 @@ class Plots:
         
         df_aggregated = pd.concat(df_container, ignore_index=True)
 
-        # ----> for violin plot
-        # fig = go.Figure()
-        #
-        # fig.add_trace(
-        #     go.Violin(
-        #         x=df_dup["features_name"][df_dup["targets"]=="NA"],
-        #         y=df_dup["intensity"][df_dup["targets"]=="NA"],
-        #         legendgroup='Yes', scalegroup='Yes', name='NA',
-        #         side='negative',
-        #     )
-        # )
-        #
-        # fig.add_trace(
-        #     go.Violin(
-        #         x=df_dup["features_name"][df_dup["targets"] == "Med"],
-        #         y=df_dup["intensity"][df_dup["targets"] == "Med"],
-        #         legendgroup='Yes', scalegroup='Yes', name='Med',
-        #         side='positive',
-        #     )
-        # )
-        #
-        # fig.update_traces(meanline_visible=True,
-        #                   # points='all',  # show all points
-        #                   # jitter=0.05,  # add some jitter on points for better visibility
-        #                   # scalemode='count'
-        #                   )
-        # fig.update_layout(violingap=0, violinmode='overlay')
-        # ---> end for violin plot
-
         fig = px.strip(
             df_aggregated,
             x="features_name",
@@ -361,10 +282,7 @@ class Plots:
         )
 
         fig.update_layout(
-            {
-                "plot_bgcolor": "rgba(0, 0, 0, 0)",
-                "paper_bgcolor": "rgba(0, 0, 0, 0)",
-            }
+            template='plotly_white'
         )
         return fig
 
@@ -398,11 +316,11 @@ class Plots:
             go.Bar(name='Test', x=algos, y=test_acc, error_y=dict(type='data', array=test_std))
         ])
         # Change the bar mode
-        fig.update_layout(barmode='group')
+        fig.update_layout(barmode='group', template='plotly_white')
         return fig
 
     def show_2d(self, data, classes, sample_names):
-        return px.scatter(
+        fig = px.scatter(
             data,
             x=data.columns[0],
             y=data.columns[1],
@@ -410,10 +328,21 @@ class Plots:
             color_continuous_scale=self.colors,
             title="",
             hover_name=sample_names,
+            render_mode=self.render_mode,
         )
 
+        fig.update_layout(
+            {
+                "plot_bgcolor": "rgba(0, 0, 0, 0)",
+                "paper_bgcolor": "rgba(0, 0, 0, 0)",
+            }
+        )
+        
+        
+        return fig
+
     def show_3d(self, data, classes, sample_names):
-        return px.scatter_3d(
+        fig = px.scatter_3d(
             data,
             x=data.columns[0],
             y=data.columns[1],
@@ -423,6 +352,12 @@ class Plots:
             title="",
             hover_name=sample_names,
         )
+
+        fig.update_layout(
+            template='plotly_white'
+        )
+        
+        return fig
 
     @staticmethod
     def get_train_test_split_graph(nbr_element, slider_value, percent_test):
@@ -469,6 +404,7 @@ class Plots:
         fig = px.scatter(y=valeurs, x=[i for i in range(1, len(valeurs) + 1)],
                     labels={'x': 'Number of splits',
                             'y': 'Probability a'},
+                            render_mode="svg"
                          )
         fig.add_trace(go.Scatter(x=[slider_value], y=[valeurs[slider_value - 1]], mode='markers',
                                  marker_symbol='circle',
@@ -476,7 +412,7 @@ class Plots:
         fig.add_annotation(x=slider_value, y=valeurs[slider_value - 1],
                            text=f"({slider_value} splits, a={valeurs[slider_value - 1]:.2f}, b={threshold_at_99(slider_value)}%)",
                            showarrow=True, arrowhead=1)
-        fig.update_layout(showlegend=False)
+        fig.update_layout(showlegend=False, template="plotly_white")
         return fig
 
     def get_default_stylesheet_for_cooc_graph(self):

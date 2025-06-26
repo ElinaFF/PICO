@@ -644,7 +644,11 @@ class SplitsTab(MetaTab):
             ],
         )
         @log_exceptions(self._logger)
-        def update_train_test_split_graph(slider_value, percent_test):
+        def update_train_test_split_graph(slider_value, percent_test, uploaded_data):
+            """
+            uploaded_data : not used in the function, but its presence is needed to triger the callback
+                            when the data file is uploaded/changed
+            """
             if percent_test is None:
                 return dash.no_update
             nbr_of_samples = len(self.metabo_controller.get_samples_id())
