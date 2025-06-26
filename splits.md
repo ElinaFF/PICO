@@ -50,7 +50,7 @@ Targets
 
 **Pratical example**
 : An experiment with data from two different studies (studyA, studyB) and three diagnosis (High Symptoms, Low Symptoms and Controls). The metadata contains two columns of interest : Studies and Diagnosis, both of them selected as 'target columns' (meaning they will be used to define what targets will be predicted by the models).
-Potential classes are : studyA, studyB, High Symptoms, Low Symptoms and Controls
+Potential classes are : studyA, studyB, High Symptoms, Low Symptoms and Controls, or a combination of those.
 
 **Classification design 1 (StudyAHigh_vs_StudyALow)**
 - classes : studyA__High Symptoms and studyA__Low Symptoms
