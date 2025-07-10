@@ -43,14 +43,14 @@ menu:
     sub :
       - title: Home tab
         url: /home
-      - title: Splits tab
-        url: /splits
-      - title: Machine Learning tab
-        url: /ml
-      - title: Results tab
-        url: /results
-      - title: Results aggregated tab
-        url: /resultsagg
+  - title: Splits tab
+    url: /splits
+  - title: Machine Learning tab
+    url: /ml
+  - title: Results tab
+    url: /results
+  - title: Results aggregated tab
+    url: /resultsagg
   - title: Implementation
     url: /implementation
   - title: View on github
