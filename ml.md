@@ -68,6 +68,9 @@ The AVAILABLE ALGORITHMS are:
 * Set Covering Machine (SCM)
 * Random Set Covering Machine (RandomSCM)
 
+For some computers on Windows there is an error that occurs when trying to run the SCM or the RandomSCM (issue https://github.com/ElinaFF/MeDIC/issues/134). The cause is still unknown.
+{: .note title="Warning"}
+
 The first classifier implement a regular **decision tree**. To make a prediction, the data is the input of the root node. The root node, as the others, has a threshold for one feature : for example
 cholesterol ≥ 2. If the value validate the threshold, it goes to the right node, otherwise it goes to the left, until it reach a leaf. The leaf assigns a class to the sample.
 
