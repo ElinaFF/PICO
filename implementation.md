@@ -6,10 +6,37 @@ title:  Implementation
 # Implementation
 {: .no_toc}
 _ _ _ _
-MeDIC software is organized in five main packages.
+MeDIC was built with modularity in mind. The software is organized in five packages, the three principals being Domain, UI and Service. The target audience being biologists unfamiliar with coding, the interface was central during development, but we still tried to keep the tool practical for ML users and coders.
 
 * toc
 {:toc}
+
+## Practical informations
+
+### Interface
+The transition between different experiment on the interface is not optimized. If results are loaded from a previous experiment while the interface is already displaying results, make sure to click on the "load" button in the "Results" and "Results aggregated" tabs because the figures will not be cleared when loading a different experiement. To avoid any kind of confusion, it is best to restart the interface in between.
+
+### Logs and results savings
+Both are saved in a directory called `medic_files` in the home directory.
+  - Linux : /home/USER/medic_files/
+  - Windows : C:\Users\USER\medic_files\
+  - Mac : /Users/USER/medic_files
+
+#### Logs
+Logs will be in `medic_files/logs`.
+There is one file per day, with the extension `.log`. In the event of multiple experiments in one day, each will be added at the end of the file every time (the content of the file is chronologically ordered). 
+
+There is no automatic cleaning of this directory, once in a while you might want to deleted unnecessary/older files.
+{: .note title="Warning"}
+
+#### Results
+The `.mtxp` results files will be in `medic_files/saves`. 
+For a complete experiment there is two files. The name structure is `medic_STEP_YYYYMMDD_HHMMSS.mtxp`, where STEP is either "splits" or "ml".
+
+### Memory usage
+The tool is not optimizing the memory for a high number of samples. It means that depending on the specifications of the computer used, a certain high number of samples might be impossible to run. The higher the performances, the higher the possible number of samples. This considers a fat dataset with at **least** 2-3 times more features than samples. Experiments with ~3000 features for ~1000 samples and ~15 000 features for ~200 samples have been performed on a personnal computer without trouble.
+For bigger datasets, it is recommended to run the experiment on a server.
+
 
 ## Packages
 
@@ -27,7 +54,6 @@ Command Line Interface (CLI)
 
 Tests
 : Contains all tests run with `pytest`
-
 
 
 ## Controller interface : MetaboController bottleneck
