@@ -6,21 +6,27 @@ title:  Implementation
 # Implementation
 {: .no_toc}
 _ _ _ _
-MeDIC software is organized in three main packages.
+MeDIC software is organized in five main packages.
 
 * toc
 {:toc}
 
 ## Packages
 
-Domain
-: It contains all the logic that compose MeDIC. This package can access freely the Service package. All the communication with the UI package must pass by the controller. This allows us to modify the Domain if necessary without having to modify the UI too.
+Domain (backend)
+: It contains all the logic that composes MeDIC. This package can access freely the Service package. All the communication with the UI package must pass by the controller. This allows us to modify the Domain if necessary without having to modify the UI too.
 
-User Interface (UI)
+User Interface (UI) (frontend)
 : It contains all the classes that are used to display the web interface of MeDIC. It manages only the interface and connects to the Domain by the controller only.
 
 Service
 : It can be accessed by both other packages and contains methods that are frequently used in different classes. 
+
+Command Line Interface (CLI)
+: Provides the structure to interact with the MeDIC by command line.
+
+Tests
+: Contains all tests run with `pytest`
 
 Here is a diagram that represents the communications between all three packages.
 ![](imgs/2022-06-07-15-17-45.png){:width="40%"}
@@ -38,11 +44,8 @@ This diagram shows all the classes that compose the UI package of MeDIC and the 
 
 
 ## Controller interface
-This section can be use as a high-level documentation of the MetaboController class that serves of controller in MeDIC.
-
+This section can be used as a high-level documentation of the MetaboController class that serves as bottleneck between the frontend and backend.
 This class can be used to integrate MeDIC in a Python script.
-
-The explanation of the concepts and the pipelines are in the Home tab. Don't hesitate to go back to this section while reading this one.
 
 ### Main methods description
 
@@ -57,6 +60,7 @@ This function sets the name of the column containing the unique IDs.
 
 ```set_target_column(target_column: str)```
 This function sets the name of the column containing the targets.
+
 ```add_experimental_design(classes_design: dict)```
 This function adds an experimental design. The input dictionary must follow the format :
 ```json
@@ -71,10 +75,10 @@ This function adds an experimental design. The input dictionary must follow the 
 This function sets the proportion of the data that will be used as tests after the training.
 
 ```set_number_of_splits(number_of_splits: int)```
-This function sets the number of splits as explain in the section 3. Define split in the Split tab
+This function sets the number of splits.
 
 ```create_splits() ```
-Once all the splits are set, this function creates all the splits at the same time.
+Once all the parameters are set, this function creates all the splits at the same time.
 
 ```set_selected_models(selected_models: list)```
 Set the list of models that will be trained.

@@ -6,27 +6,40 @@ title:  Installation
 # Installation
 {: .no_toc}
 _ _ _ _
-The MeDIC is a tool that must be installed on your computer. The visual interface is made with Dash from Plotly and can be
-open in the majority of web browser. To install the MeDIC, the principal method is manually doing all the steps. A launcher script
-to automate the installation is currently under development, and a beta version is available.
-Note that we only support Windows and Linux for now, and only Python 3.8, 3.9 and 3.10.
+The MeDIC is a tool that must be installed on a computer or a server. The visual interface is made with Dash from Plotly and can be
+opened in the majority of web browser. It should be functional on Linux, Mac and Windows. 
+
+The simplest way to install is using PyPI (https://pypi.org/project/medic-ml/). The MeDIC is also available with Docker (https://hub.docker.com/r/elinaff/medic).
+
 
 * toc
 {:toc}
 
 ## Prerequisites
-The first step, to use MeDIC, is to install Python and Git. For Windows, you also need to make sure that Microsoft Visual C++ is correctly installed.
+The first step is ensuring Python, PyPI and an environment manager are installed. Usually pip and venv are natively included in Python.  
+For Windows, you also need to make sure that Microsoft Visual C++ is correctly installed.
 
 ## Linux installation
 {: .titleclass}
+
 #### Python
 In order to install Python, you need to go to this [link](https://www.python.org/downloads/source/). Download your
 preferred version (or the latest 3.10 stable version) and proceed with the installation.
 You can also follow this [tutorial](https://www.scaler.com/topics/python/install-python-on-linux/) for further details.
-#### Git
-Open a terminal and run the command : `sudo apt-get install git`.
-Then enter your root password and follow the installation instructions.
-For more details follow this [link](https://git-scm.com/download/linux).
+
+#### Virtual environment
+Make sure a virtual environment manager is installed, we use venv which is normally included in Python. It is good practice to encapsulate each project in specific envs to prevent collisions of versions.
+
+#### PyPI
+Make sure PyPI is installed/functional. It is also normally included in Python.
+
+#### Steps (with bash)
+install python version
+create env
+activate
+`pip install medic-ml`
+then either medic ui or python automate
+
 
 
 ## Windows installation
@@ -48,11 +61,6 @@ Otherwise, you have to double-click again on the python.exe file you downloaded 
 Then click on Next. Then you can click on add to path and install.
 ![](imgs/addToPathAfterRepair.png)
 
-#### Git installation
-In order to install Git, you need to go to this [link](https://git-scm.com/download/win) and choose the Standalone Installer (64 bits).
-After downloading the .exe file, double-click on it and follow the installation instructions.
-Note : You'll have a lot of choices, leave them as default if you are not familiar with what they do or impact.
-
 #### Microsoft Visual C++ requirement
 To make sure MeDIC and all it's dependencies work properly, you need Microsoft Visual C++ 14.0 or later.
 To check if the correct version of Microsoft Visual C++ is installed on your computer, you can open the Control Panel from the start menu,
@@ -65,9 +73,24 @@ Then, select "Desktop development in C++" and go to the "Individual components" 
 Scroll down to select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or later and click install
 (It may take a while depending on your internet download speed).
 
+#### Virtual environment
+Make sure a virtual environment manager is installed, we use venv which is normally included in Python. It is good practice to encapsulate each project in specific envs to prevent collisions of versions.
+
+#### PyPI
+Make sure PyPI is installed/functional. It is also normally included in Python.
+
+#### Steps (with windows cmd language ?)
+install python version
+create env
+activate
+`pip install medic-ml`
+then either medic ui or python automate
+
+
+
+
 
 ***
-
 
 ## Manual installation
 
