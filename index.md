@@ -45,8 +45,10 @@ Many things can factors into the variations of speed, like the cache memory, the
 1. Debian 12 with 16gb RAM and 8 threads : ~35 minutes
 2. In WSL, Ubuntu with 8 gb RAM and 12 threads : ~40 minutes
 3. In docker container, Fedora with 6gb VRAM and 12 threads : ~15 minutes
+
 ###### Mac
 1. MacOS 14.6.1 with 16gb RAM and 8 core : ~10 minutes
 2. MacOS 15.5 with M4 chip 32gb RAM and 10 core : ~5 minutes
+
 ###### Windows
 1. Windows 10 version 10.0.19045 with 16 gb RAM and 8 core : ~15min
