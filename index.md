@@ -17,6 +17,7 @@ Expert users will find that the `automate` script can be run on a distant server
 
 
 Warning : Throughout the interface, when clicking on something, if the expected effect is not displayed immediately, check the title of the web navigator tab. If an action has indeed been triggered it will be written "Updating...".
+{: .note title="Warning"}
 
 License
 : <a href="https://github.com/ElinaFF/MeDIC">Metabolomic Dashboard for Interpretable Classification (MeDIC)</a> © 2025 by <a href="https://creativecommons.org">Elina Francovic-Fontaine</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
