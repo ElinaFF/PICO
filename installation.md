@@ -103,11 +103,97 @@ pip install medic-ml
 ```
 
 ## Mac installation
+{: .titleclass}
+
+We recommend using pyenv as a python version manager if you happen to use or developp multiple projects with potential(probably) different versions of python. With pyenv a user can declare a local version of python per project directory. This version will be taken into account automatically by venv when creating the virtual enironment.
+
+### Pyenv  
+
+##### To install
+[Reference](https://mac.install.guide/python/install-pyenv) with more details and explanations.
+
+You need to have 'Homebrew' installed first ([Reference](https://mac.install.guide/python/install-pyenv))
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Then install pyenv from Homebrew
+```
+brew install pyenv
+```
+
+Also add this to the `~/.zprofile` file (provided by the installation message of pyenv)
+```
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+```
+Dont forget to source the zprofile
+```
+source ~/.zprofile # Or just restart your terminal
+```
+
+Generally there is also a need for the `xy` package, better to do it now
+```
+brew install xz
+```
+
+
+##### To setup and use
+With VERSION = 3.12.7
+
+```
+pyenv install VERSION
+```
+VERSION can be any python version needed. MeDIC requires Python <3.13, >=3.8.
+This command is also the thing to do to install a new python version.
+
+Then activate the installed version as the current global version with
+```
+pyenv global VERSION
+``` 
+(the command `python` will then refer to that VERSION)
+
+##### For each project
+
+Specify which version of python must be used in a specific directory with
+```
+pyenv local VERSION
+```
+It creates a file `.python-version` in the current directory, the VERSION must have been installed already.
+
+By creating a `venv` environment afterwards, it will automatically pickup the python version to use with `.python-version`
+
+
+### Virtual environment
+Make sure a virtual environment manager is installed. We use venv which is normally included in Python. It is good practice to encapsulate each project in specific envs to prevent collisions of packages versions and dependencies.
+
+Simply create an environment with 
+```
+python -m venv NAME
+```
+
+Then activate the env
+```
+source NAME/bin/activate
+```
+(To deactivate simply do `deactivate`.)
+
+
+### PyPI
+Make sure PyPI is installed/functional. It is also normally included in Python.
+And install MeDIC with 
+```
+pip install medic-ml
+```
 
 
 
 ## Windows installation
+{: .titleclass}
+
 Don't forget to check that Microsoft Visual C++ is correctly installed.
+Also use the cmd prompt, not the powershell.
 
 ### Python
 In order to install Python, you need to go to this [link](https://www.python.org/downloads/windows/). Download your
