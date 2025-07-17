@@ -13,11 +13,18 @@ It explains how to use MeDIC but also how it works.
  - [Élina Francovic-Fontaine](https://github.com/ElinaFF)
  - [Vincent Primpied](https://github.com/le-smog)
  - [Vincent Vilain](https://github.com/VincentVilain)
+ - [Gabriel Leclerc](https://github.com/PandaGab)
+ - [Thierry Moszkowicz](https://github.com/ThierryAM)
+ - [Mathieu Bazinet](https://github.com/MathieuBazinet)
+ - [Thibaud Godon](https://github.com/thibgo)
+ - [Pier-Luc Plante](https://github.com/plpla)
+ - [Baptiste Bauvin](https://github.com/babau1)
+ - [Louis-Philippe Vignault](https://scholar.google.com/citations?user=QXye6lEAAAAJ&hl=fr)
 
 ## Disclaimer
 MeDIC is still in development. If you encounter any issue or have any suggestion, feel free to contact us at [elina.francovic-fontaine.1@ulaval.ca](mailto:elina.francovic-fontaine.1@ulaval.ca). Or you can leave an issue [here](https://github.com/ElinaFF/MeDIC/issues) with the tag "bug".
 
-## Development
+## For developers
 
 ### Setup
 
