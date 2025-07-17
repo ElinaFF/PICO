@@ -17,7 +17,7 @@ It requires Python <3.13, >=3.8.
 
 ## Prerequisites
 The first step is ensuring Python, PyPI and an environment manager are installed. Usually pip and venv are natively included in Python.  
-For Windows, you also need to make sure that Microsoft Visual C++ is correctly installed.
+For Windows, you also need to make sure that Microsoft Visual C++ >= 14.0 is installed, otherwise an error will occur while installing medic-ml.
 
 ## Linux installation (or WSL)
 {: .titleclass}
@@ -25,7 +25,7 @@ For Windows, you also need to make sure that Microsoft Visual C++ is correctly i
 We recommend using pyenv as a python version manager if you happen to use or developp multiple projects with potential(probably) different versions of python. With pyenv a user can declare a local version of python per project directory. This version will be taken into account automatically by venv when creating the virtual enironment.
 
 ### Pyenv  
-It is not an obligation to use pyenv (or a Python versions manager), but it might prevent things from breaking in the future.
+It is not an obligation to use pyenv (or a Python versions manager), but it might prevent things from breaking in the future and it is good practice.
 
 ##### To install
 
@@ -132,11 +132,11 @@ To check if the correct version of Microsoft Visual C++ is installed on your com
 click on "uninstall app" and scroll down to see which version, if any, of Microsoft Visual C++ is installed.
 
 ##### Install new version
-In order to install Microsoft Visual C++, you need to go to this [link](https://visualstudio.microsoft.com/downloads/)
-and select Visual Studio 2022 Community.
-Then, select "Desktop development in C++" and go to the "Individual components" tab.
-Scroll down to select "C++ V14.32(17.2) MFC for Build Tools v143 (x86 & x64)" or later and click install
-(It may take a while depending on your internet download speed).
+In order to install Microsoft Visual C++, you need to go to this [link](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+and click on the "Download Build Tools" button. Once the installer is downloaded and installed, select the "Desktop development in C++" block and click install at the bottom.
+![](imgs/screenshot_doc_medic_cplusplus_update14.0.png)
+
+You will need to restart your computer once it is done to complete the installlation.
 
 ### Moving to appropriate directory
 
