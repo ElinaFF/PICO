@@ -148,6 +148,9 @@ We determined that the appropriate number of splits for an experiment can be fou
 P(X<1) (values) as a function of the number of splits n (1:nbr_limit) with m=250 samples and a test proportion of 0.2 (k=50)
 ![P(X<1) as a function of the number of splits n](imgs/2022-06-07-14-02-37.png)
 
+### Limitation
+The computing of "a" and "b" values for splits choice number is only made on the full data matrix (i.e. total number of samples provided in the file). It makes those values conservative estimates for classification designs including less samples. Indeed, the higher the number of samples, the higher the number of splits needs to be to see most of them. If a classification design involves less samples, the "a" and "b" values are the minimum and the real (not computed) values are higher. 
+
 ## Generate the splits file
 
 Once all the parameters, the samples id and target columns, and at least one classification design are set, you can run the splits' computation by clicking on the CREATE button.
