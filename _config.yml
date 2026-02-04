@@ -1,8 +1,8 @@
 markdown: kramdown
-title: MeDIC
-logo: logo.png
+title: PICO
+logo: logo_pico.png
 favicon: favicon.ico
-apple_touch_icon: logo.png
+apple_touch_icon: logo_pico.png
 accent_image: /imgs/gradient2.png
 accent_color: rgb(174, 174, 174)
 tagline: Documentation website
@@ -48,8 +48,8 @@ menu:
     url: /ml
   - title: Results tab
     url: /results
-  - title: Results aggregated tab
-    url: /resultsagg
+  - title: Aggregated Results tab
+    url: /aggresults
   - title: Implementation
     url: /implementation
   - title: View on github

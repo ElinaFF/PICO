@@ -9,7 +9,7 @@ _ _ _ _
 
 The **P**ipeline of **I**nterpretable **C**lassification for **O**mics (PICO) is a tool to democratize machine learning (ML) for omics data.
 
-![](logo.png){:height="15%" width="15%"}
+![](logoName_pico.png){:height="15%" width="15%"}
 
 It must be installed on a computer and possesses a visual interface which can be used to perform an ML experiment, from uploading the data to analysing the results. 
 Advanced users will find that a script `automate.py` allows the steps from uploading data to training the algorithms to be run directly with a terminal (command prompt). The output file can then be loaded into the PICO interface for results analysis.
