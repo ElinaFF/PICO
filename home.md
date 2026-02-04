@@ -13,10 +13,10 @@ The 'Home' tab of the tool provides the link to this official documentation, the
 
 
 ## Results file (Load MetaboExperiment)
-To allow better modularity of the experiments, the two major steps (splits setup and ml results) of MeDIC are saved independently into medic_splits and medic_ml files. 
+To allow better modularity of the experiments, the two major steps (splits setup and ml results) of PICO are saved independently into pico_splits and pico_ml files. 
 Moreover, the data and metadata are only saved (dumps) in a local repository which enables sharing the results file to outside collaborators. 
 
-To continue an experiment and/or visualize results, MeDIC offers the possibility to load a `.mtxp` file. To prevent any problem between a local data dump and a potentially different saving file, a hashing process takes place to compare the file being loaded and the local dumps of data.
+To continue an experiment and/or visualize results, PICO offers the possibility to load a `.mtxp` file. To prevent any problem between a local data dump and a potentially different saving file, a hashing process takes place to compare the file being loaded and the local dumps of data.
 
 Load results
 : Select this option if you only want to visualize the results of a previous experiment. No need to provide data or metadata. It is not impacted by the hashing verification.

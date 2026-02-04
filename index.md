@@ -7,12 +7,12 @@ cover:  true
 # About
 _ _ _ _
 
-The **Me**tabolomics **D**ashboard for **I**nterpretable **C**lassification (MeDIC) is a tool to democratize machine learning (ML) for metabolomics.
+The **P**ipeline of **I**nterpretable **C**lassification for **O**mics (PICO) is a tool to democratize machine learning (ML) for omics data.
 
 ![](logo.png){:height="15%" width="15%"}
 
 It must be installed on a computer and possesses a visual interface which can be used to perform an ML experiment, from uploading the data to analysing the results. 
-Advanced users will find that a script `automate.py` allows the steps from uploading data to training the algorithms to be run directly with a terminal (command prompt). The output file can then be loaded into the MeDIC interface for results analysis.
+Advanced users will find that a script `automate.py` allows the steps from uploading data to training the algorithms to be run directly with a terminal (command prompt). The output file can then be loaded into the PICO interface for results analysis.
 Expert users will find that the `automate` script can be run on a distant server (need to : install the environment on the server, understand nodes/parallelization, know how much resources it will need to run.)
 
 
@@ -34,7 +34,7 @@ The recommended configuration considers the user will need the computer while th
 
 
 ###### Parallelization
-Enabling multithreading allows MeDIC to use all the performance of the CPU. It reduces dramatically the compute time of the experiment. The speed increase depends on the CPU’s performances (number of threads/core and speed).
+Enabling multithreading allows PICO to use all the performance of the CPU. It reduces dramatically the compute time of the experiment. The speed increase depends on the CPU’s performances (number of threads/core and speed).
 
 
 ## Benchmarks

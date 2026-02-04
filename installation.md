@@ -6,10 +6,10 @@ title:  Installation
 # Installation
 {: .no_toc}
 _ _ _ _
-The MeDIC is a tool that must be installed on a computer or a server. The visual interface is made with Dash from Plotly and can be
+The PICO is a tool that must be installed on a computer or a server. The visual interface is made with Dash from Plotly and can be
 opened in the majority of web browser. It is compatible with Linux, Mac and Windows. 
 
-The simplest way to install is using PyPI[https://pypi.org/project/medic-ml/]. The MeDIC is also available with Docker[https://hub.docker.com/r/elinaff/medic].
+The simplest way to install is using PyPI[https://pypi.org/project/medic-ml/]. The PICO is also available with Docker[https://hub.docker.com/r/elinaff/medic].
 It requires Python <3.13, >=3.8.
 
 * toc
@@ -17,7 +17,7 @@ It requires Python <3.13, >=3.8.
 
 ## Prerequisites
 The first step is ensuring Python, PyPI and an environment manager are installed. Usually pip and venv are natively included in Python.  
-For Windows, you also need to make sure that Microsoft Visual C++ >= 14.0 is installed, otherwise an error will occur while installing medic-ml.
+For Windows, you also need to make sure that Microsoft Visual C++ >= 14.0 is installed, otherwise an error will occur while installing pico-ml.
 
 ## Linux installation (or WSL)
 {: .titleclass}
@@ -55,7 +55,7 @@ With VERSION = 3.12.7
 ~$ pyenv doctor
 ~$ pyenv install VERSION
 ```
-VERSION can be any python version needed. MeDIC requires Python <3.13, >=3.8.
+VERSION can be any python version needed. PICO requires Python <3.13, >=3.8.
 This command is also the thing to do to install a new python version.
 
 Then activate the installed version as the current global version with :
@@ -77,7 +77,7 @@ By creating a `venv` environment afterwards, it will automatically pickup the py
 ### Python
 Follow this if you skipped the Pyenv step.
 In order to install Python, you need to go to this [link](https://www.python.org/downloads/source/). Download your
-preferred version (MeDIC requires Python <3.13, >=3.8) and proceed with the installation.
+preferred version (PICO requires Python <3.13, >=3.8) and proceed with the installation.
 You can also follow this [tutorial](https://www.scaler.com/topics/python/install-python-on-linux/) for further details.
 
 ### Virtual environment
@@ -97,9 +97,9 @@ source NAME/bin/activate
 
 ### PyPI
 Make sure PyPI is installed/functional. It is also normally included in Python.
-And install MeDIC with 
+And install PICO with 
 ```
-pip install medic-ml
+pip install pico-ml
 ```
 
 ## Mac installation
@@ -145,7 +145,7 @@ With VERSION = 3.12.7
 ```
 pyenv install VERSION
 ```
-VERSION can be any python version needed. MeDIC requires Python <3.13, >=3.8.
+VERSION can be any python version needed. PICO requires Python <3.13, >=3.8.
 This command is also the thing to do to install a new python version.
 
 Then activate the installed version as the current global version with
@@ -182,9 +182,9 @@ source NAME/bin/activate
 
 ### PyPI
 Make sure PyPI is installed/functional. It is also normally included in Python.
-And install MeDIC with 
+And install PICO with 
 ```
-pip install medic-ml
+pip install pico-ml
 ```
 
 
@@ -197,7 +197,7 @@ Also use the cmd prompt, not the powershell.
 
 ### Python
 In order to install Python, you need to go to this [link](https://www.python.org/downloads/windows/). Download your
-preferred version (MeDIC requires Python <3.13, >=3.8) and proceed with the installation.
+preferred version (PICO requires Python <3.13, >=3.8) and proceed with the installation.
 You can also follow this [tutorial](https://phoenixnap.com/kb/how-to-install-python-3-windows) for further details.
 
 WARNING : Don't forget the select Add Python 3.X to PATH on the first page !
@@ -213,7 +213,7 @@ Then click on Next. Then you can click on add to path and install.
 ![](imgs/addToPathAfterRepair.png)
 
 ### Microsoft Visual C++ requirement
-To make sure MeDIC and all it's dependencies work properly, you need Microsoft Visual C++ 14.0 or later.
+To make sure PICO and all it's dependencies work properly, you need Microsoft Visual C++ 14.0 or later.
 To check if the correct version of Microsoft Visual C++ is installed on your computer, you can open the Control Panel from the start menu,
 click on "uninstall app" and scroll down to see which version, if any, of Microsoft Visual C++ is installed.
 
@@ -236,8 +236,8 @@ By typing the command `dir` and pressing 'enter', you should obtain a list of yo
 C:\Users\YOURNAME>dir
 ```
 
-Now type the command `mkdir medic_project` : mkdir stands for 'make directory' and medic_project will be the name of the folder. It will be visible in your File explorer.
-Move inside that directory with `cd medic_project`.
+Now type the command `mkdir pico_project` : mkdir stands for 'make directory' and pico_project will be the name of the folder. It will be visible in your File explorer.
+Move inside that directory with `cd pico_project`.
 
 ### Virtual environment
 Make sure a virtual environment manager is installed, we use venv which is normally included in Python. It is good practice to encapsulate each project in specific envs to prevent collisions of versions.
@@ -250,23 +250,23 @@ It should display the list of arguments of venv.
 
 Then create an environment with
 ```
-python -m venv env_MeDIC
+python -m venv env_PICO
 ```
 
 Activate the environment with 
 ```
-env_MeDIC\bin\activate
+env_PICO\bin\activate
 ```
 
 Parenthesis should have appeared at the very beginning of command lines
 ```
-(env_MeDIC) C:\Users\YOURNAME\medic_project>
+(env_PICO) C:\Users\YOURNAME\pico_project>
 ```
 
 ### PyPI
 Make sure PyPI is installed/functional, use `pip -h`. It is also normally included in Python.
 
-Then install MeDIC with
+Then install PICO with
 ```
-pip install medic-ml
+pip install pico-ml
 ```

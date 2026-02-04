@@ -48,7 +48,7 @@ Your samples name identifiers must be string (text), there is not *yet* a safegu
 
 ## Define Classification designs
    
-The MeDIC only allows binary classification, so the classification designs add more flexibility.
+The PICO only allows binary classification, so the classification designs add more flexibility.
 In ML litterature, the three following terms are often used as synonyms. In the context of ML applied to biological data, we needed them to reflect three slightly different things.
 There might have been some mixing up during development in the names of variables and function. Always refer to this section to clarify.
 
@@ -86,9 +86,9 @@ In this example, we consider that studyA__High Symptoms has peculiarities due to
 
 Those are only two example but there could be many. Moreover, a user simply wanting to compare diagnosis could select only the column "Diagnosis" as 'target column' and have High Symptoms, Low Symptoms and Controls as potential classes.
 
-By default, if the user provides a Progenesis file as data, the MeDIC will parse the file and select the second header of the table as classes. (The first header being Raw abundance and Normalized abundance, and the third header being the name of the samples.)
-Otherwise, the MeDIC will read the metadata file and displays the columns names. If there are not the column names expected, please retry uploading the metadata in the section A. The user can then choose which (one or multiple) column(s) to use as class(es). In other word, which information the model will try to predict. If the user choose multiple columns, the classes will be a combination of the values of those columns.
-The user will also need to select which column of the metadata file contains the unique ID or sample names. It is used by the MeDIC to link the metadata information to each unique sample in the data.
+By default, if the user provides a Progenesis file as data, the PICO will parse the file and select the second header of the table as classes. (The first header being Raw abundance and Normalized abundance, and the third header being the name of the samples.)
+Otherwise, the PICO will read the metadata file and displays the columns names. If there are not the column names expected, please retry uploading the metadata in the section A. The user can then choose which (one or multiple) column(s) to use as class(es). In other word, which information the model will try to predict. If the user choose multiple columns, the classes will be a combination of the values of those columns.
+The user will also need to select which column of the metadata file contains the unique ID or sample names. It is used by the PICO to link the metadata information to each unique sample in the data.
 
 After this step, starts the creation of classification designs. With each  target column the user chose, the section updates and displays the possibilities (original classes are separated from each other by '__').
 The user has to name the new group of classes by defining a label.

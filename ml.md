@@ -86,8 +86,8 @@ Because of their differences, some may perform better than others on different d
 
 ###### Add scikit-learn algorithm
 
-The MeDIC support the addition of Sklearn models as long as they have a method to extract the importance of features in the prediction.
-After clicking on the button to add a Sklearn algorithms, the user must give the import information of the algorithm. The MeDIC will try to import and verify that it is compatible. If it is, the user can choose to add the HP to explore by using the table provided by the MeDIC, or to do it manually.
+The PICO support the addition of Sklearn models as long as they have a method to extract the importance of features in the prediction.
+After clicking on the button to add a Sklearn algorithms, the user must give the import information of the algorithm. The PICO will try to import and verify that it is compatible. If it is, the user can choose to add the HP to explore by using the table provided by the PICO, or to do it manually.
 The user must also select which attribute contains the features importances.
 
 ###### Add custom algorithm
@@ -104,7 +104,7 @@ Add a dictionary containing the NON-INSTANTIATED class and the param grid. Forma
           }
       },
 ~~~  
-After adding your configuration, reboot the MeDIC by stopping and restarting the launcher.
+After adding your configuration, reboot the PICO by stopping and restarting the launcher.
 The algorithm should be in the AVAILABLE ALGORITHMS section with his printed name.
 Note, the custom model are in the save file (.mtxp) and will be restored.
 

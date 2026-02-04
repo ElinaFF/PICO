@@ -11,8 +11,8 @@ _ _ _ _
 
 ### Windows
 
-Open the cmd prompt, go into the `medic_project`directory and activate the environment.
-Then simply enter the command `medic ui`. 
+Open the cmd prompt, go into the `pico_project`directory and activate the environment.
+Then simply enter the command `pico ui`. 
 
 A starting message should appear and the interface should open automatically in your default internet browser. 
 If it is not the case, scroll up to the starting message and copy-paste the given adress in the search bar. It should look something like https:\\127.0.0.0:5000.
@@ -22,8 +22,8 @@ If it is not the case, scroll up to the starting message and copy-paste the give
 
 ### Linux
 
-Open the terminal, go into the `medic_project`directory and activate the environment.
-Then simply enter the command `medic ui`. 
+Open the terminal, go into the `pico_project`directory and activate the environment.
+Then simply enter the command `pico ui`. 
 
 A starting message should appear and the interface could open automatically in your default internet browser. 
 If it is not the case, scroll up to the starting message and copy-paste the given adress in the search bar. It should look something like https:\\127.0.0.0:5000.
