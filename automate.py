@@ -22,12 +22,6 @@ logger = init_logger()
 METADATA_PATH = "../medic_otherThanPackage/s_MTBLS28_merged.csv"
 DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_CombinedData2_forML.csv"
 
-#METADATA_PATH = "../medic_otherThanPackage/s_MTBLS28_.csv"
-#DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_data_POS_forML.csv"
-
-#METADATA_PATH = "../medic_otherThanPackage/s_MTBLS28_NEG.csv"
-#DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_data_NEG_forML.csv"
-
 
 ##############################
 #      Setup experiment      #
@@ -63,7 +57,7 @@ def SPLITS_setup_classification_designs(mtb_ctrl):
 
     # Designs are defined as dict with labels as keys and classes(if multiple link with "__") as values
     # The classes should correspond to values found in the column(s) defined in mtb_ctrl.set_target_columns() function. 
-    mtb_ctrl.add_classification_design({"TotalCases": ["Case"], "TotalCtrls": ["Control"]})
+    mtb_ctrl.add_classification_design({"1TotalCases": ["Case"], "0TotalCtrls": ["Control"]})
     #mtb_ctrl.add_classification_design({"NEG_Case_Current": ["Case__Current Smoker"], "Ctrl_Current": ["Control__Current Smoker"]})
     #mtb_ctrl.add_classification_design({"NEG_Case_Former": ["Case__Former Smoker"], "Ctrl_Former": ["Control__Former Smoker"]})
     #mtb_ctrl.add_classification_design({"NEG_Case_Never": ["Case__Never Smoker"], "Ctrl_Never": ["Control__Never Smoker"]})
@@ -80,7 +74,7 @@ def SPLITS_setup_splits_and_balancing(mtb_ctrl, proportion_splits , nbr_splits):
 
     # The balance correction is specific to a design, refer to a design by its name (LABEL1_vs_LABEL2)
     # Choosing balance correction value : see documentation for explanation
-    mtb_ctrl.set_balance_correction_for_experiment("TotalCases_vs_TotalCtrls", 0)
+    mtb_ctrl.set_balance_correction_for_experiment("1TotalCases_vs_0TotalCtrls", 0)
     #mtb_ctrl.set_balance_correction_for_experiment("NEG_Case_Current_vs_Ctrl_Current", 15)
     #mtb_ctrl.set_balance_correction_for_experiment("NEG_Case_Former_vs_Ctrl_Former", 0)
     #mtb_ctrl.set_balance_correction_for_experiment("NEG_Case_Never_vs_Ctrl_Never", 21)
@@ -95,14 +89,15 @@ def ML_setup_CV_and_algo(mtb_ctrl, cv_algo):
     mtb_ctrl.set_multithreading(True)
 
     # Available defaults : ["DecisionTree", "RandomForest", "SCM", "RandomSCM"]
-    mtb_ctrl.set_selected_models(["DecisionTree", "RandomForest"]) #, "SCM", "RandomSCM"
+    mtb_ctrl.set_selected_models(["DecisionTree", "RandomForest", "SCM", "RandomSCM"])
     
     # (if GridSearch you can simply comment the line)
     mtb_ctrl.set_cv_type(cv_algo)
     
     # Needed if RandomizedSearchCV is chosen
     # list of values for required parameters of CV algorithm, randomSearch requires n_iter arg : the default here is 10
-    mtb_ctrl.set_cv_algorithm_configuration([5])
+    # (if GridSearch you can simply comment the line)
+    #mtb_ctrl.set_cv_algorithm_configuration([20])
     
     mtb_ctrl.set_cv_folds(5)
     mtb_ctrl.learn()
@@ -136,10 +131,10 @@ def main():
 
     SPLITS_setup_files(metabo_controller)
     SPLITS_setup_classification_designs(metabo_controller)
-    SPLITS_setup_splits_and_balancing(metabo_controller, 0.2, 2)
+    SPLITS_setup_splits_and_balancing(metabo_controller, 0.2, 15)
     SAVE_setups_and_results(metabo_controller, "medic_splits")
     
-    ML_setup_CV_and_algo(metabo_controller, "RandomizedSearchCV")
+    ML_setup_CV_and_algo(metabo_controller, "GridSearchCV")
     SAVE_setups_and_results(metabo_controller, "medic_ml")
 
     end_time = datetime.now()

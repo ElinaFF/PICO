@@ -31,9 +31,9 @@ LEARN_CONFIG = {
                 "min_samples_split": np.arange(2, 20, step=2, dtype=int),
             },
             "GridSearch" : {
-                "n_estimators": [5, 10, 30, 50, 70, 100, 200],
+                "n_estimators": [10, 30, 50, 70, 100, 200],  # removed 5,
                 "max_depth": [2, 3, 4, 5],
-                "min_samples_split": [2, 4, 6, 8, 10],
+                "min_samples_split": [2, 4, 6, 8, 10]
             }
         },
         "importance_attribute": "feature_importances_",
