@@ -47,7 +47,7 @@ class InfoTab(MetaTab):
                         ),
                         html.P(
                             "There is a hash mecanism in place to ensure that the locally saved data fits an experiment file "
-                            "that might be loaded into the MeDIC in the future. It is computed and stored in the file of settings. This mecanism can be compared to a lock and key mecanism. The key "
+                            "that might be loaded into the PICO in the future. It is computed and stored in the file of settings. This mecanism can be compared to a lock and key mecanism. The key "
                             "to check a file will only fit this particular file. It ensures reproductibility reliability."
                         ),
                     ]

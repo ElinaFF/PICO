@@ -18,7 +18,7 @@ import threading
 # Code for the logging
 if threading.current_thread() is threading.main_thread():
     logger = set_log_filename()
-    logger.info(f"Starting MeDIC")
+    logger.info(f"Starting PICO")
 else:
     logger = init_logger()
     logger.debug(f"New thread '{threading.current_thread().name}')")
@@ -29,7 +29,7 @@ app = dash.Dash(
     external_stylesheets=[dbc.themes.LUX],
     meta_tags=[{"name": "viewport", "content": "width=device-width"}],
 )
-app.title = "MeDIC"
+app.title = "PICO"
 server = app.server
 # app.scripts.config.serve_locally = False
 app.css.config.serve_locally = False
@@ -55,7 +55,7 @@ app.layout = html.Div(
             children=[
                 html.Div(
                     children=[
-                        html.H1(id="title", children="MeDIC"),
+                        html.H1(id="title", children="PICO"),
                         html.Div(
                             children=[
                                 html.P(
@@ -115,7 +115,7 @@ app.clientside_callback(
     """
     function(n_clicks) {
         if (n_clicks > 0) {
-            if (confirm("Do you want to close MeDIC application server?")) {
+            if (confirm("Do you want to close PICO application server?")) {
                 window.close();
                 fetch('/shutdown', {method: 'POST'})
                     .then(response => response.json())
@@ -133,13 +133,13 @@ app.clientside_callback(
 @server.route('/shutdown', methods=['POST'])
 def shutdown():
     try:
-        logger.info("Shutting down MeDIC server...")
+        logger.info("Shutting down PICO server...")
         shutdown_func = request.environ.get('werkzeug.server.shutdown')
         if shutdown_func:
             shutdown_func()
         else:
             os.kill(os.getpid(), signal.SIGINT)
-        return jsonify({'message': 'MeDIC server is shutting down...'})
+        return jsonify({'message': 'PICO server is shutting down...'})
     except Exception as e:
         logger.error(f"Error during shutdown: {e}")
         return jsonify({'error': str(e)}), 500

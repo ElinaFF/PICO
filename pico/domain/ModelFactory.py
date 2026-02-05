@@ -38,7 +38,7 @@ class ModelFactory:
     def create_custom_model(self, model_name: str, needed_imports: str, params_grid: dict,
                             importance_attribute: str = Utils.DEFAULT_IMPORTANCE_ATTRIBUTE) -> MetaboModel:
         """
-        Create a custom model (not included by default) for the MeDIC to use
+        Create a custom model (not included by default) for the PICO to use
         """
         imports_list = needed_imports.split(".")
         model = Utils.get_model_from_import(imports_list, model_name)

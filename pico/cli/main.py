@@ -21,10 +21,10 @@ PYPI_PROJECT_NAME = "pico-ml"
 
 @app.callback(invoke_without_command=True, no_args_is_help=True)
 def main(
-    version: bool = typer.Option(False, "--version", "-v", help="MeDIC CLI version")
+    version: bool = typer.Option(False, "--version", "-v", help="PICO CLI version")
 ):
     """
-    MeDIC CLI!
+    PICO CLI!
     """
     if version:
         typer.echo(__version__)

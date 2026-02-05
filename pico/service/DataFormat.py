@@ -32,7 +32,7 @@ class DataFormat:
 
     def convert(self):
         """
-        Convert data format for easier use by the MeDIC
+        Convert data format for easier use by the PICO
         """
         if self.in_format == "base64":
             data_type, data_string = self.data.split(",")

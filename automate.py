@@ -41,7 +41,7 @@ def SPLITS_setup_files(mtb_ctrl):
     # To input "Normalized" :
     #    - set_raw_use_for_data(False)
     # The option of "set_data_matrix_remove_rt" should be True if Progenesis format, select False to your own risks
-    # If Not Progenesis, removing RT before 1min should part of preprocessing prior to using the MeDIC
+    # If Not Progenesis, removing RT before 1min should part of preprocessing prior to using the PICO
     mtb_ctrl.set_raw_use_for_data(False)
     mtb_ctrl.set_data_matrix_remove_rt(False)
     mtb_ctrl.set_data_matrix_from_path(DATAMATRIX_PATH, from_base64=False)

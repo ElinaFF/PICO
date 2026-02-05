@@ -496,7 +496,7 @@ class MetaboExperiment:
 
     def get_cv_types(self) -> List[str]:
         """
-        Retrieve the dict of possible cross-validation types supported by the MeDIC
+        Retrieve the dict of possible cross-validation types supported by the PICO
         """
         return list(self._cv_algorithms.keys())
 

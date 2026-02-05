@@ -170,7 +170,7 @@ class Controller:
 
     def get_cv_types(self) -> List[str]:
         """
-        Retrieve the dict of possible cross-validation types supported by the MeDIC
+        Retrieve the dict of possible cross-validation types supported by the PICO
         """
         return self._metabo_experiment.get_cv_types()
 
