@@ -5,7 +5,7 @@ from sklearn.tree import DecisionTreeClassifier
 import time
 import math
 
-from medic.domain import Results
+from pico.domain import Results
 from ..TestsUtility import NUMBER_OF_SPLITS, RESULTS, SAMPLES_ID, CLASSES, CLASSES_DESIGN, IMPORTANCE_ATTRIBUTE, \
     DATAMATRIX_DATAFRAME
 

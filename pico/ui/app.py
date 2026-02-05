@@ -12,7 +12,7 @@ import signal
 from .tabs import *
 from ..domain import MetaboController
 
-from medic.service import set_log_filename, init_logger
+from pico.service import set_log_filename, init_logger
 import threading
 
 # Code for the logging

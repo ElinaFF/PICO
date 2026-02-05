@@ -1,6 +1,6 @@
 from datetime import datetime
-from medic.domain import MetaboController
-from medic.service import Utils, init_logger, log_exceptions
+from pico.domain import MetaboController
+from pico.service import Utils, init_logger, log_exceptions
 
 logger = init_logger()
 

@@ -11,7 +11,7 @@ from ..TestsUtility import (
     SELECTED_MODELS_NAME,
     CV_TYPE,
 )
-from medic.domain.MetaboExperimentDTO import MetaboExperimentDTO
+from pico.domain.MetaboExperimentDTO import MetaboExperimentDTO
 
 
 @pytest.fixture
