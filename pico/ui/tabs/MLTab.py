@@ -337,7 +337,7 @@ class MLTab(MetaTab):
                 self.metabo_controller.learn()
 
                 # Dump file to dump folder and to save folder (backup)
-                metabo_expe_filename = Utils.get_metabo_experiment_path("medic_ml")
+                metabo_expe_filename = Utils.get_metabo_experiment_path("pico_ml")
                 metabo_expe_obj = self.metabo_controller.generate_save()
                 Utils.dump_metabo_expe(metabo_expe_obj) # Dump the classification design to the dump folder
                 Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save classification design.

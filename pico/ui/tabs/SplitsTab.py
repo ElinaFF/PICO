@@ -1059,7 +1059,7 @@ class SplitsTab(MetaTab):
                 self.metabo_controller.create_splits()
                 
                 # Dump file to dump folder and to save folder (backup)
-                metabo_expe_filename = Utils.get_metabo_experiment_path("medic_splits") # Get save file path
+                metabo_expe_filename = Utils.get_metabo_experiment_path("pico_splits") # Get save file path
                 metabo_expe_obj = self.metabo_controller.generate_save()
                 Utils.dump_metabo_expe(metabo_expe_obj) # Dump the classification design to the dump folder
                 Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save the classification design

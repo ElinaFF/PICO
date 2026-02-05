@@ -72,7 +72,7 @@ def update_marks(custom_value: int, add_all_value: bool = False) -> dict:
 
 def get_index_from_marks(number: float, marks: dict) -> int:
     """This is really specific to how the results are saved. 
-    See medic.domain.Results._produce_PCA (or _produce_UMAP).
+    See pico.domain.Results._produce_PCA (or _produce_UMAP).
 
     The first results are from cfg.features, then used_features, then all.
 

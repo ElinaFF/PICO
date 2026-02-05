@@ -35,7 +35,7 @@ Clone the project with :
 git clone https://github.com/ElinaFF/MeDIC.git
 ```
 
-It is recommanded to setup a virtual environment. When it's done, use your isolated python and install `medic` package locally and in editable mode with :
+It is recommanded to setup a virtual environment. When it's done, use your isolated python and install `pico` package locally and in editable mode with :
 ```shell
 python -m pip install -e ".[dev]"
 ```

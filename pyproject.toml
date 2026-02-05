@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "medic-ml"
+name = "pico-ml"
 authors = [
   { name="Elina Francovic-Fontaine", email="elina.francovic-fontaine.1@ulaval.ca" },
 ]
@@ -54,16 +54,16 @@ Issues = "https://github.com/ElinaFF/MeDIC/issues"
 Source = "https://github.com/ElinaFF/MeDIC"
 
 [project.scripts]
-medic = "medic.cli.main:app"
+pico = "pico.cli.main:app"
 
 [tool.hatch.version]
-path = "medic/__init__.py"
+path = "pico/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-only-include = ["medic"]
+only-include = ["pico"]
 
 [tool.hatch.build.targets.sdist]
-only-include = ["medic"]
+only-include = ["pico"]
 
 [tool.hatch.metadata]
 allow-direct-references = true

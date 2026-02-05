@@ -46,14 +46,14 @@ def get_metabo_experiment_path(expe_filename: str="save", is_date: bool=True) ->
     if not name_ext:
         expe_filename = expe_filename + ".mtxp"
     
-    saves_dir = get_medic_subdir("saves")
+    saves_dir = get_pico_subdir("saves")
     
     new_filename = insert_datetime(expe_filename) if is_date else expe_filename
     return os.path.join(saves_dir, new_filename)
 
 
-def get_medic_subdir(subdir_name: str) -> str:
-    """Returns the path to provided subdirectory of '~/medic_files/' main medic directory.
+def get_pico_subdir(subdir_name: str) -> str:
+    """Returns the path to provided subdirectory of '~/pico_files/' main pico directory.
 
     Args:
         subdir_name (str): subdir to get (and create if it doesn't exist)
@@ -62,7 +62,7 @@ def get_medic_subdir(subdir_name: str) -> str:
         str: the subdir full path
     """
     home_dir_path: str = os.path.expanduser("~")
-    subdir_path: str = os.path.join(home_dir_path, "medic_files", subdir_name)
+    subdir_path: str = os.path.join(home_dir_path, "pico_files", subdir_name)
     
     if not os.path.exists(subdir_path):
         os.makedirs(subdir_path)

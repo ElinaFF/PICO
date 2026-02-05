@@ -107,8 +107,8 @@ def SAVE_setups_and_results(mtb_ctrl, experiment_path):
     """
     mtb_ctrl : Controller object
     experiment_path :  
-        -   'medic_splits' the save of only splits parameters, after the "splits tab"
-        -   'medic_ml' the save of all parameters and results, after the "ml tab"
+        -   'pico_splits' the save of only splits parameters, after the "splits tab"
+        -   'pico_ml' the save of all parameters and results, after the "ml tab"
         This argument should not take a different path from the two above, it risks breaking the code. 
     """
     metabo_expe_filename = Utils.get_metabo_experiment_path(experiment_path) # Get save file path
@@ -132,10 +132,10 @@ def main():
     SPLITS_setup_files(metabo_controller)
     SPLITS_setup_classification_designs(metabo_controller)
     SPLITS_setup_splits_and_balancing(metabo_controller, 0.2, 15)
-    SAVE_setups_and_results(metabo_controller, "medic_splits")
+    SAVE_setups_and_results(metabo_controller, "pico_splits")
     
     ML_setup_CV_and_algo(metabo_controller, "GridSearchCV")
-    SAVE_setups_and_results(metabo_controller, "medic_ml")
+    SAVE_setups_and_results(metabo_controller, "pico_ml")
 
     end_time = datetime.now()
     logger.info(f"---> Duration of run : {end_time - start_time}")   
