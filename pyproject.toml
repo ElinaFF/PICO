@@ -49,9 +49,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://elinaff.github.io/MeDIC/"
-Issues = "https://github.com/ElinaFF/MeDIC/issues"
-Source = "https://github.com/ElinaFF/MeDIC"
+Homepage = "https://elinaff.github.io/PICO/"
+Issues = "https://github.com/ElinaFF/PICO/issues"
+Source = "https://github.com/ElinaFF/PICO"
 
 [project.scripts]
 pico = "pico.cli.main:app"
