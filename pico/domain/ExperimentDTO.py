@@ -1,7 +1,7 @@
 from . import MetaboExperiment
 
 
-class MetaboExperimentDTO:
+class ExperimentDTO:
     def __init__(self, metabo_experiment: MetaboExperiment):
         self.data_matrix = metabo_experiment.get_data_matrix()
         self.metadata = metabo_experiment.get_metadata()

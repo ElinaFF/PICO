@@ -5,7 +5,7 @@ from typing import Generator, Tuple, Union
 import pandas as pd
 
 from . import MetaboExperiment
-from .MetaboExperimentDTO import MetaboExperimentDTO
+from .ExperimentDTO import ExperimentDTO
 from .Results import *
 from ..service import init_logger
 
@@ -180,26 +180,26 @@ class Controller:
         """
         return self._metabo_experiment.get_selected_cv_type()
 
-    def generate_save(self) -> MetaboExperimentDTO:
+    def generate_save(self) -> ExperimentDTO:
         """
-        Return an object MetaboExperimentDTO
+        Return an object ExperimentDTO
         (which is a holder of some MetaboExperiment attributes)
         """
         return self._metabo_experiment.generate_save()
 
-    def is_save_safe(self, saved_metabo_experiment_dto: MetaboExperimentDTO) -> bool:
+    def is_save_safe(self, saved_metabo_experiment_dto: ExperimentDTO) -> bool:
         """
-        Verify that the hash from the saved MetaboExperimentDTO is the same from the current object
+        Verify that the hash from the saved ExperimentDTO is the same from the current object
         """
         return self._metabo_experiment.is_save_safe(saved_metabo_experiment_dto)
 
-    def full_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
+    def full_restore(self, saved_metabo_experiment_dto: ExperimentDTO):
         """
         Restore an experiment from a saving (always? from file)
         """
         self._metabo_experiment.full_restore(saved_metabo_experiment_dto)
 
-    def partial_restore(self, saved_metabo_experiment_dto: MetaboExperimentDTO, filename_data: str, filename_metadata: str,
+    def partial_restore(self, saved_metabo_experiment_dto: ExperimentDTO, filename_data: str, filename_metadata: str,
                         data=None, from_base64_data: bool = True, metadata=None, from_base64_metadata=True,):
         """
         Restore only the parameters of an experiment
@@ -208,7 +208,7 @@ class Controller:
         self._metabo_experiment.partial_restore(saved_metabo_experiment_dto, filename_data, filename_metadata, data,
                                                 from_base64_data, metadata, from_base64_metadata,)
 
-    def load_results(self, saved_metabo_experiment_dto: MetaboExperimentDTO):
+    def load_results(self, saved_metabo_experiment_dto: ExperimentDTO):
         """
         Init a new experiment (new metadata and data_matrix) and load saved results
         """
