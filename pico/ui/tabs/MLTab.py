@@ -8,11 +8,11 @@ from os.path import basename
 
 from .MetaTab import MetaTab
 from ...service import Utils, init_logger, log_exceptions
-from ...domain import MetaboController
+from ...domain import Controller
 
 
 class MLTab(MetaTab):
-    def __init__(self, app: dash.Dash, metabo_controller: MetaboController):
+    def __init__(self, app: dash.Dash, metabo_controller: Controller):
         super().__init__(app, metabo_controller)
         self._logger = init_logger()
 

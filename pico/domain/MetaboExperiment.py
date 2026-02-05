@@ -665,7 +665,7 @@ class MetaboExperiment:
     def display_splits(self) -> None:
         """
         Display the classes repartition for each split of each Classification Design.
-        See more détail in the MetaboController.display_splits() method description.
+        See more détail in the Controller.display_splits() method description.
         """
         from collections import Counter
 

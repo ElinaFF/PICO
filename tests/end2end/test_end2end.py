@@ -1,6 +1,6 @@
 import pytest
 
-from pico.domain import MetaboController
+from pico.domain import Controller
 from pico.service import Utils
 from ..TestsUtility import (
     ENCODED_DATAMATRIX_DATAFRAME,
@@ -14,7 +14,7 @@ from ..TestsUtility import (
 
 @pytest.fixture
 def input_controller():
-    return MetaboController()
+    return Controller()
 
 
 # def test_givenDataset_whenLearning_thenNoThrow(input_controller):

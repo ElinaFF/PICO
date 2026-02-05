@@ -7,7 +7,7 @@ from dash.dcc import send_file
 from os.path import basename
 
 from .MetaTab import MetaTab
-from ...domain import MetaboController
+from ...domain import Controller
 from ...service import Utils, Plots, init_logger, log_exceptions
 
 EXP_NAME = []
@@ -27,7 +27,7 @@ CONFIG = {
 
 
 class SplitsTab(MetaTab):
-    def __init__(self, app: dash.Dash, metabo_controller: MetaboController):
+    def __init__(self, app: dash.Dash, metabo_controller: Controller):
         super().__init__(app, metabo_controller)
         self._logger = init_logger()
 

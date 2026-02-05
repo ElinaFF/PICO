@@ -13,7 +13,7 @@ ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
 
 
-class MetaboController:
+class Controller:
     """
     Bottleneck class to interface between backend and frontend
     """

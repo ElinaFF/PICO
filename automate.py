@@ -1,5 +1,5 @@
 from datetime import datetime
-from pico.domain import MetaboController
+from pico.domain import Controller
 from pico.service import Utils, init_logger, log_exceptions
 
 logger = init_logger()
@@ -29,7 +29,7 @@ DATAMATRIX_PATH = "../medic_otherThanPackage/MTBLS28_CombinedData2_forML.csv"
 
 def SPLITS_setup_files(mtb_ctrl):
     """
-    mtb_ctrl : MetaboController object
+    mtb_ctrl : Controller object
     """
 
     # The UI has three options of file input : "Raw" (from progenesis), "Normalized" (from progenesis), Not Progenesis
@@ -49,7 +49,7 @@ def SPLITS_setup_files(mtb_ctrl):
 
 def SPLITS_setup_classification_designs(mtb_ctrl):
     """
-    mtb_ctrl : MetaboController object
+    mtb_ctrl : Controller object
     """
     mtb_ctrl.set_id_column("Sample_Name")
     mtb_ctrl.set_target_columns(["Factor Value[Sample Type]"])
@@ -65,7 +65,7 @@ def SPLITS_setup_classification_designs(mtb_ctrl):
 
 def SPLITS_setup_splits_and_balancing(mtb_ctrl, proportion_splits , nbr_splits):
     """
-    mtb_ctrl : MetaboController object
+    mtb_ctrl : Controller object
     proportion_splits : proportion of sample in test set in decimal (0 to 1)
     nbr_splits : number of splits to compute
     """
@@ -83,7 +83,7 @@ def SPLITS_setup_splits_and_balancing(mtb_ctrl, proportion_splits , nbr_splits):
 
 def ML_setup_CV_and_algo(mtb_ctrl, cv_algo):
     """
-    mtb_ctrl : MetaboController object
+    mtb_ctrl : Controller object
     cv_algo : Either GridSearchCV(default) or RandomizedSearchCV
     """
     mtb_ctrl.set_multithreading(True)
@@ -105,7 +105,7 @@ def ML_setup_CV_and_algo(mtb_ctrl, cv_algo):
 
 def SAVE_setups_and_results(mtb_ctrl, experiment_path):
     """
-    mtb_ctrl : MetaboController object
+    mtb_ctrl : Controller object
     experiment_path :  
         -   'medic_splits' the save of only splits parameters, after the "splits tab"
         -   'medic_ml' the save of all parameters and results, after the "ml tab"
@@ -127,7 +127,7 @@ def SAVE_setups_and_results(mtb_ctrl, experiment_path):
 def main():
     start_time = datetime.now()
     logger.info(f"---> Starting at : {start_time}")
-    metabo_controller = MetaboController()
+    metabo_controller = Controller()
 
     SPLITS_setup_files(metabo_controller)
     SPLITS_setup_classification_designs(metabo_controller)

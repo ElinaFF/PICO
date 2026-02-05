@@ -4,6 +4,6 @@ from .ClassificationDesign import ClassificationDesign
 from .MetaboExperiment import MetaboExperiment
 from .ModelFactory import ModelFactory
 from .Results import Results
-from .MetaboController import MetaboController
+from .Controller import Controller
 from .DataMatrix import DataMatrix
 from .MetaboModel import MetaboModel

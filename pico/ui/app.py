@@ -10,7 +10,7 @@ import os
 import signal
 
 from .tabs import *
-from ..domain import MetaboController
+from ..domain import Controller
 
 from pico.service import set_log_filename, init_logger
 import threading
@@ -36,7 +36,7 @@ app.css.config.serve_locally = False
 app.config.suppress_callback_exceptions = True
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
-metabo_controller = MetaboController()
+metabo_controller = Controller()
 infoTab = InfoTab(app, metabo_controller)
 splitsTab = SplitsTab(app, metabo_controller)
 mLTab = MLTab(app, metabo_controller)

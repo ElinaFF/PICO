@@ -4,11 +4,11 @@ from dash import html, dcc, Output, Input, State, callback_context, Dash
 
 from .MetaTab import MetaTab
 from ...service import decode_pickle_from_base64, Utils, init_logger, log_exceptions
-from ...domain import MetaboController
+from ...domain import Controller
 
 
 class InfoTab(MetaTab):
-    def __init__(self, app: Dash, metabo_controller: MetaboController):
+    def __init__(self, app: Dash, metabo_controller: Controller):
         super().__init__(app, metabo_controller)
         self._logger = init_logger()
         
