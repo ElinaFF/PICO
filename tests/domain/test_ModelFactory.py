@@ -2,7 +2,7 @@ import pytest
 from sklearn.svm import SVC
 import itertools
 
-from medic.domain import ModelFactory
+from pico.domain import ModelFactory
 from ..TestsUtility import SUPPORTED_MODEL
 
 

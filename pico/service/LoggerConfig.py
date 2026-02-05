@@ -7,7 +7,7 @@ import threading
 import traceback
 from functools import wraps
 from typing import Callable
-from .Utils import get_medic_subdir
+from .Utils import get_pico_subdir
 
 log_filename: str|None = None  # Global variable for log filename
 
@@ -26,10 +26,10 @@ def log_exceptions(logger: logging.Logger) -> Callable:
     return decorator
 
 
-def set_log_filename(filename: str="medic.log", add_date: bool=True, level=logging.DEBUG) -> logging.Logger:
+def set_log_filename(filename: str="pico.log", add_date: bool=True, level=logging.DEBUG) -> logging.Logger:
     """Sets the log filename with an optional date suffix.
     Args:
-        filename (str, optional): The base filename for the log. Defaults to "medic.log".
+        filename (str, optional): The base filename for the log. Defaults to "pico.log".
         add_date (bool, optional): If True, adds the current date to the filename. Defaults to True.
     """
     global log_filename
@@ -44,8 +44,8 @@ def set_log_filename(filename: str="medic.log", add_date: bool=True, level=loggi
     else:
         log_filename = filename
 
-    # Log file in ~/medic_files/logs directory
-    logs_directory = get_medic_subdir("logs")
+    # Log file in ~/pico_files/logs directory
+    logs_directory = get_pico_subdir("logs")
     log_filename = os.path.join(logs_directory, log_filename)      
 
     # Add "-----------------------" in the log file to start the current session
@@ -94,7 +94,7 @@ def set_log_filename(filename: str="medic.log", add_date: bool=True, level=loggi
 
 
 def init_logger(module_name: str|None=None, level=logging.DEBUG) -> logging.Logger:
-    """"medic.log"
+    """"pico.log"
 
     Args:
         module_name (str | None, optional): The name of the module for the logger. Defaults to None.
@@ -121,7 +121,7 @@ def init_logger(module_name: str|None=None, level=logging.DEBUG) -> logging.Logg
         return module.__name__
 
     if module_name is None:
-        module_name = get_module_name() or "medic"
+        module_name = get_module_name() or "pico"
             
     logger = logging.getLogger(module_name)
     logger.setLevel(level)

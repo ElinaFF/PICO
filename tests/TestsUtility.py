@@ -14,7 +14,7 @@ np.random.seed(42)
 random.seed(42)
 
 if __name__ != "__main__":
-    from medic.conf.SupportedModels import LEARN_CONFIG
+    from pico.conf.SupportedModels import LEARN_CONFIG
 
 
 def _get_samples_id(size: int) -> List[str]:
@@ -266,7 +266,7 @@ MOCKED_METABOEXPERIMENT.get_custom_models.return_value = CUSTOM_MODELS
 MOCKED_METABOEXPERIMENT.get_selected_models.return_value = SELECTED_MODELS_NAME
 MOCKED_METABOEXPERIMENT.get_selected_cv_type.return_value = CV_TYPE
 
-MOCKED_METABOEXPERIMENT_DTO_CLASS = Mock(name="MockedMetaboExperimentDTO")
+MOCKED_METABOEXPERIMENT_DTO_CLASS = Mock(name="MockedExperimentDTO")
 MOCKED_METABOEXPERIMENT_DTO = MOCKED_METABOEXPERIMENT_DTO_CLASS.return_value
 MOCKED_METABOEXPERIMENT_DTO.metadata = MOCKED_METADATA
 MOCKED_METABOEXPERIMENT_DTO.data_matrix = MOCKED_DATAMATRIX

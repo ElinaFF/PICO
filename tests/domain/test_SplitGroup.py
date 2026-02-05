@@ -16,7 +16,7 @@ from ..TestsUtility import (
     SELECTED_TARGETS_NAME,
     ALL_TARGETS_NAMES,
 )
-from medic.domain import SplitGroup
+from pico.domain import SplitGroup
 
 
 @pytest.fixture

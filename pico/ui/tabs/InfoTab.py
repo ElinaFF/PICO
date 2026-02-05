@@ -4,11 +4,11 @@ from dash import html, dcc, Output, Input, State, callback_context, Dash
 
 from .MetaTab import MetaTab
 from ...service import decode_pickle_from_base64, Utils, init_logger, log_exceptions
-from ...domain import MetaboController
+from ...domain import Controller
 
 
 class InfoTab(MetaTab):
-    def __init__(self, app: Dash, metabo_controller: MetaboController):
+    def __init__(self, app: Dash, metabo_controller: Controller):
         super().__init__(app, metabo_controller)
         self._logger = init_logger()
         
@@ -21,7 +21,7 @@ class InfoTab(MetaTab):
                     [
                         "You can find the official documentation ",
                         html.A(
-                            href="https://elinaff.github.io/MeDIC/",
+                            href="https://elinaff.github.io/PICO/",
                             target="_blank",
                             rel="noreferrer noopener",
                             children="here",
@@ -47,7 +47,7 @@ class InfoTab(MetaTab):
                         ),
                         html.P(
                             "There is a hash mecanism in place to ensure that the locally saved data fits an experiment file "
-                            "that might be loaded into the MeDIC in the future. It is computed and stored in the file of settings. This mecanism can be compared to a lock and key mecanism. The key "
+                            "that might be loaded into the PICO in the future. It is computed and stored in the file of settings. This mecanism can be compared to a lock and key mecanism. The key "
                             "to check a file will only fit this particular file. It ensures reproductibility reliability."
                         ),
                     ]

@@ -10,21 +10,21 @@ import typer
 
 from . import console
 from .. import __version__
-from .. import app as medic_app
+from .. import app as pico_app
 
 # Use print from `rich` library
 print = console.print
 
 app = typer.Typer()
 
-PYPI_PROJECT_NAME = "medic-ml"
+PYPI_PROJECT_NAME = "pico-ml"
 
 @app.callback(invoke_without_command=True, no_args_is_help=True)
 def main(
-    version: bool = typer.Option(False, "--version", "-v", help="MeDIC CLI version")
+    version: bool = typer.Option(False, "--version", "-v", help="PICO CLI version")
 ):
     """
-    MeDIC CLI!
+    PICO CLI!
     """
     if version:
         typer.echo(__version__)
@@ -50,12 +50,12 @@ def ui(
         args=(page_url, 5)
     )
     start_web_page_thread.start()
-    medic_app.run(debug=False, host='0.0.0.0', port=port)
+    pico_app.run(debug=False, host='0.0.0.0', port=port)
 
 
 @app.command()
 def update():
-    """Update the medic project to the latest version"""
+    """Update the pico project to the latest version"""
 
     # See https://stackoverflow.com/a/50255019 for installation of a python package
     pip_infos = (
@@ -72,20 +72,20 @@ def update():
     editable_project_location = [l for l in pip_infos if editable_identifier_str in l]
     if editable_project_location:
         print(
-            "[cyan]medic[/cyan] is installed in editable mode, it should already be up to date."
+            "[cyan]pico[/cyan] is installed in editable mode, it should already be up to date."
         )
         print(f"Current version: {__version__}")
         return
 
-    # medic was installed with pipx
+    # pico was installed with pipx
     if "pipx" in sys.executable:
-        print("[cyan]medic[/cyan] is managed by [cyan]pipx[/cyan]")
+        print("[cyan]pico[/cyan] is managed by [cyan]pipx[/cyan]")
         update_function = [
             "pipx",
             "upgrade",
             PYPI_PROJECT_NAME
         ]
-        print("The following command will update [cyan]medic[/cyan]:")
+        print("The following command will update [cyan]pico[/cyan]:")
         print(" ".join(update_function), end="\n\n")
         typer.confirm("Do you want to proceed?", abort=True)
 
@@ -93,7 +93,7 @@ def update():
         subprocess.run(update_function, check=True)
         return
 
-    # Update medic with the current Python interpreter
+    # Update pico with the current Python interpreter
     update_function = [
         sys.executable,
         "-m",
@@ -102,15 +102,15 @@ def update():
         "-U",
         PYPI_PROJECT_NAME
     ]
-    print("The following command will update [cyan]medic[/cyan]:")
+    print("The following command will update [cyan]pico[/cyan]:")
     print(" ".join(update_function), end="\n\n")
     typer.confirm("Do you want to proceed?", abort=True)
 
     subprocess.run(update_function, check=True, capture_output=True)
     new_version = subprocess.run(
-        [sys.executable, "-m", "medic", "--version"], capture_output=True
+        [sys.executable, "-m", "pico", "--version"], capture_output=True
     ).stdout.decode().strip()
-    print(f"[cyan]medic[/cyan] updated to {new_version}")
+    print(f"[cyan]pico[/cyan] updated to {new_version}")
 
 
 # This is expose for documentation purposes

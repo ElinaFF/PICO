@@ -24,7 +24,7 @@ from ..TestsUtility import (
     TARGETS_COLUMN,
     ALL_RESULTS,
 )
-from medic.domain import MetaboExperiment
+from pico.domain import MetaboExperiment
 
 
 @pytest.fixture

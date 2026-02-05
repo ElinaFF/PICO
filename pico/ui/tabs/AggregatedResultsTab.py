@@ -6,7 +6,7 @@ from dash import html, dcc, Output, Input, State, dash, Dash
 
 from .MetaTab import MetaTab
 from ...service import Plots, init_logger, log_exceptions
-from ...domain import MetaboController
+from ...domain import Controller
 
 CONFIG = {
     "toImageButtonOptions": {
@@ -18,8 +18,8 @@ CONFIG = {
 }
 
 
-class ResultsAggregatedTab(MetaTab):
-    def __init__(self, app: Dash, metabo_controller: MetaboController):
+class AggregatedResultsTab(MetaTab):
+    def __init__(self, app: Dash, metabo_controller: Controller):
         super().__init__(app, metabo_controller)
         self._logger = init_logger()
         self.r = self.metabo_controller.get_all_results()

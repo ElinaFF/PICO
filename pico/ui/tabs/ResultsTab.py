@@ -12,7 +12,7 @@ from sklearn import tree
 from ...conf import parameters as cfg
 from . import utils
 from .MetaTab import MetaTab
-from ...domain import MetaboController
+from ...domain import Controller
 from ...service import Plots, Utils, init_logger, log_exceptions
 
 PATH_TO_BIGRESULTS = os.path.abspath(
@@ -30,7 +30,7 @@ CONFIG = {
 
 
 class ResultsTab(MetaTab):
-    def __init__(self, app: Dash, metabo_controller: MetaboController):
+    def __init__(self, app: Dash, metabo_controller: Controller):
         super().__init__(app, metabo_controller)
         self._logger = init_logger()
         # self.r = pkl.load(open(PATH_TO_BIGRESULTS, "rb"))

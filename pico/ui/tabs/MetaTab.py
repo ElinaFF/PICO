@@ -3,12 +3,12 @@ import dash_bootstrap_components as dbc
 
 from dash import Dash
 
-from ...domain import MetaboController
+from ...domain import Controller
 from ...service import init_logger
 
 
 class MetaTab:
-    def __init__(self, app: Dash, metabo_controller: MetaboController):
+    def __init__(self, app: Dash, metabo_controller: Controller):
         self._logger = init_logger()
         self.metabo_controller = metabo_controller
         self.app = app

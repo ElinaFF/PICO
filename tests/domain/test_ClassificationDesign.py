@@ -2,7 +2,7 @@ from unittest.mock import patch, mock_open
 
 import pytest as pytest
 
-from medic.domain import ClassificationDesign
+from pico.domain import ClassificationDesign
 
 from ..TestsUtility import (
     MOCKED_METADATA,

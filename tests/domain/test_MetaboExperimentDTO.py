@@ -11,12 +11,12 @@ from ..TestsUtility import (
     SELECTED_MODELS_NAME,
     CV_TYPE,
 )
-from medic.domain.MetaboExperimentDTO import MetaboExperimentDTO
+from pico.domain.ExperimentDTO import ExperimentDTO
 
 
 @pytest.fixture
 def metabo_experiment_dto():
-    return MetaboExperimentDTO(MOCKED_METABOEXPERIMENT)
+    return ExperimentDTO(MOCKED_METABOEXPERIMENT)
 
 
 def test_givenMetaboXpDTO_whenGetMetaData_thenReturnMockedMetaData(
