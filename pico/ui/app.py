@@ -59,10 +59,10 @@ app.layout = html.Div(
                         html.Div(
                             children=[
                                 html.P(
-                                    "Metabolomics Dashboard", style={"color": "white", 'text-transform': 'uppercase', "margin-bottom": "0"}
+                                    "Pipeline for Interpretable", style={"color": "white", 'text-transform': 'uppercase', "margin-bottom": "0"}
                                 ),
                                 html.P(
-                                    "for Interpretable Classification",
+                                    "Classification of Omics",
                                     style={"color": "white", 'text-transform': 'uppercase', "margin-bottom": "0"},
                                 ),
                             ],

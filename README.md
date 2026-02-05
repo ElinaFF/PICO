@@ -2,7 +2,7 @@
 Pipeline for Interpretable Classification on Omics
 
 ## Description
-The PICO is a tool to apply machine learning algorithms to untargeted metabolomics datasets acquired by liquid-chromatography mass spectrometry. The goal is to extract the most important features because they are potential novel biomarkers.
+The PICO is a tool to apply machine learning algorithms to omics datasets. The goal is to extract the most important features because they are potential novel biomarkers.
 The interface is made to be easy to use and intuitive even for those with small to nonexistant experience in programming and AI.
 
 More generally, it is a tool to apply interpretable machine learning algorithms to tabular data. It focuses on analyzing the features selected by the models.
