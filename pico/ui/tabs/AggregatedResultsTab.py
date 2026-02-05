@@ -18,7 +18,7 @@ CONFIG = {
 }
 
 
-class ResultsAggregatedTab(MetaTab):
+class AggregatedResultsTab(MetaTab):
     def __init__(self, app: Dash, metabo_controller: Controller):
         super().__init__(app, metabo_controller)
         self._logger = init_logger()

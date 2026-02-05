@@ -41,7 +41,7 @@ infoTab = InfoTab(app, metabo_controller)
 splitsTab = SplitsTab(app, metabo_controller)
 mLTab = MLTab(app, metabo_controller)
 resultsTab = ResultsTab(app, metabo_controller)
-resultsAggregatedTab = ResultsAggregatedTab(app, metabo_controller)
+resultsAggregatedTab = AggregatedResultsTab(app, metabo_controller)
 interpretTab = InterpretTab(app, metabo_controller)
 
 app.layout = html.Div(
