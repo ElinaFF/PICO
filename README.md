@@ -1,5 +1,5 @@
 # PICO
-Metabolomic Dashboard for Interpretable Classification
+Pipeline for Interpretable Classification on Omics
 
 ## Description
 The PICO is a tool to apply machine learning algorithms to untargeted metabolomics datasets acquired by liquid-chromatography mass spectrometry. The goal is to extract the most important features because they are potential novel biomarkers.
@@ -41,5 +41,5 @@ python -m pip install -e ".[dev]"
 ```
 
 ## License
-<a href="https://github.com/ElinaFF/MeDIC">Metabolomic Dashboard for Interpretable Classification (MeDIC)</a> © 2025 by <a href="https://creativecommons.org">Elina Francovic-Fontaine</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
+<a href="https://github.com/ElinaFF/MeDIC">Pipeline for Interpretable Classification on Omics (MeDIC)</a> © 2025 by <a href="https://creativecommons.org">Elina Francovic-Fontaine</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
 

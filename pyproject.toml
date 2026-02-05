@@ -7,7 +7,7 @@ name = "pico-ml"
 authors = [
   { name="Elina Francovic-Fontaine", email="elina.francovic-fontaine.1@ulaval.ca" },
 ]
-description = "Metabolomic Dashboard for Interpretable Classification"
+description = "Pipeline for Interpretable Classification on Omics"
 readme = "README.md"
 requires-python = ">=3.8,<3.13"
 classifiers = [
