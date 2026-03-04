@@ -27,7 +27,6 @@ It explains how to use PICO but also how it works.
 PICO is still in development. If you encounter any issue or have any suggestion, feel free to contact us at [elina.francovic-fontaine.1@ulaval.ca](mailto:elina.francovic-fontaine.1@ulaval.ca). Or you can leave an issue [here](https://github.com/ElinaFF/PICO/issues) with the tag "bug".
 
 ## For developers
-
 ### Setup
 
 Clone the project with :
@@ -40,6 +39,9 @@ It is recommanded to setup a virtual environment. When it's done, use your isola
 python -m pip install -e ".[dev]"
 ```
 
+### Collaborative development
+The entire development process has been done following Python development guidelines. Similarly, we adhered to scikit-learn's developer recommendations and provided code understandable to any user familiar with the domain. Therefore, PICO could become an asset for the research community. Indeed, collaborative development ensures that the improvement directions are the ones needed by the user-base.
+
 ## License
-<a href="https://github.com/ElinaFF/PICO">Pipeline for Interpretable Classification on Omics (PICO)</a> © 2025 by <a href="https://creativecommons.org">Elina Francovic-Fontaine</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
+<a href="https://github.com/ElinaFF/PICO">Pipeline for Interpretable Classification on Omics (PICO)</a> © 2026 by <a href="https://creativecommons.org">Elina Francovic-Fontaine</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
 
