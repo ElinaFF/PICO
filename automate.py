@@ -131,7 +131,7 @@ def main():
 
     SPLITS_setup_files(controller)
     SPLITS_setup_classification_designs(controller)
-    SPLITS_setup_splits_and_balancing(controller, 0.2, 3)
+    SPLITS_setup_splits_and_balancing(controller, 0.2, 25)
     SAVE_setups_and_results(controller, "pico_splits")
     
     ML_setup_CV_and_algo(controller, "GridSearchCV")
