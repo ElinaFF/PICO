@@ -8,7 +8,7 @@ _ _ _ _
 
 This tab is used to define all the parameters affecting the samples : the matrices, the classes, the pairing, the number of splits, etc.
 
-This step exists in the pipeline mainly because of the nature of metabolomic data, or more generally biological data : it has few samples, but hundreds or thousands of features per sample. This situation is called *fat data*, as 
+This step exists in the pipeline mainly because of the nature of omics data, or more generally biological data : it has few samples, but hundreds or thousands of features per sample. This situation is called *fat data*, as 
 opposed to *big data* where there is tens of thousands of samples to learn from and each of them is of a reasonable size. See more below in the Splits section.
 
 * toc
@@ -127,7 +127,7 @@ classA must be the one with the highest number of samples.
 	- this should produce a list of numbers, which are now the options of value to rebalance (ex: 0, 2, 4, 6, 8)
 - to see the impact of each value option on the ratio, take each option, substract from the higher ratio and add to the lowest
 	- 60:40 (starting point), 58:42, 56:44, 54:46 and 52:48 (closest to 50:50)
-- If you wish to rebalance to 54:46, you will need to indicate the value "6" to the function metabo_controller.set_balance_correction_for_experiment()
+- If you wish to rebalance to 54:46, you will need to indicate the value "6" to the function `metabo_controller.set_balance_correction_for_experiment()`
 
 
 ## Splits
@@ -137,7 +137,7 @@ To apply machine learning to fat data, the strategy used here is to produce mult
 The splitting process we are implementing here is the production of multiple train-test dataset division completely independent of each other.
 {: #explainationOfSplits}
 
-The train-test repartition of 20% of samples in test set and 80% in train set is quite common for metabolomic datasets. Often machine learning experiments will use a ratio closer to 30%-70%, but it always depends on the number of samples needed to train the model.
+The train-test repartition of 20% of samples in test set and 80% in train set is quite common for omics datasets. Often machine learning experiments will use a ratio closer to 30%-70%, but it always depends on the number of samples needed to train the model.
 
 For the number of splits, a more complete run will be startt at 20 to 25 splits. Using 5 splits can be interesting when doing small tests of the parameters because it will be faster. However, it will not cover all the samples in a testing setting. The computing to display the graph is triggered the first time by uploading the data file, it takes by default the value of 25 splits.
 
@@ -146,6 +146,10 @@ We determined that the appropriate number of splits for an experiment can be fou
 **Math example with equations and figure**
 
 P(X<1) (values) as a function of the number of splits n (1:nbr_limit) with m=250 samples and a test proportion of 0.2 (k=50)
+
+> [!NOTE]
+> See the supplementary material linked to the article (link to be added) for the mathematical details.
+
 ![P(X<1) as a function of the number of splits n](imgs/2022-06-07-14-02-37.png)
 
 ### Limitation
