@@ -42,7 +42,7 @@ Those two figures are only meant to visualize the two and three most important f
 This section provides basic performance metrics of the model. It helps determine if the model is reliable enough to continue the analysis. 
 
 ##### Accuracy plot
-It displays the train accuracy and the test accuracy for each split. This way, the user can know which model is more or less performant on the learning data. Moreover, the type of graph can show if the results are stable. If not, it indicates errors (like wrong labeling) or important variability in the data. Because of the fat data situation often encountered in metabolomics, it can also be a sign that the models have trouble learning a representation (due to a lack of samples).
+It displays the train balanced accuracy and the test balanced accuracy for each split. This way, the user can know which model is more or less performant on the learning data. Moreover, the type of graph can show if the results are stable. If not, it can indicates errors (like wrong labeling) or important variability in the data. Because of the fat data situation often encountered in omics, it can also be a sign that the models have trouble learning a representation (due to a lack of samples).
 
 Overfitting can also be detected by this plot, when the accuracy on the train data is close to 100%, and the test accuracy is much lower. There is no clear threshold to identify overfitting, but generally a difference of at least 15-20% gives a good sign. Overfitting is not good because it means that the model has learned very well the training distribution, but will not be able to generalize this comprehension. Its predictive performance on new data will be poor. See this [link](https://machinelearningmastery.com/overfitting-machine-learning-models/) for more details.
 
@@ -79,9 +79,9 @@ Throughout the splits, the uses and the importances of features can change. Howe
 means that this feature might be a potential biomarker that behaves differently in the two samples group.
 Thus, the table presents the top 10 most important features, the number of times they were used and their mean importances.
 
-The 'export' button allows the user to download a file with the entire list of features (even those not used by the models), with their number of use and their mean importance. 
+The `export` button allows the user to download a file with the entire list of features (even those not used by the models), with their number of use and their mean importance. 
 
-##### Swarmplot of features
+##### Stripchart of features
 The figure has the same top10 features as the table just beside it (with the most important on the left, and the least on the right). So on the *x* axis there is the 10 features and on the *y* axis it is the normalized abundance of the features.
 Each point represents the abundance of a corresponding feature for a sample. Thus, visually exploring the difference between the cluster of samples (points) in each class for a feature can help determine if the specific feature is of interest.
 For example, the top 1 feature could have a cluster near 0 for the samples of the control group, and a cluster near an abundance of 3 for the compared group.
