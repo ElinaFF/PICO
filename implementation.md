@@ -13,6 +13,10 @@ PICO was built with modularity in mind. The software is organized in five packag
 
 ## Practical informations
 
+You may encounter code that uses terms referring to metabolomics, such as function names beginning with `metabo_`. This dates back to when the code was developed for metabolomics matrices. A refactoring has been carried out, but it is not yet complete.
+This does not change the fact that PICO can accept any tabular data (with enough samples).
+{:.note title="Attention"}
+
 ### Interface
 The transition between different experiment on the interface is not optimized. If results are loaded from a previous experiment while the interface is already displaying results, make sure to click on the "load" button in the "Results" and "Results aggregated" tabs because the figures will not be cleared when loading a different experiement. To avoid any kind of confusion, it is best to restart the interface in between.
 
@@ -56,8 +60,8 @@ Tests
 : Contains all tests run with `pytest`
 
 
-## Controller interface : MetaboController bottleneck
-This section can be used as a high-level documentation of the MetaboController class that serves as bottleneck between the frontend and backend.
+## Controller interface : Controller bottleneck
+This section can be used as a high-level documentation of the Controller class that serves as bottleneck between the frontend and backend.
 This class can be used to integrate PICO in a Python script.
 
 ### Main methods description
@@ -107,44 +111,44 @@ Return all the data about the results, and the best model.
 Check the `automate.py` script to get more detailed comments.
 
 ```python
-from metabodashboard.domain import MetaboController
+from pico.domain import Controller
 from pico.service import Utils
 
 DATAMATRIX_PATH = "path/to/data_matrix"
 METADATA_PATH = "path/to/metadata"
 
-metabo_controller = MetaboController()
-metabo_controller.set_raw_use_for_data(False)
-metabo_controller.set_data_matrix_remove_rt(False)
-metabo_controller.set_data_matrix_from_path(DATAMATRIX_PATH, from_base64=False)
-metabo_controller.set_metadata(METADATA_PATH, from_base64=False)
+controller = Controller()
+controller.set_raw_use_for_data(False)
+controller.set_data_matrix_remove_rt(False)
+controller.set_data_matrix_from_path(DATAMATRIX_PATH, from_base64=False)
+controller.set_metadata(METADATA_PATH, from_base64=False)
 
-metabo_controller.set_id_column("samples_name")
-metabo_controller.set_target_columns(["targets"])
-metabo_controller.set_pairing_group_column("pairing")
-metabo_controller.add_classification_design({"class1": ["target1", "target2"], "class2": ["target3"]})
+controller.set_id_column("samples_name")
+controller.set_target_columns(["targets"])
+controller.set_pairing_group_column("pairing")
+controller.add_classification_design({"class1": ["target1", "target2"], "class2": ["target3"]})
 
-metabo_controller.set_train_test_proportion(0.2)
-metabo_controller.set_number_of_splits(25)
-metabo_controller.set_balance_correction_for_experiment("class1_vs_class2", 0)
-metabo_controller.create_splits()
+controller.set_train_test_proportion(0.2)
+controller.set_number_of_splits(25)
+controller.set_balance_correction_for_experiment("class1_vs_class2", 0)
+controller.create_splits()
 
 metabo_expe_filename = Utils.get_metabo_experiment_path("pico_splits")
-metabo_expe_obj = metabo_controller.generate_save()
+metabo_expe_obj = controller.generate_save()
 Utils.dump_metabo_expe(metabo_expe_obj) # Dump the classification design to the dump folder
 Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save the classification design
 # free memory from object
 del metabo_expe_obj
 
-metabo_controller.set_multithreading(True)
-metabo_controller.set_selected_models(["DecisionTree", "RandomForest", "SCM", "RandomSCM"])
-metabo_controller.set_cv_type("RandomizedSearchCV")
-metabo_controller.set_cv_algorithm_configuration([15])
-metabo_controller.set_cv_folds(5)
-metabo_controller.learn()
+controller.set_multithreading(True)
+controller.set_selected_models(["DecisionTree", "RandomForest", "SCM", "RandomSCM"])
+controller.set_cv_type("RandomizedSearchCV")
+controller.set_cv_algorithm_configuration([15])
+controller.set_cv_folds(5)
+controller.learn()
 
 metabo_expe_filename = Utils.get_metabo_experiment_path("pico_ml")
-metabo_expe_obj = metabo_controller.generate_save()
+metabo_expe_obj = controller.generate_save()
 Utils.dump_metabo_expe(metabo_expe_obj) # Dump the classification design to the dump folder
 Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save the classification design
 # free memory from object
