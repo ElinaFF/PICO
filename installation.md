@@ -9,7 +9,7 @@ _ _ _ _
 The PICO is a tool that must be installed on a computer or a server. The visual interface is made with Dash from Plotly and can be
 opened in the majority of web browser. It is compatible with Linux, Mac and Windows. 
 
-The simplest way to install is using PyPI[https://pypi.org/project/medic-ml/]. The PICO is also available with Docker[https://hub.docker.com/r/elinaff/medic].
+The simplest way to install is using the <a href="https://pypi.org/project/pico-ml/">PyPI package</a>. The PICO is also available with <a href="https://hub.docker.com/r/elinaff/pico">Docker</a>.
 It requires Python <3.13, >=3.8.
 
 * toc
@@ -270,3 +270,4 @@ Then install PICO with
 ```
 pip install pico-ml
 ```
+
