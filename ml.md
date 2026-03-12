@@ -68,7 +68,7 @@ The AVAILABLE ALGORITHMS are:
 * Set Covering Machine (SCM)
 * Random Set Covering Machine (RandomSCM)
 
-For some computers on Windows there is an error that occurs when trying to run the SCM or the RandomSCM (issue https://github.com/ElinaFF/MeDIC/issues/134). The cause is still unknown.
+For some computers on Windows there is an error that occurs when trying to run the SCM or the RandomSCM (<a href="https://github.com/ElinaFF/PICO/issues/134">issue 134</a>). The cause is still unknown.
 {: .note title="Warning"}
 
 The first classifier implement a regular **decision tree**. To make a prediction, the data is the input of the root node. The root node, as the others, has a threshold for one feature : for example
@@ -92,8 +92,8 @@ The user must also select which attribute contains the features importances.
 
 ###### Add custom algorithm
 
-To add a full custom model, you need to add it to the configuration file located at metabodashboard/conf/SupportedModel.py.
-Add a dictionary containing the NON-INSTANTIATED class and the param grid. Format is the following ( change only the attribute xxx)
+To add a full custom model, you need to add it to the configuration file located at `pico/conf/SupportedModel.py`.
+Add a dictionary containing the NON-INSTANTIATED class and the param grid. Format is the following :
 ~~~  
     "_Printedname": {
           "function": _non-instantiatedclass,
@@ -104,7 +104,7 @@ Add a dictionary containing the NON-INSTANTIATED class and the param grid. Forma
           }
       },
 ~~~  
-After adding your configuration, reboot the PICO by stopping and restarting the launcher.
+After adding your configuration, reboot the PICO by stopping and restarting.
 The algorithm should be in the AVAILABLE ALGORITHMS section with his printed name.
 Note, the custom model are in the save file (.mtxp) and will be restored.
 
