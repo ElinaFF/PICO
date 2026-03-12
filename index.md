@@ -21,7 +21,7 @@ Throughout the interface, when clicking on something, if the expected effect is 
 
 
 License
-: <a href="https://github.com/ElinaFF/MeDIC">Metabolomic Dashboard for Interpretable Classification (MeDIC)</a> © 2025 by <a href="https://creativecommons.org">Elina Francovic-Fontaine</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
+: <a href="https://github.com/ElinaFF/PICO">Pipeline for Interpretable Classification of Omics (PICO)</a> © 2025 by <a href="https://creativecommons.org">Elina Francovic-Fontaine</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
 
 
 ## Requirements
