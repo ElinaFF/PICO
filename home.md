@@ -12,7 +12,7 @@ The 'Home' tab of the tool provides the link to this official documentation, the
 {:toc}
 
 
-## Results file (Load MetaboExperiment)
+## Results file (Load Experiment)
 To allow better modularity of the experiments, the two major steps (splits setup and ml results) of PICO are saved independently into pico_splits and pico_ml files. 
 Moreover, the data and metadata are only saved (dumps) in a local repository which enables sharing the results file to outside collaborators. 
 
