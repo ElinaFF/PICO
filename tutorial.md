@@ -7,8 +7,8 @@ cover:  true
 # Tutorial
 _ _ _ _
 
-> [!NOTE]
-> Page still in construction
+Page still in construction
+{:.note title="Attention"}
 
 ## By interface
 
