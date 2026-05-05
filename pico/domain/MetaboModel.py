@@ -1,5 +1,6 @@
 import pandas as pd
 import sklearn
+from typing import Union, List
 from sklearn.model_selection import RandomizedSearchCV, StratifiedGroupKFold
 from ..service import init_logger, log_exceptions
 
