@@ -15,6 +15,7 @@ X_TRAIN_INDEX = 0
 X_TEST_INDEX = 1
 y_TRAIN_INDEX = 2
 y_TEST_INDEX = 3
+TRAIN_FOLDS_GROUPS = 4
 
 DEFAULT_NJOB = 1
 
@@ -414,15 +415,31 @@ class MetaboExperiment:
 
         # When set n_processes is set to -1, all processors are used.
         n_processes = -1 if self._activate_multithreading else DEFAULT_NJOB
-        best_model = metabo_model.train(
-            self._cv_folds,
-            x_train,
-            split[y_TRAIN_INDEX],
-            cv_algorithm_constructor,
-            cv_algorithm_config,
-            n_processes,
-            seed=split_index
-        )
+        
+        try :
+            # Try to access split[TRAIN_FOLDS_GROUPS] to check if pairing is required and train accordingly
+            folds_groups = split[TRAIN_FOLDS_GROUPS]
+            best_model = metabo_model.train(
+                self._cv_folds,
+                x_train,
+                split[y_TRAIN_INDEX],
+                cv_algorithm_constructor,
+                cv_algorithm_config,
+                n_processes,
+                seed=split_index,
+                folds_groups=folds_groups
+            )
+        except IndexError:
+            # If pairing not required, TRAIN_FOLDS_GROUPS will be out of range
+            best_model = metabo_model.train(
+                self._cv_folds,
+                x_train,
+                split[y_TRAIN_INDEX],
+                cv_algorithm_constructor,
+                cv_algorithm_config,
+                n_processes,
+                seed=split_index
+            )
         y_train_pred = best_model.predict(x_train)
         y_test_pred = best_model.predict(x_test)
         return (

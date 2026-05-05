@@ -448,13 +448,16 @@ def get_closest_integer_steps(slider_size):
 
 
 def remove_random_samples_from_class(X: pd.Series, y: List[str], balance_correction: int,
-                                     classes_repartition: dict, seed: int = 42)-> Tuple[pd.Series, list]:
+                                     classes_repartition: dict, pairing_id: Union[List[str],None] = None, seed: int = 42)-> Tuple[pd.Series, list]:
     """
     Function to adjust proportion between classes, to make it more balanced, or as balanced as possible
     Supposed to be provided by user (how much to adjust)
     """
 
-    samples_ids_and_targets = pd.DataFrame({"id": X, "final_classes": y})
+    if pairing_id is not None:
+        samples_ids_and_targets = pd.DataFrame({"id": X, "final_classes": y, "pairing_id": pairing_id})
+    else:
+        samples_ids_and_targets = pd.DataFrame({"id": X, "final_classes": y})
     balance_correction = balance_correction / 100
 
     if len(classes_repartition) > 2:
@@ -494,4 +497,4 @@ def remove_random_samples_from_class(X: pd.Series, y: List[str], balance_correct
     ids_to_remove = np.random.choice(class_A_lines.index, int(number_of_samples_to_remove), replace=False)
     samples_ids_and_targets = samples_ids_and_targets.drop(ids_to_remove)
 
-    return samples_ids_and_targets["id"], samples_ids_and_targets["final_classes"].tolist()
+    return samples_ids_and_targets["id"], samples_ids_and_targets["final_classes"].tolist(), samples_ids_and_targets["pairing_id"].tolist()

@@ -84,6 +84,11 @@ class SplitGroup:
             if pairing_column == "":
                 X_train, X_test, y_train, y_test = train_test_split(ids, labels, test_size=train_test_proportion,
                                                                     random_state=split_index, stratify=labels)
+                if balance_correction > 0:
+                    X_train, y_train = Utils.remove_random_samples_from_class(X_train,
+                                                                            y_train,
+                                                                            balance_correction,
+                                                                            classes_repartition)
 
                 # 4- retrieve the paired samples corresponding to the one in train or test set
             else:
@@ -101,17 +106,19 @@ class SplitGroup:
                                                                                         stratify=labels)
                 # retrieve the ids corresponding the to entities in train
                 X_train = []
+                train_folds_groups = []
                 for representative in X_train_temp:
                     represented_pairing_value = df_filter.loc[representative][pairing_column]
                     X_train.extend(groups[represented_pairing_value])
+                    train_folds_groups.extend([represented_pairing_value for i in groups[represented_pairing_value]])
                 # retrieve targets corresponding to ids and then convert to labels
                 X_train = pd.Series(X_train)
                 targets = df.loc[X_train][self._metadata.get_target_column()]
                 y_train = Utils.load_classes_from_targets(self._classes_design, targets)
 
-                training_data = list(zip(X_train, y_train))
+                training_data = list(zip(X_train, y_train, train_folds_groups))
                 rng.shuffle(training_data)
-                X_train, y_train = zip(*training_data)
+                X_train, y_train, train_folds_groups = zip(*training_data)
 
                 # retrieve the ids corresponding the to entities in test
                 X_test = []
@@ -127,11 +134,14 @@ class SplitGroup:
                 rng.shuffle(testing_data)
                 X_test, y_test = zip(*testing_data)
 
-            if balance_correction > 0:
-                X_train, y_train = Utils.remove_random_samples_from_class(X_train,
-                                                                          y_train,
-                                                                          balance_correction,
-                                                                          classes_repartition)
+                if balance_correction > 0:
+                    X_train, y_train, train_folds_groups = Utils.remove_random_samples_from_class(X_train,
+                                                                            y_train,
+                                                                            balance_correction,
+                                                                            classes_repartition,
+                                                                            pairing_id=train_folds_groups)
+                train_folds_groups = list(train_folds_groups)
+            
             X_train = list(X_train)
             y_train = list(y_train)
             X_test = list(X_test)
@@ -140,7 +150,10 @@ class SplitGroup:
             if not self._validate_split(y_train, y_test):
                 raise RuntimeError(f"_compute_split step #4 aborted for the invalid split #{split_index}.")
             
-            self._splits.append([X_train, X_test, y_train, y_test])
+            if pairing_column == "":
+                self._splits.append([X_train, X_test, y_train, y_test])
+            else:
+                self._splits.append([X_train, X_test, y_train, y_test, train_folds_groups])
             
         self._number_of_split = len(self._splits) # Update the number of splits if some have been removed
         
