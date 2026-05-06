@@ -41,6 +41,13 @@ class MetaboModel:
                     cv=StratifiedGroupKFold(n_splits=folds, shuffle=True, random_state=seed),
                     n_jobs=number_of_processes,
                 )
+
+            try:
+                search.fit(X_train, y_train, groups=folds_groups)
+            except Exception as e:
+                message: str = f"{cv_algorithms = } cv{folds:d} folds | X_train size {len(X_train)}) y_train length = {len(y_train)}"
+                self._logger.error(message)
+                raise
         else:
             if cv_algorithms == RandomizedSearchCV:
                 search = cv_algorithms(
@@ -59,12 +66,12 @@ class MetaboModel:
                     n_jobs=number_of_processes,
                 )
         
-        try:
-            search.fit(X_train, y_train)
-        except Exception as e:
-            message: str = f"{cv_algorithms = } cv{folds:d} folds | X_train size {len(X_train)}) y_train length = {len(y_train)}"
-            self._logger.error(message)
-            raise
+            try:
+                search.fit(X_train, y_train)
+            except Exception as e:
+                message: str = f"{cv_algorithms = } cv{folds:d} folds | X_train size {len(X_train)}) y_train length = {len(y_train)}"
+                self._logger.error(message)
+                raise
         
         return search.best_estimator_
 
