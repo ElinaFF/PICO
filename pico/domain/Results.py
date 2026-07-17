@@ -25,7 +25,7 @@ from ..service import Utils, init_logger
 ROOT_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(ROOT_PATH, os.path.join("dumps", "splits"))
 
-MAX_CARDINALITY_FOR_COOCURENCE = 1000
+MAX_CARDINALITY_FOR_COOCURENCE = 5000
 
 
 class Results:

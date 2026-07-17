@@ -1,6 +1,7 @@
 import pandas as pd
 import sklearn
-from sklearn.model_selection import RandomizedSearchCV
+from typing import Union, List
+from sklearn.model_selection import RandomizedSearchCV, StratifiedGroupKFold
 from ..service import init_logger, log_exceptions
 
 class MetaboModel:
@@ -19,31 +20,58 @@ class MetaboModel:
         y_train: list,
         cv_algorithms: sklearn.model_selection,
         cv_algorithm_config,
-        number_of_processes: int, seed: int
+        number_of_processes: int, seed: int,
+        folds_groups: Union[List[str],None] = None
     ) -> sklearn:
-        if cv_algorithms == RandomizedSearchCV:
-            search = cv_algorithms(
-                self.model(random_state=seed),
-                self.grid_search_param,
-                cv=folds,
-                random_state=seed,
-                n_jobs=number_of_processes,
-                n_iter=cv_algorithm_config[0]["value"],
-            )
-        else:
-            search = cv_algorithms(
-                self.model(random_state=seed),
-                self.grid_search_param,
-                cv=folds,
-                n_jobs=number_of_processes,
-            )
         
-        try:
-            search.fit(X_train, y_train)
-        except Exception as e:
-            message: str = f"{cv_algorithms = } cv{folds:d} folds | X_train size {len(X_train)}) y_train length = {len(y_train)}"
-            self._logger.error(message)
-            raise
+        if folds_groups is not None:
+            if cv_algorithms == RandomizedSearchCV:
+                search = cv_algorithms(
+                    self.model(random_state=seed),
+                    self.grid_search_param,
+                    cv=StratifiedGroupKFold(n_splits=folds, shuffle=True, random_state=seed),
+                    random_state=seed,
+                    n_jobs=number_of_processes,
+                    n_iter=cv_algorithm_config[0]["value"],
+                )
+            else:
+                search = cv_algorithms(
+                    self.model(random_state=seed),
+                    self.grid_search_param,
+                    cv=StratifiedGroupKFold(n_splits=folds, shuffle=True, random_state=seed),
+                    n_jobs=number_of_processes,
+                )
+
+            try:
+                search.fit(X_train, y_train, groups=folds_groups)
+            except Exception as e:
+                message: str = f"{cv_algorithms = } cv{folds:d} folds | X_train size {len(X_train)}) y_train length = {len(y_train)}"
+                self._logger.error(message)
+                raise
+        else:
+            if cv_algorithms == RandomizedSearchCV:
+                search = cv_algorithms(
+                    self.model(random_state=seed),
+                    self.grid_search_param,
+                    cv=folds,
+                    random_state=seed,
+                    n_jobs=number_of_processes,
+                    n_iter=cv_algorithm_config[0]["value"],
+                )
+            else:
+                search = cv_algorithms(
+                    self.model(random_state=seed),
+                    self.grid_search_param,
+                    cv=folds,
+                    n_jobs=number_of_processes,
+                )
+        
+            try:
+                search.fit(X_train, y_train)
+            except Exception as e:
+                message: str = f"{cv_algorithms = } cv{folds:d} folds | X_train size {len(X_train)}) y_train length = {len(y_train)}"
+                self._logger.error(message)
+                raise
         
         return search.best_estimator_
 
