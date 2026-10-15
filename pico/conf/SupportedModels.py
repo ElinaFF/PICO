@@ -12,6 +12,7 @@ LEARN_CONFIG = {
                 "max_depth": np.arange(2, 9, step=1, dtype=int),
                 "min_samples_split": np.arange(2, 20, step=2, dtype=int),
                 "max_features": ["sqrt", "log2"],
+                "class_weight": ["balanced"]
             },
             "GridSearch": {
                 "max_depth": [2, 3, 4, 5, 6, 7],
@@ -29,11 +30,13 @@ LEARN_CONFIG = {
                 "n_estimators": np.arange(5, 300, step=10, dtype=int),
                 "max_depth": np.arange(2, 6, step=1, dtype=int), #[1, 2, 3, 4, 5],
                 "min_samples_split": np.arange(2, 20, step=2, dtype=int),
+                "class_weight": ["balanced"]
             },
             "GridSearch" : {
                 "n_estimators": [10, 30, 50, 70, 100, 200],  # removed 5,
                 "max_depth": [2, 3, 4, 5],
-                "min_samples_split": [2, 4, 6, 8, 10]
+                "min_samples_split": [2, 4, 6, 8, 10],
+                "class_weight": ["balanced"]
             }
         },
         "importance_attribute": "feature_importances_",
