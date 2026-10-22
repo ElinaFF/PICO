@@ -19,9 +19,10 @@ logger = init_logger()
 #   Define paths variables   #
 ##############################
 
-METADATA_PATH = "test_data/MTBLS7337_metadata.csv"
-DATAMATRIX_PATH = "test_data/MTBLS7337_4DatamatricesCombined_forML.csv"
-
+METADATA_PATH = "test_data/MTBLS7337_metadata_paired.csv"
+DATAMATRIX_PATH = "test_data/MTBLS7337_4DatamatricesCombined_forML_paired.csv"
+#METADATA_PATH = "test_data/MTBLS7337_metadata.csv"
+#DATAMATRIX_PATH = "test_data/MTBLS7337_4DatamatricesCombined_forML.csv"
 
 ##############################
 #      Setup experiment      #
