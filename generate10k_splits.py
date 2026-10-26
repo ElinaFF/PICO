@@ -78,7 +78,7 @@ def SPLITS_setup_splits_and_balancing(controller, proportion_splits, nbr_splits=
     split_from_seed : setting a seed to run only one split with this particular seed
     """
     controller.set_train_test_proportion(proportion_splits)
-    controller.set_pairing_group_column("SUPP_subject_id")
+    #controller.set_pairing_group_column("SUPP_subject_id")
 
     # The balance correction is specific to a design, refer to a design by its name (LABEL1_vs_LABEL2)
     # Choosing balance correction value : see documentation for explanation

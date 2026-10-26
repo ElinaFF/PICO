@@ -19,8 +19,8 @@ logger = init_logger()
 #   Define paths variables   #
 ##############################
 
-METADATA_PATH = "test_data/MTBLS7337_metadata.csv"
-DATAMATRIX_PATH = "test_data/MTBLS7337_4DatamatricesCombined_forML.csv"
+METADATA_PATH = "test_data/MTBLS7337_metadata_paired.csv"
+DATAMATRIX_PATH = "test_data/MTBLS7337_4DatamatricesCombined_forML_paired.csv"
 
 
 ##############################
@@ -73,7 +73,7 @@ def finish_an_experiment(split_start, split_end):
     logger.info(f"---> Starting at : {start_time}")
     controller = Controller()
 
-    dto = Utils.load_metabo_expe("test_data/pico_splits_20261015_121327_paired10ksplits.mtxp")
+    dto = Utils.load_metabo_expe("test_data/pico_splits_20261022_160353_paired10ksplits_withoutLC177-178.mtxp")
     controller.full_restore(dto)
 
     ML_setup_CV_and_algo(controller, "GridSearchCV", split_start, split_end)
@@ -89,7 +89,7 @@ def finish_an_experiment(split_start, split_end):
 @log_exceptions(logger)
 def main():
 
-    finish_an_experiment(3, 5)
+    finish_an_experiment(0, 1)
 
 
 if __name__ == "__main__":
