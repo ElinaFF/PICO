@@ -972,7 +972,13 @@ class ResultsTab(MetaTab):
             df = df.sort_values(by="importance_usage", ascending=False)
             df = df.round(4)
 
-            return dbc.Table.from_dataframe(df.iloc[:10, :], borderless=True)
+            output_df = df.iloc[:10, :].rename(columns={"times_used":"times\nused", 
+                                                        "importance_usage":"importance\nusage",
+                                                        "importance_all_splits":"importance\nall splits",
+                                                        "std_all_splits":"std\nall splits"
+                                                        })
+
+            return dbc.Table.from_dataframe(output_df, borderless=True)
 
 
         @self.app.callback(

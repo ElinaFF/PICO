@@ -180,19 +180,24 @@ class Results:
     def format_name_and_associated_values(self, names, values):
         """
         Aggregate statistics for used features.
+        names : list of features name, will be of length = features*splits
+        values : list of features importance, will be of length = features*splits
+        Returns {name: [count, mean, std, mean_all, std_all]} where
+          - count/mean/std are computed only on splits where the feature is used (value != 0)
+          - mean_all/std_all are computed on every split (0 when the feature is not used)
         """
         df = pd.DataFrame({"name": names, "value": values})
-        # Replace 0 by Nans so we dont count them in the statistics
-        df = df.replace(0, value=np.nan)
-        df = df.groupby(by="name").agg(['count', 'mean', 'std']).reset_index()
 
-        # Replace Nans back to zeros
-        df = df.fillna(0)
+        # Stats on splits where the feature is used: 0 -> NaN so they are ignored
+        used_stats = df.replace(0, value=np.nan).groupby(by="name")["value"].agg(count="count", mean="mean", std="std")
 
-        # This will get a dictionnary where keys are names and values is a list of [count, mean, std]
-        aggregated_statistics = df.set_index("name").T.to_dict("list")
+        # Stats on ALL splits: zeros are kept and counted
+        all_stats = df.groupby(by="name")["value"].agg(mean_all="mean", std_all="std")
 
-        return aggregated_statistics
+        # NaN std (single value) or NaN mean (never used) -> 0
+        stats = used_stats.join(all_stats).fillna(0)
+
+        return stats.T.to_dict("list")
 
 
     def _produce_conf_matrix(self, y_test_true: list, y_test_pred: list):
@@ -285,15 +290,16 @@ class Results:
 
     def produce_features_importance_table(self):
         """
-        Fonction qui réccupère les features et leurs importances de chq split sur le train et le test pour en faire un dataframe.
-        Est donnée à la fonction de plotting correspondante (après que l'instance ait été complétée avec tous
-        les résultats de splits)
+        A function that retrieves the features and their importance from each split in the training and test sets and put them into a DataFrame.
+        It is passed to the corresponding plotting function (after the instance has been populated with all the split results).
         """
         (
             features,
             times_used_all_splits,
             importance_or_usage_or_,
-            std
+            std,
+            mean_all,
+            std_all
         ) = self._aggregate_features_info()
         # print("--> aggregating done, importances : {}".format(importance_or_usage_or_))
 
@@ -301,12 +307,13 @@ class Results:
             "features": features,
             "times_used": times_used_all_splits,
             "importance_usage": importance_or_usage_or_,
-            "std": std
+            "std": std,
+            "importance_all_splits": mean_all,
+            "std_all_splits": std_all,
         }
         df = pd.DataFrame(data=d)
-        df["times_used"] = pd.to_numeric(df["times_used"])
-        df["importance_usage"] = pd.to_numeric(df["importance_usage"])
-        df["std"] = pd.to_numeric(df["std"])
+        for col in ["times_used", "importance_usage", "std", "importance_all_splits", "std_all_splits"]:
+            df[col] = pd.to_numeric(df[col])
         df = df.sort_values(by=["importance_usage"], ascending=False)
         return df
 
@@ -548,11 +555,13 @@ class Results:
         # Store the mean importance, and the number of time used, per feature
         count_f = self.format_name_and_associated_values(features, imp)
 
-        features = [f for f in count_f.keys()]
-        times_used_all_splits = [count_f[f][0] for f in count_f.keys()]
-        importance_or_usage_or_ = [count_f[f][1] for f in count_f.keys()]
-        std = [count_f[f][2] for f in count_f.keys()]
-        return features, times_used_all_splits, importance_or_usage_or_, std
+        features = list(count_f.keys())
+        times_used_all_splits = [count_f[f][0] for f in features]
+        importance_or_usage_or_ = [count_f[f][1] for f in features]
+        std = [count_f[f][2] for f in features]
+        mean_all = [count_f[f][3] for f in features]
+        std_all = [count_f[f][4] for f in features]
+        return features, times_used_all_splits, importance_or_usage_or_, std, mean_all, std_all
 
     def produce_coocurence_matrix(self):
 

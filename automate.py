@@ -19,8 +19,8 @@ logger = init_logger()
 #   Define paths variables   #
 ##############################
 
-METADATA_PATH = "data/MTBLS7337_metadata.csv"
-DATAMATRIX_PATH = "data/MTBLS7337_4DatamatricesCombined_forML.csv"
+METADATA_PATH = "test_data/MTBLS7337_metadata_paired.csv"
+DATAMATRIX_PATH = "test_data/MTBLS7337_4DatamatricesCombined_forML_paired.csv"
 
 
 ##############################
@@ -100,7 +100,7 @@ def SPLITS_setup_splits_and_balancing(controller, proportion_splits, nbr_splits=
     split_from_seed : setting a seed to run only one split with this particular seed
     """
     controller.set_train_test_proportion(proportion_splits)
-    #controller.set_pairing_group_column("SUPP_subject_id")
+    controller.set_pairing_group_column("SUPP_subject_id")
 
     # The balance correction is specific to a design, refer to a design by its name (LABEL1_vs_LABEL2)
     # Choosing balance correction value : see documentation for explanation
@@ -186,10 +186,11 @@ def run_an_experiment(nbr_splits):
 @log_exceptions(logger)
 def main():
 
+    run_an_experiment(5)
     #run_an_experiment(1)
     #run_an_experiment(10)
     #run_an_experiment(20)
-    run_an_experiment(30)
+    #run_an_experiment(30)
     #run_an_experiment(40)
     #run_an_experiment(50)
     #run_an_experiment(100)
