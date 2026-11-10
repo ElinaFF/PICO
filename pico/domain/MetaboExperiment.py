@@ -34,6 +34,7 @@ class MetaboExperiment:
         self._pairing_group_column = ""
         self._cv_folds = 5
         self._activate_multithreading = True
+        self._learning_progress = {"status": "idle", "done": 0, "total": 0, "message": ""}
 
         self.classification_designs: Dict[str, ClassificationDesign] = {}
 
@@ -333,43 +334,83 @@ class MetaboExperiment:
                 "You must define at least one classification design before learning."
             )
 
+    def reset_learning_progress(self, message: str = "Preparing data..."):
+        """
+        Reset the learning progress to a 'running' state with no step done yet.
+        A new dict is assigned (instead of mutating fields) so a concurrent reader never sees a half-reset state.
+        """
+        self._learning_progress = {"status": "running", "done": 0, "total": 0, "message": message}
+
+    def get_learning_progress(self) -> dict:
+        """
+        Return a copy of the learning progress (status, done, total, message).
+        getattr is used because experiments restored from older dumps may lack the attribute.
+        """
+        return dict(getattr(self, "_learning_progress",
+                            {"status": "idle", "done": 0, "total": 0, "message": ""}))
+
+    def _advance_progress(self, message: str = ""):
+        self._learning_progress["done"] += 1
+        if message:
+            self._learning_progress["message"] = message
+
     def learn(self):
-        self._raise_if_value_for_learning_not_setted()
-        cv_algorithm_constructor = self.get_cv_algorithm_constructor()
-        cv_algorithm_config = self.get_cv_algorithm_configuration()
-        self._check_classification_design()
-        self._data_matrix.load_data()
-        assert(self._data_matrix.data is not None)
-        if not self._data_matrix.data.index.isin(self._metadata.get_metadata()[self._metadata.get_id_column()]).all():
-            raise ValueError(f"'{self._metadata.get_id_column()}' seen not to be as valid name of the unique id column.")
-        params = []
-        for _, classification_design in self.classification_designs.items():
-            self._logger.info("-> Classification design loop ")
-            selected_targets_name = classification_design.get_selected_targets_name()
-            (selected_targets, selected_ids,) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
-            classes = Utils.load_classes_from_targets(
-                classification_design.get_classes_design(), selected_targets
-            )
-            for split_index, split in classification_design.all_splits():
-                for model_name in self._selected_models:
-                    x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
-                        split[X_TRAIN_INDEX]
-                    )
-                    x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
-                        split[X_TEST_INDEX]
-                    )
-                    params.append(
-                        (model_name, classification_design.get_name(), split_index, split, x_train, x_test,
-                         cv_algorithm_constructor, cv_algorithm_config, selected_ids, classes)
-                    )
-        self.run_learning(params)
-        self._data_matrix.unload_data()
+        # When called from the UI, the progress was already reset by the Learn button callback.
+        # When called from a script (e.g. automate.py), reset it here.
+        if not hasattr(self, "_learning_progress") or self._learning_progress["status"] != "running":
+            self.reset_learning_progress()
+        try:
+            self._raise_if_value_for_learning_not_setted()
+            cv_algorithm_constructor = self.get_cv_algorithm_constructor()
+            cv_algorithm_config = self.get_cv_algorithm_configuration()
+            self._check_classification_design()
+            self._data_matrix.load_data()
+            assert(self._data_matrix.data is not None)
+            if not self._data_matrix.data.index.isin(self._metadata.get_metadata()[self._metadata.get_id_column()]).all():
+                raise ValueError(f"'{self._metadata.get_id_column()}' seen not to be as valid name of the unique id column.")
+            params = []
+            for _, classification_design in self.classification_designs.items():
+                self._logger.info("-> Classification design loop ")
+                selected_targets_name = classification_design.get_selected_targets_name()
+                (selected_targets, selected_ids,) = self._metadata.get_selected_targets_and_ids(selected_targets_name)
+                classes = Utils.load_classes_from_targets(
+                    classification_design.get_classes_design(), selected_targets
+                )
+                for split_index, split in classification_design.all_splits():
+                    for model_name in self._selected_models:
+                        x_train = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
+                            split[X_TRAIN_INDEX]
+                        )
+                        x_test = self._data_matrix.load_samples_corresponding_to_IDs_in_splits(
+                            split[X_TEST_INDEX]
+                        )
+                        params.append(
+                            (model_name, classification_design.get_name(), split_index, split, x_train, x_test,
+                             cv_algorithm_constructor, cv_algorithm_config, selected_ids, classes)
+                        )
+            self.run_learning(params)
+            self._data_matrix.unload_data()
+            self._learning_progress["status"] = "done"
+            self._learning_progress["message"] = "Learning completed"
+        except Exception:
+            self._learning_progress["status"] = "error"
+            self._learning_progress["message"] = "Learning failed (see logs)"
+            raise
 
 
     def run_learning(self, params: List[tuple]):
         self._logger.info("-> run_learning function beginning")
+        # Total steps = one training per (design, split, model) + one aggregation per (design, model)
+        n_final_steps = sum(len(cd.get_results()) for cd in self.classification_designs.values())
+        self._learning_progress["total"] = len(params) + n_final_steps
+
         # launch the run_on_model function with the params
-        result_params = [self.run_on_model(*param) for param in params]
+        result_params = []
+        for param in params:
+            model_name, design_name, split_index = param[0], param[1], param[2]
+            self._learning_progress["message"] = f"{design_name} | {model_name} | split {split_index}"
+            result_params.append(self.run_on_model(*param))
+            self._advance_progress()
 
         for result_param in result_params:
             (
@@ -402,7 +443,9 @@ class MetaboExperiment:
                 classification_design.get_selected_targets_name())
             for model_name, result in results.items():
                 self._logger.info(f"-> Compute remaining results for {model_name} of {classification_design_name} design")
+                self._learning_progress["message"] = f"Computing results: {model_name} ({classification_design_name})"
                 result.compute_remaining_results_on_all_splits(selected_sample_id)
+                self._advance_progress()
             classification_design.set_is_done(True)
 
 

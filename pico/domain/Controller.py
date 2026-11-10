@@ -130,6 +130,18 @@ class Controller:
     def learn(self):  # TODO: Come back to put this function in the diagram, suspect its to big for now
         self._metabo_experiment.learn()
 
+    def reset_learning_progress(self):
+        """
+        Reset the learning progress to 'running' with no step done (called by the UI before learning starts)
+        """
+        self._metabo_experiment.reset_learning_progress()
+
+    def get_learning_progress(self) -> dict:
+        """
+        Retrieve a copy of the learning progress: {"status", "done", "total", "message"}
+        """
+        return self._metabo_experiment.get_learning_progress()
+
     def get_results(self, design_name: str, algo: str):
         """
         Retrieve the results of a specific algorithm for a specific classification design

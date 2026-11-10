@@ -144,13 +144,34 @@ class MLTab(MetaTab):
                     type="dot",
                     color="#13BD00",
                 ),
-                dbc.Button(
-                    "Learn",
-                    color="primary",
-                    id="start_learning_button",
-                    className="custom_buttons",
-                    n_clicks=0,
+                html.Div(
+                    style={"display": "flex", "alignItems": "center", "gap": "1rem", "width": "100%"},
+                    children=[
+                        dbc.Button(
+                            "Learn",
+                            color="primary",
+                            id="start_learning_button",
+                            className="custom_buttons",
+                            n_clicks=0,
+                        ),
+                        html.Div(
+                            style={"flex": "1", "minWidth": "200px"},
+                            children=[
+                                dbc.Progress(
+                                    id="learn_progress_bar",
+                                    value=0,
+                                    label="",
+                                    striped=True,
+                                    animated=True,
+                                    style={"height": "22px", "visibility": "hidden"},
+                                ),
+                                html.Small(id="learn_progress_text", className="text-muted"),
+                            ],
+                        ),
+                    ],
                 ),
+                # Polls the learning progress while learning runs (enabled by the Learn button)
+                dcc.Interval(id="learn_progress_interval", interval=3000, disabled=True),  #interval in ms, currently set to a verification every 3sec
                 html.Div(id="output_button_ml", children="", style={"display": "none"}),
             ], )
 
@@ -343,10 +364,55 @@ class MLTab(MetaTab):
                 Utils.dump_metabo_expe(metabo_expe_obj, metabo_expe_filename) # Save classification design.
                 del metabo_expe_obj
                 self._logger.info(f'The classification design file "{metabo_expe_filename}" has been saved.')
-                self._logger.info(f"bip bip 3 : {self.metabo_controller._metabo_experiment.classification_designs}")
                 return "Done!", "", True, basename(metabo_expe_filename)
             else:
                 return dash.no_update
+
+        @self.app.callback(
+            [Output("learn_progress_interval", "disabled"),
+             Output("start_learning_button", "disabled")],
+            Input("start_learning_button", "n_clicks"),
+            prevent_initial_call=True,
+        )
+        @log_exceptions(self._logger)
+        def start_progress_polling(n):
+            """
+            Runs in parallel with start_machine_learning (same trigger, separate request):
+            enables the polling interval and disables the Learn button to avoid a double launch.
+            """
+            if not n:
+                return dash.no_update, dash.no_update
+            # Reset now so the first poll never reads a stale "done" from a previous run
+            self.metabo_controller.reset_learning_progress()
+            return False, True
+
+        @self.app.callback(
+            [Output("learn_progress_bar", "value"),
+             Output("learn_progress_bar", "label"),
+             Output("learn_progress_bar", "color"),
+             Output("learn_progress_bar", "style"),
+             Output("learn_progress_text", "children"),
+             Output("learn_progress_interval", "disabled", allow_duplicate=True),
+             Output("start_learning_button", "disabled", allow_duplicate=True)],
+            Input("learn_progress_interval", "n_intervals"),
+            prevent_initial_call=True,
+        )
+        @log_exceptions(self._logger)
+        def update_learn_progress(_):
+            """
+            Read the learning progress at each interval tick and update the bar.
+            Stops the polling and re-enables the Learn button once learning is done or failed.
+            """
+            p = self.metabo_controller.get_learning_progress()
+            total, done = p["total"], p["done"]
+            pct = int(100 * done / total) if total else 0
+            style = {"height": "22px", "visibility": "visible"}
+            label = f"{pct}% ({done}/{total})" if total else ""
+            if p["status"] == "done":
+                return 100, f"100% ({done}/{total})", "success", style, p["message"], True, False
+            if p["status"] == "error":
+                return pct, label, "danger", style, p["message"], True, False
+            return pct, label, "primary", style, p["message"], False, True
 
         @self.app.callback(
             Output("learn_completed_modal", "is_open"),
