@@ -342,6 +342,7 @@ class ResultsTab(MetaTab):
             className="table_features",
             children=[
                 html.H6("Metrics table : mean(std)"),
+                html.Small(id="info_SCM_ROCAUC", className="text-muted"),
                 dcc.Loading(
                     id="loading_metrics_table",
                     children=html.Div(id="metrics_score_table", children=""),
@@ -896,7 +897,9 @@ class ResultsTab(MetaTab):
 
         @self.app.callback(
             [
-                Output("metrics_score_table", "children")
+                Output("metrics_score_table", "children"),
+                Output("info_SCM_ROCAUC", "children"),
+                Output("info_SCM_ROCAUC", "style")
             ],
             [
                 Input("load_ML_results_button", "n_clicks")
@@ -913,7 +916,13 @@ class ResultsTab(MetaTab):
             
             df = self.r[design_name][algo].results["metrics_table"]
             table = dbc.Table.from_dataframe(df, borderless=True)
-            return [table]
+
+            if algo == "SCM":
+                warn = "SCM do not support probabilistic predictions, ROC AUC uses hard predictions instead."
+                return [table], warn, {"visibility": "visible"}
+            else:
+                return [table], "", {"visibility": "hidden"}
+            
 
 
         @self.app.callback(

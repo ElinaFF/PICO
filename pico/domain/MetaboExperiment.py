@@ -434,7 +434,7 @@ class MetaboExperiment:
             results[model_name].add_results_from_one_algo_on_one_split(
                 best_model, scaled_data, importance_attribute, 
                 classes, y_train, y_train_pred, y_test, y_test_pred,
-                split_index, X_train.index, X_test.index
+                split_index, X_train.index, X_test.index, X_train, X_test
             )
 
         for classification_design_name, classification_design in self.classification_designs.items():

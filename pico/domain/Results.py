@@ -58,6 +58,8 @@ class Results:
             split_number: str,
             train_ids: List[str],
             test_ids: List[str],
+            X_train:pd.DataFrame,
+            X_test:pd.DataFrame
     ):
         """
         Besoin modèle pour extraire features, features importance
@@ -106,11 +108,21 @@ class Results:
         self.results[split_number]["test_f1"] = f1_score(
             binary_y_test_true, binary_y_test_pred
         )
+
+        if type(model).__name__ == "SetCoveringMachineClassifier":
+            # SCM do not support probabilistic predictions. The returned values will be zero or one (equivalent to hard predictions).
+            y_train_proba = binary_y_train_pred
+            y_test_proba = binary_y_test_pred
+        else:
+            y_train_proba = model.predict_proba(X_train.to_numpy())[:, 1] 
+            y_test_proba = model.predict_proba(X_test.to_numpy())[:, 1] 
+
+
         self.results[split_number]["train_roc_auc"] = roc_auc_score(
-            binary_y_train_true, binary_y_train_pred
+            binary_y_train_true, y_train_proba
         )
         self.results[split_number]["test_roc_auc"] = roc_auc_score(
-            binary_y_test_true, binary_y_test_pred
+            binary_y_test_true, y_test_proba
         )
         self.results[split_number][
             "failed_samples"
