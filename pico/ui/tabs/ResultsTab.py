@@ -950,7 +950,7 @@ class ResultsTab(MetaTab):
             for i, line in enumerate(cm):
                 text_mat.append([])
                 for j, col in enumerate(line):
-                    text_mat[i].append(str(col))
+                    text_mat[i].append(str(round(col*100,4))+"%")
 
             hps = self.r[design_name][algo].results[split]["hyperparameters"]
 

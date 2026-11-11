@@ -213,7 +213,7 @@ class Results:
 
 
     def _produce_conf_matrix(self, y_test_true: list, y_test_pred: list):
-        labels = list(set(y_test_true))
+        labels = sorted(set(y_test_true))
         return labels, confusion_matrix(
             y_test_true, y_test_pred, labels=labels, normalize="true"
         )

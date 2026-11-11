@@ -147,8 +147,10 @@ class Plots:
         fig = fig.update_traces(text=text, texttemplate="%{text}", hovertemplate=None)
         fig.update_layout(
             title="Confusion matrix of split " + str(split) + " by " + algo,
-            xaxis_title="Prediciton",
+            xaxis_title="Prediction",
             yaxis_title="Truth",
+            yaxis=dict(autorange="reversed", type="category"),
+            xaxis=dict(type="category", side="bottom"),
         )
         return fig
 
