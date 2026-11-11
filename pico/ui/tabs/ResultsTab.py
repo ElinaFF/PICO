@@ -380,7 +380,7 @@ class ResultsTab(MetaTab):
         ___featuresTable = html.Div(
             className="table_features",
             children=[
-                html.H6("Top 10 features sorted by importance"),
+                html.H6("Top 10 features sorted by importance, means & stds"),
                 dbc.Button(
                     "Export",
                     color="primary",
@@ -982,12 +982,13 @@ class ResultsTab(MetaTab):
             df = df.round(4)
 
             output_df = df.iloc[:10, :].rename(columns={"times_used":"times\nused", 
-                                                        "importance_usage":"importance\nusage",
+                                                        "importance_usage":"importance\nwhen used",
+                                                        "std":"std\nwhen used",
                                                         "importance_all_splits":"importance\nall splits",
                                                         "std_all_splits":"std\nall splits"
                                                         })
 
-            return dbc.Table.from_dataframe(output_df, borderless=True)
+            return dbc.Table.from_dataframe(output_df, borderless=True, size="sm", responsive=True)
 
 
         @self.app.callback(
