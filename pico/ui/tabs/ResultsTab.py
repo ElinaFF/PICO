@@ -918,7 +918,7 @@ class ResultsTab(MetaTab):
             table = dbc.Table.from_dataframe(df, borderless=True)
 
             if algo == "SCM":
-                warn = "SCM do not support probabilistic predictions, ROC AUC uses hard predictions instead."
+                warn = "As the SCM does not support probabilistic predictions, ROC AUC uses hard predictions instead."
                 return [table], warn, {"visibility": "visible"}
             else:
                 return [table], "", {"visibility": "hidden"}
