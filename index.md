@@ -23,6 +23,45 @@ Throughout the interface, when clicking on something, if the expected effect is 
 License
 : <a href="https://github.com/ElinaFF/PICO">Pipeline for Interpretable Classification of Omics (PICO)</a> © 2025 by <a href="https://creativecommons.org">Elina Francovic-Fontaine</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
 
+## Related works
+
+| Tools | Splits | FAIR | Crossover studies | Agnostic Features | Balancing | Classification designs | Accessible | Interpretability |
+|-------|--------|------|-------------------|-------------------|-----------|------------------------|------------|------------------|
+| PICO (our tool)| +++ | +++ | +++ | +++ | ++ | +++ | ++ | +++ |
+| CRANK-MS | + | No | No | No | No | No | + | + |
+| SPARSENN | + | No | No | + | No | No | + | - |
+| AutoXAIOmics | No | No | No | No | +++ | + | No | + |
+| MetaboAnalyst | - | - | + | ++ | - | - | +++ | +++ |
+| ExplainerDashboard | No | + | - | - | - | - | + | ++ |
+| LipidSig | No | No | No | No | No | No | +++ | + |
+| 3D Intelligenes | No | +++ | No | ++ | No | No | +++ | ++ |
+| OmicLearn | + | + | No | No | No | No | +++ | +++ |
+
+
+Splits  
+: +++ : yes, variable, with statistics supporting decision, ++ : option not present in literature, +: yes, fixed number.
+
+FAIR   
+: +++ : implementation of at least one concept in each FAIR ``letter", also built to facilitate research collaborations while maintaining privacy of data, ++ : option not present in literature, + : implement minimum FAIR principles OR support for research collaborations.
+
+Crossover studies  
+: +++ : handling pairing of variable number of samples, ++ : option not present in literature, + : handling pairing of two samples only (minimal way of supporting pairing).
+
+Agnostic features  
+: +++ : analyze important features across splits and algorithms, ++ : analyze important features across algorithms, + : analyze important features across splits.
+
+Balancing  
+: +++ : multiple methods of balancing (oversampling, undersampling, synthetic data, etc), ++ : one method of balancing, + : option not present in literature.
+
+Classification Design  
+: +++ : Support creating multiple custom designs for binary classification, ++ : option not present in literature, + : support only one design.
+
+Accessible  
+: +++ : visual interface for computing and results, ++ : visual just for results, no need ML knowledge, + : need ML knowledge.
+
+Interpretability  
+: +++ : pure interpretability, focus on using it for features selection, ++ :  XAI like SHAP of LIME, plus a little bit of importances, + : only XAI.
+
 
 ## Requirements
 The recommended configuration considers the user will need the computer while the experiment is runing. 
