@@ -47,7 +47,7 @@ It displays the train balanced accuracy and the test balanced accuracy for each 
 Overfitting can also be detected by this plot, when the accuracy on the train data is close to 100%, and the test accuracy is much lower. There is no clear threshold to identify overfitting, but generally a difference of at least 15-20% gives a good sign. Overfitting is not good because it means that the model has learned very well the training distribution, but will not be able to generalize this comprehension. Its predictive performance on new data will be poor. See this [link](https://machinelearningmastery.com/overfitting-machine-learning-models/) for more details.
 
 ##### Metrics table
-This table gives the mean and standard deviation of multiple metrics of the models. 
+This table gives the mean and standard deviation of multiple metrics of the models over the train set and test set. In the case of an imbalanced dataset, the user can use the balanced accuracy, the precision, the recall and the F1 score to analyze results.
 
 Accuracy
 : Proportion of correctly predicted samples. See scikit-learn’s documentation on [accuracy](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score)
