@@ -63,7 +63,7 @@ F1-score
 
 ROC curve
 : The ROC curve compares the true positive rate and the false positive rate. If the AUC (Area Under the Curve) is high, it means that the model is able to produce a lot of correct positive predictions for few false positives. The opposite means that the model has a hard time making true positive predictions. [For more details.](https://scikit-learn.org/stable/modules/model_evaluation.html#roc-metrics)
-
+Warning : As the SCM does not support probabilistic predictions, ROC AUC uses hard predictions for this algorithm instead.
 
 ##### Splits number for Confusion matrix
 In this section, the user can select one particular split with the dropdown menu to display the confusion matrix of the model. The values are normalized so it shows the repartition of predictions for each class. Also, it can show if the model detects/undertsands better one class versus the other. Because in that case, there is a proportion of the less understood class that is predicted as the better understood class.
