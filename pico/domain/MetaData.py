@@ -217,13 +217,19 @@ class MetaData:
 
     def get_classes_repartition_based_on_design(self, classes_design: Dict[str, List[str]]) -> Dict[str, int]:
         """
-        Retrieve the number of target for each class
-        Which can be used to display the ratio of each classes in the experiment/design
+        Retrieve the number of classes for each label
+        Which can be used to display the ratio of each label in the experiment/design
+
+        classes_design : dict with labels as keys and classes as values
+        target_repartition : a dict with classes as keys and int as values, ints are counts, includes all classes of the dataset.
+        return classes_repartition : dict with labels as keys and int as values, the int is a count of sample corresponding to each label.
         """
+    
         target_repartition = self._dataframe["final_targets"].value_counts().to_dict()
         classes_repartition = {}
         for class_name in classes_design:
             classes_repartition[class_name] = sum([target_repartition[target] for target in classes_design[class_name]])
+
         return classes_repartition
 
 # TODO: join sampleId and target in same pickle file

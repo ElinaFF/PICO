@@ -453,6 +453,9 @@ def remove_random_samples_from_class(X: pd.Series, y: List[str], balance_correct
     Function to adjust proportion between classes, to make it more balanced, or as balanced as possible
     Supposed to be provided by user (how much to adjust)
     """
+    print("--- debugging ---")
+    print("y : ", y)
+    print("---- debug end ---")
 
     if pairing_id is not None:
         samples_ids_and_targets = pd.DataFrame({"id": X, "final_classes": y, "pairing_id": pairing_id})
@@ -464,6 +467,9 @@ def remove_random_samples_from_class(X: pd.Series, y: List[str], balance_correct
         raise ValueError("Balance correction is not supported for multiclassification")
 
     class_A_name, class_B_name = tuple(classes_repartition.keys())
+
+    # Total number of samples and labels repartition over the dataset
+    # Because of stratification, the ratio of each label will stay the same for the train set (same as the entire dataset)
     total_number_of_samples = classes_repartition[class_A_name] + classes_repartition[class_B_name]
     class_A_repartition = classes_repartition[class_A_name] / total_number_of_samples
     class_B_repartition = classes_repartition[class_B_name] / total_number_of_samples
@@ -475,6 +481,7 @@ def remove_random_samples_from_class(X: pd.Series, y: List[str], balance_correct
 
     class_A_lines = samples_ids_and_targets[samples_ids_and_targets["final_classes"] == class_A_name]
 
+    # number of samples in the train set
     class_A_number_of_samples = len(class_A_lines)
     class_B_number_of_samples = len(samples_ids_and_targets[samples_ids_and_targets["final_classes"] == class_B_name])
 
